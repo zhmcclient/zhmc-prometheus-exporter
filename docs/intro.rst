@@ -98,14 +98,14 @@ You can then run
 
   $ zhmc_prometheus_exporter -c samplecreds.yaml -m metrics.yaml
 
-, the default port being 8000, you can change it with ``-p``.
+, the default port being 9291, you can change it with ``-p``.
 
 Demo setup
 ^^^^^^^^^^
 
 **Beware that using Prometheus and a possible graphical frontend, Grafana, is not the scope of this project. This is a very sparse guide. Consult their documentations if you want anything more complicated than a "three simple metrics" setup.**
 
-* The Prometheus server scrapes the metrics from the exporter. Get it from `the Prometheus download page`_. A sample configuration YAML is provided in the examples folder. Fill in the IP and port the exporter will run on. If you left it at default, the port will be 8000. From the downloaded directory, you can then run::
+* The Prometheus server scrapes the metrics from the exporter. Get it from `the Prometheus download page`_. A sample configuration YAML is provided in the examples folder. Fill in the IP and port the exporter will run on. If you left it at default, the port will be 9291. From the downloaded directory, you can then run::
 
     $ ./prometheus --config.file=prometheus.yaml
 

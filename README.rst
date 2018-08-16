@@ -40,7 +40,7 @@ Set up your exporter. Edit your credentials YAML file. A `sample credentials YAM
 
   $ zhmc_prometheus_exporter -c samplecreds.yaml -m metrics.yaml
 
-where ``metrics.yaml`` defines the metrics and descriptions. You do not have to edit ``metrics.yaml``. The default port is 8000, you can change it with ``-p``.
+where ``metrics.yaml`` defines the metrics and descriptions. You do not have to edit ``metrics.yaml``. The default port is 9291, you can change it with ``-p``.
 
 .. _sample credentials YAML: examples/samplecreds.yaml
 
@@ -49,7 +49,7 @@ Demo setup
 
 If you want a quick "three simple metrics" setup with Prometheus and Grafana you can proceed as follows:
 
-* Set up a Prometheus server. Get it from `Prometheus`_. A `sample configuration YAML`_ is provided. Fill in the IP and port the exporter will run on. If you left it at default, the port will be 8000. You can then run::
+* Set up a Prometheus server. Get it from `Prometheus`_. A `sample configuration YAML`_ is provided. Fill in the IP and port the exporter will run on. If you left it at default, the port will be 9291. You can then run::
 
     $ ./prometheus --config.file=prometheus.yaml
 

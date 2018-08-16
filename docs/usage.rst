@@ -37,7 +37,7 @@ You can then run
 
   $ zhmc_prometheus_exporter -c samplecreds.yaml -m metrics.yaml
 
-, the default port being 8000, you can change it with ``-p``.
+, the default port being 9291, you can change it with ``-p``.
 
 Output anatomy
 --------------

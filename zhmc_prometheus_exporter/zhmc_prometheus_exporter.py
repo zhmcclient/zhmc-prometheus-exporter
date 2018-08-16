@@ -64,8 +64,8 @@ def parse_args(args):
     """Parses the CLI arguments."""
     parser = argparse.ArgumentParser(description="Prometheus.io exporter for "
                                      "the IBM Z Hardware Management Console")
-    parser.add_argument("-p", metavar="PORT", default="8000", help="Port for "
-                        "exporting (default 8000)")
+    parser.add_argument("-p", metavar="PORT", default="9291", help="Port for "
+                        "exporting (default 9291)")
     parser.add_argument("-c", metavar="CREDENTIALS", help="Credentials "
                         "information (YAML)", required=True)
     parser.add_argument("-m", metavar="METRICS", help="Metrics information "
