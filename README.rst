@@ -15,6 +15,9 @@
 zhmc-prometheus-exporter
 ========================
 
+.. image:: https://travis-ci.org/zhmcclient/zhmc-prometheus-exporter.svg?branch=master
+    :target: https://travis-ci.org/zhmcclient/zhmc-prometheus-exporter
+
 A `prometheus.io`_ exporter written in Python for metrics from the `IBM Z`_ Hardware Management Console using `zhmcclient`_. Tested with Python 3.4 through 3.7.
 
 .. _prometheus.io: https://prometheus.io/
