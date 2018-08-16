@@ -20,7 +20,7 @@ setuptools.setup(
     name="zhmc_prometheus_exporter",
     version="0.1",
     description="A prometheus.io exporter for metrics from the IBM Z HMC",
-    url="https://github.com/zhmcclient/zhmc-prometheus-exporter"
+    url="https://github.com/zhmcclient/zhmc-prometheus-exporter",
     author="Jakob Naucke",
     author_email="jakob.naucke@ibm.com",
     license="Apache-2.0",
