@@ -1,0 +1,106 @@
+metric_groups:
+  # These will only find something if you are in classic mode
+  cpc-usage-overview:
+    prefix: cpc
+    fetch: False
+  logical-partition-usage:
+    prefix: lpar 
+    fetch: False
+  channel-usage:
+    prefix: channel 
+    fetch: False
+  # These will only find something if you are in DPM mode
+  dpm-system-usage-overview:
+    prefix: dpm
+    fetch: True
+  partition-usage:
+    prefix: partition
+    fetch: True
+  adapter-usage:
+    prefix: adapter
+    fetch: False
+  crypto-usage:
+    prefix: crypto
+    fetch: False
+  flash-memory-usage:
+    prefix: flash
+    fetch: False
+  roce-usage:
+    prefix: roce
+    fetch: False
+  # This will only find something if you are in ensemble mode
+  virtualization-host-cpu-memory-usage:
+    prefix: virtualized
+    fetch: False
+
+metrics:
+  dpm-system-usage-overview:
+    network-usage:
+      percent: True
+      exporter_name: network_usage_ratio
+      exporter_desc: DPM total network usage
+    temperature-celsius: # which one?
+      percent: False
+      exporter_name: temperature_celsius
+      exporter_desc: DPM temperature
+    storage-usage:
+      percent: True
+      exporter_name: storage_usage_ratio
+      exporter_desc: DPM total storage usage
+    crypto-usage: # the coprocessor?
+      percent: True
+      exporter_name: crypto_usage_ratio
+      exporter_desc: DPM crypto usage
+    processor-usage:
+      percent: True
+      exporter_name: processor_usage_ratio
+      exporter_desc: DPM total processor usage
+    accelerator-usage: # which one?
+      percent: True
+      exporter_name: accelerator_usage_ratio
+      exporter_desc: DPM accelerator usage
+    all-shared-processor-usage:
+      percent: True
+      exporter_name: shared_processor_usage_ratio
+      exporter_desc: DPM total shared processor usage
+    power-consumption-watts:
+      percent: False
+      exporter_name: power_watts
+      exporter_desc: DPM total power consumption
+    ifl-shared-processor-usage:
+      percent: True
+      exporter_name: ifl_shared_processor_usage_ratio
+      exporter_desc: DPM Integrated Facility for Linux Integrated Information Processor shared processor usage
+    ifl-all-processor-usage:
+      percent: True
+      exporter_name: ifl_total_processor_usage_ratio
+      exporter_desc: DPM Integrated Facility for Linux Integrated Information Processor total processor usage
+    cp-shared-processor-usage:
+      percent: True
+      exporter_name: cp_shared_usage_ratio
+      exporter_desc: DPM coprocessor shared usage
+    cp-all-processor-usage:
+      percent: True
+      exporter_name: cp_total_usage_ratio
+      exporter_desc: DPM coprocessor total usage
+  partition-usage:
+    accelerator-usage: # which one?
+      percent: True
+      exporter_name: accelerator_usage_ratio
+      exporter_desc: Partition accelerator usage
+    crypto-usage: # the coprocessor? 
+      percent: True
+      exporter_name: crypto_usage_ratio
+      exporter_desc: Partition crypto usage
+    network-usage:
+      percent: True
+      exporter_name: network_usage_ratio
+      exporter_desc: Partition network usage
+    processor-usage:
+      percent: True
+      exporter_name: processor_usage_ratio
+      exporter_desc: Partition processor usage
+    storage-usage:
+      percent: True
+      exporter_name: storage_usage_ratio
+      exporter_desc: Partition storage usage

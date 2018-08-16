@@ -1,0 +1,7 @@
+hmccreds.yaml
+__pycache__/
+build/
+dist/
+docs/_build/
+*.egg-info/
+*.swp
