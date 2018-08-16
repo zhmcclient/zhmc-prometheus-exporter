@@ -96,6 +96,7 @@ The metrics YAML file
 Various properties about scraping are collected from the ``metrics.yaml`` file that is given to the exporter with the ``-m`` option.
 
 The metric groups section
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 contains the metric groups, as seen on the first level of the lists in :ref:`Available metrics`.
 
@@ -110,6 +111,7 @@ Example:
 Within one section, the metric prefix and the fetch True/False value is stored. The latter is due to runtime concerns: Some metric groups take over a second to be scraped.
 
 The metrics section
+^^^^^^^^^^^^^^^^^^^
 
 contains the metrics themselves, as seen on the second level of the lists in :ref:`Available metrics`.
 
