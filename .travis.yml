@@ -7,7 +7,7 @@ install:
   - pip install .
   - pip install -r dev-requirements.txt
 script:
-  - python test/test.py --cov coveralls
+  - py.test test/test.py --cov zhmc_prometheus_exporter.zhmc_prometheus_exporter
   - flake8
 after_success:
   - coveralls

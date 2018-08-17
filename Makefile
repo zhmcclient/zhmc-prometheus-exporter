@@ -1,5 +1,4 @@
 # Makefile for zhmc_prometheus exporter
-# 
 # Prerequisites:
 #   Any Linux distribution (macOS not officially supported)
 #   All of these commands:
@@ -41,7 +40,7 @@ help:
 	@echo "               Binary: $(bdist_file)"
 	@echo "               Source: $(sdist_file)"
 	@echo "  builddoc   - Build the documentation in $(build_doc_dir)/index.html"
-	@echo "  test       - Perform unit tests"
+	@echo "  test       - Perform unit tests including coverage checker"
 	@echo "  lint       - Perform lint tests"
 	@echo "  clean      - Clean up temporary files"
 
@@ -80,9 +79,9 @@ build: $(bdist_file) $(sdist_file)
 	@echo "$@ done."
 
 .PHONY: test
-test: install
+test: dev-setup install
 	@echo "Performing unit tests of $(package_name)..."
-	python3 $(test_dir)/$(test_file)
+	py.test $(test_dir)/$(test_file) --cov $(package_name).$(package_name)
 	@echo "$@ done."
 
 .PHONY: lint
