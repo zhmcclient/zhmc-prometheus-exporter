@@ -47,6 +47,13 @@ where ``metrics.yaml`` defines the metrics and descriptions. You do not have to 
 
 .. _sample credentials YAML: examples/samplecreds.yaml
 
+Documentation
+^^^^^^^^^^^^^
+
+`Read the Docs`_
+
+.. _Read the Docs: https://zhmc-prometheus-exporter.readthedocs.io/en/latest/
+
 Demo setup
 ^^^^^^^^^^
 
