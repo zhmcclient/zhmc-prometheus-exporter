@@ -249,8 +249,7 @@ class TestCreateContext(unittest.TestCase):
                                           {"metric-group": {"prefix": "pre",
                                                             "fetch": True}},
                                           "filename"))
-        print(type(context))
-        self.assertEqual(str(context), "MetricsContext()")
+        self.assertEqual(type(context), zhmcclient._metrics.MetricsContext)
         context.delete()
         session.logoff()
 
@@ -449,6 +448,7 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
         self.assertEqual(my_zhmc_usage_collector.filename, "filename")
 
     def test_collect(self):
+        """Test ZHMCUsageCollector.collect"""
         session = zhmcclient_mock.FakedSession("fake-host", "fake-hmc",
                                                "2.13.1", "1.8")
         yaml_metric_groups = {"metric-group": {"prefix": "pre",
