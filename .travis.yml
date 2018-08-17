@@ -9,3 +9,5 @@ install:
 script:
   - python test/test.py
   - flake8
+after_success:
+  - coveralls
