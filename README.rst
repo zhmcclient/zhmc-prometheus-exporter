@@ -31,6 +31,14 @@ Installation
 
   $ pip3 install .
 
+Documentation
+-------------
+
+`Read the Docs`_
+
+.. _Read the Docs: https://zhmc-prometheus-exporter.readthedocs.io/en/latest/
+
+
 Quickstart
 ----------
 
@@ -46,13 +54,6 @@ Set up your exporter. Edit your credentials YAML file. A `sample credentials YAM
 where ``metrics.yaml`` defines the metrics and descriptions. You do not have to edit ``metrics.yaml``. The default port is 9291, you can change it with ``-p``.
 
 .. _sample credentials YAML: examples/samplecreds.yaml
-
-Documentation
-^^^^^^^^^^^^^
-
-`Read the Docs`_
-
-.. _Read the Docs: https://zhmc-prometheus-exporter.readthedocs.io/en/latest/
 
 Demo setup
 ^^^^^^^^^^
