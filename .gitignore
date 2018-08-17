@@ -1,7 +1,23 @@
-hmccreds.yaml
-__pycache__/
+# Sensitive information
+/hmccreds.yaml
+
+# Unnecessary clutter created by build process
 build/
-dist/
-docs/_build/
 *.egg-info/
+
+# Unnecessary clutter created by test process
+__pycache__/
+.pytest_cache/
+.coverage
+
+# Build
+dist/
+
+# Doc build
+docs/_build/
+
+# Test coverage
+htmlcov/
+
+# If I still have a file open in Vim
 *.swp

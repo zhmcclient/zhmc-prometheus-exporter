@@ -66,10 +66,14 @@ def parse_args(args):
                                      "the IBM Z Hardware Management Console")
     parser.add_argument("-p", metavar="PORT", default="9291", help="Port for "
                         "exporting (default 9291)")
-    parser.add_argument("-c", metavar="CREDENTIALS", help="Credentials "
-                        "information (YAML)", required=True)
-    parser.add_argument("-m", metavar="METRICS", help="Metrics information "
-                        "(YAML)", required=True)
+    parser.add_argument("-c", metavar="CREDENTIALS", default="/etc/zhmc-"
+                        "prometheus-exporter/hmccreds.yaml",
+                        help="Credentials information (default /etc/zhmc-"
+                        "prometheus-exporter/hmccreds.yaml)")
+    parser.add_argument("-m", metavar="METRICS", default="/etc/zhmc-"
+                        "prometheus-exporter/metrics.yaml", help="Credentials "
+                        "information (default /etc/zhmc-prometheus-exporter/"
+                        "metrics.yaml)")
     return parser.parse_args(args)
 
 

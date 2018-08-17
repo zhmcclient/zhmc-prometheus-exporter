@@ -17,6 +17,11 @@ zhmc-prometheus-exporter
 
 .. image:: https://travis-ci.org/zhmcclient/zhmc-prometheus-exporter.svg?branch=master
     :target: https://travis-ci.org/zhmcclient/zhmc-prometheus-exporter
+.. image:: https://readthedocs.org/projects/zhmc-prometheus-exporter/badge/?version=latest
+    :target: https://zhmc-prometheus-exporter.readthedocs.io/en/latest/?badge=latest
+.. image:: https://coveralls.io/repos/github/zhmcclient/zhmc-prometheus-exporter/badge.svg?branch=master
+    :target: https://coveralls.io/github/zhmcclient/zhmc-prometheus-exporter?branch=master
+
 
 A `prometheus.io`_ exporter written in Python for metrics from the `IBM Z`_ Hardware Management Console using `zhmcclient`_. Tested with Python 3.4 through 3.7.
 
@@ -31,21 +36,29 @@ Installation
 
   $ pip3 install .
 
+Documentation
+-------------
+
+`Read the Docs`_
+
+.. _Read the Docs: https://zhmc-prometheus-exporter.readthedocs.io/en/latest/
+
+
 Quickstart
 ----------
 
 The exporter itself
 ^^^^^^^^^^^^^^^^^^^
 
-Set up your exporter. Edit your credentials YAML file. A `sample credentials YAML`_ is provided. Enter the IP address of the HMC, your username, and your password there. You can then run
+Set up your exporter. Edit your credentials YAML file. A `sample credentials YAML`_ is provided. Enter the IP address of the HMC, your username, and your password there. Put this file and ``metrics.yaml`` into ``/etc/zhmc-prometheus-exporter/``. The latter defines the metrics and descriptions, you do not have to edit it. You can then run
 
 .. code-block:: bash
 
-  $ zhmc_prometheus_exporter -c samplecreds.yaml -m metrics.yaml
+  $ zhmc_prometheus_exporter
 
-where ``metrics.yaml`` defines the metrics and descriptions. You do not have to edit ``metrics.yaml``. The default port is 9291, you can change it with ``-p``.
+The default port is 9291, you can change it with ``-p``. If you do not want to put ``hmccreds.yaml`` and ``metrics.yaml`` into ``/etc/zhmc-prometheus-exporter``, you can also specify them with ``-c`` and ``-m`` respectively.
 
-.. _sample credentials YAML: examples/samplecreds.yaml
+.. _sample credentials YAML: examples/hmccreds.yaml
 
 Demo setup
 ^^^^^^^^^^
