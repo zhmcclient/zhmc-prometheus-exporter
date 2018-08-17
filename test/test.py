@@ -29,6 +29,8 @@ from unittest.mock import patch
 import zhmcclient
 import zhmcclient_mock
 
+import prometheus_client
+
 import zhmc_prometheus_exporter.zhmc_prometheus_exporter
 
 
@@ -247,6 +249,7 @@ class TestCreateContext(unittest.TestCase):
                                           {"metric-group": {"prefix": "pre",
                                                             "fetch": True}},
                                           "filename"))
+        print(type(context))
         self.assertEqual(str(context), "MetricsContext()")
         context.delete()
         session.logoff()
@@ -377,9 +380,14 @@ class TestAddFamilies(unittest.TestCase):
             "exporter_desc": "metric"}}}
         output = (zhmc_prometheus_exporter.zhmc_prometheus_exporter.
                   add_families(yaml_metric_groups, input_metrics))
-        # As the prometheus_client handles reading at this point, this is the
-        # last thing that I can test
-        self.assertIsInstance(output["metric-group"]["metric"], object)
+        families = output["metric-group"]["metric"]
+        self.assertIsInstance(families,
+                              prometheus_client.core.GaugeMetricFamily)
+        self.assertEqual(families.name, "pre_metric")
+        self.assertEqual(families.documentation, "metric")
+        self.assertEqual(families.type, "gauge")
+        self.assertEqual(families.samples, [])
+        self.assertEqual(families._labelnames, ("resource",))
 
 
 class TestStoreMetrics(unittest.TestCase):
@@ -400,9 +408,74 @@ class TestStoreMetrics(unittest.TestCase):
                   store_metrics(yaml_metrics_dict,
                                 yaml_metrics,
                                 family_objects))
-        # prometheus_client handles reading, other functionality will have to
-        # be handled by smoke testing
-        self.assertIsInstance(output["metric-group"]["metric"], object)
+        stored = output["metric-group"]["metric"]
+        self.assertIsInstance(stored, prometheus_client.core.GaugeMetricFamily)
+        self.assertEqual(stored.name, "pre_metric")
+        self.assertEqual(stored.documentation, "metric")
+        self.assertEqual(stored.type, "gauge")
+        self.assertEqual(stored.samples, [("pre_metric",
+                                           {"resource": "resource"},
+                                           0)])
+        self.assertEqual(stored._labelnames, ("resource",))
+
+
+class TestInitZHMCUsageCollector(unittest.TestCase):
+    """Tests ZHMCUsageCollector."""
+
+    def test_init(self):
+        """Tests ZHMCUsageCollector.__init__."""
+        session = zhmcclient_mock.FakedSession("fake-host", "fake-hmc",
+                                               "2.13.1", "1.8")
+        yaml_metric_groups = {"metric-group": {"prefix": "pre",
+                                               "fetch": True}}
+        context = (zhmc_prometheus_exporter.zhmc_prometheus_exporter.
+                   create_metrics_context(session,
+                                          yaml_metric_groups,
+                                          "filename"))
+        yaml_metrics = {"metric-group": {"metric": {
+            "percent": True,
+            "exporter_name": "metric",
+            "exporter_desc": "metric"}}}
+        my_zhmc_usage_collector = (zhmc_prometheus_exporter.
+                                   zhmc_prometheus_exporter.
+                                   ZHMCUsageCollector(context,
+                                                      yaml_metric_groups,
+                                                      yaml_metrics,
+                                                      "filename"))
+        self.assertEqual(my_zhmc_usage_collector.context, context)
+        self.assertEqual(my_zhmc_usage_collector.yaml_metric_groups,
+                         yaml_metric_groups)
+        self.assertEqual(my_zhmc_usage_collector.yaml_metrics, yaml_metrics)
+        self.assertEqual(my_zhmc_usage_collector.filename, "filename")
+
+    def test_collect(self):
+        session = zhmcclient_mock.FakedSession("fake-host", "fake-hmc",
+                                               "2.13.1", "1.8")
+        yaml_metric_groups = {"metric-group": {"prefix": "pre",
+                                               "fetch": True}}
+        context = (zhmc_prometheus_exporter.zhmc_prometheus_exporter.
+                   create_metrics_context(session,
+                                          yaml_metric_groups,
+                                          "filename"))
+        yaml_metrics = {"metric-group": {"metric": {
+            "percent": True,
+            "exporter_name": "metric",
+            "exporter_desc": "metric"}}}
+        my_zhmc_usage_collector = (zhmc_prometheus_exporter.
+                                   zhmc_prometheus_exporter.
+                                   ZHMCUsageCollector(context,
+                                                      yaml_metric_groups,
+                                                      yaml_metrics,
+                                                      "filename"))
+        collected = list(my_zhmc_usage_collector.collect())
+        self.assertEqual(len(collected), 1)
+        self.assertEqual(type(collected[0]),
+                         prometheus_client.core.GaugeMetricFamily)
+        self.assertEqual(collected[0].name, "pre_metric")
+        self.assertEqual(collected[0].documentation, "metric")
+        self.assertEqual(collected[0].type, "gauge")
+        self.assertEqual(collected[0].samples, [])
+        self.assertEqual(collected[0]._labelnames, ("resource",))
 
 
 if __name__ == "__main__":
