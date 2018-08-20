@@ -1,4 +1,4 @@
-hmccreds.yaml
+/hmccreds.yaml
 __pycache__/
 build/
 dist/
