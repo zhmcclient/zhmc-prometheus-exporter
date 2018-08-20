@@ -75,6 +75,11 @@ or, with make:
 
 Instead of running ``zhmc_prometheus_exporter``, you will then run ``python3 zhmc_prometheus_exporter/zhmc_prometheus_exporter.py`` from the repository.
 
+Do not install at all: Run as a Docker container
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You will have to configure it before you can run it in Docker container virtualisation. Please refer to :ref:`The exporter in Docker`.
+
 Quickstart
 ----------
 
@@ -99,6 +104,16 @@ Put both of these files into ``/etc/zhmc-prometheus-exporter`` (or link them). Y
   $ zhmc_prometheus_exporter
 
 The default port is 9291, you can change it with ``-p``. If you do not want to put ``hmccreds.yaml`` and ``metrics.yaml`` into ``/etc/zhmc-prometheus-exporter``, you can also specify them with ``-c`` and ``-m`` respectively.
+
+The exporter in Docker
+^^^^^^^^^^^^^^^^^^^^^^
+
+Follow the normal quickstart guide, but ensure that your ``hmccreds.yaml`` and ``metrics.yaml`` are in the project home directory. You can then run
+
+.. code-block:: bash
+
+  $ docker build . -t zhmcexporter
+  $ docker run -p 9291:9291 zhmcexporter
 
 Demo setup
 ^^^^^^^^^^
