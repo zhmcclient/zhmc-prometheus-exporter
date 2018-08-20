@@ -40,10 +40,20 @@ help:
 	@echo "  build      - Build the distribution files in $(dist_dir)"
 	@echo "               Binary: $(bdist_file)"
 	@echo "               Source: $(sdist_file)"
+	@echo "  upload     - Upload to PyPI"
 	@echo "  builddoc   - Build the documentation in $(build_doc_dir)/index.html"
 	@echo "  test       - Perform unit tests"
 	@echo "  lint       - Perform lint tests"
 	@echo "  clean      - Clean up temporary files"
+
+.PHONY: _check_version
+_check_version:
+ifeq (,$(package_version))
+	@echo 'Error: Package version could not be determine: (requires pbr; run "make dev-setup")'
+	@false
+else
+	@true
+endif
 
 .PHONY: setup
 setup:
@@ -68,6 +78,19 @@ dev-setup: setup
 	@echo "Installing dev requirements..."
 	pip3 install -r dev-requirements.txt
 	@echo "$@ done."
+
+.PHONY: upload
+upload: _check_version $(bdist_file) $(sdist_file)
+ifeq (,$(findstring .dev,$(package_version)))
+	@echo "==> This will upload $(package_name) version $(package_version) to PyPI!"
+	@echo -n "==> Continue? [yN] "
+	@bash -c 'read answer; if [ "$$answer" != "y" ]; then echo "Aborted."; false; fi'
+	twine upload $(bdist_file) $(sdist_file)
+	@echo "Done: Uploaded $(package_name) version to PyPI: $(package_version)"
+else
+	@echo "Error: A development version $(package_version) of $(package_name) cannot be uploaded to PyPI!"
+	@false
+endif
 
 .PHONY: builddoc
 builddoc: html
@@ -94,7 +117,7 @@ lint: dev-setup
 .PHONY: clean
 clean:
 	@echo "Cleaning up temporary files..."
-	rm -rfv build $(package_name).egg-info __pycache__
+	rm -rfv build $(package_name).egg-info __pycache__ AUTHORS ChangeLog
 	@echo "$@ done."
 
 html: dev-setup

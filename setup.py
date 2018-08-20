@@ -17,20 +17,5 @@
 import setuptools
 
 setuptools.setup(
-    name="zhmc_prometheus_exporter",
-    version="0.1",
-    description="A prometheus.io exporter for metrics from the IBM Z HMC",
-    url="https://github.com/zhmcclient/zhmc-prometheus-exporter",
-    author="Jakob Naucke",
-    author_email="jakob.naucke@ibm.com",
-    license="Apache-2.0",
-    long_description="Please see README.rst",
-    platforms="Linux",
-    packages=["zhmc_prometheus_exporter"],
-    install_requires=["pyyaml>=3.13",
-                      "zhmcclient>=0.19.0",
-                      "prometheus-client>=0.3.1"],
-    entry_points={"console_scripts": ["zhmc_prometheus_exporter = "
-                                      "zhmc_prometheus_exporter."
-                                      "zhmc_prometheus_exporter:main"]}
-)
+    setup_requires=['pbr>=4.2.0'],
+    pbr=True)
