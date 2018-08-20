@@ -31,6 +31,14 @@ Installation
 
   $ pip3 install .
 
+Documentation
+-------------
+
+`Read the Docs`_
+
+.. _Read the Docs: https://zhmc-prometheus-exporter.readthedocs.io/en/latest/
+
+
 Quickstart
 ----------
 
