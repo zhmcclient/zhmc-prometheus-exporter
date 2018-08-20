@@ -44,11 +44,11 @@ class TestParseArgs(unittest.TestCase):
         self.assertEqual(args.m, "3")
 
     def test_default_args(self):
-       """Tests for all defaults."""
-       args = (zhmc_prometheus_exporter.zhmc_prometheus_exporter.parse_args([]))
-       self.assertEqual(args.p, "9291")
-       self.assertEqual(args.c, "/etc/zhmc-prometheus-exporter/hmccreds.yaml")
-       self.assertEqual(args.m, "/etc/zhmc-prometheus-exporter/metrics.yaml")
+        """Tests for all defaults."""
+        args = zhmc_prometheus_exporter.zhmc_prometheus_exporter.parse_args([])
+        self.assertEqual(args.p, "9291")
+        self.assertEqual(args.c, "/etc/zhmc-prometheus-exporter/hmccreds.yaml")
+        self.assertEqual(args.m, "/etc/zhmc-prometheus-exporter/metrics.yaml")
 
 
 class TestParseYaml(unittest.TestCase):
