@@ -67,8 +67,8 @@ def parse_args(args):
     parser.add_argument("-p", metavar="PORT", default="9291", help="Port for "
                         "exporting (default 9291)")
     parser.add_argument("-c", metavar="CREDENTIALS", default="/etc/zhmc-"
-                        "prometheus-exporter/hmccreds.yaml", help=
-                        "Credentials information (default /etc/zhmc-"
+                        "prometheus-exporter/hmccreds.yaml",
+                        help="Credentials information (default /etc/zhmc-"
                         "prometheus-exporter/hmccreds.yaml)")
     parser.add_argument("-m", metavar="METRICS", default="/etc/zhmc-"
                         "prometheus-exporter/metrics.yaml", help="Credentials "
