@@ -17,19 +17,6 @@ Error messages
 
 This page further describes error messages if you have trouble understanding them. If an error is not listed here, see :ref:`Reporting issues`.
 
-The following arguments are required
-------------------------------------
-
-Example:
-
-.. code-block:: bash
-
-  $ zhmc_prometheus_exporter
-  usage: zhmc_prometheus_exporter [-h] [-p PORT] -c CREDENTIALS -m METRICS
-  zhmc_prometheus_exporter: error: the following arguments are required: -c, -m
-
-You have to provide credentials and metrics YAML files with the respective ``-c`` and ``-m`` arguments. See :ref:`Quickstart` on how to fill them.
-
 Permission error
 ----------------
 
@@ -37,8 +24,8 @@ Example:
 
 .. code-block:: bash
 
-  $ zhmc_prometheus_exporter -c samplecreds.yaml -m metrics.yaml
-  Permission error. Make sure you have appropriate permissions to read from samplecreds.yaml.
+  $ zhmc_prometheus_exporter
+  Permission error. Make sure you have appropriate permissions to read from /etc/zhmc-prometheus-exporter/hmccreds.yaml.
 
 You don't have permission to read from a YAML file. Change the permissions with ``chmod``, check ``man chmod`` if you are unfamiliar with it.
 
@@ -49,10 +36,10 @@ Example:
 
 .. code-block:: bash
 
-  $ zhmc_prometheus_exporter -c samplecreds.yaml -m metrics.yaml
-  Error: File not found. It seems that samplecreds.yaml does not exist.
+  $ zhmc_prometheus_exporter
+  Error: File not found. It seems that /etc/zhmc-prometheus-exporter/hmccreds.yaml does not exist.
 
-A YAML file you specified does not exist. Make sure that you specify paths, relative or absolute, if the file is not in your working directory. You have to copy the credentials file from the ``examples`` folder and fill in your own credentials, see :ref:`Quickstart` for more information.
+A required YAML file (``hmccreds.yaml`` and ``metrics.yaml``) does not exist. Make sure that you specify paths, relative or absolute, with ``-c`` or ``-m`` if the file is not in ``etc/zhmc-prometheus-exporter/``. You have to copy the credentials file from the ``examples`` folder and fill in your own credentials, see :ref:`Quickstart` for more information.
 
 Section not found
 -----------------
@@ -61,10 +48,10 @@ Example:
 
 .. code-block:: bash
 
-  $ zhmc_prometheus_exporter -c samplecreds.yaml -m metrics.yaml
-  Section metric_groups not found in file metrics.yaml.
+  $ zhmc_prometheus_exporter
+  Section metric_groups not found in file /etc/zhmc-prometheus-exporter/metrics.yaml.
 
-At least one of the sections ``metric_groups`` and ``metrics`` is missing in your ``metrics.yaml`` in its entirety. See chapter :ref:`The metrics YAML file` for more information.
+At least one of the sections ``metric_groups`` and ``metrics`` in your ``metrics.yaml`` or ``metrics`` in ``hmccreds.yaml`` is missing in its entirety. See chapter :ref:`The metrics YAML file` for more information.
 
 Doesn't follow the YAML syntax
 ------------------------------
@@ -73,8 +60,8 @@ Example:
 
 .. code-block:: bash
 
-  $ zhmc_prometheus_exporter -c samplecreds.yaml -m metrics.yaml
-  metrics.yaml does not follow the YAML syntax
+  $ zhmc_prometheus_exporter
+  /etc/zhmc-prometheus-exporter/metrics.yaml does not follow the YAML syntax
 
 A YAML file you specified breaks the syntax rules of the YAML specification. If you derive your YAML files from the existing examples (see chapter :ref:`Quickstart`), this error should not occur, you can also check the `YAML specification`_.
 
@@ -88,8 +75,8 @@ Example:
 
 .. code-block:: bash
 
-  $ zhmc_prometheus_exporter -c samplecreds.yaml -m metrics.yaml
-  You did not specify the IP address of the HMC in samplecreds.yaml.
+  $ zhmc_prometheus_exporter
+  You did not specify the IP address of the HMC in /etc/zhmc-prometheus-exporter/hmccreds.yaml.
 
 There is a lot of mandatory information in the two YAML files that might be missing if you improperly filled the credentials file (see :ref:`Quickstart`) or made bad changes to the metrics file (see :ref:`The metrics YAML file`).
 
@@ -120,8 +107,8 @@ Example:
 
 .. code-block:: bash
 
-  $ zhmc_prometheus_exporter -c samplecreds.yaml -m metrics.yaml
-  Time out. Ensure that you have access to the HMC and that you have stored the correct IP address in samplecreds.yaml.
+  $ zhmc_prometheus_exporter
+  Time out. Ensure that you have access to the HMC and that you have stored the correct IP address in /etc/zhmc-prometheus-exporter/hmccreds.yaml.
 
 There is a certain timeout threshold if the HMC cannot be found. Check that you have access to the HMC on the IP address that you specified in the credentials file.
 
@@ -132,8 +119,8 @@ Example:
 
 .. code-block:: bash
 
-  $ zhmc_prometheus_exporter -c samplecreds.yaml -m metrics.yaml
-  Authentication error. Ensure that you have stored a correct user ID-password combination in samplecreds.yaml.
+  $ zhmc_prometheus_exporter
+  Authentication error. Ensure that you have stored a correct user ID-password combination in /etc/zhmc-prometheus-exporter/hmccreds.yaml.
 
 Wrong username or password in the credentials file. Check if you can regularly access the HMC with this username-password combniation.
 
@@ -144,7 +131,7 @@ Example:
 
 .. code-block:: bash
 
-  $ zhmc_prometheus_exporter -c samplecreds.yaml -m metrics.yaml
+  $ zhmc_prometheus_exporter
   ...: UserWarning: Metric network-usage was not found. Consider adding it to your metrics.yaml.
     warnings.warn(warning_str % (metric, filename))
 
