@@ -24,7 +24,7 @@ setuptools.setup(
     author="Jakob Naucke",
     author_email="jakob.naucke@ibm.com",
     license="Apache-2.0",
-    long_description="Please see README.rst",
+    long_description=open('README.rst').read(),
     platforms="Linux",
     packages=["zhmc_prometheus_exporter"],
     install_requires=["pyyaml>=3.13",
