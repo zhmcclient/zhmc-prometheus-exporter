@@ -77,6 +77,6 @@ If you want a quick "three simple metrics" setup with Prometheus and Grafana you
 
 The following image illustrates what the setup described above could look like.
 
-.. image:: examples/Deployment.png
+.. image:: https://github.com/zhmcclient/zhmc-prometheus-exporter/blob/master/examples/Deployment.png?raw=true
     :align: center
     :alt: Deployment diagram of the example
