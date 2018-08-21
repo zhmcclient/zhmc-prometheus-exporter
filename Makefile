@@ -102,13 +102,23 @@ html: dev-setup
 	sphinx-build -b html $(doc_dir) $(build_doc_dir)
 	@echo "$@ done."
 
-$(bdist_file): dev-setup
+clean_bdist:
+	@echo "Cleaning previous binary build..."
+	rm -rfv $(dist_dir)/*-py2.py3-none-any.whl
+	@echo "Done: Cleaned previous binary build."
+
+clean_sdist:
+	@echo "Cleaning previous source build..."
+	rm -rfv $(dist_dir)/*.tar.gz
+	@echo "Done: Cleaned previous source build."
+
+$(bdist_file): dev-setup clean_bdist
 	@echo "Creating binary distribution archive $@..."
 	rm -rfv $(package_name).egg-info
 	python3 setup.py bdist_wheel -d $(dist_dir) --universal
 	@echo "Done: Created binary distribution archive $@."
 
-$(sdist_file): dev-setup
+$(sdist_file): dev-setup clean_sdist
 	@echo "Creating source distribution archive $@..."
 	rm -rfv $(package_name).egg-info
 	python3 setup.py sdist -d $(dist_dir)
