@@ -94,7 +94,7 @@ lint: dev-setup
 .PHONY: clean
 clean:
 	@echo "Cleaning up temporary files..."
-	rm -rfv build $(package_name).egg-info __pycache__
+	rm -rfv build $(package_name).egg-info __pycache__ AUTHORS ChangeLog
 	@echo "$@ done."
 
 html: dev-setup
