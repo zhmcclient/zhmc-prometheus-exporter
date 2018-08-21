@@ -40,10 +40,20 @@ help:
 	@echo "  build      - Build the distribution files in $(dist_dir)"
 	@echo "               Binary: $(bdist_file)"
 	@echo "               Source: $(sdist_file)"
+	@echo "  upload     - Upload to PyPI"
 	@echo "  builddoc   - Build the documentation in $(build_doc_dir)/index.html"
 	@echo "  test       - Perform unit tests"
 	@echo "  lint       - Perform lint tests"
 	@echo "  clean      - Clean up temporary files"
+
+.PHONY: _check_version
+_check_version:
+ifeq (,$(package_version))
+	@echo 'Error: Package version could not be determine: (requires pbr; run "make dev-setup")'
+	@false
+else
+	@true
+endif
 
 .PHONY: setup
 setup:
@@ -68,6 +78,19 @@ dev-setup: setup
 	@echo "Installing dev requirements..."
 	pip3 install -r dev-requirements.txt
 	@echo "$@ done."
+
+.PHONY: upload
+upload: _check_version $(bdist_file) $(sdist_file)
+ifeq (,$(findstring .dev,$(package_version)))
+	@echo "==> This will upload $(package_name) version $(package_version) to PyPI!"
+	@echo -n "==> Continue? [yN] "
+	@bash -c 'read answer; if [ "$$answer" != "y" ]; then echo "Aborted."; false; fi'
+	twine upload $(bdist_file) $(sdist_file)
+	@echo "Done: Uploaded $(package_name) version to PyPI: $(package_version)"
+else
+	@echo "Error: A development version $(package_version) of $(package_name) cannot be uploaded to PyPI!"
+	@false
+endif
 
 .PHONY: builddoc
 builddoc: html
@@ -102,23 +125,13 @@ html: dev-setup
 	sphinx-build -b html $(doc_dir) $(build_doc_dir)
 	@echo "$@ done."
 
-clean_bdist:
-	@echo "Cleaning previous binary build..."
-	rm -rfv $(dist_dir)/*-py2.py3-none-any.whl
-	@echo "Done: Cleaned previous binary build."
-
-clean_sdist:
-	@echo "Cleaning previous source build..."
-	rm -rfv $(dist_dir)/*.tar.gz
-	@echo "Done: Cleaned previous source build."
-
-$(bdist_file): dev-setup clean_bdist
+$(bdist_file): dev-setup
 	@echo "Creating binary distribution archive $@..."
 	rm -rfv $(package_name).egg-info
 	python3 setup.py bdist_wheel -d $(dist_dir) --universal
 	@echo "Done: Created binary distribution archive $@."
 
-$(sdist_file): dev-setup clean_sdist
+$(sdist_file): dev-setup
 	@echo "Creating source distribution archive $@..."
 	rm -rfv $(package_name).egg-info
 	python3 setup.py sdist -d $(dist_dir)
