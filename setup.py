@@ -18,7 +18,6 @@ import setuptools
 
 setuptools.setup(
     name="zhmc_prometheus_exporter",
-    version="0.1",
     description="A prometheus.io exporter for metrics from the IBM Z HMC",
     url="https://github.com/zhmcclient/zhmc-prometheus-exporter",
     author="Jakob Naucke",
