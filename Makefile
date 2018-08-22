@@ -1,5 +1,4 @@
 # Makefile for zhmc_prometheus exporter
-# 
 # Prerequisites:
 #   Any Linux distribution (macOS not officially supported)
 #   All of these commands:
@@ -41,7 +40,7 @@ help:
 	@echo "               Binary: $(bdist_file)"
 	@echo "               Source: $(sdist_file)"
 	@echo "  builddoc   - Build the documentation in $(build_doc_dir)/index.html"
-	@echo "  test       - Perform unit tests"
+	@echo "  test       - Perform unit tests including coverage checker"
 	@echo "  lint       - Perform lint tests"
 	@echo "  clean      - Clean up temporary files"
 
@@ -80,9 +79,9 @@ build: $(bdist_file) $(sdist_file)
 	@echo "$@ done."
 
 .PHONY: test
-test: install
+test: dev-setup install
 	@echo "Performing unit tests of $(package_name)..."
-	python3 $(test_dir)/$(test_file)
+	py.test $(test_dir)/$(test_file) --cov $(package_name).$(package_name) --cov-report=html
 	@echo "$@ done."
 
 .PHONY: lint
@@ -94,7 +93,7 @@ lint: dev-setup
 .PHONY: clean
 clean:
 	@echo "Cleaning up temporary files..."
-	rm -rfv build $(package_name).egg-info __pycache__
+	rm -rfv build $(package_name).egg-info .pytest_cache .coverage $(test_dir)/__pycache__
 	@echo "$@ done."
 
 html: dev-setup
@@ -102,14 +101,12 @@ html: dev-setup
 	sphinx-build -b html $(doc_dir) $(build_doc_dir)
 	@echo "$@ done."
 
-$(bdist_file): dev-setup
+$(bdist_file): dev-setup clean
 	@echo "Creating binary distribution archive $@..."
-	rm -rfv $(package_name).egg-info
 	python3 setup.py bdist_wheel -d $(dist_dir) --universal
 	@echo "Done: Created binary distribution archive $@."
 
-$(sdist_file): dev-setup
+$(sdist_file): dev-setup clean
 	@echo "Creating source distribution archive $@..."
-	rm -rfv $(package_name).egg-info
 	python3 setup.py sdist -d $(dist_dir)
 	@echo "Done: Created source distribution archive $@."

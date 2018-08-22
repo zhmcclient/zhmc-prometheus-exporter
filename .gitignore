@@ -1,7 +1,10 @@
 /hmccreds.yaml
 __pycache__/
+.pytest_cache/
 build/
 dist/
 docs/_build/
+htmlcov/
 *.egg-info/
+.coverage
 *.swp
