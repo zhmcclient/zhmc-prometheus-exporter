@@ -15,6 +15,7 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
+from pbr.version import VersionInfo
 
 
 # -- Project information -----------------------------------------------------
@@ -24,9 +25,10 @@ copyright = '2018, IBM Corp'
 author = 'Jakob Naucke'
 
 # The short X.Y version
-version = '0.1'
+# Note: We use the full version in both cases (e.g. 'M.N.U' or 'M.N.U.dev0').
+version = VersionInfo("zhmc_prometheus_exporter").release_string()
 # The full version, including alpha/beta/rc tags
-release = '0.1'
+release = version
 
 
 # -- General configuration ---------------------------------------------------

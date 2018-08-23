@@ -1,9 +1,11 @@
 # Sensitive information
 /hmccreds.yaml
 
-# Unnecessary clutter created by build process
+# Unnecessary clutter created by build processes
 build/
 *.egg-info/
+AUTHORS
+ChangeLog
 
 # Unnecessary clutter created by test process
 __pycache__/
