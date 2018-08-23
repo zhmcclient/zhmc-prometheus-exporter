@@ -1,5 +1,4 @@
 # Makefile for zhmc_prometheus exporter
-# 
 # Prerequisites:
 #   Any Linux distribution (macOS not officially supported)
 #   All of these commands:
@@ -17,7 +16,7 @@ python_version := $(shell python3 -c "import sys; sys.stdout.write('%s.%s'%(sys.
 
 package_dir := zhmc_prometheus_exporter
 package_file := zhmc_prometheus_exporter.py
-test_dir := test
+test_dir := zhmc_prometheus_exporter
 test_file := test.py
 
 dist_dir := dist
@@ -33,17 +32,18 @@ help:
 	@echo "Package version: $(package_version)"
 	@echo "Python version: $(python_version)"
 	@echo "Targets:"
-	@echo "  setup      - Install prerequisites"
-	@echo "  install    - Install package"
-	@echo "  uninstall  - Uninstall package"
-	@echo "  dev-setup  - Install building & testing prerequisites"
-	@echo "  build      - Build the distribution files in $(dist_dir)"
-	@echo "               Binary: $(bdist_file)"
-	@echo "               Source: $(sdist_file)"
-	@echo "  builddoc   - Build the documentation in $(build_doc_dir)/index.html"
-	@echo "  test       - Perform unit tests"
-	@echo "  lint       - Perform lint tests"
-	@echo "  clean      - Clean up temporary files"
+	@echo "  setup       - Install prerequisites"
+	@echo "  install     - Install package"
+	@echo "  uninstall   - Uninstall package"
+	@echo "  dev-setup   - Install building & testing prerequisites"
+	@echo "  build       - Build the distribution files in $(dist_dir)"
+	@echo "                Binary: $(bdist_file)"
+	@echo "                Source: $(sdist_file)"
+	@echo "  builddoc    - Build the documentation in $(build_doc_dir)/index.html"
+	@echo "  test        - Perform unit tests including coverage checker"
+	@echo "  lint        - Perform lint tests"
+	@echo "  clean       - Clean up temporary files"
+	@echo "  clean-built - Clean up files that the build processes generated"
 
 .PHONY: setup
 setup:
@@ -80,9 +80,10 @@ build: $(bdist_file) $(sdist_file)
 	@echo "$@ done."
 
 .PHONY: test
-test: install
-	@echo "Performing unit tests of $(package_name)..."
-	python3 $(test_dir)/$(test_file)
+test: dev-setup install
+	@echo "Performing unit tests of $(package_name) with coverage checker..."
+	@echo "Note that the warning about an unknown metric is part of the tests"
+	py.test $(test_dir)/$(test_file) --cov $(package_name) --cov-report=html
 	@echo "$@ done."
 
 .PHONY: lint
@@ -94,7 +95,13 @@ lint: dev-setup
 .PHONY: clean
 clean:
 	@echo "Cleaning up temporary files..."
-	rm -rfv build $(package_name).egg-info __pycache__
+	rm -rfv build $(package_name).egg-info .pytest_cache .coverage $(test_dir)/__pycache__
+	@echo "$@ done."
+
+.PHONY: clean-built
+clean-built:
+	@echo "Cleaning up built files..."
+	rm -rfv dist docs/_build htmlcov
 	@echo "$@ done."
 
 html: dev-setup
@@ -102,14 +109,12 @@ html: dev-setup
 	sphinx-build -b html $(doc_dir) $(build_doc_dir)
 	@echo "$@ done."
 
-$(bdist_file): dev-setup
+$(bdist_file): dev-setup clean
 	@echo "Creating binary distribution archive $@..."
-	rm -rfv $(package_name).egg-info
 	python3 setup.py bdist_wheel -d $(dist_dir) --universal
 	@echo "Done: Created binary distribution archive $@."
 
-$(sdist_file): dev-setup
+$(sdist_file): dev-setup clean
 	@echo "Creating source distribution archive $@..."
-	rm -rfv $(package_name).egg-info
 	python3 setup.py sdist -d $(dist_dir)
 	@echo "Done: Created source distribution archive $@."
