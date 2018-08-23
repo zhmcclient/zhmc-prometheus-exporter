@@ -17,8 +17,8 @@ zhmc-prometheus-exporter
 
 .. image:: https://travis-ci.org/zhmcclient/zhmc-prometheus-exporter.svg?branch=master
     :target: https://travis-ci.org/zhmcclient/zhmc-prometheus-exporter
-.. image:: https://readthedocs.org/projects/zhmc-prometheus-exporter/badge/?version=latest
-    :target: https://zhmc-prometheus-exporter.readthedocs.io/en/latest/?badge=latest
+.. image:: https://readthedocs.org/projects/zhmc-prometheus-exporter/badge/?version=stable
+    :target: https://zhmc-prometheus-exporter.readthedocs.io/en/latest/?badge=stable
 .. image:: https://coveralls.io/repos/github/zhmcclient/zhmc-prometheus-exporter/badge.svg?branch=master
     :target: https://coveralls.io/github/zhmcclient/zhmc-prometheus-exporter?branch=master
 
@@ -41,7 +41,7 @@ Documentation
 
 `Read the Docs`_
 
-.. _Read the Docs: https://zhmc-prometheus-exporter.readthedocs.io/en/latest/
+.. _Read the Docs: https://zhmc-prometheus-exporter.readthedocs.io/en/stable/
 
 
 Quickstart
