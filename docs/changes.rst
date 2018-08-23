@@ -22,16 +22,23 @@
 Change log
 ----------
 
+Version 0.1.2
+^^^^^^^^^^^^^
+
+Released: 2018-08-23
+
+**Enhancements:** The description now instructs the user to ``pip3 install zhmc-prometheus-exporter`` instead of running a local install from the cloned repository. It also links to the stable version of the documentation rather than to the latest build.
+
+**Known issues:** See the `list of open issues`_.
+
+.. _list of open issues: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
+
 Version 0.1.1
 ^^^^^^^^^^^^^
 
 Released: 2018-08-23
 
 Initial PyPI release (0.1.0 was for testing purposes)
-
-**Known issues:** See the `list of open issues`_.
-
-.. _list of open issues: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 Version 0.1.0
 ^^^^^^^^^^^^^
