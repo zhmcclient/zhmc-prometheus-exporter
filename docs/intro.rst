@@ -36,6 +36,23 @@ Installation
 
 Due to the language of the exporter and the required dependencies, you are going to need Python & Pip.
 
+Installation with pip
+^^^^^^^^^^^^^^^^^^^^^
+
+The traditional way is to install with ``pip``. Run
+
+.. code-block:: bash
+
+  $ pip3 install zhmc-prometheus-exporter
+
+Or, locally run
+
+.. code-block:: bash
+
+  $ pip3 install .
+
+from the cloned repository.
+
 Installation with make
 ^^^^^^^^^^^^^^^^^^^^^^
 
@@ -44,17 +61,6 @@ If you have ``make`` on your system, the quickest way is to simply run
 .. code-block:: bash
 
   $ make install
-
-from the cloned repository.
-
-Installation with pip
-^^^^^^^^^^^^^^^^^^^^^
-
-The traditional way is to install with ``pip``. Run
-
-.. code-block:: bash
-
-  $ pip3 install .
 
 from the cloned repository.
 
