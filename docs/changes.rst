@@ -22,13 +22,20 @@
 Change log
 ----------
 
-Version 0.1.0
+Version 0.1.1
 ^^^^^^^^^^^^^
 
-Released: Not yet
+Released: 2018-08-23
 
-Initial release
+Initial PyPI release (0.1.0 was for testing purposes)
 
 **Known issues:** See the `list of open issues`_.
 
 .. _list of open issues: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
+
+Version 0.1.0
+^^^^^^^^^^^^^
+
+Released: Only on GitHub, never on PyPI
+
+Initial release
