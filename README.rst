@@ -34,7 +34,7 @@ Installation
 
 .. code-block:: bash
 
-  $ pip3 install .
+  $ pip3 install zhmc-prometheus-exporter
 
 Documentation
 -------------
