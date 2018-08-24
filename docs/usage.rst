@@ -48,7 +48,7 @@ In the case of many of the metrics, they apply to multiple devices. The ``dpm`` 
 
 Available metrics
 -----------------
-This is an easier to read version of the relevant parts from the `HMC Web Services API Documentation`_. On the first level, you can read the metric groups and their prefixes. On the second level, you can read the metrics and their exporter name without the prefix.
+This is an easier to read version of the relevant parts from the `HMC Web Services API Documentation`_. On the first level, you can read the metric groups and their prefixes. They will additionally be prefixed with ``zhmc_``. On the second level, you can read the metrics and their exporter name without the prefix.
 
 **Only in classic mode**
 
@@ -108,7 +108,7 @@ Example:
     prefix: dpm
     fetch: True
 
-Within one section, the metric prefix and the fetch True/False value is stored. The latter is due to runtime concerns: Some metric groups take over a second to be scraped.
+Within one section, the metric prefix and the fetch True/False value is stored. Note that the former will additionally be prefixed with ``zhmc_``. The latter is due to runtime concerns: Some metric groups take over a second to be scraped.
 
 The metrics section
 ^^^^^^^^^^^^^^^^^^^
