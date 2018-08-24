@@ -15,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 2,
   "links": [],
   "panels": [
     {
@@ -23,7 +23,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "myprometheus",
+      "datasource": "ZHMC_Prometheus",
       "fill": 1,
       "gridPos": {
         "h": 9,
@@ -31,7 +31,6 @@
         "x": 0,
         "y": 0
       },
-      "hideTimeOverride": false,
       "id": 2,
       "legend": {
         "avg": false,
@@ -56,32 +55,28 @@
       "steppedLine": false,
       "targets": [
         {
-          "$$hashKey": "object:172",
-          "expr": "dpm_processor_usage_ratio",
+          "expr": "zhmc_dpm_processor_usage_ratio",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "",
           "refId": "A"
         },
         {
-          "$$hashKey": "object:173",
-          "expr": "dpm_storage_usage_ratio",
+          "expr": "zhmc_dpm_network_usage_ratio",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "B"
         },
         {
-          "$$hashKey": "object:174",
-          "expr": "dpm_network_usage_ratio",
+          "expr": "zhmc_dpm_storage_usage_ratio",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "C"
         }
       ],
       "thresholds": [],
-      "timeFrom": "2m",
+      "timeFrom": null,
       "timeShift": null,
-      "title": "Testpanel",
+      "title": "IBM Z HMC Demo",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -97,16 +92,14 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:244",
           "format": "percentunit",
-          "label": "Load in percent",
+          "label": null,
           "logBase": 1,
-          "max": null,
+          "max": "0.1",
           "min": "0",
           "show": true
         },
         {
-          "$$hashKey": "object:245",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -121,7 +114,7 @@
       }
     }
   ],
-  "refresh": "15s",
+  "refresh": "10s",
   "schemaVersion": 16,
   "style": "dark",
   "tags": [],
@@ -129,12 +122,21 @@
     "list": []
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {
     "refresh_intervals": [
-      "15s"
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
     ],
     "time_options": [
       "5m",
@@ -148,8 +150,8 @@
       "30d"
     ]
   },
-  "timezone": "browser",
-  "title": "Z HMC Test",
-  "uid": "-AZc_Hviz",
-  "version": 3
+  "timezone": "",
+  "title": "IBM Z HMC",
+  "uid": "XcsuH8tik",
+  "version": 2
 }

@@ -301,7 +301,10 @@ def add_families(yaml_metric_groups, yaml_metrics):
     for metric_group in yaml_metrics:
         family_objects[metric_group] = {}
         for metric in yaml_metrics[metric_group]:
-            family_name = (yaml_metric_groups[metric_group]["prefix"] + "_" +
+            family_name = ("zhmc_" +
+                           yaml_metric_groups[metric_group]["prefix"]
+                           +
+                           "_" +
                            yaml_metrics[metric_group][metric]["exporter_name"])
             family_objects[metric_group][metric] = GaugeMetricFamily(
                 family_name,

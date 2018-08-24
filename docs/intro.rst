@@ -144,7 +144,7 @@ Demo setup
 .. _Grafana: https://grafana.com/grafana/download
 .. _Prometheus' guide on Grafana: https://prometheus.io/docs/visualization/grafana/
 
-* Create the dashboard in Grafana. A sample JSON is provided in the examples folder. If you want to change something, you might find it easier to change it in the Web GUI instead of the JSON file.
+* Create the dashboard in Grafana. A sample JSON is provided in the examples folder. If you want it to work natively, you will have to name your source ``ZHMC_Prometheus``. If you want to change something, you might find it easier to change it in the Web GUI instead of the JSON file.
 
 The following image illustrates what the setup described above could look like.
 

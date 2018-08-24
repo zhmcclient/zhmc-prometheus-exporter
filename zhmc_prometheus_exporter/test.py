@@ -339,7 +339,7 @@ class TestAddFamilies(unittest.TestCase):
         families = output["metric-group"]["metric"]
         self.assertIsInstance(families,
                               prometheus_client.core.GaugeMetricFamily)
-        self.assertEqual(families.name, "pre_metric")
+        self.assertEqual(families.name, "zhmc_pre_metric")
         self.assertEqual(families.documentation, "metric")
         self.assertEqual(families.type, "gauge")
         self.assertEqual(families.samples, [])
@@ -365,10 +365,10 @@ class TestStoreMetrics(unittest.TestCase):
                                                         family_objects)
         stored = output["metric-group"]["metric"]
         self.assertIsInstance(stored, prometheus_client.core.GaugeMetricFamily)
-        self.assertEqual(stored.name, "pre_metric")
+        self.assertEqual(stored.name, "zhmc_pre_metric")
         self.assertEqual(stored.documentation, "metric")
         self.assertEqual(stored.type, "gauge")
-        self.assertEqual(stored.samples, [("pre_metric",
+        self.assertEqual(stored.samples, [("zhmc_pre_metric",
                                            {"resource": "resource"},
                                            0)])
         self.assertEqual(stored._labelnames, ("resource",))
@@ -425,7 +425,7 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
         self.assertEqual(len(collected), 1)
         self.assertEqual(type(collected[0]),
                          prometheus_client.core.GaugeMetricFamily)
-        self.assertEqual(collected[0].name, "pre_metric")
+        self.assertEqual(collected[0].name, "zhmc_pre_metric")
         self.assertEqual(collected[0].documentation, "metric")
         self.assertEqual(collected[0].type, "gauge")
         self.assertEqual(collected[0].samples, [])
