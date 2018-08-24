@@ -84,7 +84,7 @@ If you want a quick "three simple metrics" setup with Prometheus and Grafana you
 .. _Grafana: https://grafana.com/grafana/download
 .. _Prometheus' guide on Grafana: https://prometheus.io/docs/visualization/grafana/
 
-* Create the dashboard in Grafana. A `sample JSON`_ is provided. If you want it to work natively, you will have to name your source `ZHMC_Prometheus``.
+* Create the dashboard in Grafana. A `sample JSON`_ is provided. If you want it to work natively, you will have to name your source ``ZHMC_Prometheus``.
 
 .. _sample JSON: examples/grafana.json
 
