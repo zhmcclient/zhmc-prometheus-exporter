@@ -6,6 +6,7 @@ build/
 *.egg-info/
 AUTHORS
 ChangeLog
+docs/.doctrees
 
 # Unnecessary clutter created by test process
 __pycache__/
