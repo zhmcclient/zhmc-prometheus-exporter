@@ -16,6 +16,7 @@
 
 """Unit tests for the zhmc_prometheus_exporter"""
 
+# pylint: disable=import-error
 import time
 import datetime
 import hashlib

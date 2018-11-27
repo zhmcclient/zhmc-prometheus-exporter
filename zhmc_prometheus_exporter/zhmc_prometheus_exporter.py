@@ -18,14 +18,15 @@
 """A prometheus.io exporter for metrics from the Z Hardware Management Console
 """
 
+# pylint: disable=import-error
 import argparse
 import sys
 import time
 import ipaddress
 import warnings
 import re
-import yaml
 import urllib3
+import yaml
 
 import zhmcclient
 
