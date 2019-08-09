@@ -22,6 +22,21 @@
 Change log
 ----------
 
+Version 0.x.0
+^^^^^^^^^^^^^
+
+Released: xxxx-xx-xx
+
+**Incompatible changes:**
+
+**Bug fixes:**
+- Reconnect in case of a connection drop.
+
+**Known issues:** See the `list of open issues`_.
+
+.. _list of open issues: https://github.com/zhmcclient/zhmc-prometheus-exporter/issue
+
+
 Version 0.2.0
 ^^^^^^^^^^^^^
 

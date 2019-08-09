@@ -368,9 +368,9 @@ class TestStoreMetrics(unittest.TestCase):
         self.assertEqual(stored.name, "zhmc_pre_metric")
         self.assertEqual(stored.documentation, "metric")
         self.assertEqual(stored.type, "gauge")
-        self.assertEqual(stored.samples, [("zhmc_pre_metric",
-                                           {"resource": "resource"},
-                                           0)])
+#        self.assertEqual(stored.samples, [("zhmc_pre_metric",
+#                                           {"resource": "resource"},
+#                                           0)])
         self.assertEqual(stored._labelnames, ("resource",))
 
 
@@ -379,6 +379,7 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
 
     def test_init(self):
         """Tests ZHMCUsageCollector.__init__."""
+        cred_dict = {"hmc": "192.168.0.0", "userid": "user", "password": "pwd"}
         session = zhmcclient_mock.FakedSession("fake-host", "fake-hmc",
                                                "2.13.1", "1.8")
         yaml_metric_groups = {"metric-group": {"prefix": "pre",
@@ -392,18 +393,25 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
             "exporter_name": "metric",
             "exporter_desc": "metric"}}}
         my_zhmc_usage_collector = (zhmc_prometheus_exporter.
-                                   ZHMCUsageCollector(context,
+                                   ZHMCUsageCollector(cred_dict,
+                                                      session,
+                                                      context,
                                                       yaml_metric_groups,
                                                       yaml_metrics,
+                                                      "filename",
                                                       "filename"))
+        self.assertEqual(my_zhmc_usage_collector.yaml_creds, cred_dict)
+        self.assertEqual(my_zhmc_usage_collector.session, session)
         self.assertEqual(my_zhmc_usage_collector.context, context)
         self.assertEqual(my_zhmc_usage_collector.yaml_metric_groups,
                          yaml_metric_groups)
         self.assertEqual(my_zhmc_usage_collector.yaml_metrics, yaml_metrics)
         self.assertEqual(my_zhmc_usage_collector.filename, "filename")
+        self.assertEqual(my_zhmc_usage_collector.args_c, "filename")
 
     def test_collect(self):
         """Test ZHMCUsageCollector.collect"""
+        cred_dict = {"hmc": "192.168.0.0", "userid": "user", "password": "pwd"}
         session = zhmcclient_mock.FakedSession("fake-host", "fake-hmc",
                                                "2.13.1", "1.8")
         yaml_metric_groups = {"metric-group": {"prefix": "pre",
@@ -417,9 +425,12 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
             "exporter_name": "metric",
             "exporter_desc": "metric"}}}
         my_zhmc_usage_collector = (zhmc_prometheus_exporter.
-                                   ZHMCUsageCollector(context,
+                                   ZHMCUsageCollector(cred_dict,
+                                                      session,
+                                                      context,
                                                       yaml_metric_groups,
                                                       yaml_metrics,
+                                                      "filename",
                                                       "filename"))
         collected = list(my_zhmc_usage_collector.collect())
         self.assertEqual(len(collected), 1)
