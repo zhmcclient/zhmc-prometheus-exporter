@@ -334,21 +334,36 @@ def store_metrics(retrieved_metrics, yaml_metrics, family_objects):
 class ZHMCUsageCollector():
     """Collects the usage for exporting."""
 
-    def __init__(self, context, yaml_metric_groups, yaml_metrics, filename):
+    def __init__(self, yaml_creds, session, context, yaml_metric_groups,
+                 yaml_metrics, filename_metrics, filename_creds):
+        self.session = session
         self.context = context
+        self.yaml_creds = yaml_creds
         self.yaml_metric_groups = yaml_metric_groups
         self.yaml_metrics = yaml_metrics
-        self.filename = filename
+        self.filename_metrics = filename_metrics
+        self.filename_creds = filename_creds
 
     def collect(self):
         """Yield the metrics for exporting.
         Uses the context, the metric groups and the metrics from the YAML file,
         and the name of the YAML file for error output.
         """
-        retrieved_metrics = retrieve_metrics(self.context)
+        try:
+            retrieved_metrics = retrieve_metrics(self.context)
+        except zhmcclient.HTTPError as exc:
+            if exc.http_status == 404 and exc.reason == 1:
+                delete_metrics_context(self.session, self.context)
+                self.session = create_session(self.yaml_creds)
+                self.context = create_metrics_context(self.session,
+                                                      self.yaml_metric_groups,
+                                                      self.filename_creds)
+                retrieved_metrics = retrieve_metrics(self.context)
+            else:
+                raise
         self.yaml_metrics = identify_incoming_metrics(retrieved_metrics,
                                                       self.yaml_metrics,
-                                                      self.filename)
+                                                      self.filename_metrics)
         family_objects = add_families(self.yaml_metric_groups,
                                       self.yaml_metrics)
         family_objects = store_metrics(retrieved_metrics, self.yaml_metrics,
@@ -404,8 +419,9 @@ def main():
                                              args.c)
         except (ConnectTimeout, ServerAuthError) as error_message:
             raise ImproperExit(error_message)
-        REGISTRY.register(ZHMCUsageCollector(context, yaml_metric_groups,
-                                             yaml_metrics, args.m))
+        REGISTRY.register(ZHMCUsageCollector(yaml_creds, session, context,
+                                             yaml_metric_groups,
+                                             yaml_metrics, args.m, args.c))
         start_http_server(int(args.p))
         while True:
             try:
