@@ -22,12 +22,10 @@
 Change log
 ----------
 
-Version 0.x.0
+Version 0.3.0
 ^^^^^^^^^^^^^
 
-Released: xxxx-xx-xx
-
-**Incompatible changes:**
+Released: 2019-08-11
 
 **Bug fixes:**
 - Reconnect in case of a connection drop.
