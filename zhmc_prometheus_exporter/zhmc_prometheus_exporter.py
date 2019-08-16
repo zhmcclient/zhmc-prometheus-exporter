@@ -353,7 +353,9 @@ class ZHMCUsageCollector():
             retrieved_metrics = retrieve_metrics(self.context)
         except zhmcclient.HTTPError as exc:
             if exc.http_status == 404 and exc.reason == 1:
-                delete_metrics_context(self.session, self.context)
+                # Disable this line because it leads sometimes to
+                # an exception within the exception handling.
+                # delete_metrics_context(self.session, self.context)
                 self.session = create_session(self.yaml_creds)
                 self.context = create_metrics_context(self.session,
                                                       self.yaml_metric_groups,
