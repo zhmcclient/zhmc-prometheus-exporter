@@ -22,6 +22,20 @@
 Change log
 ----------
 
+Version 0.4.0
+^^^^^^^^^^^^^
+
+Released: xxxx-xx-xx
+
+**Bug fixes:**
+- Avoid exception in case of a connection drop error handling.
+
+**Known issues:** See the `list of open issues`_.
+
+.. _list of open issues: https://github.com/zhmcclient/zhmc-prometheus-exporter/issue
+
+
+
 Version 0.3.0
 ^^^^^^^^^^^^^
 
