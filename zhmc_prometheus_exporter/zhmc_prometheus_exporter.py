@@ -83,7 +83,7 @@ def parse_yaml_file(yamlfile):
     """
     try:
         with open(yamlfile, "r") as yamlcontent:
-            return yaml.load(yamlcontent)
+            return yaml.safe_load(yamlcontent)
     except PermissionError:
         raise PermissionError("Permission error. Make sure you have "
                               "appropriate permissions to read from %s."
