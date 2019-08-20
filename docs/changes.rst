@@ -29,6 +29,9 @@ Released: xxxx-xx-xx
 
 **Bug fixes:**
 - Avoid exception in case of a connection drop error handling.
+- Replace yaml.load() by yaml.safe_load(). In PyYAML before 5.1,
+  the yaml.load() API could execute arbitrary code if used with untrusted data
+  (CVE-2017-18342).
 
 **Known issues:** See the `list of open issues`_.
 
