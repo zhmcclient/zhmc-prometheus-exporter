@@ -25,7 +25,7 @@ Change log
 Version 0.4.0
 ^^^^^^^^^^^^^
 
-Released: xxxx-xx-xx
+Released: 2019-08-21
 
 **Bug fixes:**
 - Avoid exception in case of a connection drop error handling.
