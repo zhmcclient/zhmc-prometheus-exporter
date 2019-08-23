@@ -58,8 +58,8 @@ class TestParseYaml(unittest.TestCase):
 
     def test_normal_input(self):
         """Tests if some generic file is correctly parsed."""
-        # Get a SHA1 of Unixtime to create a filename that does not exist
-        filename = str(hashlib.sha1(str(time.time()).encode("utf-8")).
+        # Get a SHA256 of Unixtime to create a filename that does not exist
+        filename = str(hashlib.sha256(str(time.time()).encode("utf-8")).
                        hexdigest())
         with open(filename, "w+") as testfile:
             testfile.write("""metrics:
@@ -76,7 +76,7 @@ class TestParseYaml(unittest.TestCase):
 
     def test_permission_error(self):
         """Tests if permission denied is correctly handled."""
-        filename = str(hashlib.sha1(str(time.time()).encode("utf-8")).
+        filename = str(hashlib.sha256(str(time.time()).encode("utf-8")).
                        hexdigest())
         with open(filename, "w+"):
             pass
@@ -89,7 +89,7 @@ class TestParseYaml(unittest.TestCase):
 
     def test_not_found_error(self):
         """Tests if file not found is correctly handled."""
-        filename = str(hashlib.sha1(str(time.time()).encode("utf-8")).
+        filename = str(hashlib.sha256(str(time.time()).encode("utf-8")).
                        hexdigest())
         with self.assertRaises(FileNotFoundError):
             zhmc_prometheus_exporter.parse_yaml_file(filename)
