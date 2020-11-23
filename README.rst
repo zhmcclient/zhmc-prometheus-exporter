@@ -15,6 +15,11 @@
 zhmc-prometheus-exporter
 ========================
 
+
+.. image:: https://github.com/zhmcclient/zhmc-prometheus-exporter/workflows/test/badge.svg?branch=master
+    :target: https://github.com/zhmcclient/zhmc-prometheus-exporter/actions/
+    :alt: Actions status
+
 .. image:: https://readthedocs.org/projects/zhmc-prometheus-exporter/badge/?version=stable
     :target: https://zhmc-prometheus-exporter.readthedocs.io/en/latest/?badge=stable
 
