@@ -1,2 +1,7 @@
 [run]
+
+# If True, stores relative file paths in data file (needed for Github Actions).
+# Using this parameter requires coverage>=5.0
+relative_files = True
+
 omit = zhmc_prometheus_exporter/test.py

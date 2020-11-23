@@ -1,7 +1,15 @@
 flake8>=3.5.0 # MIT
 pytest>=3.8.0 # MIT
-pytest-cov>=2.6.0 # MIT
-python-coveralls>=2.9.1 # Apache-2.0
 pbr>=4.2.0 # Apache-2.0
 twine>=1.11.0 # Apache-2.0
 sphinx>=1.8.0 # Simplified BSD
+
+# Coverage reporting (no imports, invoked via coveralls script):
+# We exclude Python 3.4 from coverage testing and reporting.
+# coverage 5.0 has removed support for py34
+coverage>=5.0; python_version == '2.7' or python_version >= '3.5'
+pytest-cov>=2.7.0; python_version == '2.7' or python_version >= '3.5'
+# coveralls 2.0 has removed support for Python 2.7 and 3.4
+git+https://github.com/andy-maier/coveralls-python.git@andy/add-py27#egg=coveralls; python_version == '2.7'
+coveralls>=2.1.2; python_version >= '3.5'
+# PyYAML: covered in direct deps for installation

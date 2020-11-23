@@ -26,6 +26,12 @@ sdist_file := $(dist_dir)/$(package_name)-$(package_version).tar.gz
 doc_dir := docs
 build_doc_dir := $(doc_dir)/_build
 
+ifeq ($(python_version),3.4)
+  pytest_cov_opts :=
+else
+  pytest_cov_opts := --cov $(package_name) --cov-config .coveragerc --cov-report=html
+endif
+
 .PHONY: help
 help:
 	@echo "Makefile for project $(package_name)"
@@ -105,7 +111,7 @@ build: $(bdist_file) $(sdist_file)
 test: dev-setup install
 	@echo "Performing unit tests of $(package_name) with coverage checker..."
 	@echo "Note that the warning about an unknown metric is part of the tests"
-	py.test $(test_dir)/$(test_file) --cov $(package_name) --cov-report=html
+	py.test $(test_dir)/$(test_file) $(pytest_cov_opts)
 	@echo "$@ done."
 
 .PHONY: lint
