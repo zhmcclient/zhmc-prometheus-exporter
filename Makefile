@@ -134,9 +134,13 @@ clean-built:
 	@echo "$@ done."
 
 html: dev-setup
+ifeq ($(python_version),3.4)
+	@echo "Warning: Skipping Sphinx doc build on Python $(python_version)" >&2
+else
 	@echo "Generating an HTML documentation..."
 	sphinx-build -b html $(doc_dir) $(build_doc_dir)
 	@echo "$@ done."
+endif
 
 $(bdist_file): dev-setup clean
 	@echo "Creating binary distribution archive $@..."
