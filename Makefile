@@ -5,14 +5,14 @@
 #     bash
 #     rm
 #     make
-#     python3
-#     pip3
+#     python
+#     pip
 # Use this to get information on the targets:
 #   make help
 
 package_name := zhmc_prometheus_exporter
-package_version := $(shell python3 -c "from pbr.version import VersionInfo; vi=VersionInfo('$(package_name)'); print(vi.release_string())" 2> /dev/null)
-python_version := $(shell python3 -c "import sys; sys.stdout.write('%s.%s'%(sys.version_info[0], sys.version_info[1]))")
+package_version := $(shell python -c "from pbr.version import VersionInfo; vi=VersionInfo('$(package_name)'); print(vi.release_string())" 2> /dev/null)
+python_version := $(shell python -c "import sys; sys.stdout.write('%s.%s'%(sys.version_info[0], sys.version_info[1]))")
 
 package_dir := zhmc_prometheus_exporter
 package_file := zhmc_prometheus_exporter.py
@@ -63,26 +63,26 @@ endif
 .PHONY: setup
 setup:
 	@echo "Installing requirements..."
-	python3 -m pip install --upgrade pip setuptools wheel
-	pip3 install -r requirements.txt
+	python -m pip install --upgrade pip setuptools wheel
+	pip install -r requirements.txt
 	@echo "$@ done."
 
 .PHONY: install
 install:
 	@echo "Installing $(package_name)..."
-	pip3 install .
+	pip install .
 	@echo "$@ done."
 
 .PHONY: uninstall
 uninstall:
 	@echo "Uninstalling $(package_name)..."
-	bash -c "pip3 show $(package_name) > /dev/null; if [ $$? -eq 0 ]; then pip3 uninstall -y $(package_name); fi"
+	bash -c "pip show $(package_name) > /dev/null; if [ $$? -eq 0 ]; then pip uninstall -y $(package_name); fi"
 	@echo "$@ done."
 
 .PHONY: dev-setup
 dev-setup: setup
 	@echo "Installing dev requirements..."
-	pip3 install -r dev-requirements.txt
+	pip install -r dev-requirements.txt
 	@echo "$@ done."
 
 .PHONY: upload
@@ -140,10 +140,10 @@ html: dev-setup
 
 $(bdist_file): dev-setup clean
 	@echo "Creating binary distribution archive $@..."
-	python3 setup.py bdist_wheel -d $(dist_dir) --universal
+	python setup.py bdist_wheel -d $(dist_dir) --universal
 	@echo "Done: Created binary distribution archive $@."
 
 $(sdist_file): dev-setup clean
 	@echo "Creating source distribution archive $@..."
-	python3 setup.py sdist -d $(dist_dir)
+	python setup.py sdist -d $(dist_dir)
 	@echo "Done: Created source distribution archive $@."
