@@ -63,6 +63,7 @@ endif
 .PHONY: setup
 setup:
 	@echo "Installing requirements..."
+	python3 -m pip install --upgrade pip setuptools wheel
 	pip3 install -r requirements.txt
 	@echo "$@ done."
 
