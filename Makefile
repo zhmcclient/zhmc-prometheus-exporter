@@ -88,7 +88,7 @@ check: develop_$(pymn).done
 .PHONY: pylint
 pylint: develop_$(pymn).done
 	@echo "Performing pylint checks..."
-	-pylint --rcfile=.pylintrc $(package_py_files) $(test_py_files) setup.py $(doc_dir)/conf.py
+	pylint --rcfile=.pylintrc $(package_py_files) $(test_py_files) setup.py $(doc_dir)/conf.py
 	@echo "$@ done."
 
 .PHONY: test

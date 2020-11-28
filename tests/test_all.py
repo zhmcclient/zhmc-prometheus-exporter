@@ -211,6 +211,7 @@ class TestCreateContext(unittest.TestCase):
                                           {"metric-group": {"prefix": "pre",
                                                             "fetch": True}},
                                           "filename"))
+        # pylint: disable=protected-access
         self.assertEqual(type(context), zhmcclient._metrics.MetricsContext)
         context.delete()
         session.logoff()
@@ -230,6 +231,7 @@ class TestDeleteContext(unittest.TestCase):
     """Tests delete_metrics_context."""
 
     def test_delete_context(self):
+        # pylint: disable=no-self-use
         """Tests normal input, just needs to know no errors happen."""
         session = zhmcclient_mock.FakedSession("fake-host", "fake-hmc",
                                                "2.13.1", "1.8")
@@ -343,6 +345,7 @@ class TestAddFamilies(unittest.TestCase):
         self.assertEqual(families.documentation, "metric")
         self.assertEqual(families.type, "gauge")
         self.assertEqual(families.samples, [])
+        # pylint: disable=protected-access
         self.assertEqual(families._labelnames, ("resource",))
 
 
@@ -371,6 +374,7 @@ class TestStoreMetrics(unittest.TestCase):
 #        self.assertEqual(stored.samples, [("zhmc_pre_metric",
 #                                           {"resource": "resource"},
 #                                           0)])
+        # pylint: disable=protected-access
         self.assertEqual(stored._labelnames, ("resource",))
 
 
@@ -440,6 +444,7 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
         self.assertEqual(collected[0].documentation, "metric")
         self.assertEqual(collected[0].type, "gauge")
         self.assertEqual(collected[0].samples, [])
+        # pylint: disable=protected-access
         self.assertEqual(collected[0]._labelnames, ("resource",))
 
 
