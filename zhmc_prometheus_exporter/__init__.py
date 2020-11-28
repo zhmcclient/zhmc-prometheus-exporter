@@ -12,4 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+A prometheus.io exporter for metrics from the Z Hardware Management Console
+"""
+
 from .zhmc_prometheus_exporter import *  # noqa: F401, F403

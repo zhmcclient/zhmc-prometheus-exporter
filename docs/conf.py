@@ -6,6 +6,12 @@
 # full list see the documentation:
 # http://www.sphinx-doc.org/en/master/config
 
+# pylint: disable=invalid-name
+
+"""
+Config file for Sphinx.
+"""
+
 # -- Path setup --------------------------------------------------------------
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -21,7 +27,7 @@ from pbr.version import VersionInfo
 # -- Project information -----------------------------------------------------
 
 project = 'zhmc_prometheus_exporter'
-copyright = '2018, IBM Corp'
+copyright = '2018, IBM Corp'  # pylint: disable=redefined-builtin
 author = 'Jakob Naucke'
 
 # The short X.Y version

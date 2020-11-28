@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-
 # Copyright 2018 IBM Corp. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""A prometheus.io exporter for metrics from the Z Hardware Management Console
+"""
+A prometheus.io exporter for metrics from the Z Hardware Management Console
 """
 
 import argparse
@@ -330,6 +330,7 @@ def store_metrics(retrieved_metrics, yaml_metrics, family_objects):
 
 
 class ZHMCUsageCollector():
+    # pylint: disable=too-few-public-methods
     """Collects the usage for exporting."""
 
     def __init__(self, yaml_creds, session, context, yaml_metric_groups,
