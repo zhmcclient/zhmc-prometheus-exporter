@@ -1,26 +1,24 @@
 # Sensitive information
 /hmccreds.yaml
 
-# Unnecessary clutter created by build processes
-build/
-*.egg-info/
-AUTHORS
-ChangeLog
-docs/.doctrees
+# Make targets
+/*.done
 
-# Unnecessary clutter created by test process
+# Make build
+/build/
+/dist/
+/*.egg-info/
+/AUTHORS
+/ChangeLog
+
+# Make test
 __pycache__/
-.pytest_cache/
-.coverage
+/.pytest_cache/
+/htmlcov/
+/.coverage
 
-# Build
-dist/
-
-# Doc build
-docs/_build/
-
-# Test coverage
-htmlcov/
+# Make build_doc
+/build_docs/
 
 # If I still have a file open in Vim
 *.swp

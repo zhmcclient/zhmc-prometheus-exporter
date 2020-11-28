@@ -12,24 +12,36 @@
 
 package_name := zhmc_prometheus_exporter
 package_version := $(shell python -c "from pbr.version import VersionInfo; vi=VersionInfo('$(package_name)'); print(vi.release_string())" 2> /dev/null)
-python_version := $(shell python -c "import sys; sys.stdout.write('%s.%s'%(sys.version_info[0], sys.version_info[1]))")
 
-package_dir := zhmc_prometheus_exporter
-package_file := zhmc_prometheus_exporter.py
-test_dir := zhmc_prometheus_exporter
-test_file := test.py
+python_version := $(shell python -c "import sys; sys.stdout.write('%s.%s'%(sys.version_info[0], sys.version_info[1]))")
+pymn := $(shell python -c "import sys; sys.stdout.write('py%s%s'%(sys.version_info[0], sys.version_info[1]))")
+
+package_dir := $(package_name)
+package_py_files := \
+    $(wildcard $(package_dir)/*.py) \
+    $(wildcard $(package_dir)/*/*.py) \
+
+test_dir := tests
+test_py_files := \
+    $(wildcard $(test_dir)/*.py) \
+    $(wildcard $(test_dir)/*/*.py) \
 
 dist_dir := dist
 bdist_file := $(dist_dir)/$(package_name)-$(package_version)-py2.py3-none-any.whl
 sdist_file := $(dist_dir)/$(package_name)-$(package_version).tar.gz
 
 doc_dir := docs
-build_doc_dir := $(doc_dir)/_build
+doc_build_dir := build_docs
+doc_build_file := $(doc_build_dir)/html/index.html
+doc_dependent_files := \
+    $(doc_dir)/conf.py \
+    $(wildcard $(doc_dir)/*.rst) \
+    $(package_py_files) \
 
 ifeq ($(python_version),3.4)
   pytest_cov_opts :=
 else
-  pytest_cov_opts := --cov $(package_name) --cov-config .coveragerc --cov-report=html
+  pytest_cov_opts := --cov $(package_name) --cov-config .coveragerc --cov-report=html:htmlcov
 endif
 
 .PHONY: help
@@ -38,51 +50,64 @@ help:
 	@echo "Package version: $(package_version)"
 	@echo "Python version: $(python_version)"
 	@echo "Targets:"
-	@echo "  setup       - Install prerequisites"
-	@echo "  install     - Install package"
-	@echo "  uninstall   - Uninstall package"
-	@echo "  dev-setup   - Install building & testing prerequisites"
-	@echo "  build       - Build the distribution files in $(dist_dir)"
-	@echo "                Binary: $(bdist_file)"
-	@echo "                Source: $(sdist_file)"
-	@echo "  builddoc    - Build the documentation in $(build_doc_dir)/index.html"
-	@echo "  test        - Perform unit tests including coverage checker"
-	@echo "  lint        - Perform lint tests"
-	@echo "  clean       - Clean up temporary files"
-	@echo "  clean-built - Clean up files that the build processes generated"
+	@echo "  install    - Install package and its prerequisites"
+	@echo "  develop    - Install prerequisites for development"
+	@echo "  check      - Perform flake8 checks"
+	@echo "  pylint     - Perform pylint checks"
+	@echo "  test       - Perform unit tests including coverage checker"
+	@echo "  build      - Build the distribution files in $(dist_dir)"
+	@echo "  builddoc   - Build the documentation in $(doc_build_file)"
+	@echo "  all        - Do all of the above"
+	@echo "  upload     - Upload the package to Pypi"
+	@echo "  clean      - Remove any temporary files"
+	@echo "  clobber    - Remove any build products"
 
 .PHONY: _check_version
 _check_version:
 ifeq (,$(package_version))
-	@echo 'Error: Package version could not be determine: (requires pbr; run "make dev-setup")'
+	@echo 'Error: Package version could not be determine: (requires pbr; run "make develop")'
 	@false
 else
 	@true
 endif
 
-.PHONY: setup
-setup:
-	@echo "Installing requirements..."
-	python -m pip install --upgrade pip setuptools wheel
-	pip install -r requirements.txt
-	@echo "$@ done."
-
 .PHONY: install
-install:
-	@echo "Installing $(package_name)..."
-	pip install .
+install: install_$(pymn).done
 	@echo "$@ done."
 
-.PHONY: uninstall
-uninstall:
-	@echo "Uninstalling $(package_name)..."
-	bash -c "pip show $(package_name) > /dev/null; if [ $$? -eq 0 ]; then pip uninstall -y $(package_name); fi"
+.PHONY: develop
+develop: develop_$(pymn).done
 	@echo "$@ done."
 
-.PHONY: dev-setup
-dev-setup: setup
-	@echo "Installing dev requirements..."
-	pip install -r dev-requirements.txt
+.PHONY: check
+check: develop_$(pymn).done
+	@echo "Performing flake8 checks..."
+	flake8 --config .flake8 $(package_py_files) $(test_py_files) setup.py $(doc_dir)/conf.py
+	@echo "$@ done."
+
+.PHONY: pylint
+pylint: develop_$(pymn).done
+	@echo "Performing pylint checks..."
+	-pylint --rcfile=.pylintrc $(package_py_files) $(test_py_files) setup.py $(doc_dir)/conf.py
+	@echo "$@ done."
+
+.PHONY: test
+test: develop_$(pymn).done
+	@echo "Performing unit tests including coverage checker..."
+	@echo "Note that the warning about an unknown metric is part of the tests"
+	pytest $(pytest_cov_opts) -s $(test_dir)
+	@echo "$@ done."
+
+.PHONY: build
+build: _check_version $(bdist_file) $(sdist_file)
+	@echo "$@ done."
+
+.PHONY: builddoc
+builddoc: _check_version $(doc_build_file)
+	@echo "$@ done."
+
+.PHONY: all
+all: install develop check pylint test build builddoc
 	@echo "$@ done."
 
 .PHONY: upload
@@ -98,56 +123,57 @@ else
 	@false
 endif
 
-.PHONY: builddoc
-builddoc: html
-	@echo "Building HTML documentation..."
-	@echo "$@ done."
-
-.PHONY: build
-build: $(bdist_file) $(sdist_file)
-	@echo "Building binary & source distributions..."
-	@echo "$@ done."
-
-.PHONY: test
-test: dev-setup install
-	@echo "Performing unit tests of $(package_name) with coverage checker..."
-	@echo "Note that the warning about an unknown metric is part of the tests"
-	py.test $(test_dir)/$(test_file) $(pytest_cov_opts)
-	@echo "$@ done."
-
-.PHONY: lint
-lint: dev-setup
-	@echo "Performing lint tests of $(package_name)..."
-	flake8
-	@echo "$@ done."
-
 .PHONY: clean
 clean:
-	@echo "Cleaning up temporary files..."
-	rm -rfv build $(package_name).egg-info .pytest_cache .coverage $(test_dir)/__pycache__ AUTHORS ChangeLog
+	@echo "Removing any temporary files..."
+	rm -rfv build $(package_name).egg-info .pytest_cache .coverage $(test_dir)/__pycache__ $(package_dir)/__pycache__ AUTHORS ChangeLog
+	find . -type f -name '*.pyc' -delete
 	@echo "$@ done."
 
-.PHONY: clean-built
-clean-built:
-	@echo "Cleaning up built files..."
-	rm -rfv dist docs/_build htmlcov
+.PHONY: clobber
+clobber: clean
+	@echo "Removing any build products..."
+	rm -rfv dist $(doc_build_dir) htmlcov
+	rm -rfv *.done
 	@echo "$@ done."
 
-html: dev-setup
+install_base_$(pymn).done:
+	@echo "Installing base packages..."
+	rm -f $@
+	python -m pip install --upgrade --upgrade-strategy eager pip setuptools wheel
+	@echo "Done: Installed base packages"
+	echo "done" >$@
+
+install_$(pymn).done: install_base_$(pymn).done requirements.txt setup.py setup.cfg $(package_py_files)
+	@echo "Installing package and its prerequisites..."
+	rm -f $@
+	pip install --upgrade-strategy eager -r requirements.txt
+	pip install -e .
+	@echo "Done: Installed package and its prerequisites"
+	echo "done" >$@
+
+develop_$(pymn).done: install_$(pymn).done dev-requirements.txt
+	@echo "Installing prerequisites for development..."
+	rm -f $@
+	pip install --upgrade-strategy eager -r dev-requirements.txt
+	@echo "Done: Installed prerequisites for development"
+	echo "done" >$@
+
+$(doc_build_file): develop_$(pymn).done
 ifeq ($(python_version),3.4)
 	@echo "Warning: Skipping Sphinx doc build on Python $(python_version)" >&2
 else
-	@echo "Generating an HTML documentation..."
-	sphinx-build -b html $(doc_dir) $(build_doc_dir)
-	@echo "$@ done."
+	@echo "Generating HTML documentation..."
+	sphinx-build -b html $(doc_dir) $(doc_build_dir)
+	@echo "Done: Generated HTML documentation with main file: $@"
 endif
 
-$(bdist_file): dev-setup clean
+$(bdist_file): _check_version develop_$(pymn).done
 	@echo "Creating binary distribution archive $@..."
 	python setup.py bdist_wheel -d $(dist_dir) --universal
 	@echo "Done: Created binary distribution archive $@."
 
-$(sdist_file): dev-setup clean
+$(sdist_file): _check_version develop_$(pymn).done
 	@echo "Creating source distribution archive $@..."
 	python setup.py sdist -d $(dist_dir)
 	@echo "Done: Created source distribution archive $@."

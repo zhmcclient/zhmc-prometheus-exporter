@@ -72,7 +72,6 @@ jobs:
       env:
         PACKAGE_LEVEL: ${{ matrix.package_level }}
       run: |
-        make setup
         make install
         echo "Installed Python packages:"
         pip list
@@ -80,7 +79,7 @@ jobs:
       env:
         PACKAGE_LEVEL: ${{ matrix.package_level }}
       run: |
-        make dev-setup
+        make develop
         echo "Installed Python packages:"
         pip list
     - name: Run build
@@ -93,11 +92,16 @@ jobs:
         PACKAGE_LEVEL: ${{ matrix.package_level }}
       run: |
         make builddoc
-    - name: Run lint
+    - name: Run check
       env:
         PACKAGE_LEVEL: ${{ matrix.package_level }}
       run: |
-        make lint
+        make check
+    - name: Run pylint
+      env:
+        PACKAGE_LEVEL: ${{ matrix.package_level }}
+      run: |
+        make pylint
     - name: Run test
       env:
         PACKAGE_LEVEL: ${{ matrix.package_level }}
