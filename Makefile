@@ -1,12 +1,13 @@
 # Makefile for zhmc_prometheus exporter
 # Prerequisites:
-#   Any Linux distribution (macOS not officially supported)
-#   All of these commands:
+#   OS: Linux, macOS
+#   Commands provided by the OS:
 #     bash
-#     rm
+#     find
 #     make
-#     python
 #     pip
+#     python
+#     rm
 # Use this to get information on the targets:
 #   make help
 
@@ -144,7 +145,7 @@ install_base_$(pymn).done:
 	@echo "Done: Installed base packages"
 	echo "done" >$@
 
-install_$(pymn).done: install_base_$(pymn).done requirements.txt setup.py setup.cfg $(package_py_files)
+install_$(pymn).done: install_base_$(pymn).done requirements.txt setup.py setup.cfg
 	@echo "Installing package and its prerequisites..."
 	rm -f $@
 	pip install --upgrade-strategy eager -r requirements.txt
