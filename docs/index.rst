@@ -25,3 +25,4 @@ zhmc-prometheus-exporter - A prometheus.io exporter for the IBM Z Hardware Manag
    errors.rst
    dev.rst
    appendix.rst
+   changes.rst

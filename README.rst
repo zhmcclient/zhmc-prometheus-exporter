@@ -54,15 +54,29 @@ Quickstart
 The exporter itself
 ^^^^^^^^^^^^^^^^^^^
 
-Set up your exporter. Edit your credentials YAML file. A `sample credentials YAML`_ is provided. Enter the IP address of the HMC, your username, and your password there. Put this file and ``metrics.yaml`` into ``/etc/zhmc-prometheus-exporter/``. The latter defines the metrics and descriptions, you do not have to edit it. You can then run
+Set up your exporter as follows:
+
+Edit your HMC credentials YAML file ``hmccreds.yaml``. A sample
+`hmccreds.yaml <https://github.com/zhmcclient/zhmc-prometheus-exporter/blob/master/examples/hmccreds.yaml>`_
+file is provided in the Git repo.
+Enter the IP address of the HMC, your username, and your password there.
+
+Get your metric definition file ``metrics.yaml``. A sample
+`metrics.yaml <https://github.com/zhmcclient/zhmc-prometheus-exporter/blob/master/examples/metrics.yaml>`_
+file is provided in the Git repo.
+The sample file defines some DPM related metrics to be enabled. If your system
+is in DPM mode, you do not need to edit the sample file.
+
+Put the ``hmccreds.yaml`` file and the ``metrics.yaml`` file
+into ``/etc/zhmc-prometheus-exporter/``.
+
+You can then run
 
 .. code-block:: bash
 
   $ zhmc_prometheus_exporter
 
 The default port is 9291, you can change it with ``-p``. If you do not want to put ``hmccreds.yaml`` and ``metrics.yaml`` into ``/etc/zhmc-prometheus-exporter``, you can also specify them with ``-c`` and ``-m`` respectively.
-
-.. _sample credentials YAML: examples/hmccreds.yaml
 
 Demo setup
 ^^^^^^^^^^
@@ -94,6 +108,6 @@ If you want a quick "three simple metrics" setup with Prometheus and Grafana you
 
 The following image illustrates what the setup described above could look like.
 
-.. image:: https://github.com/zhmcclient/zhmc-prometheus-exporter/blob/master/examples/Deployment.png?raw=true
+.. image:: https://github.com/zhmcclient/zhmc-prometheus-exporter/blob/master/docs/deployment.png?raw=true
     :align: center
     :alt: Deployment diagram of the example

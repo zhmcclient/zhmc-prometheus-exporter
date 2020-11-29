@@ -92,7 +92,7 @@ Quickstart
 The exporter itself
 ^^^^^^^^^^^^^^^^^^^
 
-To sign into the HMC, you have to provide credentials in the YAML format. The file ``hmccreds.yaml`` could look something like this (see also the sample in the examples folder):
+To sign into the HMC, you have to provide credentials in the YAML format. The file ``hmccreds.yaml`` could look something like this (see also the example file shown in :ref:`sample credentials YAML`):
 
 .. code-block:: yaml
 
@@ -101,7 +101,7 @@ To sign into the HMC, you have to provide credentials in the YAML format. The fi
     userid: user
     password: password
 
-Furthermore, the file ``metrics.yaml`` defines details about the metrics fetching. An example file is in the repository root, for more information on its anatomy see chapter :ref:`The metrics YAML file`.
+Furthermore, the file ``metrics.yaml`` defines details about the metrics fetching. An example file is shown in :ref:`sample metrics YAML`, for more information on its anatomy see chapter :ref:`The metrics YAML file`.
 
 Put both of these files into ``/etc/zhmc-prometheus-exporter`` (or link them). You can then run
 
@@ -148,7 +148,7 @@ Demo setup
 
 The following image illustrates what the setup described above could look like.
 
-.. image:: ../examples/Deployment.png
+.. image:: deployment.png
     :align: center
     :alt: Deployment diagram of the example
 

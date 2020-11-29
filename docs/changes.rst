@@ -13,8 +13,6 @@
 .. limitations under the License.
 
 
-.. _`Change log`:
-
 Change log
 ----------
 
@@ -54,6 +52,9 @@ Released: not yet
 * Expanded the supported Python versions to 3.4 and higher.
 
 * Expanded the supported operating systems to Linux, macOS, Windows.
+
+* Added the sample HMC credentials file and the sample metric definition file
+  to the appendix of the documentation.
 
 **Cleanup:**
 
