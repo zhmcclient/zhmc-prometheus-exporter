@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 # Copyright 2018 IBM Corp. All Rights Reserved.
 #
@@ -43,13 +43,19 @@ class YAMLInfoNotFoundError(Exception):
     pass
 
 
-class ConnectTimeout(Exception):
+class ConnectionError(Exception):
+    # pylint: disable=redefined-builtin
     """Unwrapped from zhmcclient"""
     pass
 
 
-class ServerAuthError(Exception):
+class AuthError(Exception):
     """Unwrapped from zhmcclient"""
+    pass
+
+
+class OtherError(Exception):
+    """Other exceptions raised by zhmcclient"""
     pass
 
 
@@ -322,15 +328,19 @@ def create_metrics_context(session, yaml_metric_groups, filename):
             {"anticipated-frequency-seconds": 15,
              "metric-groups": fetched_metric_groups})
         return context
-    except zhmcclient.ConnectTimeout:
-        raise ConnectTimeout("Time out connecting to the HMC using IP address "
-                             "{} defined in HMC credentials file {}".
-                             format(session.host, filename))
-    except zhmcclient.ServerAuthError:
-        raise ServerAuthError("Authentication error when logging on to the "
-                              "HMC at {} using userid '{}' defined in HMC "
-                              "credentials file {}".
-                              format(session.host, session.userid, filename))
+    except zhmcclient.ConnectionError as exc:
+        raise ConnectionError("Connection error using IP address {} defined "
+                              "in HMC credentials file {}: {}".
+                              format(session.host, filename, exc))
+    except zhmcclient.AuthError as exc:
+        raise AuthError("Authentication error when logging on to the "
+                        "HMC at {} using userid '{}' defined in HMC "
+                        "credentials file {}: {}".
+                        format(session.host, session.userid, filename,
+                               exc))
+    except zhmcclient.Error as exc:
+        raise OtherError("Error returned from HMC at {}: {}".
+                         format(session.host, exc))
 
 
 def delete_metrics_context(session, context):
@@ -535,7 +545,7 @@ def main():
         try:
             context = create_metrics_context(session, yaml_metric_groups,
                                              args.c)
-        except (ConnectTimeout, ServerAuthError) as error_message:
+        except (ConnectionError, AuthError, OtherError) as error_message:
             raise ImproperExit(error_message)
         REGISTRY.register(ZHMCUsageCollector(yaml_creds, session, context,
                                              yaml_metric_groups,

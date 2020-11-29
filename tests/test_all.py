@@ -223,7 +223,7 @@ class TestCreateContext(unittest.TestCase):
         """
         cred_dict = {"hmc": "192.168.0.0", "userid": "user", "password": "pwd"}
         session = zhmc_prometheus_exporter.create_session(cred_dict)
-        with self.assertRaises(zhmc_prometheus_exporter.ConnectTimeout):
+        with self.assertRaises(zhmc_prometheus_exporter.ConnectionError):
             (zhmc_prometheus_exporter.
              create_metrics_context(session, {}, "filename"))
 

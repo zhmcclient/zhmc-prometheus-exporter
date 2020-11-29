@@ -16,4 +16,5 @@
 A prometheus.io exporter for metrics from the Z Hardware Management Console
 """
 
+# pylint: disable=redefined-builtin
 from .zhmc_prometheus_exporter import *  # noqa: F401, F403

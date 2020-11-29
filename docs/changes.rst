@@ -30,6 +30,12 @@ Released: not yet
 
 **Bug fixes:**
 
+* Fixed the error that only a subset of the possible exceptions were handled
+  that can be raised by the zhmcclient package (i.e. only ConnectionTimeout
+  and ServerAuthError). This lead to lengthy and confusing tracebacks being
+  shown when they occurred. Now, they are all handled and result in a proper
+  error message.
+
 **Enhancements:**
 
 * Migrated from Travis and Appveyor to GitHub Actions. This required several
