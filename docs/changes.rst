@@ -36,6 +36,9 @@ Released: not yet
   shown when they occurred. Now, they are all handled and result in a proper
   error message.
 
+* Added metadata to the Pypi package declaring a development status of 4 - Beta,
+  and requiring the supported Python versions (3.4 and higher).
+
 **Enhancements:**
 
 * Migrated from Travis and Appveyor to GitHub Actions. This required several
@@ -47,6 +50,10 @@ Released: not yet
 * Improved all exception and warning messages to be better understandable
   and to provide the context for any issues with content in the HMC credentials
   or metric definition files.
+
+* Expanded the supported Python versions to 3.4 and higher.
+
+* Expanded the supported operating systems to Linux, macOS, Windows.
 
 **Cleanup:**
 
