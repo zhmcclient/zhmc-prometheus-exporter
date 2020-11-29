@@ -1,4 +1,4 @@
 metrics:
-  hmc: IP address
+  hmc: 9.10.11.12
   userid: user
   password: password

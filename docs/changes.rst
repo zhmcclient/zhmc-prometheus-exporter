@@ -38,6 +38,10 @@ Released: not yet
 * Added options `--help-creds` and `--help-metrics` that show brief help for
   the HMC credentials file and for the metric definition file, respectively.
 
+* Improved all exception and warning messages to be better understandable
+  and to provide the context for any issues with content in the HMC credentials
+  or metric definition files.
+
 **Cleanup:**
 
 **Known issues:**

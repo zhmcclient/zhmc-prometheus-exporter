@@ -70,8 +70,9 @@ class TestParseYaml(unittest.TestCase):
         expected_dict = {"metrics": {"hmc": "127.0.0.1",
                                      "userid": "user",
                                      "password": "pwd"}}
-        self.assertEqual(zhmc_prometheus_exporter.parse_yaml_file(filename),
-                         expected_dict)
+        self.assertEqual(
+            zhmc_prometheus_exporter.parse_yaml_file(filename, 'test file'),
+            expected_dict)
         os.remove(filename)
 
     def test_permission_error(self):
@@ -84,7 +85,7 @@ class TestParseYaml(unittest.TestCase):
         os.chmod(filename, not stat.S_IRWXU)
         with self.assertRaises(PermissionError):
             (zhmc_prometheus_exporter.
-             parse_yaml_file(filename))
+             parse_yaml_file(filename, 'test file'))
         os.remove(filename)
 
     def test_not_found_error(self):
@@ -92,7 +93,7 @@ class TestParseYaml(unittest.TestCase):
         filename = str(hashlib.sha256(str(time.time()).encode("utf-8")).
                        hexdigest())
         with self.assertRaises(FileNotFoundError):
-            zhmc_prometheus_exporter.parse_yaml_file(filename)
+            zhmc_prometheus_exporter.parse_yaml_file(filename, 'test file')
 
 
 class TestParseSections(unittest.TestCase):
