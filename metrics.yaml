@@ -4,10 +4,10 @@ metric_groups:
     prefix: cpc
     fetch: False
   logical-partition-usage:
-    prefix: lpar 
+    prefix: lpar
     fetch: False
   channel-usage:
-    prefix: channel 
+    prefix: channel
     fetch: False
   # These will only find something if you are in DPM mode
   dpm-system-usage-overview:
@@ -88,7 +88,7 @@ metrics:
       percent: True
       exporter_name: accelerator_usage_ratio
       exporter_desc: Partition accelerator usage
-    crypto-usage: # the coprocessor? 
+    crypto-usage: # the coprocessor?
       percent: True
       exporter_name: crypto_usage_ratio
       exporter_desc: Partition crypto usage

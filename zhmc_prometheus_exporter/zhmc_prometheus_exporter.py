@@ -162,7 +162,7 @@ metrics:
 """)
 
 
-def parse_yaml_file(yamlfile):
+def parse_yaml_file(yamlfile, name):
     """Takes a YAML file name.
     Returns a parsed version of that file i.e. nests of dictionaries and lists.
     """
@@ -170,12 +170,11 @@ def parse_yaml_file(yamlfile):
         with open(yamlfile, "r") as yamlcontent:
             return yaml.safe_load(yamlcontent)
     except PermissionError:
-        raise PermissionError("Permission error. Make sure you have "
-                              "appropriate permissions to read from %s."
-                              % yamlfile)
+        raise PermissionError("Permission error reading {} {}".
+                              format(name, yamlfile))
     except FileNotFoundError:
-        raise FileNotFoundError("Error: File not found. It seems that %s "
-                                "does not exist." % yamlfile)
+        raise FileNotFoundError("Cannot find {} {}".
+                                format(name, yamlfile))
 
 
 def parse_yaml_sections(yamlcontent, sought_sections, filename):
@@ -184,15 +183,12 @@ def parse_yaml_sections(yamlcontent, sought_sections, filename):
     Returns a list of the parsed sections as dictionaries.
     """
     parsed_sections = []
-    try:
-        for sought_section in sought_sections:
-            section = yamlcontent.get(sought_section, None)
-            if section is None:
-                raise YAMLInfoNotFoundError("Section %s not found in file %s."
-                                            % (sought_section, filename))
-            parsed_sections.append(section)
-    except AttributeError:
-        raise AttributeError("%s does not follow the YAML syntax" % filename)
+    for sought_section in sought_sections:
+        section = yamlcontent.get(sought_section, None)
+        if section is None:
+            raise YAMLInfoNotFoundError("Section {} not found in file {}".
+                                        format(sought_section, filename))
+        parsed_sections.append(section)
     return parsed_sections
 
 
@@ -202,19 +198,24 @@ def check_creds_yaml(yaml_creds, filename):
     the YAML file for error output.
     """
     if "hmc" not in yaml_creds:
-        raise YAMLInfoNotFoundError("You did not specify the IP address of "
-                                    "the HMC in %s." % filename)
+        raise YAMLInfoNotFoundError("The 'hmc' property is missing in "
+                                    "HMC credentials file {}".
+                                    format(filename))
     try:
         ipaddress.ip_address(yaml_creds["hmc"])
     except ValueError:
-        raise YAMLInfoNotFoundError("You did not specify a correct IP "
-                                    "address in %s." % filename)
+        raise YAMLInfoNotFoundError("The 'hmc' property specifies an invalid "
+                                    "IP address '{}' in HMC credentials file "
+                                    "{}".
+                                    format(yaml_creds["hmc"], filename))
     if "userid" not in yaml_creds:
-        raise YAMLInfoNotFoundError("You did not specify a user ID in %s."
-                                    % filename)
+        raise YAMLInfoNotFoundError("The 'userid' property is missing in "
+                                    "HMC credentials file {}".
+                                    format(filename))
     if "password" not in yaml_creds:
-        raise YAMLInfoNotFoundError("You did not specify a password in %s."
-                                    % filename)
+        raise YAMLInfoNotFoundError("The 'password' property is missing in "
+                                    "HMC credentials file {}".
+                                    format(filename))
 
 
 def check_metrics_yaml(yaml_metric_groups, yaml_metrics, filename):
@@ -228,41 +229,65 @@ def check_metrics_yaml(yaml_metric_groups, yaml_metrics, filename):
     """
     for metric_group in yaml_metric_groups:
         if "prefix" not in yaml_metric_groups[metric_group]:
-            raise YAMLInfoNotFoundError("In %s, you did not specify a prefix "
-                                        "for %s." % (filename, metric_group))
+            raise YAMLInfoNotFoundError("The 'prefix' property is missing in "
+                                        "metric group '{}' in the "
+                                        "'metric_groups' section in metric "
+                                        "definition file {}".
+                                        format(metric_group, filename))
         if "fetch" not in yaml_metric_groups[metric_group]:
-            raise YAMLInfoNotFoundError("In %s, you did not specify whether "
-                                        "%s is to be fetched."
-                                        % (filename, metric_group))
-        if yaml_metric_groups[metric_group]["fetch"] not in (True, False):
-            raise YAMLInfoNotFoundError("In %s, you did not specify whether "
-                                        "%s is to be fetched with True or "
-                                        "False." % (filename, metric_group))
+            raise YAMLInfoNotFoundError("The 'fetch' property is missing in "
+                                        "metric group '{}' in the "
+                                        "'metric_groups' section in metric "
+                                        "definition file {}".
+                                        format(metric_group, filename))
+        fetch = yaml_metric_groups[metric_group]["fetch"]
+        if fetch not in (True, False):
+            raise YAMLInfoNotFoundError("The 'fetch' property has an invalid "
+                                        "boolean value '{}' in metric group "
+                                        "'{}' in the 'metric_groups' section "
+                                        "in metric definition file {}".
+                                        format(fetch, metric_group, filename))
     for metric_group in yaml_metrics:
         if metric_group not in yaml_metric_groups:
-            raise YAMLInfoNotFoundError("In %s, you specified %s as a metric "
-                                        "group, but you did not specify it "
-                                        "within the metric_groups section."
-                                        % (filename, metric_group))
+            raise YAMLInfoNotFoundError("The metric group '{}' specified in "
+                                        "the 'metrics' section is not defined "
+                                        "in the 'metric_groups' section in "
+                                        "metric definition file {}".
+                                        format(metric_group, filename))
         for metric in yaml_metrics[metric_group]:
             if "percent" not in yaml_metrics[metric_group][metric]:
-                raise YAMLInfoNotFoundError("In %s, you did not specify "
-                                            "whether %s is a percent value."
-                                            % (filename, metric))
-            if yaml_metrics[metric_group][metric]["percent"] not in (True,
-                                                                     False):
-                raise YAMLInfoNotFoundError("In %s, you did not specify "
-                                            "whether %s is a percent value "
-                                            "with True or False."
-                                            % (filename, metric))
+                raise YAMLInfoNotFoundError("The 'percent' property is "
+                                            "missing in metric '{}' in metric "
+                                            "group '{}' in the 'metrics' "
+                                            "section in metric definition file "
+                                            "{}".
+                                            format(metric, metric_group,
+                                                   filename))
+            percent = yaml_metrics[metric_group][metric]["percent"]
+            if percent not in (True, False):
+                raise YAMLInfoNotFoundError("The 'percent' property has an "
+                                            "invalid boolean value '{}' in "
+                                            "metric '{}' in metric group '{}' "
+                                            "in the 'metrics' section in "
+                                            "metric definition file {}".
+                                            format(fetch, metric, metric_group,
+                                                   filename))
             if "exporter_name" not in yaml_metrics[metric_group][metric]:
-                raise YAMLInfoNotFoundError("In %s, you did not specify an "
-                                            "exporter name for %s."
-                                            % (filename, metric))
+                raise YAMLInfoNotFoundError("The 'exporter_name' property is "
+                                            "missing in metric '{}' in metric "
+                                            "group '{}' in the 'metrics' "
+                                            "section in metric definition file "
+                                            "{}".
+                                            format(metric, metric_group,
+                                                   filename))
             if "exporter_desc" not in yaml_metrics[metric_group][metric]:
-                raise YAMLInfoNotFoundError("In %s, you did not specify an "
-                                            "exporter description for %s."
-                                            % (filename, metric))
+                raise YAMLInfoNotFoundError("The 'exporter_desc' property is "
+                                            "missing in metric '{}' in metric "
+                                            "group '{}' in the 'metrics' "
+                                            "section in metric definition file "
+                                            "{}".
+                                            format(metric, metric_group,
+                                                   filename))
 
 
 # Metrics context creation & deletion and retrieval derived from
@@ -298,13 +323,14 @@ def create_metrics_context(session, yaml_metric_groups, filename):
              "metric-groups": fetched_metric_groups})
         return context
     except zhmcclient.ConnectTimeout:
-        raise ConnectTimeout("Time out. Ensure that you have access to the "
-                             "HMC and that you have stored the correct IP "
-                             "address in %s." % filename)
+        raise ConnectTimeout("Time out connecting to the HMC using IP address "
+                             "{} defined in HMC credentials file {}".
+                             format(session.host, filename))
     except zhmcclient.ServerAuthError:
-        raise ServerAuthError("Authentication error. Ensure that you have "
-                              "stored a correct user ID-password combination "
-                              "in %s." % filename)
+        raise ServerAuthError("Authentication error when logging on to the "
+                              "HMC at {} using userid '{}' defined in HMC "
+                              "credentials file {}".
+                              format(session.host, session.userid, filename))
 
 
 def delete_metrics_context(session, context):
@@ -368,10 +394,10 @@ def identify_incoming_metrics(incoming_metrics, yaml_metrics, filename):
                 if metric not in yaml_metrics[metric_group]:
                     yaml_metrics[metric_group][metric] = (
                         format_unknown_metric(metric))
-                    # warnings does not handle multiline well
-                    warning_str = ("Metric %s was not found. Consider "
-                                   "adding it to your %s.")
-                    warnings.warn(warning_str % (metric, filename))
+                    warnings.warn("Metric '{}' returned by the HMC is not "
+                                  "defined in metric definition file {} - "
+                                  "consider adding it".
+                                  format(metric, filename))
     return yaml_metrics
 
 
@@ -476,7 +502,7 @@ def main():
             help_metrics()
             sys.exit(0)
         try:
-            raw_yaml_creds = parse_yaml_file(args.c)
+            raw_yaml_creds = parse_yaml_file(args.c, 'HMC credentials file')
         # These will be thrown upon wrong user input
         # The user should not see a traceback then
         except (PermissionError, FileNotFoundError) as error_message:
@@ -491,7 +517,7 @@ def main():
         except YAMLInfoNotFoundError as error_message:
             raise ImproperExit(error_message)
         try:
-            raw_yaml_metrics = parse_yaml_file(args.m)
+            raw_yaml_metrics = parse_yaml_file(args.m, 'metric definition file')
         except (PermissionError, FileNotFoundError) as error_message:
             raise ImproperExit(error_message)
         try:
@@ -525,7 +551,7 @@ def main():
         delete_metrics_context(session, context)
         sys.exit(1)
     except ImproperExit as error_message:
-        print(error_message)
+        print("Error: {}".format(error_message))
         delete_metrics_context(session, context)
         sys.exit(1)
     except ProperExit:
