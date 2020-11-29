@@ -1,5 +1,6 @@
-# Sensitive information
-/hmccreds.yaml
+# User specific configuration files
+/myconfig/
+/hmccreds.yaml  # from the past - move to /myconfig
 
 # Make targets
 /*.done
@@ -20,5 +21,6 @@ __pycache__/
 # Make build_doc
 /build_docs/
 
-# If I still have a file open in Vim
+# Other
 *.swp
+.DS_Store
