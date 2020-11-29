@@ -15,16 +15,21 @@
 zhmc-prometheus-exporter
 ========================
 
+.. image:: https://img.shields.io/pypi/v/zhmc-prometheus-exporter.svg
+    :target: https://pypi.python.org/pypi/zhmc-prometheus-exporter/
+    :alt: Version on Pypi
 
 .. image:: https://github.com/zhmcclient/zhmc-prometheus-exporter/workflows/test/badge.svg?branch=master
-    :target: https://github.com/zhmcclient/zhmc-prometheus-exporter/actions/
-    :alt: Actions status
+    :target: https://github.com/zhmcclient/zhmc-prometheus-exporter/actions?query=branch%3Amaster
+    :alt: Test status (master)
 
-.. image:: https://readthedocs.org/projects/zhmc-prometheus-exporter/badge/?version=stable
-    :target: https://zhmc-prometheus-exporter.readthedocs.io/en/latest/?badge=stable
+.. image:: https://readthedocs.org/projects/zhmc-prometheus-exporter/badge/?version=latest
+    :target: https://readthedocs.org/projects/zhmc-prometheus-exporter/builds/
+    :alt: Docs status (master)
 
 .. image:: https://coveralls.io/repos/github/zhmcclient/zhmc-prometheus-exporter/badge.svg?branch=master
     :target: https://coveralls.io/github/zhmcclient/zhmc-prometheus-exporter?branch=master
+    :alt: Test coverage (master)
 
 
 A `prometheus.io`_ exporter written in Python for metrics from the `IBM Z`_ Hardware Management Console using `zhmcclient`_. Tested with Python 3.4 through 3.7.
