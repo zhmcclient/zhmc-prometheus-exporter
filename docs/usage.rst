@@ -1,11 +1,11 @@
 .. Copyright 2018 IBM Corp. All Rights Reserved.
-.. 
+..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
 .. You may obtain a copy of the License at
-.. 
+..
 ..    http://www.apache.org/licenses/LICENSE-2.0
-.. 
+..
 .. Unless required by applicable law or agreed to in writing, software
 .. distributed under the License is distributed on an "AS IS" BASIS,
 .. WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,16 +20,16 @@ This page describes how to use the exporter beyond following the quickstart guid
 Revision: Quickstart
 --------------------
 
-To sign into the HMC, you have to provide credentials in the YAML format. The file ``hmccreds.yaml`` could look something like this (see also the sample in the examples folder):
+To sign into the HMC, you have to provide credentials in the YAML format. The file ``hmccreds.yaml`` could look something like this (see also the example file shown in :ref:`sample credentials YAML`):
 
 .. code-block:: yaml
 
-  metrics:
-    hmc: 10.10.10.10
-    userid: user
-    password: password
+    metrics:
+      hmc: 10.10.10.10
+      userid: user
+      password: password
 
-Furthermore, the file ``metrics.yaml`` defines details about the metrics fetching. An example file is in the repository root, for more information on its anatomy see chapter :ref:`The metrics YAML file`.
+Furthermore, the file ``metrics.yaml`` defines details about the metrics fetching. An example file is shown in :ref:`sample metrics YAML`, for more information on its anatomy see chapter :ref:`The metrics YAML file`.
 
 Put both of these files into ``/etc/zhmc-prometheus-exporter`` (or link them). You can then run
 
