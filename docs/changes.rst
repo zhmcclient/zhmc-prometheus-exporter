@@ -35,6 +35,9 @@ Released: not yet
 * Migrated from Travis and Appveyor to GitHub Actions. This required several
   changes in package dependencies for development.
 
+* Added options `--help-creds` and `--help-metrics` that show brief help for
+  the HMC credentials file and for the metric definition file, respectively.
+
 **Cleanup:**
 
 **Known issues:**
