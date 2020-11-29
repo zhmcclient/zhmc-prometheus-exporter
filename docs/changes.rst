@@ -17,14 +17,10 @@ Change log
 ----------
 
 
-Version 0.4.1.dev1
-^^^^^^^^^^^^^^^^^^
+Version 0.4.1
+^^^^^^^^^^^^^
 
-Released: not yet
-
-**Incompatible changes:**
-
-**Deprecations:**
+Released: 2020-11-29
 
 **Bug fixes:**
 
@@ -60,14 +56,6 @@ Released: not yet
   so that it now defines all metrics of all metric groups supported by
   HMC 2.15 (z15). Note that some metric values have been renamed for clarity
   and consistency.
-
-**Cleanup:**
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/python-zhmcclient/issues
 
 
 Version 0.4.0
