@@ -1,106 +1,277 @@
+# Example zhmc-prometheus-export metric definition file with all metrics supported by HMC 2.15 (z15)
+#
+# All metrics of CPCs in DPM mode are enabled.
+
 metric_groups:
-  # These will only find something if you are in classic mode
+
+  # Available for CPCs in classic mode
   cpc-usage-overview:
     prefix: cpc
     fetch: False
   logical-partition-usage:
-    prefix: lpar
+    prefix: partition
     fetch: False
   channel-usage:
     prefix: channel
     fetch: False
-  # These will only find something if you are in DPM mode
+  crypto-usage:
+    prefix: crypto_adapter
+    fetch: False
+  flash-memory-usage:
+    prefix: flash_memory_adapter
+    fetch: False
+  roce-usage:
+    prefix: roce_adapter
+    fetch: False
+
+  # Available for CPCs in DPM mode
   dpm-system-usage-overview:
-    prefix: dpm
+    prefix: cpc
     fetch: True
   partition-usage:
     prefix: partition
     fetch: True
   adapter-usage:
     prefix: adapter
-    fetch: False
-  crypto-usage:
-    prefix: crypto
-    fetch: False
-  flash-memory-usage:
-    prefix: flash
-    fetch: False
-  roce-usage:
-    prefix: roce
-    fetch: False
-  # This will only find something if you are in ensemble mode
+    fetch: True
+
+  # Available for CPCs in ensemble mode (supported only on z196)
   virtualization-host-cpu-memory-usage:
-    prefix: virtualized
+    prefix: virtualization_host
     fetch: False
 
 metrics:
+
+#   # Available for CPCs in classic mode
+#   cpc-usage-overview:
+#     cpc-processor-usage:
+#       percent: True
+#       exporter_name: processor_usage_ratio
+#       exporter_desc: Usage ratio across all processors of the CPC
+#     all-shared-processor-usage:
+#       percent: True
+#       exporter_name: shared_processor_usage_ratio
+#       exporter_desc: Usage ratio across all shared processors of the CPC
+#     all-dedicated-processor-usage:
+#       percent: True
+#       exporter_name: dedicated_processor_usage_ratio
+#       exporter_desc: Usage ratio across all dedicated processors of the CPC
+#     cp-all-processor-usage:
+#       percent: True
+#       exporter_name: cp_processor_usage_ratio
+#       exporter_desc: Usage ratio across all CP processors of the CPC
+#     cp-shared-processor-usage:
+#       percent: True
+#       exporter_name: cp_shared_processor_usage_ratio
+#       exporter_desc: Usage ratio across all shared CP processors of the CPC
+#     cp-dedicated-processor-usage:
+#       percent: True
+#       exporter_name: cp_dedicated_processor_usage_ratio
+#       exporter_desc: Usage ratio across all dedicated CP processors of the CPC
+#     ifl-all-processor-usage:
+#       percent: True
+#       exporter_name: ifl_processor_usage_ratio
+#       exporter_desc: Usage ratio across all IFL processors of the CPC
+#     ifl-shared-processor-usage:
+#       percent: True
+#       exporter_name: ifl_shared_processor_usage_ratio
+#       exporter_desc: Usage ratio across all shared IFL processors of the CPC
+#     ifl-dedicated-processor-usage:
+#       percent: True
+#       exporter_name: ifl_dedicated_processor_usage_ratio
+#       exporter_desc: Usage ratio across all dedicated IFL processors of the CPC
+#     icf-all-processor-usage:
+#       percent: True
+#       exporter_name: icf_processor_usage_ratio
+#       exporter_desc: Usage ratio across all ICF processors of the CPC
+#     icf-shared-processor-usage:
+#       percent: True
+#       exporter_name: icf_shared_processor_usage_ratio
+#       exporter_desc: Usage ratio across all shared ICF processors of the CPC
+#     icf-dedicated-processor-usage:
+#       percent: True
+#       exporter_name: icf_dedicated_processor_usage_ratio
+#       exporter_desc: Usage ratio across all dedicated ICF processors of the CPC
+#     iip-all-processor-usage:
+#       percent: True
+#       exporter_name: iip_processor_usage_ratio
+#       exporter_desc: Usage ratio across all zIIP processors of the CPC
+#     iip-shared-processor-usage:
+#       percent: True
+#       exporter_name: iip_shared_processor_usage_ratio
+#       exporter_desc: Usage ratio across all shared zIIP processors of the CPC
+#     iip-dedicated-processor-usage:
+#       percent: True
+#       exporter_name: iip_dedicated_processor_usage_ratio
+#       exporter_desc: Usage ratio across all dedicated zIIP processors of the CPC
+#     aap-shared-processor-usage:
+#       percent: True
+#       exporter_name: aap_shared_processor_usage_ratio
+#       exporter_desc: Usage ratio across all shared zAAP processors of the CPC
+#     aap-dedicated-processor-usage:
+#       percent: True
+#       exporter_name: aap_dedicated_processor_usage_ratio
+#       exporter_desc: Usage ratio across all dedicated zAAP processors of the CPC
+#     # aap-all-processor-usage does not seem to exist
+#     cbp-all-processor-usage:
+#       percent: True
+#       exporter_name: cbp_processor_usage_ratio
+#       exporter_desc: Usage ratio across all CBP processors of the CPC
+#     cbp-shared-processor-usage:
+#       percent: True
+#       exporter_name: cbp_shared_processor_usage_ratio
+#       exporter_desc: Usage ratio across all shared CBP processors of the CPC
+#     cbp-dedicated-processor-usage:
+#       percent: True
+#       exporter_name: cbp_dedicated_processor_usage_ratio
+#       exporter_desc: Usage ratio across all dedicated CBP processors of the CPC
+#     channel-usage:
+#       percent: True
+#       exporter_name: channel_usage_ratio
+#       exporter_desc: Usage ratio across all channels of the CPC
+#     power-consumption-watts:
+#       percent: False
+#       exporter_name: power_watts
+#       exporter_desc: Power consumption of the CPC
+#     temperature-celsius:
+#       percent: False
+#       exporter_name: temperature_celsius
+#       exporter_desc: Ambient temperature of the CPC
+#   logical-partition-usage:
+#     processor-usage:
+#       percent: True
+#       exporter_name: processor_usage_ratio
+#       exporter_desc: Usage ratio across all processors of the partition
+#     cp-processor-usage:
+#       percent: True
+#       exporter_name: cp_processor_usage_ratio
+#       exporter_desc: Usage ratio across all CP processors of the partition
+#     ifl-processor-usage:
+#       percent: True
+#       exporter_name: ifl_processor_usage_ratio
+#       exporter_desc: Usage ratio across all IFL processors of the partition
+#     icf-processor-usage:
+#       percent: True
+#       exporter_name: icf_processor_usage_ratio
+#       exporter_desc: Usage ratio across all ICF processors of the partition
+#     iip-processor-usage:
+#       percent: True
+#       exporter_name: iip_processor_usage_ratio
+#       exporter_desc: Usage ratio across all IIP processors of the partition
+#     cbp-processor-usage:
+#       percent: True
+#       exporter_name: cbp_processor_usage_ratio
+#       exporter_desc: Usage ratio across all CBP processors of the partition
+#     zvm-paging-rate:
+#       percent: False
+#       exporter_name: zvm_paging_rate_pages_per_second
+#       exporter_desc: z/VM paging rate in pages/sec
+#   channel-usage:
+#     channel-usage:
+#       percent: True
+#       exporter_name: usage_ratio
+#       exporter_desc: Usage ratio of the channel
+#   crypto-usage:
+#     crypto-usage:
+#       percent: True
+#       exporter_name: usage_ratio
+#       exporter_desc: Usage ratio of the crypto adapter
+#   flash-memory-usage:
+#     channel-id:
+#       percent: False
+#       exporter_name: pchid
+#       exporter_desc: PCHID of the flash memory adapter
+#     adapter-usage:
+#       percent: True
+#       exporter_name: usage_ratio
+#       exporter_desc: Usage ratio of the flash memory adapter
+#   roce-usage:
+#     channel-id:
+#       percent: False
+#       exporter_name: pchid
+#       exporter_desc: PCHID of the RoCE adapter
+#     adapter-usage:
+#       percent: True
+#       exporter_name: usage_ratio
+#       exporter_desc: Usage ratio of the RoCE adapter
+
+  # Available for CPCs in DPM mode
   dpm-system-usage-overview:
-    network-usage:
-      percent: True
-      exporter_name: network_usage_ratio
-      exporter_desc: DPM total network usage
-    temperature-celsius: # which one?
-      percent: False
-      exporter_name: temperature_celsius
-      exporter_desc: DPM temperature
-    storage-usage:
-      percent: True
-      exporter_name: storage_usage_ratio
-      exporter_desc: DPM total storage usage
-    crypto-usage: # the coprocessor?
-      percent: True
-      exporter_name: crypto_usage_ratio
-      exporter_desc: DPM crypto usage
     processor-usage:
       percent: True
       exporter_name: processor_usage_ratio
-      exporter_desc: DPM total processor usage
-    accelerator-usage: # which one?
-      percent: True
-      exporter_name: accelerator_usage_ratio
-      exporter_desc: DPM accelerator usage
+      exporter_desc: Usage ratio across all processors of the CPC
     all-shared-processor-usage:
       percent: True
       exporter_name: shared_processor_usage_ratio
-      exporter_desc: DPM total shared processor usage
-    power-consumption-watts:
-      percent: False
-      exporter_name: power_watts
-      exporter_desc: DPM total power consumption
+      exporter_desc: Usage ratio across all shared processors of the CPC
+    cp-all-processor-usage:
+      percent: True
+      exporter_name: cp_processor_usage_ratio
+      exporter_desc: Usage ratio across all CP processors of the CPC
+    cp-shared-processor-usage:
+      percent: True
+      exporter_name: cp_shared_processor_usage_ratio
+      exporter_desc: Usage ratio across all shared CP processors of the CPC
+    ifl-all-processor-usage:
+      percent: True
+      exporter_name: ifl_processor_usage_ratio
+      exporter_desc: Usage ratio across all IFL processors of the CPC
     ifl-shared-processor-usage:
       percent: True
       exporter_name: ifl_shared_processor_usage_ratio
-      exporter_desc: DPM Integrated Facility for Linux Integrated Information Processor shared processor usage
-    ifl-all-processor-usage:
-      percent: True
-      exporter_name: ifl_total_processor_usage_ratio
-      exporter_desc: DPM Integrated Facility for Linux Integrated Information Processor total processor usage
-    cp-shared-processor-usage:
-      percent: True
-      exporter_name: cp_shared_usage_ratio
-      exporter_desc: DPM coprocessor shared usage
-    cp-all-processor-usage:
-      percent: True
-      exporter_name: cp_total_usage_ratio
-      exporter_desc: DPM coprocessor total usage
-  partition-usage:
-    accelerator-usage: # which one?
-      percent: True
-      exporter_name: accelerator_usage_ratio
-      exporter_desc: Partition accelerator usage
-    crypto-usage: # the coprocessor?
-      percent: True
-      exporter_name: crypto_usage_ratio
-      exporter_desc: Partition crypto usage
+      exporter_desc: Usage ratio across all shared IFL processors of the CPC
     network-usage:
       percent: True
-      exporter_name: network_usage_ratio
-      exporter_desc: Partition network usage
+      exporter_name: network_adapter_usage_ratio
+      exporter_desc: Usage ratio across all network adapters of the CPC
+    storage-usage:
+      percent: True
+      exporter_name: storage_adapter_usage_ratio
+      exporter_desc: Usage ratio across all storage adapters of the CPC
+    accelerator-usage:
+      percent: True
+      exporter_name: accelerator_adapter_usage_ratio
+      exporter_desc: Usage ratio across all accelerator adapters of the CPC
+    crypto-usage:
+      percent: True
+      exporter_name: crypto_adapter_usage_ratio
+      exporter_desc: Usage ratio across all crypto adapters of the CPC
+    power-consumption-watts:
+      percent: False
+      exporter_name: power_watts
+      exporter_desc: Power consumption of the CPC
+    temperature-celsius:
+      percent: False
+      exporter_name: temperature_celsius
+      exporter_desc: Ambient temperature of the CPC
+  partition-usage:
     processor-usage:
       percent: True
       exporter_name: processor_usage_ratio
-      exporter_desc: Partition processor usage
+      exporter_desc: Usage ratio of all processors of the partition
+    network-usage:
+      percent: True
+      exporter_name: network_adapter_usage_ratio
+      exporter_desc: Usage ratio of all network adapters of the partition
     storage-usage:
       percent: True
-      exporter_name: storage_usage_ratio
-      exporter_desc: Partition storage usage
+      exporter_name: storage_adapter_usage_ratio
+      exporter_desc: Usage ratio of all storage adapters of the partition
+    accelerator-usage:
+      percent: True
+      exporter_name: accelerator_adapter_usage_ratio
+      exporter_desc: Usage ratio of all accelerator adapters of the partition
+    crypto-usage:
+      percent: True
+      exporter_name: crypto_adapter_usage_ratio
+      exporter_desc: Usage ratio of all crypto adapters of the partition
+  adapter-usage:
+    adapter-usage:
+      percent: True
+      exporter_name: usage_ratio
+      exporter_desc: Usage ratio of the adapter
+
+#   # Available for CPCs in ensemble mode (supported only on z196)
+#   virtualization-host-cpu-memory-usage: {}
+#     # TODO: Add metrics

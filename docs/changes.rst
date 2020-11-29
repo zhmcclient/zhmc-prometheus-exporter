@@ -56,6 +56,11 @@ Released: not yet
 * Added the sample HMC credentials file and the sample metric definition file
   to the appendix of the documentation.
 
+* The sample metric definition file 'examples/metrics.yaml' has been completed
+  so that it now defines all metrics of all metric groups supported by
+  HMC 2.15 (z15). Note that some metric values have been renamed for clarity
+  and consistency.
+
 **Cleanup:**
 
 **Known issues:**
