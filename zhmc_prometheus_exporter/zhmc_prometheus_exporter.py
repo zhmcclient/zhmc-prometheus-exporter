@@ -32,6 +32,9 @@ import zhmcclient
 from prometheus_client import start_http_server
 from prometheus_client.core import GaugeMetricFamily, REGISTRY
 
+DEFAULT_CREDS_FILE = '/etc/zhmc-prometheus-exporter/hmccreds.yaml'
+DEFAULT_METRICS_FILE = '/etc/zhmc-prometheus-exporter/metrics.yaml'
+
 
 class YAMLInfoNotFoundError(Exception):
     """A custom error that is raised when something that was expected in a
@@ -64,17 +67,99 @@ def parse_args(args):
     """Parses the CLI arguments."""
     parser = argparse.ArgumentParser(description="Prometheus.io exporter for "
                                      "the IBM Z Hardware Management Console")
-    parser.add_argument("-p", metavar="PORT", default="9291", help="Port for "
-                        "exporting (default 9291)")
-    parser.add_argument("-c", metavar="CREDENTIALS", default="/etc/zhmc-"
-                        "prometheus-exporter/hmccreds.yaml",
-                        help="Credentials information (default /etc/zhmc-"
-                        "prometheus-exporter/hmccreds.yaml)")
-    parser.add_argument("-m", metavar="METRICS", default="/etc/zhmc-"
-                        "prometheus-exporter/metrics.yaml", help="Credentials "
-                        "information (default /etc/zhmc-prometheus-exporter/"
-                        "metrics.yaml)")
+    parser.add_argument("-p", metavar="PORT",
+                        default="9291",
+                        help="port for exporting. Default: 9291")
+    parser.add_argument("-c", metavar="CREDS_FILE",
+                        default=DEFAULT_CREDS_FILE,
+                        help="path name of HMC credentials file. "
+                        "Use --help-creds for details. "
+                        "Default: {}".format(DEFAULT_CREDS_FILE))
+    parser.add_argument("-m", metavar="METRICS_FILE",
+                        default=DEFAULT_METRICS_FILE,
+                        help="path name of metric definition file. "
+                        "Use --help-metrics for details. "
+                        "Default: {}".format(DEFAULT_METRICS_FILE))
+    parser.add_argument("--help-creds", action='store_true',
+                        help="show help for HMC credentials file and exit")
+    parser.add_argument("--help-metrics", action='store_true',
+                        help="show help for metric definition file and exit")
     return parser.parse_args(args)
+
+
+def help_creds():
+    """
+    Print help for HMC credentials file.
+    """
+    print("""
+Help for HMC credentials file
+
+The HMC credentials file is a YAML file that defines the IP address of the HMC
+and the userid and password for logging on to the HMC.
+
+The HMC userid must be authorized for object access permission to the resources
+for which metrics are to be returned. Metrics of resources for which the userid
+does not have object access permission will not be included in the result,
+without raising an error.
+
+The following example shows a complete HMC credentials file. For more details,
+see the documentation at https://zhmc-prometheus-exporter.readthedocs.io/.
+
+---
+metrics:
+  hmc: 1.2.3.4
+  userid: myuser
+  password: mypassword
+""")
+
+
+def help_metrics():
+    """
+    Print help for metric definition file.
+    """
+    print("""
+Help for metric definition file
+
+The metric definition file is a YAML file that defines which metrics are
+exported to prometheus and under which names.
+
+The following example shows a complete metric definition file that defines
+a small subset of metrics and metric groups for DPM mode to be exported. For
+more details and a full list of metrics and metric groups, see the
+documentation at https://zhmc-prometheus-exporter.readthedocs.io/.
+
+---
+metric_groups:
+  dpm-system-usage-overview:
+    prefix: dpm
+    fetch: True
+  partition-usage:
+    prefix: partition
+    fetch: True
+  # ...
+metrics:
+  dpm-system-usage-overview:
+    network-usage:
+      percent: True
+      exporter_name: network_usage_ratio
+      exporter_desc: DPM total network usage
+    temperature-celsius:
+      percent: False
+      exporter_name: temperature_celsius
+      exporter_desc: DPM temperature
+    # ...
+  partition-usage:
+    accelerator-usage:
+      percent: True
+      exporter_name: accelerator_usage_ratio
+      exporter_desc: Partition accelerator usage
+    crypto-usage:
+      percent: True
+      exporter_name: crypto_usage_ratio
+      exporter_desc: Partition crypto usage
+    # ...
+  # ...
+""")
 
 
 def parse_yaml_file(yamlfile):
@@ -384,6 +469,12 @@ def main():
     context = False
     try:
         args = parse_args(sys.argv[1:])
+        if args.help_creds:
+            help_creds()
+            sys.exit(0)
+        if args.help_metrics:
+            help_metrics()
+            sys.exit(0)
         try:
             raw_yaml_creds = parse_yaml_file(args.c)
         # These will be thrown upon wrong user input
