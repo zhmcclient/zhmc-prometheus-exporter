@@ -24,11 +24,10 @@ import time
 import ipaddress
 import warnings
 import re
-import yaml
 import urllib3
 
+import yaml
 import zhmcclient
-
 from prometheus_client import start_http_server
 from prometheus_client.core import GaugeMetricFamily, REGISTRY
 
