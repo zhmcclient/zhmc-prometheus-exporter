@@ -1,11 +1,11 @@
 .. Copyright 2018 IBM Corp. All Rights Reserved.
-.. 
+..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
 .. You may obtain a copy of the License at
-.. 
+..
 ..    http://www.apache.org/licenses/LICENSE-2.0
-.. 
+..
 .. Unless required by applicable law or agreed to in writing, software
 .. distributed under the License is distributed on an "AS IS" BASIS,
 .. WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,8 +27,8 @@ What this package provides
 Supported environments
 ----------------------
 
-* Operating systems: It has been tested on Linux. Other operating systems are not officially supported.
-* Python versions: It has been tested with versions 3.4 through 3.7. Later versions are not officially supported. Earlier versions, including Python 2, are not supported.
+* Operating systems: Linux, macOS, Windows
+* Python versions: 3.4 and higher
 * HMC versions: 2.11.1 and higher
 
 Installation
