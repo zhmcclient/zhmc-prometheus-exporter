@@ -33,6 +33,27 @@ Released: not yet
 * The packages needed for installation are now properly reflected
   in the package metadata (part of issue #55).
 
+* Improved the metric labels published along with metric values in multiple
+  ways. The sample metric definition file has been updated to exploit all
+  these new capabilities:
+
+  - The type of resource to which a metric value belongs is now identified in
+    the label name e.g. by showing a label 'cpc' or 'adapter' instead of the
+    generic label 'resource'.
+
+  - Resources that are inside a CPC (e.g. adapters, partitions) now can show
+    their parent resource (the CPC) as an additional label, if the metric
+    definition file specifies that.
+
+  - Metrics that identify the resource (e.g. 'channel-id' in the 'channel-usage'
+    metric group now can used as additional labels on the actual metric value,
+    if the metric definition file specifies that.
+
+* The published metrics no longer contain empty HELP/TYPE comments.
+
+* Metrics with the special value -1 that are returned by the HMC for some
+  metrics in case the resource does not exist, are now suppressed.
+
 **Cleanup:**
 
 * Removed the use of 'pbr' to simplify installation and development

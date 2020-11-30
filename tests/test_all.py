@@ -22,16 +22,10 @@ import hashlib
 import os
 import sys
 import stat
-
-from io import StringIO
 import unittest
-from unittest.mock import patch
-
 import pytest
-
 import zhmcclient
 import zhmcclient_mock
-
 import prometheus_client
 
 import zhmc_prometheus_exporter
@@ -214,11 +208,10 @@ class TestCreateContext(unittest.TestCase):
         """Tests normal input with a generic metric group."""
         session = zhmcclient_mock.FakedSession("fake-host", "fake-hmc",
                                                "2.13.1", "1.8")
-        context = (zhmc_prometheus_exporter.
-                   create_metrics_context(session,
-                                          {"metric-group": {"prefix": "pre",
-                                                            "fetch": True}},
-                                          "filename"))
+        context = zhmc_prometheus_exporter.create_metrics_context(
+            session,
+            {"dpm-system-usage-overview": {"prefix": "pre", "fetch": True}},
+            "filename")
         # pylint: disable=protected-access
         self.assertEqual(type(context), zhmcclient._metrics.MetricsContext)
         context.delete()
@@ -231,8 +224,8 @@ class TestCreateContext(unittest.TestCase):
         cred_dict = {"hmc": "192.168.0.0", "userid": "user", "password": "pwd"}
         session = zhmc_prometheus_exporter.create_session(cred_dict)
         with self.assertRaises(zhmc_prometheus_exporter.ConnectionError):
-            (zhmc_prometheus_exporter.
-             create_metrics_context(session, {}, "filename"))
+            zhmc_prometheus_exporter.create_metrics_context(
+                session, {}, "filename")
 
 
 class TestDeleteContext(unittest.TestCase):
@@ -246,144 +239,109 @@ class TestDeleteContext(unittest.TestCase):
         client = zhmcclient.Client(session)
         context = client.metrics_contexts.create(
             {"anticipated-frequency-seconds": 15,
-             "metric-groups": ["metric-group"]})
+             "metric-groups": ["dpm-system-usage-overview"]})
         zhmc_prometheus_exporter.delete_metrics_context(session, context)
 
 
-class TestRetrieveMetrics(unittest.TestCase):
-    """Tests retrieve_metrics."""
+def setup_faked_session():
+    """Create a faked session."""
+
+    session = zhmcclient_mock.FakedSession("fake-host", "fake-hmc",
+                                           "2.13.1", "1.8")
+    session.hmc.add_resources({"cpcs": [{"properties": {
+        "name": "cpc_1", "object-uri": "cpc_1"}}]})
+    session.hmc.metrics_contexts.add_metric_group_definition(
+        zhmcclient_mock.FakedMetricGroupDefinition(
+            name="dpm-system-usage-overview",
+            types=[("metric-1", "integer-metric")]))
+    session.hmc.metrics_contexts.add_metric_values(
+        zhmcclient_mock.FakedMetricObjectValues(
+            group_name="dpm-system-usage-overview",
+            resource_uri="cpc_1",
+            timestamp=datetime.datetime.now(),
+            values=[("metric-1", 1)]))
+    return session
+
+
+def setup_metrics_context():
+    """Create a faked session and return a faked metrics context."""
+
+    session = setup_faked_session()
+    client = zhmcclient.Client(session)
+    context = client.metrics_contexts.create(
+        {"anticipated-frequency-seconds": 15,
+         "metric-groups": ["dpm-system-usage-overview"]})
+    return context
+
+
+def teardown_metrics_context(context):
+    """Delete a faked metrics context."""
+    context.delete()
+
+
+class TestMetrics(unittest.TestCase):
+    """Tests metrics."""
 
     def test_retrieve_metrics(self):
-        """Tests metrics retrieval with a fake CPC and fake metrics."""
-        session = zhmcclient_mock.FakedSession("fake-host", "fake-hmc",
-                                               "2.13.1", "1.8")
-        session.hmc.add_resources({"cpcs": [{"properties": {
-            "name": "cpc_1", "object-uri": "cpc_1"}}]})
-        session.hmc.metrics_contexts.add_metric_group_definition(
-            zhmcclient_mock.FakedMetricGroupDefinition(
-                name="dpm-system-usage-overview",
-                types=[("metric", "integer-metric")]))
-        session.hmc.metrics_contexts.add_metric_values(
-            zhmcclient_mock.FakedMetricObjectValues(
-                group_name="dpm-system-usage-overview",
-                resource_uri="cpc_1",
-                timestamp=datetime.datetime.now(),
-                values=[("metric", 1)]))
-        client = zhmcclient.Client(session)
-        context = client.metrics_contexts.create(
-            {"anticipated-frequency-seconds": 15,
-             "metric-groups": ["dpm-system-usage-overview"]})
-        expected_output = {"dpm-system-usage-"
-                           "overview": {"cpc_1": {"metric": 1}}}
-        actual_output = zhmc_prometheus_exporter.retrieve_metrics(context)
-        self.assertEqual(expected_output, actual_output)
-        context.delete()
-        session.logoff()
+        # pylint: disable=no-self-use
+        """Tests retrieve_metrics()"""
 
+        context = setup_metrics_context()
 
-class TestFormatUnknown(unittest.TestCase):
-    """Tests format_unknown_metrics."""
+        metrics_object = zhmc_prometheus_exporter.retrieve_metrics(context)
 
-    def test_non_percent(self):
-        """Tests one with a non-percent value."""
-        expected_output = {"percent": False,
-                           "exporter_name": "my_metric",
-                           "exporter_desc": "my metric"}
-        actual_output = (zhmc_prometheus_exporter.
-                         format_unknown_metric("my-metric"))
-        self.assertEqual(expected_output, actual_output)
+        assert isinstance(metrics_object, zhmcclient.MetricsResponse)
+        assert len(metrics_object.metric_group_values) == 1
+        mgv = metrics_object.metric_group_values[0]
+        assert mgv.name == 'dpm-system-usage-overview'
+        assert len(mgv.object_values) == 1
+        ov = mgv.object_values[0]
+        assert ov.resource.name == 'cpc_1'
+        assert ov.metrics == {'metric-1': 1}
 
-    def test_percent(self):
-        """Tests one with a percent value."""
-        expected_output = {"percent": True,
-                           "exporter_name": "my_metric_usage_ratio",
-                           "exporter_desc": "my metric usage"}
-        actual_output = (zhmc_prometheus_exporter.
-                         format_unknown_metric("my-metric-usage"))
-        self.assertEqual(expected_output, actual_output)
+        teardown_metrics_context(context)
 
+    def test_build_family_objects(self):
+        """Tests build_family_objects()"""
 
-class TestIdentifyIncoming(unittest.TestCase):
-    """Tests identify_incoming_metrics."""
+        yaml_metric_groups = {
+            "dpm-system-usage-overview": {
+                "prefix": "pre",
+                "fetch": True,
+            }
+        }
+        yaml_metrics = {
+            "dpm-system-usage-overview": {
+                "metric-1": {
+                    "percent": True,
+                    "exporter_name": "metric1",
+                    "exporter_desc": "metric1 description",
+                }
+            }
+        }
 
-    def test_unexpected_metric(self):
-        """Tests with some metric that is not known."""
-        # Verify a known metric does not get modified
-        incoming_metrics = {"metric-group": {"resource": {
-            "known-metric": 0, "unknown-metric": 0}}}
-        yaml_metrics = {"metric-group": {"known-metric": {
-            "percent": False,
-            "exporter_name": "known_metric",
-            "exporter_desc": "known metric"}}}
-        expected_output = {"metric-group": {
-            "known-metric": {
-                "percent": False,
-                "exporter_name": "known_metric",
-                "exporter_desc": "known metric"},
-            "unknown-metric": {
-                "percent": False,
-                "exporter_name": "unknown_metric",
-                "exporter_desc": "unknown metric"}}}
-        # Ignore warning
-        with patch("sys.stderr", new=StringIO()):
-            actual_output = (zhmc_prometheus_exporter.
-                             identify_incoming_metrics(incoming_metrics,
-                                                       yaml_metrics,
-                                                       "filename"))
-        self.assertEqual(expected_output, actual_output)
+        context = setup_metrics_context()
+        metrics_object = zhmc_prometheus_exporter.retrieve_metrics(context)
 
+        families = zhmc_prometheus_exporter.build_family_objects(
+            metrics_object, yaml_metric_groups, yaml_metrics, 'file')
 
-class TestAddFamilies(unittest.TestCase):
-    """Tests add_families."""
+        assert len(families) == 1
+        assert "zhmc_pre_metric1" in families
+        family = families["zhmc_pre_metric1"]
+        assert isinstance(family, prometheus_client.core.GaugeMetricFamily)
 
-    def test_add_families(self):
-        """Tests with some generic input."""
-        yaml_metric_groups = {"metric-group": {"prefix": "pre",
-                                               "fetch": True}}
-        input_metrics = {"metric-group": {"metric": {
-            "percent": True,
-            "exporter_name": "metric",
-            "exporter_desc": "metric"}}}
-        output = (zhmc_prometheus_exporter.
-                  add_families(yaml_metric_groups, input_metrics))
-        families = output["metric-group"]["metric"]
-        self.assertIsInstance(families,
-                              prometheus_client.core.GaugeMetricFamily)
-        self.assertEqual(families.name, "zhmc_pre_metric")
-        self.assertEqual(families.documentation, "metric")
-        self.assertEqual(families.type, "gauge")
-        self.assertEqual(families.samples, [])
+        self.assertEqual(family.name, "zhmc_pre_metric1")
+        self.assertEqual(family.documentation, "metric1 description")
+        self.assertEqual(family.type, "gauge")
+        sample1 = prometheus_client.samples.Sample(
+            name='zhmc_pre_metric1', labels={'resource': 'cpc_1'}, value=0.01)
+        self.assertEqual(family.samples, [sample1])
+
         # pylint: disable=protected-access
-        self.assertEqual(families._labelnames, ("resource",))
+        self.assertEqual(family._labelnames, ("resource",))
 
-
-class TestStoreMetrics(unittest.TestCase):
-    """Tests store_metrics."""
-
-    def test_store_metrics(self):
-        """Tests with some generic input."""
-        yaml_metric_groups = {"metric-group": {"prefix": "pre",
-                                               "fetch": True}}
-        yaml_metrics = {"metric-group": {"metric": {
-            "percent": True,
-            "exporter_name": "metric",
-            "exporter_desc": "metric"}}}
-        yaml_metrics_dict = {"metric-group": {"resource": {"metric": 0}}}
-        family_objects = (zhmc_prometheus_exporter.
-                          add_families(yaml_metric_groups, yaml_metrics))
-        output = zhmc_prometheus_exporter.store_metrics(yaml_metrics_dict,
-                                                        yaml_metrics,
-                                                        family_objects)
-        stored = output["metric-group"]["metric"]
-        self.assertIsInstance(stored, prometheus_client.core.GaugeMetricFamily)
-        self.assertEqual(stored.name, "zhmc_pre_metric")
-        self.assertEqual(stored.documentation, "metric")
-        self.assertEqual(stored.type, "gauge")
-#        self.assertEqual(stored.samples, [("zhmc_pre_metric",
-#                                           {"resource": "resource"},
-#                                           0)])
-        # pylint: disable=protected-access
-        self.assertEqual(stored._labelnames, ("resource",))
+        teardown_metrics_context(context)
 
 
 class TestInitZHMCUsageCollector(unittest.TestCase):
@@ -391,27 +349,20 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
 
     def test_init(self):
         """Tests ZHMCUsageCollector.__init__."""
+
         cred_dict = {"hmc": "192.168.0.0", "userid": "user", "password": "pwd"}
-        session = zhmcclient_mock.FakedSession("fake-host", "fake-hmc",
-                                               "2.13.1", "1.8")
-        yaml_metric_groups = {"metric-group": {"prefix": "pre",
-                                               "fetch": True}}
-        context = (zhmc_prometheus_exporter.
-                   create_metrics_context(session,
-                                          yaml_metric_groups,
-                                          "filename"))
-        yaml_metrics = {"metric-group": {"metric": {
+        session = setup_faked_session()
+        yaml_metric_groups = {"dpm-system-usage-overview": {"prefix": "pre",
+                                                            "fetch": True}}
+        context = zhmc_prometheus_exporter.create_metrics_context(
+            session, yaml_metric_groups, "filename")
+        yaml_metrics = {"dpm-system-usage-overview": {"metric-1": {
             "percent": True,
-            "exporter_name": "metric",
-            "exporter_desc": "metric"}}}
-        my_zhmc_usage_collector = (zhmc_prometheus_exporter.
-                                   ZHMCUsageCollector(cred_dict,
-                                                      session,
-                                                      context,
-                                                      yaml_metric_groups,
-                                                      yaml_metrics,
-                                                      "filename",
-                                                      "filename"))
+            "exporter_name": "metric1",
+            "exporter_desc": "metric1 description"}}}
+        my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
+            cred_dict, session, context, yaml_metric_groups, yaml_metrics,
+            "filename", "filename")
         self.assertEqual(my_zhmc_usage_collector.yaml_creds, cred_dict)
         self.assertEqual(my_zhmc_usage_collector.session, session)
         self.assertEqual(my_zhmc_usage_collector.context, context)
@@ -423,35 +374,30 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
 
     def test_collect(self):
         """Test ZHMCUsageCollector.collect"""
+
         cred_dict = {"hmc": "192.168.0.0", "userid": "user", "password": "pwd"}
-        session = zhmcclient_mock.FakedSession("fake-host", "fake-hmc",
-                                               "2.13.1", "1.8")
-        yaml_metric_groups = {"metric-group": {"prefix": "pre",
-                                               "fetch": True}}
-        context = (zhmc_prometheus_exporter.
-                   create_metrics_context(session,
-                                          yaml_metric_groups,
-                                          "filename"))
-        yaml_metrics = {"metric-group": {"metric": {
+        session = setup_faked_session()
+        yaml_metric_groups = {"dpm-system-usage-overview": {"prefix": "pre",
+                                                            "fetch": True}}
+        context = zhmc_prometheus_exporter.create_metrics_context(
+            session, yaml_metric_groups, "filename")
+        yaml_metrics = {"dpm-system-usage-overview": {"metric-1": {
             "percent": True,
-            "exporter_name": "metric",
-            "exporter_desc": "metric"}}}
-        my_zhmc_usage_collector = (zhmc_prometheus_exporter.
-                                   ZHMCUsageCollector(cred_dict,
-                                                      session,
-                                                      context,
-                                                      yaml_metric_groups,
-                                                      yaml_metrics,
-                                                      "filename",
-                                                      "filename"))
+            "exporter_name": "metric1",
+            "exporter_desc": "metric1 description"}}}
+        my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
+            cred_dict, session, context, yaml_metric_groups, yaml_metrics,
+            "filename", "filename")
         collected = list(my_zhmc_usage_collector.collect())
         self.assertEqual(len(collected), 1)
         self.assertEqual(type(collected[0]),
                          prometheus_client.core.GaugeMetricFamily)
-        self.assertEqual(collected[0].name, "zhmc_pre_metric")
-        self.assertEqual(collected[0].documentation, "metric")
+        self.assertEqual(collected[0].name, "zhmc_pre_metric1")
+        self.assertEqual(collected[0].documentation, "metric1 description")
         self.assertEqual(collected[0].type, "gauge")
-        self.assertEqual(collected[0].samples, [])
+        sample1 = prometheus_client.samples.Sample(
+            name='zhmc_pre_metric1', labels={'resource': 'cpc_1'}, value=0.01)
+        self.assertEqual(collected[0].samples, [sample1])
         # pylint: disable=protected-access
         self.assertEqual(collected[0]._labelnames, ("resource",))
 
