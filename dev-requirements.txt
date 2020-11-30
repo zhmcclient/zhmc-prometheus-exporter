@@ -1,6 +1,5 @@
 flake8>=3.5.0 # MIT
 pytest>=3.8.0 # MIT
-pbr>=4.2.0,<5.5.0 # Apache-2.0
 twine>=1.11.0 # Apache-2.0
 
 # Coverage reporting (no imports, invoked via coveralls script):

@@ -1,4 +1,4 @@
-# Copyright 2018 IBM Corp. All Rights Reserved.
+# Copyright 2020 IBM Corp. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,9 +13,16 @@
 # limitations under the License.
 
 """
-A prometheus.io exporter for metrics from the Z Hardware Management Console
+Definition of the package version, and check for supported Python versions.
 """
 
-# pylint: disable=redefined-builtin
-from .zhmc_prometheus_exporter import *  # noqa: F401, F403
-from ._version import *  # noqa: F401, F403
+__all__ = ['__version__']
+
+#: The full version of this package including any development levels, as a
+#: :term:`string`.
+#:
+#: Possible formats for this version string are:
+#:
+#: * "M.N.P.dev1": A not yet released version M.N.P
+#: * "M.N.P": A released version M.N.P
+__version__ = '0.5.0.dev1'

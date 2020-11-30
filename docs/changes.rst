@@ -30,7 +30,13 @@ Released: not yet
 
 **Enhancements:**
 
+* The packages needed for installation are now properly reflected
+  in the package metadata (part of issue #55).
+
 **Cleanup:**
+
+* Removed the use of 'pbr' to simplify installation and development
+  (see issue #55).
 
 **Known issues:**
 

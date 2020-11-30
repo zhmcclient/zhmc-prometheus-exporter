@@ -92,11 +92,6 @@ jobs:
         make develop
         echo "Installed Python packages:"
         pip list
-    - name: Display platform (only needed due to pbr)
-      env:
-        PACKAGE_LEVEL: ${{ matrix.package_level }}
-      run: |
-        make platform
     - name: Run build
       env:
         PACKAGE_LEVEL: ${{ matrix.package_level }}

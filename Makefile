@@ -79,7 +79,7 @@ else
 endif
 
 package_name := zhmc_prometheus_exporter
-package_version := $(shell $(PYTHON_CMD) -c "from pbr.version import VersionInfo; vi=VersionInfo('$(package_name)'); print(vi.release_string())")
+package_version := $(shell $(PYTHON_CMD) setup.py --version)
 
 python_version := $(shell $(PYTHON_CMD) -c "import sys; sys.stdout.write('{}.{}'.format(sys.version_info[0], sys.version_info[1]))")
 pymn := $(shell $(PYTHON_CMD) -c "import sys; sys.stdout.write('py{}{}'.format(sys.version_info[0], sys.version_info[1]))")
@@ -155,7 +155,7 @@ env:
 .PHONY: _check_version
 _check_version:
 ifeq (,$(package_version))
-	@echo 'Error: Package version could not be determine: (requires pbr; run "make develop")'
+	@echo "Error: Package version could not be determined"
 	@false
 else
 	@true
@@ -236,7 +236,7 @@ install_base_$(pymn).done:
 	@echo "Done: Installed base packages"
 	echo "done" >$@
 
-install_$(pymn).done: install_base_$(pymn).done requirements.txt setup.py setup.cfg
+install_$(pymn).done: install_base_$(pymn).done requirements.txt setup.py
 	@echo "Installing package and its prerequisites..."
 	-$(call RM_FUNC,$@)
 	pip install --upgrade-strategy eager -r requirements.txt
