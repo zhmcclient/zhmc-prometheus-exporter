@@ -23,7 +23,7 @@ import sys
 import time
 import ipaddress
 import warnings
-import re
+from collections import OrderedDict
 import urllib3
 
 import yaml
@@ -355,97 +355,108 @@ def delete_metrics_context(session, context):
 
 
 def retrieve_metrics(context):
-    """Retrieve metrics from the Z HMC.
+    """
+    Retrieve metrics from the Z HMC.
     Takes the metrics context.
-    Returns a dictionary of collected metrics.
+    Returns a zhmcclient.MetricsResponse object.
     """
     retrieved_metrics = context.get_metrics()
     metrics_object = zhmcclient.MetricsResponse(context, retrieved_metrics)
-    # Anatomy: metric group, resource (e.g. CPC), metric & value
-    arranged_metrics = {}
-    for metric_group_value in metrics_object.metric_group_values:
-        arranged_metrics[metric_group_value.name] = {}
-        for object_value in metric_group_value.object_values:
-            resource_name = object_value.resource.name
-            arranged_metrics[metric_group_value.name][resource_name] = {}
-            for metrics_name in object_value.metrics:
-                arranged_metrics[metric_group_value.name][resource_name][
-                    metrics_name] = (object_value.metrics[metrics_name])
-    return arranged_metrics
+    return metrics_object
 
 
-def format_unknown_metric(name):
-    """Puts some generic formatting to an unknown metric.
-    Takes the name.
-    Returns a dictionary with the percent value, the exporter name, and the
-    exporter description.
+def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
+                         filename):
     """
-    formatted_info = {"percent": False,
-                      "exporter_name": name.replace("-", "_"),
-                      "exporter_desc": name.replace("-", " ")}
-    matches = re.findall(r".*-usage", name)
-    # If it is a percent value
-    if matches != []:
-        formatted_info["percent"] = True
-        formatted_info["exporter_name"] += "_ratio"
-    return formatted_info
+    Go through all retrieved metrics and build the Prometheus Family objects.
 
+    Returns a dictionary of Prometheus Family objects with the following
+    structure:
 
-def identify_incoming_metrics(incoming_metrics, yaml_metrics, filename):
-    """Ensures all metrics that come from the HMC are known.
-    Takes the exported dictionary, the known metrics from the YAML file, and
-    the name of the YAML file for error output.
-    Returns the (possibly modified) metrics.
+      family_name:
+        GaugeMetricFamily object
     """
-    for metric_group in incoming_metrics:
-        for resource in incoming_metrics[metric_group]:
-            for metric in incoming_metrics[metric_group][resource]:
-                if metric not in yaml_metrics[metric_group]:
-                    yaml_metrics[metric_group][metric] = (
-                        format_unknown_metric(metric))
-                    warnings.warn("Metric '{}' returned by the HMC is not "
-                                  "defined in metric definition file {} - "
-                                  "consider adding it".
-                                  format(metric, filename))
-    return yaml_metrics
 
-
-def add_families(yaml_metric_groups, yaml_metrics):
-    """Add all metrics as label groups.
-    Takes the known metric groups and the (possibly expanded by
-    identify_incoming_metrics) known metrics, both from the YAML file.
-    Returns a dictionary with these families.
-    """
-    # Anatomy: metric group, metric, family object
     family_objects = {}
-    for metric_group in yaml_metrics:
-        family_objects[metric_group] = {}
-        for metric in yaml_metrics[metric_group]:
-            family_name = "zhmc_{}_{}".format(
-                yaml_metric_groups[metric_group]["prefix"],
-                yaml_metrics[metric_group][metric]["exporter_name"])
-            family_objects[metric_group][metric] = GaugeMetricFamily(
-                family_name,
-                yaml_metrics[metric_group][metric]["exporter_desc"],
-                labels=["resource"])
-    return family_objects
+    for metric_group_value in metrics_object.metric_group_values:
+        metric_group = metric_group_value.name
+        try:
+            yaml_metric_group = yaml_metric_groups[metric_group]
+        except KeyError:
+            warnings.warn("Skipping metric group '{}' returned by the HMC "
+                          "that is not defined in the 'metric_groups' section "
+                          "of metric definition file {}".
+                          format(metric_group, filename))
+            continue  # Skip this metric group
 
+        for object_value in metric_group_value.object_values:
+            resource = object_value.resource
+            metric_values = object_value.metrics
 
-def store_metrics(retrieved_metrics, yaml_metrics, family_objects):
-    """Store the metrics in the families to be exported.
-    Takes the retrieved metrics, the known metrics from the YAML file, and the
-    previously created families.
-    Returns the dictionary with the metrics inserted.
-    """
-    for metric_group in retrieved_metrics:
-        for resource in retrieved_metrics[metric_group]:
-            for metric in retrieved_metrics[metric_group][resource]:
-                # ZHMC: 100% means 100, Prometheus: 100% means 1
-                if yaml_metrics[metric_group][metric]["percent"]:
-                    retrieved_metrics[metric_group][resource][metric] /= 100
-                family_objects[metric_group][metric].add_metric(
-                    [resource],
-                    retrieved_metrics[metric_group][resource][metric])
+            # Calculate the resource labels:
+            # metric_groups:
+            #   {metric}:
+            #     labels:
+            #       - name: partition  # default: resource
+            #         value: resource  # default: resource
+            yaml_labels = yaml_metric_group.get('labels', None)
+            if not yaml_labels:
+                yaml_labels = [{}]
+            labels = OrderedDict()
+            for item in yaml_labels:
+                label_name = item.get('name', 'resource')
+                item_value = item.get('value', 'resource')
+                if item_value == 'resource':
+                    label_value = str(resource.name)
+                elif item_value == 'resource.parent':
+                    label_value = str(resource.manager.parent.name)
+                else:
+                    label_value = str(metric_values.get(item_value, 'unknown'))
+                labels[label_name] = label_value
+
+            for metric in metric_values:
+                try:
+                    yaml_metric = yaml_metrics[metric_group][metric]
+                except KeyError:
+                    warnings.warn("Skipping metric '{}' of metric group '{}' "
+                                  "returned by the HMC that is not defined in "
+                                  "the 'metrics' section of metric definition "
+                                  "file {}".
+                                  format(metric, metric_group, filename))
+                    continue  # Skip this metric
+
+                metric_value = metric_values[metric]
+
+                # Skip metrics with the special value -1 (which indicates that
+                # the resource does not exist)
+                if metric_value == -1:
+                    continue
+
+                # Skip metrics that are defined to be ignored
+                if not yaml_metric.get("exporter_name", None):
+                    continue
+
+                # Transform HMC percentages (value 100 means 100% = 1) to
+                # Prometheus values (value 1 means 100% = 1)
+                if yaml_metric.get("percent", False):
+                    metric_value /= 100
+
+                # Create a Family object, if needed
+                family_name = "zhmc_{}_{}".format(
+                    yaml_metric_group["prefix"],
+                    yaml_metric["exporter_name"])
+                try:
+                    family_object = family_objects[family_name]
+                except KeyError:
+                    family_object = GaugeMetricFamily(
+                        family_name,
+                        yaml_metric["exporter_desc"],
+                        labels=list(labels.keys()))
+                    family_objects[family_name] = family_object
+
+                # Add the metric value to the Family object
+                family_object.add_metric(list(labels.values()), metric_value)
+
     return family_objects
 
 
@@ -469,7 +480,7 @@ class ZHMCUsageCollector():
         and the name of the YAML file for error output.
         """
         try:
-            retrieved_metrics = retrieve_metrics(self.context)
+            metrics_object = retrieve_metrics(self.context)
         except zhmcclient.HTTPError as exc:
             if exc.http_status == 404 and exc.reason == 1:
                 # Disable this line because it leads sometimes to
@@ -479,21 +490,18 @@ class ZHMCUsageCollector():
                 self.context = create_metrics_context(self.session,
                                                       self.yaml_metric_groups,
                                                       self.filename_creds)
-                retrieved_metrics = retrieve_metrics(self.context)
+                metrics_object = retrieve_metrics(self.context)
             else:
                 raise
-        self.yaml_metrics = identify_incoming_metrics(retrieved_metrics,
-                                                      self.yaml_metrics,
-                                                      self.filename_metrics)
-        family_objects = add_families(self.yaml_metric_groups,
-                                      self.yaml_metrics)
-        family_objects = store_metrics(retrieved_metrics, self.yaml_metrics,
-                                       family_objects)
 
-        # Yield all groups
-        for metric_group in family_objects:
-            for metric in family_objects[metric_group]:
-                yield family_objects[metric_group][metric]
+        family_objects = build_family_objects(metrics_object,
+                                              self.yaml_metric_groups,
+                                              self.yaml_metrics,
+                                              self.filename_metrics)
+
+        # Yield all family objects
+        for family_name in family_objects:
+            yield family_objects[family_name]
 
 
 def main():
