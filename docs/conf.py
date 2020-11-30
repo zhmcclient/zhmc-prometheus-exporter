@@ -12,16 +12,32 @@
 Config file for Sphinx.
 """
 
+import os
+
+
+def get_version(version_file):
+    """
+    Execute the specified version file and return the value of the __version__
+    global variable that is set in the version file.
+
+    Note: Make sure the version file does not depend on any packages in the
+    requirements list of this package (otherwise it cannot be executed in
+    a fresh Python environment).
+    """
+    with open(version_file, 'r') as fp:
+        version_source = fp.read()
+    _globals = {}
+    exec(version_source, _globals)  # pylint: disable=exec-used
+    return _globals['__version__']
+
+
 # -- Path setup --------------------------------------------------------------
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
 # sys.path.insert(0, os.path.abspath('.'))
-from pbr.version import VersionInfo
 
 
 # -- Project information -----------------------------------------------------
@@ -30,9 +46,11 @@ project = 'zhmc_prometheus_exporter'
 copyright = '2018, IBM Corp'  # pylint: disable=redefined-builtin
 author = 'Jakob Naucke'
 
-# The short X.Y version
+# The short X.Y version.
 # Note: We use the full version in both cases (e.g. 'M.N.U' or 'M.N.U.dev0').
-version = VersionInfo("zhmc_prometheus_exporter").release_string()
+version = get_version(
+    os.path.join('..', 'zhmc_prometheus_exporter', '_version.py'))
+
 # The full version, including alpha/beta/rc tags
 release = version
 

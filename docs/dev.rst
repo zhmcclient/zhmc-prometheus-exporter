@@ -144,9 +144,19 @@ directory:
 
     .. code-block:: bash
 
-        git checkout -b release-$MNU
+        git checkout -b release_$MNU
 
-5.  Edit the change log and perform the following changes in the top-most
+5.  Edit the version file and set the version to be released:
+
+    .. code-block:: text
+
+        vi zhmc_prometheus_exporter/_version.py
+
+    ``__version__ = 'M.N.U'``
+
+    Where `M.N.U` is the version to be released.
+
+6.  Edit the change log and perform the following changes in the top-most
     section (that is the section for the version to be released):
 
     .. code-block:: bash
@@ -183,17 +193,17 @@ directory:
 
     * Remove all empty list items in the change log section for this release.
 
-6.  Commit your changes and push them upstream:
+7.  Commit your changes and push them upstream:
 
     .. code-block:: bash
 
-        git add docs/changes.rst
+        git add zhmc_prometheus_exporter/_version.py docs/changes.rst
         git commit -sm "Release $MNU"
-        git push --set-upstream origin release-$MNU
+        git push --set-upstream origin release_$MNU
 
-7.  On GitHub, create a pull request for branch ``release-$MNU``.
+8.  On GitHub, create a pull request for branch ``release_$MNU``.
 
-8.  Perform a complete test:
+9.  Perform a complete test:
 
     .. code-block:: bash
 
@@ -204,28 +214,28 @@ directory:
 
     If this test fails, fix any issues until the test succeeds.
 
-9.  Once the CI tests on GitHub are complete, merge the pull request.
+10. Once the CI tests on GitHub are complete, merge the pull request.
 
-10. Update your local ``master`` branch:
+11. Update your local ``master`` branch:
 
     .. code-block:: bash
 
         git checkout master
         git pull
 
-11. Tag the ``master`` branch with the release label and push the tag upstream:
+12. Tag the ``master`` branch with the release label and push the tag upstream:
 
     .. code-block:: bash
 
         git tag $MNU
         git push --tags
 
-12. On GitHub, edit the new tag, and create a release description on it. This
+13. On GitHub, edit the new tag, and create a release description on it. This
     will cause it to appear in the Release tab.
 
     You can see the tags in GitHub via Code -> Releases -> Tags.
 
-13. Upload the package to PyPI:
+14. Upload the package to PyPI:
 
     .. code-block:: bash
 
@@ -236,9 +246,9 @@ directory:
     **Attention!** This only works once for each version. You cannot release
     the same version twice to PyPI.
 
-14. Verify that the released version is shown on PyPI.
+15. Verify that the released version is shown on PyPI.
 
-15. On GitHub, close milestone ``M.N.U``.
+16. On GitHub, close milestone ``M.N.U``.
 
 Starting a new version
 ----------------------
@@ -264,7 +274,18 @@ directory:
         git pull
         git checkout -b start_$MNU
 
-3.  Edit the change log:
+3.  Edit the version file and set the version to the new version and to
+    development:
+
+    .. code-block:: text
+
+        vi zhmc_prometheus_exporter/_version.py
+
+    ``__version__ = 'M.N.U.dev1'``
+
+    Where `M.N.U` is the version to be started.
+
+4.  Edit the change log:
 
     .. code-block:: text
 
@@ -295,31 +316,31 @@ directory:
 
         .. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
-4.  Commit your changes and push them upstream:
+5.  Commit your changes and push them upstream:
 
     .. code-block:: text
 
-        git add docs/changes.rst
+        git add zhmc_prometheus_exporter/_version.py docs/changes.rst
         git commit -sm "Start $MNU"
         git push --set-upstream origin start_$MNU
 
-5.  On GitHub, create a Pull Request for branch ``start_M.N.U``.
+6.  On GitHub, create a Pull Request for branch ``start_M.N.U``.
 
-6.  On GitHub, create a milestone for the new version ``M.N.U``.
+7.  On GitHub, create a milestone for the new version ``M.N.U``.
 
     You can create a milestone in GitHub via Issues -> Milestones -> New
     Milestone.
 
-7.  On GitHub, go through all open issues and pull requests that still have
+8.  On GitHub, go through all open issues and pull requests that still have
     milestones for previous releases set, and either set them to the new
     milestone, or to have no milestone.
 
-8.  On GitHub, once the checks for this Pull Request succeed:
+9.  On GitHub, once the checks for this Pull Request succeed:
 
     * Merge the Pull Request (no review is needed)
     * Delete the branch of the Pull Request (``start_M.N.U``)
 
-9.  Checkout the branch the new version is based on, update it from upstream, and
+10. Checkout the branch the new version is based on, update it from upstream, and
     delete the local topic branch you created:
 
     .. code-block:: text
