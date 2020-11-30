@@ -1,21 +1,88 @@
 # Makefile for zhmc_prometheus exporter
 # Prerequisites:
-#   OS: Linux, macOS
-#   Commands provided by the OS:
-#     bash
-#     find
+#   OS: Linux, macOS, Windows
+#   Commands provided by Linux, macOS:
 #     make
 #     pip
 #     python
+#     bash
+#     find
 #     rm
+#   Commands provided by Windows:
+#     make
+#     pip
+#     python
+#     del
+#     rmdir
 # Use this to get information on the targets:
 #   make help
 
-package_name := zhmc_prometheus_exporter
-package_version := $(shell python -c "from pbr.version import VersionInfo; vi=VersionInfo('$(package_name)'); print(vi.release_string())" 2> /dev/null)
+# No built-in rules needed:
+MAKEFLAGS += --no-builtin-rules
+.SUFFIXES:
 
-python_version := $(shell python -c "import sys; sys.stdout.write('%s.%s'%(sys.version_info[0], sys.version_info[1]))")
-pymn := $(shell python -c "import sys; sys.stdout.write('py%s%s'%(sys.version_info[0], sys.version_info[1]))")
+# Python / Pip commands
+ifndef PYTHON_CMD
+  PYTHON_CMD := python
+endif
+ifndef PIP_CMD
+  PIP_CMD := pip
+endif
+
+# Determine OS platform make runs on.
+ifeq ($(OS),Windows_NT)
+  ifdef PWD
+    PLATFORM := Windows_UNIX
+  else
+    PLATFORM := Windows_native
+    ifndef COMSPEC
+      # Make variables are case sensitive and some native Windows environments have
+      # ComSpec set instead of COMSPEC.
+      ifdef ComSpec
+        COMSPEC = $(ComSpec)
+      endif
+    endif
+    ifdef COMSPEC
+      SHELL := $(subst \,/,$(COMSPEC))
+    else
+      SHELL := cmd.exe
+    endif
+    .SHELLFLAGS := /c
+  endif
+else
+  # Values: Linux, Darwin
+  PLATFORM := $(shell uname -s)
+endif
+
+ifeq ($(PLATFORM),Windows_native)
+  # Note: The substituted backslashes must be doubled.
+  # Remove files (blank-separated list of wildcard path specs)
+  RM_FUNC = del /f /q $(subst /,\\,$(1))
+  # Remove files recursively (single wildcard path spec)
+  RM_R_FUNC = del /f /q /s $(subst /,\\,$(1))
+  # Remove directories (blank-separated list of wildcard path specs)
+  RMDIR_FUNC = rmdir /q /s $(subst /,\\,$(1))
+  # Remove directories recursively (single wildcard path spec)
+  RMDIR_R_FUNC = rmdir /q /s $(subst /,\\,$(1))
+  # Copy a file, preserving the modified date
+  CP_FUNC = copy /y $(subst /,\\,$(1)) $(subst /,\\,$(2))
+  ENV = set
+  WHICH = where
+else
+  RM_FUNC = rm -f $(1)
+  RM_R_FUNC = find . -type f -name '$(1)' -delete
+  RMDIR_FUNC = rm -rf $(1)
+  RMDIR_R_FUNC = find . -type d -name '$(1)' | xargs -n 1 rm -rf
+  CP_FUNC = cp -r $(1) $(2)
+  ENV = env | sort
+  WHICH = which
+endif
+
+package_name := zhmc_prometheus_exporter
+package_version := $(shell $(PYTHON_CMD) -c "from pbr.version import VersionInfo; vi=VersionInfo('$(package_name)'); print(vi.release_string())")
+
+python_version := $(shell $(PYTHON_CMD) -c "import sys; sys.stdout.write('{}.{}'.format(sys.version_info[0], sys.version_info[1]))")
+pymn := $(shell $(PYTHON_CMD) -c "import sys; sys.stdout.write('py{}{}'.format(sys.version_info[0], sys.version_info[1]))")
 
 package_dir := $(package_name)
 package_py_files := \
@@ -62,6 +129,28 @@ help:
 	@echo "  upload     - Upload the package to Pypi"
 	@echo "  clean      - Remove any temporary files"
 	@echo "  clobber    - Remove any build products"
+	@echo "  platform   - Display the information about the platform as seen by make"
+	@echo "  env        - Display the environment as seen by make"
+
+.PHONY: platform
+platform:
+	@echo "Makefile: Platform information as seen by make:"
+	@echo "Platform: $(PLATFORM)"
+	@echo "Shell used for commands: $(SHELL)"
+	@echo "Shell flags: $(.SHELLFLAGS)"
+	@echo "Make version: $(MAKE_VERSION)"
+	@echo "Python command name: $(PYTHON_CMD)"
+	@echo "Python command location: $(shell $(WHICH) $(PYTHON_CMD))"
+	@echo "Python version: $(python_version)"
+	@echo "Pip command name: $(PIP_CMD)"
+	@echo "Pip command location: $(shell $(WHICH) $(PIP_CMD))"
+	@echo "Pip version: $(shell $(PIP_CMD) --version)"
+	@echo "$(package_name) package version: $(package_version)"
+
+.PHONY: env
+env:
+	@echo "Makefile: Environment variables as seen by make:"
+	$(ENV)
 
 .PHONY: _check_version
 _check_version:
@@ -126,28 +215,30 @@ endif
 
 .PHONY: clean
 clean:
-	@echo "Removing any temporary files..."
-	rm -rfv build $(package_name).egg-info .pytest_cache .coverage $(test_dir)/__pycache__ $(package_dir)/__pycache__ AUTHORS ChangeLog
-	find . -type f -name '*.pyc' -delete
+	-$(call RM_R_FUNC,*.pyc)
+	-$(call RM_R_FUNC,*.tmp)
+	-$(call RM_R_FUNC,tmp_*)
+	-$(call RM_FUNC,.coverage AUTHORS ChangeLog)
+	-$(call RMDIR_R_FUNC,__pycache__)
+	-$(call RMDIR_FUNC,build $(package_name).egg-info .pytest_cache)
 	@echo "$@ done."
 
 .PHONY: clobber
 clobber: clean
-	@echo "Removing any build products..."
-	rm -rfv dist $(doc_build_dir) htmlcov
-	rm -rfv *.done
+	-$(call RMDIR_FUNC,$(doc_build_dir) htmlcov)
+	-$(call RM_FUNC,*.done)
 	@echo "$@ done."
 
 install_base_$(pymn).done:
 	@echo "Installing base packages..."
-	rm -f $@
+	-$(call RM_FUNC,$@)
 	python -m pip install --upgrade --upgrade-strategy eager pip setuptools wheel
 	@echo "Done: Installed base packages"
 	echo "done" >$@
 
 install_$(pymn).done: install_base_$(pymn).done requirements.txt setup.py setup.cfg
 	@echo "Installing package and its prerequisites..."
-	rm -f $@
+	-$(call RM_FUNC,$@)
 	pip install --upgrade-strategy eager -r requirements.txt
 	pip install -e .
 	@echo "Done: Installed package and its prerequisites"
@@ -155,7 +246,7 @@ install_$(pymn).done: install_base_$(pymn).done requirements.txt setup.py setup.
 
 develop_$(pymn).done: install_$(pymn).done dev-requirements.txt
 	@echo "Installing prerequisites for development..."
-	rm -f $@
+	-$(call RM_FUNC,$@)
 	pip install --upgrade-strategy eager -r dev-requirements.txt
 	@echo "Done: Installed prerequisites for development"
 	echo "done" >$@

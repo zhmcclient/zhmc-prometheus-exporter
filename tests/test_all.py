@@ -20,11 +20,14 @@ import time
 import datetime
 import hashlib
 import os
+import sys
 import stat
 
 from io import StringIO
 import unittest
 from unittest.mock import patch
+
+import pytest
 
 import zhmcclient
 import zhmcclient_mock
@@ -77,6 +80,10 @@ class TestParseYaml(unittest.TestCase):
 
     def test_permission_error(self):
         """Tests if permission denied is correctly handled."""
+
+        if sys.platform == 'win32':
+            pytest.skip("Test not supported on Windows")
+
         filename = str(hashlib.sha256(str(time.time()).encode("utf-8")).
                        hexdigest())
         with open(filename, "w+"):
