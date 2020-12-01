@@ -548,15 +548,25 @@ def main():
             check_metrics_yaml(yaml_metric_groups, yaml_metrics, args.m)
         except YAMLInfoNotFoundError as error_message:
             raise ImproperExit(error_message)
+
+        # Unregister the default collectors (Python, Platform)
+        if hasattr(REGISTRY, '_collector_to_names'):
+            # pylint: disable=protected-access
+            for coll in list(REGISTRY._collector_to_names.keys()):
+                REGISTRY.unregister(coll)
+
         session = create_session(yaml_creds)
         try:
             context = create_metrics_context(session, yaml_metric_groups,
                                              args.c)
         except (ConnectionError, AuthError, OtherError) as error_message:
             raise ImproperExit(error_message)
-        REGISTRY.register(ZHMCUsageCollector(yaml_creds, session, context,
-                                             yaml_metric_groups,
-                                             yaml_metrics, args.m, args.c))
+
+        coll = ZHMCUsageCollector(yaml_creds, session, context,
+                                  yaml_metric_groups, yaml_metrics, args.m,
+                                  args.c)
+        REGISTRY.register(coll)
+
         start_http_server(int(args.p))
         while True:
             try:
