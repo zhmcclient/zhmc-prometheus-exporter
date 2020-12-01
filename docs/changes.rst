@@ -49,6 +49,11 @@ Released: not yet
     metric group now can used as additional labels on the actual metric value,
     if the metric definition file specifies that.
 
+  Note that these changes will only become active if you pick them up in your
+  metric definition file, e.g. by using the updated sample metric definition
+  file. If you continue to use your current metric definition file, nothing will
+  change regarding the labels.
+
 * The published metrics no longer contain empty HELP/TYPE comments.
 
 * Metrics with the special value -1 that are returned by the HMC for some
