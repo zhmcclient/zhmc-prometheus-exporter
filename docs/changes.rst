@@ -62,6 +62,8 @@ Released: not yet
 * Disabled the Platform and Python specific additional metrics so that they
   are not collected or published (see issue #66).
 
+* Overhauled the complete documentation (triggered by issue #57).
+
 **Cleanup:**
 
 * Removed the use of 'pbr' to simplify installation and development

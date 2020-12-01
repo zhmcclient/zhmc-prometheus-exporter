@@ -98,7 +98,7 @@ setuptools.setup(
     install_requires=install_requires,
     dependency_links=dependency_links,
 
-    description='A prometheus.io exporter for metrics from the IBM Z HMC',
+    description='IBM Z HMC Prometheus Exporter',
     long_description=read_file('README.rst'),
     long_description_content_type='text/x-rst',
     license='Apache License, Version 2.0',

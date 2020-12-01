@@ -13,7 +13,7 @@
 # limitations under the License.
 
 """
-A prometheus.io exporter for metrics from the Z Hardware Management Console
+IBM Z HMC Prometheus Exporter
 """
 
 # pylint: disable=redefined-builtin

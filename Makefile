@@ -102,8 +102,8 @@ doc_dir := docs
 doc_build_dir := build_docs
 doc_build_file := $(doc_build_dir)/html/index.html
 doc_dependent_files := \
-    $(doc_dir)/conf.py \
-    $(wildcard $(doc_dir)/*.rst) \
+    $(wildcard $(doc_dir)/*.*) \
+		$(wildcard $(doc_dir)/*/*.*) \
     $(package_py_files) \
 
 ifeq ($(python_version),3.4)

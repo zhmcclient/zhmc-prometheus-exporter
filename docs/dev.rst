@@ -20,9 +20,8 @@ This page covers the relevant aspects for developers.
 Repository
 ----------
 
-The exporter is on `GitHub`_.
-
-.. _GitHub: https://github.com/zhmcclient/zhmc-prometheus-exporter
+The Git repository for the exporter project is GitHub:
+https://github.com/zhmcclient/zhmc-prometheus-exporter
 
 Code of Conduct
 ---------------
@@ -49,7 +48,12 @@ In order to contribute, create a `Git pull request`_, considering this:
   why the change is useful.
 * The commit message must follow the format explained below.
 
-What comprises a "logical" change is subject to sound judgement. Sometimes, it makes sense to produce a set of commits for a feature (even if not large). For example, a first commit may introduce a (presumably) compatible API change without exploitation of that feature. With only this commit applied, it should be demonstrable that everything is still working as before. The next commit may be the exploitation of the feature in other components.
+What comprises a "logical" change is subject to sound judgement. Sometimes, it
+makes sense to produce a set of commits for a feature (even if not large). For
+example, a first commit may introduce a (presumably) compatible API change
+without exploitation of that feature. With only this commit applied, it should
+be demonstrable that everything is still working as before. The next commit may
+be the exploitation of the feature in other components.
 
 For further discussion of good and bad practices regarding commits, see:
 
@@ -64,15 +68,24 @@ Format of commit messages
 
 A commit message must start with a short summary line, followed by a blank line.
 
-Optionally, the summary line may start with an identifier that helps identifying the type of change or the component that is affected, followed by a colon.
+Optionally, the summary line may start with an identifier that helps identifying
+the type of change or the component that is affected, followed by a colon.
 
-It can include a more detailed description after the summary line. This is where you explain why the change was done, and summarize what was done.
+It can include a more detailed description after the summary line. This is where
+you explain why the change was done, and summarize what was done.
 
-It must end with the DCO (Developer Certificate of Origin) sign-off line in the format shown in the example below, using your name and a valid email address of yours. The DCO sign-off line certifies that you followed the rules stated in `DCO 1.1`_. In short, you certify that you wrote the patch or otherwise have the right to pass it on as an open-source patch.
+It must end with the DCO (Developer Certificate of Origin) sign-off line in the
+format shown in the example below, using your name and a valid email address of
+yours. The DCO sign-off line certifies that you followed the rules stated in
+`DCO 1.1`_. In short, you certify that you wrote the patch or otherwise have the
+right to pass it on as an open-source patch.
 
 .. _DCO 1.1: https://developercertificate.org/
 
-We use `GitCop`_ during creation of a pull request to check whether the commit messages in the pull request comply to this format. If the commit messages do not comply, GitCop will add a comment to the pull request with a description of what was wrong.
+We use `GitCop`_ during creation of a pull request to check whether the commit
+messages in the pull request comply to this format. If the commit messages do
+not comply, GitCop will add a comment to the pull request with a description of
+what was wrong.
 
 .. _GitCop: http://gitcop.com/
 
@@ -89,9 +102,12 @@ Example commit message:
 
 Use ``git commit --amend`` to edit the commit message, if you need to.
 
-Use the ``--signoff`` (``-s``) option of ``git commit`` to append a sign-off line to the commit message with your name and email as known by Git.
+Use the ``--signoff`` (``-s``) option of ``git commit`` to append a sign-off
+line to the commit message with your name and email as known by Git.
 
-If you like filling out the commit message in an editor instead of using the ``-m`` option of ``git commit``, you can automate the presence of the sign-off line by using a commit template file:
+If you like filling out the commit message in an editor instead of using the
+``-m`` option of ``git commit``, you can automate the presence of the sign-off
+line by using a commit template file:
 
 * Create a file outside of the repo (say, ``~/.git-signoff.template``)
   that contains, for example:
@@ -349,68 +365,61 @@ directory:
         git pull
         git branch -d start_$MNU
 
-Build a package
----------------
+Building the distribution archives
+----------------------------------
 
-You can build a binary and a source distribution with
+You can build a binary (wheel) distribution archive and a source distribution
+archive (a more minimal version of the repository) with:
 
 .. code-block:: bash
 
   $ make build
 
-You will find the files ``zhmc_prometheus_exporter-VERSION_NUMBER-py2.py3-none-any.whl`` and ``zhmc_prometheus_exporter-VERSION_NUMBER.tar.gz`` in the ``dist`` folder, the former being the binary and the latter being the source distribution.
+You will find the files ``zhmc_prometheus_exporter-VERSION_NUMBER-py2.py3-none-any.whl``
+and ``zhmc_prometheus_exporter-VERSION_NUMBER.tar.gz`` in the ``dist`` folder,
+the former being the binary and the latter being the source distribution archive.
 
-The binary could then be installed with
-
-.. code-block:: bash
-
-  $ pip3 install zhmc_prometheus_exporter-VERSION_NUMBER-py2.py3-none-any.whl
-
-The source distribution (a more minimal version of the repository) can be unpacked with
+The binary distribution archive could be installed with:
 
 .. code-block:: bash
 
-  $ tar xfz zhmc_prometheus_exporter-VERSION_NUMBER.tar.gz
+  $ pip install zhmc_prometheus_exporter-VERSION_NUMBER-py2.py3-none-any.whl
 
-Build the documentation
------------------------
+The source distribution archive could be installed with:
 
-You can build the documentation as HTML with
+.. code-block:: bash
+
+  $ tar -xfz zhmc_prometheus_exporter-VERSION_NUMBER.tar.gz
+  $ pip install zhmc_prometheus_exporter-VERSION_NUMBER
+
+Building the documentation
+--------------------------
+
+You can build the HTML documentation with:
 
 .. code-block:: bash
 
   $ make builddoc
 
-The root for the built documentation will be ``docs/_build/index.html``.
+The root file for the built documentation will be ``build_docs/index.html``.
 
-Unit & lint testing
--------------------
+Testing
+-------
 
-You can perform unit tests based on ``unittest`` with
+You can perform unit tests with:
 
 .. code-block:: bash
 
   $ make test
 
-If you want to speed up test time, you can remove the timeout test.
-
-You can perform lint tests based on ``flake8`` with
+You can perform a flake8 check with:
 
 .. code-block:: bash
 
-  $ make lint
+  $ make check
 
-Cleanup processes
------------------
-
-The package can be uninstalled with
+You can perform a pylint check with:
 
 .. code-block:: bash
 
-  $ make uninstall
-
-The unnecessary files from the build process can be removed with
-
-.. code-block:: bash
-
-  $ make clean
+  $ make pylint

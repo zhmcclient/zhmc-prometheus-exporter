@@ -317,7 +317,7 @@ metrics:
     processor-usage:
       percent: True
       exporter_name: processor_usage_ratio
-      exporter_desc: Usage ratio of all processors of the partition
+      exporter_desc: Usage ratio across all processors of the partition
     network-usage:
       percent: True
       exporter_name: network_adapter_usage_ratio

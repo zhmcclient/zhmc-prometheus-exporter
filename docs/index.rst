@@ -12,8 +12,8 @@
 .. See the License for the specific language governing permissions and
 .. limitations under the License.
 
-zhmc-prometheus-exporter - A prometheus.io exporter for the IBM Z Hardware Management Console
-=============================================================================================
+IBM Z HMC Prometheus Exporter
+=============================
 
 .. toctree::
    :maxdepth: 2

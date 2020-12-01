@@ -12,8 +12,8 @@
 .. See the License for the specific language governing permissions and
 .. limitations under the License.
 
-zhmc-prometheus-exporter
-========================
+IBM Z HMC Prometheus Exporter
+=============================
 
 .. image:: https://img.shields.io/pypi/v/zhmc-prometheus-exporter.svg
     :target: https://pypi.python.org/pypi/zhmc-prometheus-exporter/
@@ -31,88 +31,85 @@ zhmc-prometheus-exporter
     :target: https://coveralls.io/github/zhmcclient/zhmc-prometheus-exporter?branch=master
     :alt: Test coverage (master)
 
+The **IBM Z HMC Prometheus Exporter** is a `Prometheus exporter`_ written in
+Python that retrieves metrics from the `IBM Z`_ Hardware Management Console (HMC)
+and exports them to the `Prometheus`_ monitoring system.
 
-A `prometheus.io`_ exporter written in Python for metrics from the `IBM Z`_ Hardware Management Console using `zhmcclient`_. Tested with Python 3.4 through 3.7.
-
-.. _prometheus.io: https://prometheus.io/
 .. _IBM Z: https://www.ibm.com/it-infrastructure/z
-.. _zhmcclient: https://github.com/zhmcclient/python-zhmcclient
-
-Installation
-------------
-
-.. code-block:: bash
-
-  $ pip3 install zhmc-prometheus-exporter
+.. _Prometheus exporter: https://prometheus.io/docs/instrumenting/exporters/
+.. _Prometheus: https://prometheus.io
 
 Documentation
 -------------
 
-`Read the Docs`_
+* `Documentation`_
+* `Change log`_
 
-.. _Read the Docs: https://zhmc-prometheus-exporter.readthedocs.io/en/stable/
-
+.. _Documentation: https://zhmc-prometheus-exporter.readthedocs.io/en/stable/
+.. _Change log: https://zhmc-prometheus-exporter.readthedocs.io/en/stable/changes.html
 
 Quickstart
 ----------
 
-The exporter itself
-^^^^^^^^^^^^^^^^^^^
+* Install the exporter and all of its Python dependencies as follows:
 
-Set up your exporter as follows:
+  .. code-block:: bash
 
-Edit your HMC credentials YAML file ``hmccreds.yaml``. A sample
-`hmccreds.yaml <https://github.com/zhmcclient/zhmc-prometheus-exporter/blob/master/examples/hmccreds.yaml>`_
-file is provided in the Git repo.
-Enter the IP address of the HMC, your username, and your password there.
+      $ pip install zhmc-prometheus-exporter
 
-Get your metric definition file ``metrics.yaml``. A sample
-`metrics.yaml <https://github.com/zhmcclient/zhmc-prometheus-exporter/blob/master/examples/metrics.yaml>`_
-file is provided in the Git repo.
-The sample file defines some DPM related metrics to be enabled. If your system
-is in DPM mode, you do not need to edit the sample file.
+* Provide an *HMC credentials file* for use by the exporter.
 
-Put the ``hmccreds.yaml`` file and the ``metrics.yaml`` file
-into ``/etc/zhmc-prometheus-exporter/``.
+  The HMC credentials file tells the exporter which HMC to talk to for
+  obtaining metrics, and which userid and password to use for logging on to
+  the HMC.
 
-You can then run
+  Download the `sample HMC credentials file`_ as ``hmccreds.yaml`` and edit
+  that copy accordingly.
 
-.. code-block:: bash
+  For details, see `The HMC credentials file`_.
 
-  $ zhmc_prometheus_exporter
+.. _The HMC credentials file: https://zhmc-prometheus-exporter.readthedocs.io/en/stable/usage.html#the-hmc-credentials-file
+.. _sample HMC credentials file: https://zhmc-prometheus-exporter.readthedocs.io/en/stable/appendix.html#sample-hmc-credentials-file
 
-The default port is 9291, you can change it with ``-p``. If you do not want to put ``hmccreds.yaml`` and ``metrics.yaml`` into ``/etc/zhmc-prometheus-exporter``, you can also specify them with ``-c`` and ``-m`` respectively.
+* Provide a *metric definition file* for use by the exporter.
 
-Demo setup
-^^^^^^^^^^
+  The metric definition file maps the metrics returned by the HMC to metrics
+  exported to Prometheus.
 
-If you want a quick "three simple metrics" setup with Prometheus and Grafana you can proceed as follows:
+  Furthermore, the metric definition file allows optimizing the access time to
+  the HMC by disabling the fetching of metrics that are not needed.
 
-* Set up a Prometheus server. Get it from `Prometheus`_. A `sample configuration YAML`_ is provided. Fill in the IP and port the exporter will run on. If you left it at default, the port will be 9291. You can then run::
+  Download the `sample metric definition file`_ as ``metrics.yaml``. It can
+  be used as it is and will have all metrics enabled and mapped properly. You
+  only need to edit the file if you want to adjust the metric names, labels, or
+  metric descriptions, or if you want to optimize access time by disabling
+  metrics not needed.
 
-    $ ./prometheus --config.file=prometheus.yaml
+  For details, see `The metric definition file`_.
 
-  See also `Prometheus' guide`_.
+.. _The metric definition file: https://zhmc-prometheus-exporter.readthedocs.io/en/stable/usage.html#the-metric-definition-file
+.. _sample metric definition file: https://zhmc-prometheus-exporter.readthedocs.io/en/stable/appendix.html#sample-metric-definition-file
 
-.. _Prometheus: https://prometheus.io/download/
-.. _sample configuration YAML: examples/prometheus.yaml
-.. _Prometheus' guide: https://prometheus.io/docs/prometheus/latest/getting_started/
+* Run the exporter as follows:
 
-* Set up a Grafana server. Get it from `Grafana`_. You can then run::
+  .. code-block:: bash
 
-    $ ./bin/grafana-server web
+      $ zhmc_prometheus_exporter -c hmccreds.yaml -m metrics.yaml
 
-  By default it will be on ``localhost:3000``. You will have to set IP and port of the Prometheus server. If you didn't change it, it's ``localhost:9090``. See also `Prometheus' guide on Grafana`_.
+* Direct your web browser at https://localhost:9291 to see the exported
+  Prometheus metrics (depending on the number of CPCs managed by your HMC, and
+  dependent on how many metrics are enabled, this may take a moment).
 
-.. _Grafana: https://grafana.com/grafana/download
-.. _Prometheus' guide on Grafana: https://prometheus.io/docs/visualization/grafana/
+Reporting issues
+----------------
 
-* Create the dashboard in Grafana. A `sample JSON`_ is provided. If you want it to work natively, you will have to name your source ``ZHMC_Prometheus``.
+If you encounter a problem, please report it as an `issue on GitHub`_.
 
-.. _sample JSON: examples/grafana.json
+.. _issue on GitHub: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
-The following image illustrates what the setup described above could look like.
+License
+-------
 
-.. image:: https://github.com/zhmcclient/zhmc-prometheus-exporter/blob/master/docs/deployment.png?raw=true
-    :align: center
-    :alt: Deployment diagram of the example
+This package is licensed under the `Apache 2.0 License`_.
+
+.. _Apache 2.0 License: http://apache.org/licenses/LICENSE-2.0

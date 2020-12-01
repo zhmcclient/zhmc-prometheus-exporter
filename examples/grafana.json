@@ -15,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 2,
+  "id": 1,
   "links": [],
   "panels": [
     {
@@ -24,13 +24,22 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "ZHMC_Prometheus",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 9,
         "w": 12,
         "x": 0,
         "y": 0
       },
+      "hiddenSeries": false,
       "id": 2,
       "legend": {
         "avg": false,
@@ -45,7 +54,11 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
+      "pluginVersion": "7.3.4",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -55,28 +68,35 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "zhmc_dpm_processor_usage_ratio",
+          "expr": "zhmc_cpc_processor_usage_ratio",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
+          "legendFormat": "CPU {{cpc}}",
           "refId": "A"
         },
         {
-          "expr": "zhmc_dpm_network_usage_ratio",
+          "expr": "zhmc_cpc_network_adapter_usage_ratio",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
+          "legendFormat": "Network adapters {{cpc}}",
           "refId": "B"
         },
         {
-          "expr": "zhmc_dpm_storage_usage_ratio",
+          "expr": "zhmc_cpc_storage_adapter_usage_ratio",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
+          "legendFormat": "Storage adapters {{cpc}}",
           "refId": "C"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
-      "title": "IBM Z HMC Demo",
+      "title": "IBM Z CPC Utilization",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -95,7 +115,7 @@
           "format": "percentunit",
           "label": null,
           "logBase": 1,
-          "max": "0.1",
+          "max": "1",
           "min": "0",
           "show": true
         },
@@ -115,7 +135,7 @@
     }
   ],
   "refresh": "10s",
-  "schemaVersion": 16,
+  "schemaVersion": 26,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -151,7 +171,7 @@
     ]
   },
   "timezone": "",
-  "title": "IBM Z HMC",
+  "title": "IBM Z HMC Demo",
   "uid": "XcsuH8tik",
-  "version": 2
+  "version": 1
 }
