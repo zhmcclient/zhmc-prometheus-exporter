@@ -1,11 +1,16 @@
+# Prometheus config file for the demo setup
+
 global:
-  scrape_interval:     15s 
-  evaluation_interval: 15s 
+  scrape_interval:     15s
+  evaluation_interval: 15s
 
 scrape_configs:
   - job_name: 'prometheus'
     static_configs:
     - targets: ['localhost:9090']
   - job_name: 'zhmc'
+    scrape_interval: 120s
+    scrape_timeout: 120s  # 120s when fetching all metrics of multiple CPCs
+    scheme: http
     static_configs:
-    - targets: ['ip:port of the exporter machine']
+    - targets: ['localhost:9121']  # Host:port of the Z HMC Exporter

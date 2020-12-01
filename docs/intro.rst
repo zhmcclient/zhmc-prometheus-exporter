@@ -18,11 +18,13 @@ Introduction
 What this package provides
 --------------------------
 
-``zhmc_prometheus_exporter`` adapts metrics from the `IBM Z`_ Hardware Management Console (HMC) for the `Prometheus`_ monitoring system. It is written in Python and uses the `zhmcclient`_ package.
+The **IBM Z HMC Prometheus Exporter** is a `Prometheus exporter`_ written in
+Python that retrieves metrics from the `IBM Z`_ Hardware Management Console (HMC)
+and exports them to the `Prometheus`_ monitoring system.
 
 .. _IBM Z: https://www.ibm.com/it-infrastructure/z
+.. _Prometheus exporter: https://prometheus.io/docs/instrumenting/exporters/
 .. _Prometheus: https://prometheus.io
-.. _zhmcclient: https://github.com/zhmcclient/python-zhmcclient
 
 Supported environments
 ----------------------
@@ -31,126 +33,51 @@ Supported environments
 * Python versions: 3.4 and higher
 * HMC versions: 2.11.1 and higher
 
-Installation
-------------
-
-Due to the language of the exporter and the required dependencies, you are going to need Python & Pip.
-
-Installation with pip
-^^^^^^^^^^^^^^^^^^^^^
-
-The traditional way is to install with ``pip``. Run
-
-.. code-block:: bash
-
-  $ pip3 install zhmc-prometheus-exporter
-
-Or, locally run
-
-.. code-block:: bash
-
-  $ pip3 install .
-
-from the cloned repository.
-
-Installation with make
-^^^^^^^^^^^^^^^^^^^^^^
-
-If you have ``make`` on your system, the quickest way is to simply run
-
-.. code-block:: bash
-
-  $ make install
-
-from the cloned repository.
-
-Install as little as possible
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-If you do not want to install the package itself, you can also just run
-
-.. code-block:: bash
-
-  $ pip3 install -r requirements.txt
-
-or, with make:
-
-.. code-block:: bash
-
-  $ make setup
-
-Instead of running ``zhmc_prometheus_exporter``, you will then run ``python3 zhmc_prometheus_exporter/zhmc_prometheus_exporter.py`` from the repository.
-
-Do not install at all: Run as a Docker container
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-You will have to configure it before you can run it in Docker container virtualisation. Please refer to :ref:`The exporter in Docker`.
-
 Quickstart
 ----------
 
-The exporter itself
-^^^^^^^^^^^^^^^^^^^
+* Install the exporter and all of its Python dependencies as follows:
 
-To sign into the HMC, you have to provide credentials in the YAML format. The file ``hmccreds.yaml`` could look something like this (see also the example file shown in :ref:`sample credentials YAML`):
+  .. code-block:: bash
 
-.. code-block:: yaml
+      $ pip install zhmc-prometheus-exporter
 
-  metrics:
-    hmc: 10.10.10.10
-    userid: user
-    password: password
+* Provide an *HMC credentials file* for use by the exporter.
 
-Furthermore, the file ``metrics.yaml`` defines details about the metrics fetching. An example file is shown in :ref:`sample metrics YAML`, for more information on its anatomy see chapter :ref:`The metrics YAML file`.
+  The HMC credentials file tells the exporter which HMC to talk to for
+  obtaining metrics, and which userid and password to use for logging on to
+  the HMC.
 
-Put both of these files into ``/etc/zhmc-prometheus-exporter`` (or link them). You can then run
+  Download the :ref:`sample HMC credentials file` as ``hmccreds.yaml`` and edit
+  that copy accordingly.
 
-.. code-block:: bash
+  For details, see :ref:`HMC credentials file`.
 
-  $ zhmc_prometheus_exporter
+* Provide a *metric definition file* for use by the exporter.
 
-The default port is 9291, you can change it with ``-p``. If you do not want to put ``hmccreds.yaml`` and ``metrics.yaml`` into ``/etc/zhmc-prometheus-exporter``, you can also specify them with ``-c`` and ``-m`` respectively.
+  The metric definition file maps the metrics returned by the HMC to metrics
+  exported to Prometheus.
 
-The exporter in Docker
-^^^^^^^^^^^^^^^^^^^^^^
+  Furthermore, the metric definition file allows optimizing the access time to
+  the HMC by disabling the fetching of metrics that are not needed.
 
-Follow the normal quickstart guide, but ensure that your ``hmccreds.yaml`` and ``metrics.yaml`` are in the project home directory. You can then run
+  Download the :ref:`sample metric definition file` as ``metrics.yaml``. It can
+  be used as it is and will have all metrics enabled and mapped properly. You
+  only need to edit the file if you want to adjust the metric names, labels, or
+  metric descriptions, or if you want to optimize access time by disabling
+  metrics not needed.
 
-.. code-block:: bash
+  For details, see :ref:`Metric definition file`.
 
-  $ docker build . -t zhmcexporter
-  $ docker run -p 9291:9291 zhmcexporter
+* Run the exporter as follows:
 
-Demo setup
-^^^^^^^^^^
+  .. code-block:: bash
 
-**Beware that using Prometheus and a possible graphical frontend, Grafana, is not the scope of this project. This is a very sparse guide. Consult their documentations if you want anything more complicated than a "three simple metrics" setup.**
+      $ zhmc_prometheus_exporter -c hmccreds.yaml -m metrics.yaml
 
-* The Prometheus server scrapes the metrics from the exporter. Get it from `the Prometheus download page`_. A sample configuration YAML is provided in the examples folder. Fill in the IP and port the exporter will run on. If you left it at default, the port will be 9291. From the downloaded directory, you can then run::
-
-    $ ./prometheus --config.file=prometheus.yaml
-
-  See also `Prometheus' guide`_.
-
-.. _the Prometheus download page: https://prometheus.io/download/
-.. _Prometheus' guide: https://prometheus.io/docs/prometheus/latest/getting_started/
-
-* The Grafana server is a more versatile option to visualise the metrics scraped from metrics. Get it from `Grafana`_. From the downloaded directory, you can then run::
-
-    $ ./bin/grafana-server web
-
-  By default it will be on ``localhost:3000``. You will have to set IP and port of the Prometheus server. If you didn't change it, it's ``localhost:9090``. See also `Prometheus' guide on Grafana`_.
-
-.. _Grafana: https://grafana.com/grafana/download
-.. _Prometheus' guide on Grafana: https://prometheus.io/docs/visualization/grafana/
-
-* Create the dashboard in Grafana. A sample JSON is provided in the examples folder. If you want it to work natively, you will have to name your source ``ZHMC_Prometheus``. If you want to change something, you might find it easier to change it in the Web GUI instead of the JSON file.
-
-The following image illustrates what the setup described above could look like.
-
-.. image:: deployment.png
-    :align: center
-    :alt: Deployment diagram of the example
+* Direct your web browser at https://localhost:9291 to see the exported
+  Prometheus metrics (depending on the number of CPCs managed by your HMC, and
+  dependent on how many metrics are enabled, this may take a moment).
 
 Reporting issues
 ----------------

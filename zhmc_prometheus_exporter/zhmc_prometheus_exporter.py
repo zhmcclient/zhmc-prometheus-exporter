@@ -15,7 +15,7 @@
 # limitations under the License.
 
 """
-A prometheus.io exporter for metrics from the Z Hardware Management Console
+IBM Z HMC Prometheus Exporter
 """
 
 import argparse
@@ -70,8 +70,9 @@ class ImproperExit(Exception):
 
 def parse_args(args):
     """Parses the CLI arguments."""
-    parser = argparse.ArgumentParser(description="Prometheus.io exporter for "
-                                     "the IBM Z Hardware Management Console")
+    parser = argparse.ArgumentParser(
+        description="IBM Z HMC Exporter - a Prometheus exporter for metrics "
+        "from the IBM Z HMC")
     parser.add_argument("-p", metavar="PORT",
                         default="9291",
                         help="port for exporting. Default: 9291")

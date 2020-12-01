@@ -15,6 +15,11 @@ Config file for Sphinx.
 import os
 
 
+def setup(app):
+    """Setup for the module"""
+    app.add_css_file('my_theme.css')
+
+
 def get_version(version_file):
     """
     Execute the specified version file and return the value of the __version__
@@ -42,7 +47,7 @@ def get_version(version_file):
 
 # -- Project information -----------------------------------------------------
 
-project = 'zhmc_prometheus_exporter'
+project = 'IBM Z HMC Prometheus Exporter'
 copyright = '2018, IBM Corp'  # pylint: disable=redefined-builtin
 author = 'Jakob Naucke'
 

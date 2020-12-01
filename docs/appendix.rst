@@ -32,29 +32,35 @@ Glossary
    Z HMC
       Hardware Management Console for IBM Z
 
-.. _`sample credentials YAML`:
+Bibliography
+------------
 
-Sample HMC credentials file
----------------------------
+.. glossary::
 
-The following is a sample HMC credentials file (``hmccreds.yaml``).
+   HMC API
+       The Web Services API of the z Systems Hardware Management Console, described in the following books:
 
-The file is also available in the Git repo as
-`examples/hmccreds.yaml <https://github.com/zhmcclient/zhmc-prometheus-exporter/blob/master/examples/hmccreds.yaml>`_.
+   HMC API 2.11.1
+       `IBM SC27-2616, System z Hardware Management Console Web Services API (Version 2.11.1) <https://www.ibm.com/support/pages/node/6017542>`_
 
-.. literalinclude:: ../examples/hmccreds.yaml
-  :language: yaml
+   HMC API 2.12.0
+       `IBM SC27-2617, System z Hardware Management Console Web Services API (Version 2.12.0) <https://www.ibm.com/support/pages/node/6019030>`_
 
-.. _`sample metrics YAML`:
+   HMC API 2.12.1
+       `IBM SC27-2626, System z Hardware Management Console Web Services API (Version 2.12.1) <https://www.ibm.com/support/pages/node/6017614>`_
 
-Sample metric definition file
------------------------------
+   HMC API 2.13.0
+       `IBM SC27-2627, z Systems Hardware Management Console Web Services API (Version 2.13.0) <https://www.ibm.com/support/pages/node/6018628>`_
 
-The following is a sample metric definition file (``metrics.yaml``) that lists
-all metrics as of HMC 2.14 and that has some DPM metrics enabled.
+   HMC API 2.13.1
+       `IBM SC27-2634, z Systems Hardware Management Console Web Services API (Version 2.13.1) <https://www.ibm.com/support/pages/node/6019732>`_
 
-The file is also available in the Git repo as
-`examples/metrics.yaml <https://github.com/zhmcclient/zhmc-prometheus-exporter/blob/master/examples/metrics.yaml>`_.
+   HMC API 2.14.0
+       `IBM SC27-2636, IBM Z Hardware Management Console Web Services API (Version 2.14.0) <https://www.ibm.com/support/pages/node/6020008>`_
 
-.. literalinclude:: ../examples/metrics.yaml
-  :language: yaml
+   HMC API 2.14.1
+       `IBM SC27-2637, IBM Z Hardware Management Console Web Services API (Version 2.14.1) <https://www.ibm.com/support/pages/node/6019768>`_
+
+   HMC API 2.15.0
+       `IBM SC27-2638, IBM Z Hardware Management Console Web Services API (Version 2.15.0) <https://www.ibm.com/support/pages/node/6019720>`_
+       (covers both GA1 and GA2)
