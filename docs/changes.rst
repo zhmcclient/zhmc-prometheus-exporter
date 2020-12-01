@@ -54,6 +54,9 @@ Released: not yet
 * Metrics with the special value -1 that are returned by the HMC for some
   metrics in case the resource does not exist, are now suppressed.
 
+* Disabled the Platform and Python specific additional metrics so that they
+  are not collected or published (see issue #66).
+
 **Cleanup:**
 
 * Removed the use of 'pbr' to simplify installation and development
