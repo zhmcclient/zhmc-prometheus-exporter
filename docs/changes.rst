@@ -64,6 +64,15 @@ Released: not yet
 
 * Overhauled the complete documentation (triggered by issue #57).
 
+* Added a cache for looking up HMC resources from their resource URIs to
+  avoid repeated lookup on the HMC. This speeds up large metric retrievals
+  from over a minute to sub-seconds (see issue #73).
+
+* Added a command line option `-v` / `--verbose` to show additional verbose
+  messages (see issue #54).
+
+* Showing the HMC API version as a verbose message.
+
 **Cleanup:**
 
 * Removed the use of 'pbr' to simplify installation and development

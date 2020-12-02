@@ -362,7 +362,7 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
             "exporter_desc": "metric1 description"}}}
         my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
             cred_dict, session, context, yaml_metric_groups, yaml_metrics,
-            "filename", "filename")
+            "filename", "filename", resource_cache=None)
         self.assertEqual(my_zhmc_usage_collector.yaml_creds, cred_dict)
         self.assertEqual(my_zhmc_usage_collector.session, session)
         self.assertEqual(my_zhmc_usage_collector.context, context)
@@ -387,7 +387,7 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
             "exporter_desc": "metric1 description"}}}
         my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
             cred_dict, session, context, yaml_metric_groups, yaml_metrics,
-            "filename", "filename")
+            "filename", "filename", resource_cache=None)
         collected = list(my_zhmc_usage_collector.collect())
         self.assertEqual(len(collected), 1)
         self.assertEqual(type(collected[0]),
