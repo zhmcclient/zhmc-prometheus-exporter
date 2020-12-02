@@ -96,7 +96,7 @@ Quickstart
 
       $ zhmc_prometheus_exporter -c hmccreds.yaml -m metrics.yaml
 
-* Direct your web browser at https://localhost:9291 to see the exported
+* Direct your web browser at http://localhost:9291 to see the exported
   Prometheus metrics (depending on the number of CPCs managed by your HMC, and
   dependent on how many metrics are enabled, this may take a moment).
 
