@@ -73,9 +73,6 @@ def parse_args(args):
     parser = argparse.ArgumentParser(
         description="IBM Z HMC Exporter - a Prometheus exporter for metrics "
         "from the IBM Z HMC")
-    parser.add_argument("-p", metavar="PORT",
-                        default="9291",
-                        help="port for exporting. Default: 9291")
     parser.add_argument("-c", metavar="CREDS_FILE",
                         default=DEFAULT_CREDS_FILE,
                         help="path name of HMC credentials file. "
@@ -86,6 +83,11 @@ def parse_args(args):
                         help="path name of metric definition file. "
                         "Use --help-metrics for details. "
                         "Default: {}".format(DEFAULT_METRICS_FILE))
+    parser.add_argument("-p", metavar="PORT",
+                        default="9291",
+                        help="port for exporting. Default: 9291")
+    parser.add_argument("--verbose", "-v", action='count', default=0,
+                        help="increase the verbosity level (max: 2)")
     parser.add_argument("--help-creds", action='store_true',
                         help="show help for HMC credentials file and exit")
     parser.add_argument("--help-metrics", action='store_true',
@@ -311,6 +313,27 @@ def create_session(cred_dict):
     return session
 
 
+def get_version_info(session, filename):
+    """Return the HMC API version as tuple(major,minor)."""
+    try:
+        client = zhmcclient.Client(session)
+        version_info = client.version_info()
+    except zhmcclient.ConnectionError as exc:
+        raise ConnectionError("Connection error using IP address {} defined "
+                              "in HMC credentials file {}: {}".
+                              format(session.host, filename, exc))
+    except zhmcclient.AuthError as exc:
+        raise AuthError("Authentication error when logging on to the "
+                        "HMC at {} using userid '{}' defined in HMC "
+                        "credentials file {}: {}".
+                        format(session.host, session.userid, filename,
+                               exc))
+    except zhmcclient.Error as exc:
+        raise OtherError("Error returned from HMC at {}: {}".
+                         format(session.host, exc))
+    return version_info
+
+
 def create_metrics_context(session, yaml_metric_groups, filename):
     """Creating a context is mandatory for reading metrics from the Z HMC.
     Takes the session, the metric_groups dictionary from the metrics YAML file
@@ -366,8 +389,31 @@ def retrieve_metrics(context):
     return metrics_object
 
 
+class ResourceCache(object):
+    # pylint: disable=too-few-public-methods
+    """
+    Cache for zhmcclient resource objects to avoid having to look them up
+    repeatedly.
+    """
+
+    def __init__(self):
+        self._resources = {}  # dict URI -> Resource object
+
+    def resource(self, uri, object_value):
+        """
+        Return the zhmcclient resource object for the URI, updating the cache
+        if not present.
+        """
+        try:
+            _resource = self._resources[uri]
+        except KeyError:
+            _resource = object_value.resource  # Takes time to find on HMC
+            self._resources[uri] = _resource
+        return _resource
+
+
 def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
-                         filename):
+                         filename, resource_cache=None):
     """
     Go through all retrieved metrics and build the Prometheus Family objects.
 
@@ -391,7 +437,11 @@ def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
             continue  # Skip this metric group
 
         for object_value in metric_group_value.object_values:
-            resource = object_value.resource
+            if resource_cache:
+                resource = resource_cache.resource(
+                    object_value.resource_uri, object_value)
+            else:
+                resource = object_value.resource
             metric_values = object_value.metrics
 
             # Calculate the resource labels:
@@ -466,7 +516,8 @@ class ZHMCUsageCollector():
     """Collects the usage for exporting."""
 
     def __init__(self, yaml_creds, session, context, yaml_metric_groups,
-                 yaml_metrics, filename_metrics, filename_creds):
+                 yaml_metrics, filename_metrics, filename_creds,
+                 resource_cache):
         self.session = session
         self.context = context
         self.yaml_creds = yaml_creds
@@ -474,41 +525,69 @@ class ZHMCUsageCollector():
         self.yaml_metrics = yaml_metrics
         self.filename_metrics = filename_metrics
         self.filename_creds = filename_creds
+        self.resource_cache = resource_cache
 
     def collect(self):
         """Yield the metrics for exporting.
         Uses the context, the metric groups and the metrics from the YAML file,
         and the name of the YAML file for error output.
         """
+        verbose2("Collecting metrics")
         try:
+            verbose2("Fetching metrics from HMC")
             metrics_object = retrieve_metrics(self.context)
         except zhmcclient.HTTPError as exc:
             if exc.http_status == 404 and exc.reason == 1:
                 # Disable this line because it leads sometimes to
                 # an exception within the exception handling.
                 # delete_metrics_context(self.session, self.context)
+                verbose2(" Recreating a metrics context on the HMC")
                 self.session = create_session(self.yaml_creds)
                 self.context = create_metrics_context(self.session,
                                                       self.yaml_metric_groups,
                                                       self.filename_creds)
+                verbose2("Fetching metrics from HMC")
                 metrics_object = retrieve_metrics(self.context)
             else:
                 raise
 
+        verbose2("Building family objects")
         family_objects = build_family_objects(metrics_object,
                                               self.yaml_metric_groups,
                                               self.yaml_metrics,
-                                              self.filename_metrics)
+                                              self.filename_metrics,
+                                              self.resource_cache)
 
+        verbose2("Returning family objects")
         # Yield all family objects
         for family_name in family_objects:
             yield family_objects[family_name]
+
+        verbose2("Done collecting metrics")
+
+
+VERBOSE_LEVEL = 0
+
+
+def verbose(message):
+    """Print a message at verbosity level 1"""
+    if VERBOSE_LEVEL >= 1:
+        print(message)
+
+
+def verbose2(message):
+    """Print a message at verbosity level 2"""
+    if VERBOSE_LEVEL >= 2:
+        print(message)
 
 
 def main():
     """Puts the exporter together."""
     # If the session and context keys are not created, their destruction
     # should not be attempted.
+
+    global VERBOSE_LEVEL  # pylint: disable=global-statement
+
     session = False
     context = False
     try:
@@ -519,6 +598,9 @@ def main():
         if args.help_metrics:
             help_metrics()
             sys.exit(0)
+        VERBOSE_LEVEL = args.verbose
+
+        verbose("Parsing HMC credentials file: {}".format(args.c))
         try:
             raw_yaml_creds = parse_yaml_file(args.c, 'HMC credentials file')
         # These will be thrown upon wrong user input
@@ -530,6 +612,8 @@ def main():
                                              args.c)[0]
         except (AttributeError, YAMLInfoNotFoundError) as error_message:
             raise ImproperExit(error_message)
+
+        verbose("Parsing metric definition file: {}".format(args.c))
         try:
             check_creds_yaml(yaml_creds, args.c)
         except YAMLInfoNotFoundError as error_message:
@@ -556,26 +640,41 @@ def main():
             for coll in list(REGISTRY._collector_to_names.keys()):
                 REGISTRY.unregister(coll)
 
+        verbose("Creating a session with HMC {}".format(yaml_creds['hmc']))
         session = create_session(yaml_creds)
+
+        version_info = get_version_info(session, args.c)
+        verbose("HMC API version: {}.{}".
+                format(version_info[0], version_info[1]))
+
+        verbose("Creating a metrics context on the HMC for metric groups:")
+        for metric_group in yaml_metric_groups:
+            verbose("  {}".format(metric_group))
         try:
             context = create_metrics_context(session, yaml_metric_groups,
                                              args.c)
         except (ConnectionError, AuthError, OtherError) as error_message:
             raise ImproperExit(error_message)
 
+        resource_cache = ResourceCache()
         coll = ZHMCUsageCollector(yaml_creds, session, context,
                                   yaml_metric_groups, yaml_metrics, args.m,
-                                  args.c)
-        REGISTRY.register(coll)
+                                  args.c, resource_cache)
 
+        verbose("Registering the collector and performing first collection")
+        REGISTRY.register(coll)  # Performs a first collection
+
+        verbose("Starting the HTTP server on port {}".format(args.p))
         start_http_server(int(args.p))
+
+        verbose("Exporter is up and running")
         while True:
             try:
                 time.sleep(1)
             except KeyboardInterrupt:
                 raise ProperExit
     except KeyboardInterrupt:
-        print("Operation interrupted before server start.")
+        print("Exporter interrupted before server start.")
         delete_metrics_context(session, context)
         sys.exit(1)
     except ImproperExit as error_message:
@@ -583,7 +682,7 @@ def main():
         delete_metrics_context(session, context)
         sys.exit(1)
     except ProperExit:
-        print("Operation interrupted after server start.")
+        print("Exporter interrupted after server start.")
         delete_metrics_context(session, context)
         sys.exit(0)
 

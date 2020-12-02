@@ -402,7 +402,7 @@ Perform these steps for setting it up:
   Copy the sample Prometheus configuration file (``examples/prometheus.yaml`` in
   the Git repo) as ``prometheus.yaml`` into some directory where you will run
   the Prometheus server. The host:port for contacting the exporter is already
-  set to ``localhost:9121`` and it can be changed as needed.
+  set to ``localhost:9291`` and it can be changed as needed.
 
   Run the Prometheus server as follows:
 
