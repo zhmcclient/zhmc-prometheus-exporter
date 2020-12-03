@@ -17,16 +17,17 @@ Change log
 ----------
 
 
-Version 0.5.0-devN
-^^^^^^^^^^^^^^^^^^
+Version 0.5.0
+^^^^^^^^^^^^^
 
-Released: not yet
+Released: 2020-12-03
 
 **Incompatible changes:**
 
-**Deprecations:**
-
-**Bug fixes:**
+* The sample metric definition file has changed the metric names that are
+  exported, and also the labels. This is only a change if you choose to
+  use the new sample metric definition file; if you continue using your
+  current metric definition file, the exported metrics will be as before.
 
 **Enhancements:**
 
@@ -86,12 +87,6 @@ Released: not yet
 
 * Removed the use of 'pbr' to simplify installation and development
   (see issue #55).
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 0.4.1
