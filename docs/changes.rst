@@ -77,6 +77,11 @@ Released: not yet
 
 * Added all missing metrics up to z15 to the sample metric definition file.
 
+* Added support for additional labels to be shown in every metric that is
+  exported, by specifying them in a new `extra_labels` section of the HMC
+  credentials file. This allows providing some identification of the HMC
+  environment, if needed. (see issue #80)
+
 **Cleanup:**
 
 * Removed the use of 'pbr' to simplify installation and development

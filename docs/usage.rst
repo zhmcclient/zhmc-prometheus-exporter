@@ -317,6 +317,11 @@ The *HMC credentials file* tells the exporter which HMC to talk to for
 obtaining metrics, and which userid and password to use for logging on to
 the HMC.
 
+In addition, it allows specifying additional labels to be used in all
+metrics exported to Prometheus. This can be used for defining labels that
+identify the environment managed by the HMC, in cases where metrics from
+multiple instances of exporters and HMCs come together.
+
 The HMC credentials file is in YAML format and has the following structure:
 
 .. code-block:: yaml
@@ -326,6 +331,11 @@ The HMC credentials file is in YAML format and has the following structure:
       userid: {hmc-userid}
       password: {hmc-password}
 
+    extra_labels:  # optional
+      # list of labels:
+      - name: {label-name}
+        value: {label-value}
+
 Where:
 
 * ``{hmc-ip-address}`` is the IP address of the HMC.
@@ -333,6 +343,11 @@ Where:
 * ``{hmc-userid}`` is the userid on the HMC to be used for logging on.
 
 * ``{hmc-password}`` is the password of that userid.
+
+* ``{label-name}`` is the label name.
+
+* ``{label-value}`` is the label value. The string value is used directly
+  without any further interpretation.
 
 Sample HMC credentials file
 ---------------------------
