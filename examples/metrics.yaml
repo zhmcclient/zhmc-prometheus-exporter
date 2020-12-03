@@ -609,6 +609,144 @@ metrics:
       exporter_name: exhaust_temperature_celsius
       exporter_desc: Exhaust temperature of the CPC
 
+  environmental-power-status:
+    # linecord-one-name:
+    #   # type: info
+    #   percent: false
+    #   exporter_name: power_cord1_name
+    #   exporter_desc: Line cord 1 identifier - "not-connected" if not available
+    linecord-one-power-phase-A:
+      percent: false
+      exporter_name: power_cord1_phase_a_watts
+      exporter_desc: Power in Phase A of line cord 1 - 0 if not available
+    linecord-one-power-phase-B:
+      percent: false
+      exporter_name: power_cord1_phase_b_watts
+      exporter_desc: Power in Phase B of line cord 1 - 0 if not available
+    linecord-one-power-phase-C:
+      percent: false
+      exporter_name: power_cord1_phase_c_watts
+      exporter_desc: Power in Phase C of line cord 1 - 0 if not available
+    # linecord-two-name:
+    #   # type: info
+    #   percent: false
+    #   exporter_name: power_cord2_name
+    #   exporter_desc: Line cord 2 identifier - "not-connected" if not available
+    linecord-two-power-phase-A:
+      percent: false
+      exporter_name: power_cord2_phase_a_watts
+      exporter_desc: Power in Phase A of line cord 2 - 0 if not available
+    linecord-two-power-phase-B:
+      percent: false
+      exporter_name: power_cord2_phase_b_watts
+      exporter_desc: Power in Phase B of line cord 2 - 0 if not available
+    linecord-two-power-phase-C:
+      percent: false
+      exporter_name: power_cord2_phase_c_watts
+      exporter_desc: Power in Phase C of line cord 2 - 0 if not available
+    # linecord-three-name:
+    #   # type: info
+    #   percent: false
+    #   exporter_name: power_cord3_name
+    #   exporter_desc: Line cord 3 identifier - "not-connected" if not available
+    linecord-three-power-phase-A:
+      percent: false
+      exporter_name: power_cord3_phase_a_watts
+      exporter_desc: Power in Phase A of line cord 3 - 0 if not available
+    linecord-three-power-phase-B:
+      percent: false
+      exporter_name: power_cord3_phase_b_watts
+      exporter_desc: Power in Phase B of line cord 3 - 0 if not available
+    linecord-three-power-phase-C:
+      percent: false
+      exporter_name: power_cord3_phase_c_watts
+      exporter_desc: Power in Phase C of line cord 3 - 0 if not available
+    # linecord-four-name:
+    #   # type: info
+    #   percent: false
+    #   exporter_name: power_cord4_name
+    #   exporter_desc: Line cord 4 identifier - "not-connected" if not available
+    linecord-four-power-phase-A:
+      percent: false
+      exporter_name: power_cord4_phase_a_watts
+      exporter_desc: Power in Phase A of line cord 4 - 0 if not available
+    linecord-four-power-phase-B:
+      percent: false
+      exporter_name: power_cord4_phase_b_watts
+      exporter_desc: Power in Phase B of line cord 4 - 0 if not available
+    linecord-four-power-phase-C:
+      percent: false
+      exporter_name: power_cord4_phase_c_watts
+      exporter_desc: Power in Phase C of line cord 4 - 0 if not available
+    # linecord-five-name:
+    #   # type: info
+    #   percent: false
+    #   exporter_name: power_cord5_name
+    #   exporter_desc: Line cord 5 identifier - "not-connected" if not available
+    linecord-five-power-phase-A:
+      percent: false
+      exporter_name: power_cord5_phase_a_watts
+      exporter_desc: Power in Phase A of line cord 5 - 0 if not available
+    linecord-five-power-phase-B:
+      percent: false
+      exporter_name: power_cord5_phase_b_watts
+      exporter_desc: Power in Phase B of line cord 5 - 0 if not available
+    linecord-five-power-phase-C:
+      percent: false
+      exporter_name: power_cord5_phase_c_watts
+      exporter_desc: Power in Phase C of line cord 5 - 0 if not available
+    # linecord-six-name:
+    #   # type: info
+    #   percent: false
+    #   exporter_name: power_cord6_name
+    #   exporter_desc: Line cord 6 identifier - "not-connected" if not available
+    linecord-six-power-phase-A:
+      percent: false
+      exporter_name: power_cord6_phase_a_watts
+      exporter_desc: Power in Phase A of line cord 6 - 0 if not available
+    linecord-six-power-phase-B:
+      percent: false
+      exporter_name: power_cord6_phase_b_watts
+      exporter_desc: Power in Phase B of line cord 6 - 0 if not available
+    linecord-six-power-phase-C:
+      percent: false
+      exporter_name: power_cord6_phase_c_watts
+      exporter_desc: Power in Phase C of line cord 6 - 0 if not available
+    # linecord-seven-name:
+    #   # type: info
+    #   percent: false
+    #   exporter_name: power_cord7_name
+    #   exporter_desc: Line cord 7 identifier - "not-connected" if not available
+    linecord-seven-power-phase-A:
+      percent: false
+      exporter_name: power_cord7_phase_a_watts
+      exporter_desc: Power in Phase A of line cord 7 - 0 if not available
+    linecord-seven-power-phase-B:
+      percent: false
+      exporter_name: power_cord7_phase_b_watts
+      exporter_desc: Power in Phase B of line cord 7 - 0 if not available
+    linecord-seven-power-phase-C:
+      percent: false
+      exporter_name: power_cord7_phase_c_watts
+      exporter_desc: Power in Phase C of line cord 7 - 0 if not available
+    # linecord-eight-name:
+    #   # type: info
+    #   percent: false
+    #   exporter_name: power_cord8_name
+    #   exporter_desc: Line cord 8 identifier - "not-connected" if not available
+    linecord-eight-power-phase-A:
+      percent: false
+      exporter_name: power_cord8_phase_a_watts
+      exporter_desc: Power in Phase A of line cord 8 - 0 if not available
+    linecord-eight-power-phase-B:
+      percent: false
+      exporter_name: power_cord8_phase_b_watts
+      exporter_desc: Power in Phase B of line cord 8 - 0 if not available
+    linecord-eight-power-phase-C:
+      percent: false
+      exporter_name: power_cord8_phase_c_watts
+      exporter_desc: Power in Phase C of line cord 8 - 0 if not available
+
   zcpc-processor-usage:
     processor-name:
       # type: info
@@ -623,7 +761,7 @@ metrics:
     processor-usage:
       percent: true
       exporter_name: usage_ratio
-      exporter_desc: Utilization of the processor
+      exporter_desc: Usage ratio of the processor
     smt-usage:
       percent: false
       exporter_name: smt_mode_percent
@@ -631,146 +769,8 @@ metrics:
     thread-0-usage:
       percent: true
       exporter_name: smt_thread0_usage_ratio
-      exporter_desc: Utilization of thread 0 of the processor when in SMT mode - -1 if not supported
+      exporter_desc: Usage ratio of thread 0 of the processor when in SMT mode - -1 if not supported
     thread-1-usage:
       percent: true
       exporter_name: smt_thread1_usage_ratio
-      exporter_desc: Utilization of thread 1 of the processor when in SMT mode - -1 if not supported
-
-  environmental-power-status:
-    # linecord-one-name:
-    #   # type: info
-    #   percent: false
-    #   exporter_name: power_cord1_name
-    #   exporter_desc: Line cord 1 identifier - "not-connected" if not available
-    linecord-one-power-phase-A:
-      percent: false
-      exporter_name: power_cord1_phaseA_watts
-      exporter_desc: Power in Phase A of line cord 1 - 0 if not available
-    linecord-one-power-phase-B:
-      percent: false
-      exporter_name: power_cord1_phaseB_watts
-      exporter_desc: Power in Phase B of line cord 1 - 0 if not available
-    linecord-one-power-phase-C:
-      percent: false
-      exporter_name: power_cord1_phaseC_watts
-      exporter_desc: Power in Phase C of line cord 1 - 0 if not available
-    # linecord-two-name:
-    #   # type: info
-    #   percent: false
-    #   exporter_name: power_cord1_name
-    #   exporter_desc: Line cord 2 identifier - "not-connected" if not available
-    linecord-two-power-phase-A:
-      percent: false
-      exporter_name: power_cord1_phaseA_watts
-      exporter_desc: Power in Phase A of line cord 2 - 0 if not available
-    linecord-two-power-phase-B:
-      percent: false
-      exporter_name: power_cord1_phaseA_watts
-      exporter_desc: Power in Phase B of line cord 2 - 0 if not available
-    linecord-two-power-phase-C:
-      percent: false
-      exporter_name: power_cord1_phaseA_watts
-      exporter_desc: Power in Phase C of line cord 2 - 0 if not available
-    # linecord-three-name:
-    #   # type: info
-    #   percent: false
-    #   exporter_name: power_cord1_name
-    #   exporter_desc: Line cord 3 identifier - "not-connected" if not available
-    linecord-three-power-phase-A:
-      percent: false
-      exporter_name: power_cord1_phaseA_watts
-      exporter_desc: Power in Phase A of line cord 3 - 0 if not available
-    linecord-three-power-phase-B:
-      percent: false
-      exporter_name: power_cord1_phaseA_watts
-      exporter_desc: Power in Phase B of line cord 3 - 0 if not available
-    linecord-three-power-phase-C:
-      percent: false
-      exporter_name: power_cord1_phaseA_watts
-      exporter_desc: Power in Phase C of line cord 3 - 0 if not available
-    # linecord-four-name:
-    #   # type: info
-    #   percent: false
-    #   exporter_name: power_cord1_name
-    #   exporter_desc: Line cord 4 identifier - "not-connected" if not available
-    linecord-four-power-phase-A:
-      percent: false
-      exporter_name: power_cord1_phaseA_watts
-      exporter_desc: Power in Phase A of line cord 4 - 0 if not available
-    linecord-four-power-phase-B:
-      percent: false
-      exporter_name: power_cord1_phaseA_watts
-      exporter_desc: Power in Phase B of line cord 4 - 0 if not available
-    linecord-four-power-phase-C:
-      percent: false
-      exporter_name: power_cord1_phaseA_watts
-      exporter_desc: Power in Phase C of line cord 4 - 0 if not available
-    # linecord-five-name:
-    #   # type: info
-    #   percent: false
-    #   exporter_name: power_cord1_name
-    #   exporter_desc: Line cord 5 identifier - "not-connected" if not available
-    linecord-five-power-phase-A:
-      percent: false
-      exporter_name: power_cord1_phaseA_watts
-      exporter_desc: Power in Phase A of line cord 5 - 0 if not available
-    linecord-five-power-phase-B:
-      percent: false
-      exporter_name: power_cord1_phaseA_watts
-      exporter_desc: Power in Phase B of line cord 5 - 0 if not available
-    linecord-five-power-phase-C:
-      percent: false
-      exporter_name: power_cord1_phaseA_watts
-      exporter_desc: Power in Phase C of line cord 5 - 0 if not available
-    # linecord-six-name:
-    #   # type: info
-    #   percent: false
-    #   exporter_name: power_cord1_name
-    #   exporter_desc: Line cord 6 identifier - "not-connected" if not available
-    linecord-six-power-phase-A:
-      percent: false
-      exporter_name: power_cord1_phaseA_watts
-      exporter_desc: Power in Phase A of line cord 6 - 0 if not available
-    linecord-six-power-phase-B:
-      percent: false
-      exporter_name: power_cord1_phaseA_watts
-      exporter_desc: Power in Phase B of line cord 6 - 0 if not available
-    linecord-six-power-phase-C:
-      percent: false
-      exporter_name: power_cord1_phaseA_watts
-      exporter_desc: Power in Phase C of line cord 6 - 0 if not available
-    # linecord-seven-name:
-    #   # type: info
-    #   percent: false
-    #   exporter_name: power_cord1_name
-    #   exporter_desc: Line cord 7 identifier - "not-connected" if not available
-    linecord-seven-power-phase-A:
-      percent: false
-      exporter_name: power_cord1_phaseA_watts
-      exporter_desc: Power in Phase A of line cord 7 - 0 if not available
-    linecord-seven-power-phase-B:
-      percent: false
-      exporter_name: power_cord1_phaseA_watts
-      exporter_desc: Power in Phase B of line cord 7 - 0 if not available
-    linecord-seven-power-phase-C:
-      percent: false
-      exporter_name: power_cord1_phaseA_watts
-      exporter_desc: Power in Phase C of line cord 7 - 0 if not available
-    # linecord-eight-name:
-    #   # type: info
-    #   percent: false
-    #   exporter_name: power_cord1_name
-    #   exporter_desc: Line cord 8 identifier - "not-connected" if not available
-    linecord-eight-power-phase-A:
-      percent: false
-      exporter_name: power_cord1_phaseA_watts
-      exporter_desc: Power in Phase A of line cord 8 - 0 if not available
-    linecord-eight-power-phase-B:
-      percent: false
-      exporter_name: power_cord1_phaseA_watts
-      exporter_desc: Power in Phase B of line cord 8 - 0 if not available
-    linecord-eight-power-phase-C:
-      percent: false
-      exporter_name: power_cord1_phaseA_watts
-      exporter_desc: Power in Phase C of line cord 8 - 0 if not available
+      exporter_desc: Usage ratio of thread 1 of the processor when in SMT mode - -1 if not supported
