@@ -4,3 +4,7 @@ metrics:
   hmc: 9.10.11.12
   userid: user
   password: password
+
+extra_labels:
+  - name: pod
+    value: mypod

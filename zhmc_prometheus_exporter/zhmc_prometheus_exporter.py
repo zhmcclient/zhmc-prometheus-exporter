@@ -23,10 +23,8 @@ import sys
 import time
 import ipaddress
 import warnings
-from collections import OrderedDict
 from contextlib import contextmanager
 import urllib3
-
 import yaml
 import zhmcclient
 from prometheus_client import start_http_server
@@ -149,6 +147,10 @@ metrics:
   hmc: 1.2.3.4
   userid: myuser
   password: mypassword
+
+extra_labels:
+  - name: pod
+    value: mypod
 """)
 
 
@@ -413,7 +415,8 @@ class ResourceCache(object):
 
 
 def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
-                         filename, resource_cache=None):
+                         metrics_filename, yaml_extra_labels,
+                         resource_cache=None):
     """
     Go through all retrieved metrics and build the Prometheus Family objects.
 
@@ -424,6 +427,15 @@ def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
         GaugeMetricFamily object
     """
 
+    extra_labels = dict()
+    for item in yaml_extra_labels:
+        # name, value assumed to be present for now - will be validated once
+        # schema validation is implemented.
+        extra_labels[item['name']] = item['value']
+    extra_labels_str = ','.join(
+        ['{}="{}"'.format(k, v) for k, v in extra_labels.items()])
+    verbose("Using extra labels: {}".format(extra_labels_str))
+
     family_objects = {}
     for metric_group_value in metrics_object.metric_group_values:
         metric_group = metric_group_value.name
@@ -433,7 +445,7 @@ def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
             warnings.warn("Skipping metric group '{}' returned by the HMC "
                           "that is not defined in the 'metric_groups' section "
                           "of metric definition file {}".
-                          format(metric_group, filename))
+                          format(metric_group, metrics_filename))
             continue  # Skip this metric group
 
         for object_value in metric_group_value.object_values:
@@ -453,7 +465,7 @@ def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
             yaml_labels = yaml_metric_group.get('labels', None)
             if not yaml_labels:
                 yaml_labels = [{}]
-            labels = OrderedDict()
+            labels = dict(extra_labels)
             for item in yaml_labels:
                 label_name = item.get('name', 'resource')
                 item_value = item.get('value', 'resource')
@@ -476,7 +488,8 @@ def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
                                   "returned by the HMC that is not defined in "
                                   "the 'metrics' section of metric definition "
                                   "file {}".
-                                  format(metric, metric_group, filename))
+                                  format(metric, metric_group,
+                                         metrics_filename))
                     continue  # Skip this metric
 
                 metric_value = metric_values[metric]
@@ -519,13 +532,14 @@ class ZHMCUsageCollector():
     """Collects the usage for exporting."""
 
     def __init__(self, yaml_creds, session, context, yaml_metric_groups,
-                 yaml_metrics, filename_metrics, filename_creds,
-                 resource_cache):
+                 yaml_metrics, yaml_extra_labels, filename_metrics,
+                 filename_creds, resource_cache):
         self.session = session
         self.context = context
         self.yaml_creds = yaml_creds
         self.yaml_metric_groups = yaml_metric_groups
         self.yaml_metrics = yaml_metrics
+        self.yaml_extra_labels = yaml_extra_labels
         self.filename_metrics = filename_metrics
         self.filename_creds = filename_creds
         self.resource_cache = resource_cache
@@ -561,6 +575,7 @@ class ZHMCUsageCollector():
                                                   self.yaml_metric_groups,
                                                   self.yaml_metrics,
                                                   self.filename_metrics,
+                                                  self.yaml_extra_labels,
                                                   self.resource_cache)
 
         verbose2("Returning family objects")
@@ -617,6 +632,14 @@ def main():
                                              args.c)[0]
         except (AttributeError, YAMLInfoNotFoundError) as error_message:
             raise ImproperExit(error_message)
+        if "extra_labels" in raw_yaml_creds:
+            try:
+                yaml_extra_labels = parse_yaml_sections(
+                    raw_yaml_creds, ("extra_labels",), args.c)[0]
+            except (AttributeError, YAMLInfoNotFoundError) as error_message:
+                raise ImproperExit(error_message)
+        else:
+            yaml_extra_labels = []
 
         verbose("Parsing metric definition file: {}".format(args.c))
         try:
@@ -658,9 +681,9 @@ def main():
             raise ImproperExit(error_message)
 
         resource_cache = ResourceCache()
-        coll = ZHMCUsageCollector(yaml_creds, session, context,
-                                  yaml_metric_groups, yaml_metrics, args.m,
-                                  args.c, resource_cache)
+        coll = ZHMCUsageCollector(
+            yaml_creds, session, context, yaml_metric_groups, yaml_metrics,
+            yaml_extra_labels, args.m, args.c, resource_cache)
 
         verbose("Registering the collector and performing first collection")
         REGISTRY.register(coll)  # Performs a first collection
