@@ -461,6 +461,9 @@ def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
                     label_value = str(resource.name)
                 elif item_value == 'resource.parent':
                     label_value = str(resource.manager.parent.name)
+                elif item_value == 'resource.parent.parent':
+                    label_value = \
+                        str(resource.manager.parent.manager.parent.name)
                 else:
                     label_value = str(metric_values.get(item_value, 'unknown'))
                 labels[label_name] = label_value

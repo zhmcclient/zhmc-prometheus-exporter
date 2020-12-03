@@ -1,57 +1,56 @@
-# Example zhmc-prometheus-export metric definition file with all metrics supported by HMC 2.15 (z15)
-#
-# All metrics of CPCs in DPM mode are enabled.
+# Example zhmc-prometheus-export metric definition file with all metrics
+# supported up to HMC 2.15.0 (z15), except ensemble/zBX metrics.
 
 metric_groups:
 
   # Available for CPCs in classic mode
+
   cpc-usage-overview:
     prefix: cpc
-    fetch: True
+    fetch: true
     labels:
       - name: cpc
         value: resource
+
   logical-partition-usage:
     prefix: partition
-    fetch: True
+    fetch: true
     labels:
       - name: cpc
         value: resource.parent
       - name: partition
         value: resource
+
   channel-usage:
     prefix: channel
-    fetch: True
+    fetch: true
     labels:
       - name: cpc
         value: resource
       - name: channel_css_chpid
         value: channel-name  # format: 'CSS.CHPID'
-     # - name: shared
-     #   value: shared-channel  # Boolean indicating whether channel is shared among LPARs
-     # - name: partition
-     #   value: logical-partition-name  # Name of the owning LPAR, 'shared', or empty string
+
   crypto-usage:
     prefix: crypto_adapter
-    fetch: True
+    fetch: true  # hmc_version >= 2.12.0
     labels:
       - name: cpc
         value: resource
       - name: adapter_pchid
         value: channel-id
-     # - name: crypto_id
-     #   value: crypto-id
+
   flash-memory-usage:
     prefix: flash_memory_adapter
-    fetch: True
+    fetch: true  # hmc_version >= 2.12.0
     labels:
       - name: cpc
         value: resource
       - name: adapter_pchid
         value: channel-id
+
   roce-usage:
     prefix: roce_adapter
-    fetch: True
+    fetch: true  # hmc_version >= 2.12.1
     labels:
       - name: cpc
         value: resource
@@ -59,287 +58,719 @@ metric_groups:
         value: channel-id
 
   # Available for CPCs in DPM mode
+
   dpm-system-usage-overview:
     prefix: cpc
-    fetch: True
+    fetch: true  # hmc_version >= 2.13.1
     labels:
       - name: cpc
         value: resource
+
   partition-usage:
     prefix: partition
-    fetch: True
+    fetch: true  # hmc_version >= 2.13.1
     labels:
       - name: cpc
         value: resource.parent
       - name: partition
         value: resource
+
   adapter-usage:
     prefix: adapter
-    fetch: True
+    fetch: true  # hmc_version >= 2.13.1
     labels:
       - name: cpc
         value: resource.parent
       - name: adapter
         value: resource
 
-  # Available for CPCs in ensemble mode (supported only on z196)
-  virtualization-host-cpu-memory-usage:
-    prefix: virtualization_host
-    fetch: False
+  network-physical-adapter-port:
+    prefix: port
+    fetch: true  # hmc_version >= 2.13.1
     labels:
       - name: cpc
         value: resource.parent
+      - name: adapter
+        value: resource
+      - name: port
+        value: network-port-id
+
+  partition-attached-network-interface:
+    prefix: nic
+    fetch: true  # hmc_version >= 2.13.1
+    labels:
+      - name: cpc
+        value: resource.parent.parent
       - name: partition
+        value: resource.parent
+      - name: nic
+        value: resource
+
+  # Available for CPCs in any mode
+
+  zcpc-environmentals-and-power:
+    prefix: cpc
+    fetch: true
+    labels:
+      - name: cpc
+        value: resource
+
+  zcpc-processor-usage:
+    prefix: processor
+    fetch: true
+    labels:
+      - name: cpc
+        value: resource
+      - name: processor
+        value: processor-name
+
+  environmental-power-status:
+    prefix: cpc
+    fetch: true  # hmc_version >= 2.15.0
+    labels:
+      - name: cpc
         value: resource
 
 metrics:
 
   # Available for CPCs in classic mode
+
   cpc-usage-overview:
     cpc-processor-usage:
-      percent: True
+      percent: true
       exporter_name: processor_usage_ratio
       exporter_desc: Usage ratio across all processors of the CPC
     all-shared-processor-usage:
-      percent: True
+      percent: true
       exporter_name: shared_processor_usage_ratio
       exporter_desc: Usage ratio across all shared processors of the CPC
     all-dedicated-processor-usage:
-      percent: True
+      percent: true
       exporter_name: dedicated_processor_usage_ratio
       exporter_desc: Usage ratio across all dedicated processors of the CPC
     cp-all-processor-usage:
-      percent: True
+      percent: true
       exporter_name: cp_processor_usage_ratio
       exporter_desc: Usage ratio across all CP processors of the CPC
     cp-shared-processor-usage:
-      percent: True
+      percent: true
       exporter_name: cp_shared_processor_usage_ratio
       exporter_desc: Usage ratio across all shared CP processors of the CPC
     cp-dedicated-processor-usage:
-      percent: True
+      percent: true
       exporter_name: cp_dedicated_processor_usage_ratio
       exporter_desc: Usage ratio across all dedicated CP processors of the CPC
     ifl-all-processor-usage:
-      percent: True
+      percent: true
       exporter_name: ifl_processor_usage_ratio
       exporter_desc: Usage ratio across all IFL processors of the CPC
     ifl-shared-processor-usage:
-      percent: True
+      percent: true
       exporter_name: ifl_shared_processor_usage_ratio
       exporter_desc: Usage ratio across all shared IFL processors of the CPC
     ifl-dedicated-processor-usage:
-      percent: True
+      percent: true
       exporter_name: ifl_dedicated_processor_usage_ratio
       exporter_desc: Usage ratio across all dedicated IFL processors of the CPC
     icf-all-processor-usage:
-      percent: True
+      percent: true
       exporter_name: icf_processor_usage_ratio
       exporter_desc: Usage ratio across all ICF processors of the CPC
     icf-shared-processor-usage:
-      percent: True
+      percent: true
       exporter_name: icf_shared_processor_usage_ratio
       exporter_desc: Usage ratio across all shared ICF processors of the CPC
     icf-dedicated-processor-usage:
-      percent: True
+      percent: true
       exporter_name: icf_dedicated_processor_usage_ratio
       exporter_desc: Usage ratio across all dedicated ICF processors of the CPC
     iip-all-processor-usage:
-      percent: True
+      percent: true
       exporter_name: iip_processor_usage_ratio
       exporter_desc: Usage ratio across all zIIP processors of the CPC
     iip-shared-processor-usage:
-      percent: True
+      percent: true
       exporter_name: iip_shared_processor_usage_ratio
       exporter_desc: Usage ratio across all shared zIIP processors of the CPC
     iip-dedicated-processor-usage:
-      percent: True
+      percent: true
       exporter_name: iip_dedicated_processor_usage_ratio
       exporter_desc: Usage ratio across all dedicated zIIP processors of the CPC
     aap-shared-processor-usage:
-      percent: True
+      percent: true
       exporter_name: aap_shared_processor_usage_ratio
       exporter_desc: Usage ratio across all shared zAAP processors of the CPC
     aap-dedicated-processor-usage:
-      percent: True
+      percent: true
       exporter_name: aap_dedicated_processor_usage_ratio
       exporter_desc: Usage ratio across all dedicated zAAP processors of the CPC
     # aap-all-processor-usage does not seem to exist
     cbp-all-processor-usage:
-      percent: True
+      percent: true
       exporter_name: cbp_processor_usage_ratio
       exporter_desc: Usage ratio across all CBP processors of the CPC
     cbp-shared-processor-usage:
-      percent: True
+      percent: true
       exporter_name: cbp_shared_processor_usage_ratio
       exporter_desc: Usage ratio across all shared CBP processors of the CPC
     cbp-dedicated-processor-usage:
-      percent: True
+      percent: true
       exporter_name: cbp_dedicated_processor_usage_ratio
       exporter_desc: Usage ratio across all dedicated CBP processors of the CPC
     channel-usage:
-      percent: True
+      percent: true
       exporter_name: channel_usage_ratio
       exporter_desc: Usage ratio across all channels of the CPC
     power-consumption-watts:
-      percent: False
+      percent: false
       exporter_name: power_watts
       exporter_desc: Power consumption of the CPC
     temperature-celsius:
-      percent: False
+      percent: false
       exporter_name: ambient_temperature_celsius
       exporter_desc: Ambient temperature of the CPC
+
   logical-partition-usage:
     processor-usage:
-      percent: True
+      percent: true
       exporter_name: processor_usage_ratio
       exporter_desc: Usage ratio across all processors of the partition
     cp-processor-usage:
-      percent: True
+      percent: true
       exporter_name: cp_processor_usage_ratio
       exporter_desc: Usage ratio across all CP processors of the partition
     ifl-processor-usage:
-      percent: True
+      percent: true
       exporter_name: ifl_processor_usage_ratio
       exporter_desc: Usage ratio across all IFL processors of the partition
     icf-processor-usage:
-      percent: True
+      percent: true
       exporter_name: icf_processor_usage_ratio
       exporter_desc: Usage ratio across all ICF processors of the partition
     iip-processor-usage:
-      percent: True
+      percent: true
       exporter_name: iip_processor_usage_ratio
       exporter_desc: Usage ratio across all IIP processors of the partition
     cbp-processor-usage:
-      percent: True
+      percent: true
       exporter_name: cbp_processor_usage_ratio
       exporter_desc: Usage ratio across all CBP processors of the partition
     zvm-paging-rate:
-      percent: False
+      percent: false
       exporter_name: zvm_paging_rate_pages_per_second
       exporter_desc: z/VM paging rate in pages/sec
+
   channel-usage:
     channel-usage:
-      percent: True
+      percent: true
       exporter_name: usage_ratio
       exporter_desc: Usage ratio of the channel
     channel-name:
-      percent: False
+      percent: false
       exporter_name: null  # Ignored (used for identification in channel-usage)
       exporter_desc: null
     shared-channel:
-      percent: False
+      percent: false
       exporter_name: null  # Ignored (used for identification in channel-usage)
       exporter_desc: null
     logical-partition-name:
-      percent: False
+      percent: false
       exporter_name: null  # Ignored (used for identification in channel-usage)
       exporter_desc: null
+
   crypto-usage:
     adapter-usage:
-      percent: True
+      percent: true
       exporter_name: usage_ratio
       exporter_desc: Usage ratio of the crypto adapter
     channel-id:
-      percent: False
+      percent: false
       exporter_name: null  # Ignored (used for identification in adapter-usage)
       exporter_desc: null
     crypto-id:
-      percent: False
+      percent: false
       exporter_name: null  # Ignored (used for identification in adapter-usage)
       exporter_desc: null
+
   flash-memory-usage:
     adapter-usage:
-      percent: True
+      percent: true
       exporter_name: usage_ratio
       exporter_desc: Usage ratio of the flash memory adapter
     channel-id:
-      percent: False
+      percent: false
       exporter_name: null  # Ignored (used for identification in adapter-usage)
       exporter_desc: null
+
   roce-usage:
     adapter-usage:
-      percent: True
+      percent: true
       exporter_name: usage_ratio
       exporter_desc: Usage ratio of the RoCE adapter
 
   # Available for CPCs in DPM mode
+
   dpm-system-usage-overview:
     processor-usage:
-      percent: True
+      percent: true
       exporter_name: processor_usage_ratio
       exporter_desc: Usage ratio across all processors of the CPC
     all-shared-processor-usage:
-      percent: True
+      percent: true
       exporter_name: shared_processor_usage_ratio
       exporter_desc: Usage ratio across all shared processors of the CPC
     cp-all-processor-usage:
-      percent: True
+      percent: true
       exporter_name: cp_processor_usage_ratio
       exporter_desc: Usage ratio across all CP processors of the CPC
     cp-shared-processor-usage:
-      percent: True
+      percent: true
       exporter_name: cp_shared_processor_usage_ratio
       exporter_desc: Usage ratio across all shared CP processors of the CPC
     ifl-all-processor-usage:
-      percent: True
+      percent: true
       exporter_name: ifl_processor_usage_ratio
       exporter_desc: Usage ratio across all IFL processors of the CPC
     ifl-shared-processor-usage:
-      percent: True
+      percent: true
       exporter_name: ifl_shared_processor_usage_ratio
       exporter_desc: Usage ratio across all shared IFL processors of the CPC
     network-usage:
-      percent: True
+      percent: true
       exporter_name: network_adapter_usage_ratio
       exporter_desc: Usage ratio across all network adapters of the CPC
     storage-usage:
-      percent: True
+      percent: true
       exporter_name: storage_adapter_usage_ratio
       exporter_desc: Usage ratio across all storage adapters of the CPC
     accelerator-usage:
-      percent: True
+      percent: true
       exporter_name: accelerator_adapter_usage_ratio
       exporter_desc: Usage ratio across all accelerator adapters of the CPC
     crypto-usage:
-      percent: True
+      percent: true
       exporter_name: crypto_adapter_usage_ratio
       exporter_desc: Usage ratio across all crypto adapters of the CPC
     power-consumption-watts:
-      percent: False
+      percent: false
       exporter_name: power_watts
       exporter_desc: Power consumption of the CPC
     temperature-celsius:
-      percent: False
+      percent: false
       exporter_name: ambient_temperature_celsius
       exporter_desc: Ambient temperature of the CPC
+
   partition-usage:
     processor-usage:
-      percent: True
+      percent: true
       exporter_name: processor_usage_ratio
       exporter_desc: Usage ratio across all processors of the partition
     network-usage:
-      percent: True
+      percent: true
       exporter_name: network_adapter_usage_ratio
       exporter_desc: Usage ratio of all network adapters of the partition
     storage-usage:
-      percent: True
+      percent: true
       exporter_name: storage_adapter_usage_ratio
       exporter_desc: Usage ratio of all storage adapters of the partition
     accelerator-usage:
-      percent: True
+      percent: true
       exporter_name: accelerator_adapter_usage_ratio
       exporter_desc: Usage ratio of all accelerator adapters of the partition
     crypto-usage:
-      percent: True
+      percent: true
       exporter_name: crypto_adapter_usage_ratio
       exporter_desc: Usage ratio of all crypto adapters of the partition
+
   adapter-usage:
     adapter-usage:
-      percent: True
+      percent: true
       exporter_name: usage_ratio
       exporter_desc: Usage ratio of the adapter
 
-  # Available for CPCs in ensemble mode (supported only on z196)
-  virtualization-host-cpu-memory-usage: {}
-    # TODO: Add metrics
+  network-physical-adapter-port:
+    network-port-id:
+      # type: info
+      percent: false
+      exporter_name: null  # Ignored (identifies the port, used in label)
+      exporter_desc: null
+    bytes-sent:
+      # type: counter
+      percent: false
+      exporter_name: bytes_sent_count
+      exporter_desc: Number of Bytes in unicast packets that were sent
+    bytes-received:
+      # type: counter
+      percent: false
+      exporter_name: bytes_received_count
+      exporter_desc: Number of Bytes in unicast packets that were received
+    packets-sent:
+      # type: counter
+      percent: false
+      exporter_name: packets_sent_count
+      exporter_desc: Number of unicast packets that were sent
+    packets-received:
+      # type: counter
+      percent: false
+      exporter_name: packets_received_count
+      exporter_desc: Number of unicast packets that were received
+    packets-sent-dropped:
+      # type: counter
+      percent: false
+      exporter_name: packets_sent_dropped_count
+      exporter_desc: Number of sent packets that were dropped (resource shortage)
+    packets-received-dropped:
+      # type: counter
+      percent: false
+      exporter_name: packets_received_dropped_count
+      exporter_desc: Number of received packets that were dropped (resource shortage)
+    packets-sent-discarded:
+      # type: counter
+      percent: false
+      exporter_name: packets_sent_discarded_count
+      exporter_desc: Number of sent packets that were discarded (malformed)
+    packets-received-discarded:
+      # type: counter
+      percent: false
+      exporter_name: packets_received_discarded_count
+      exporter_desc: Number of received packets that were discarded (malformed)
+    multicast-packets-sent:
+      # type: counter
+      percent: false
+      exporter_name: multicast_packets_sent_count
+      exporter_desc: Number of multicast packets sent
+    multicast-packets-received:
+      # type: counter
+      percent: false
+      exporter_name: multicast_packets_received_count
+      exporter_desc: Number of multicast packets received
+    broadcast-packets-sent:
+      # type: counter
+      percent: false
+      exporter_name: broadcast_packets_sent_count
+      exporter_desc: Number of broadcast packets sent
+    broadcast-packets-received:
+      # type: counter
+      percent: false
+      exporter_name: broadcast_packets_received_count
+      exporter_desc: Number of broadcast packets received
+    interval-bytes-sent:
+      percent: false
+      exporter_name: data_sent_bytes
+      exporter_desc: Amount of data sent over the collection interval
+    interval-bytes-received:
+      percent: false
+      exporter_name: data_received_bytes
+      exporter_desc: Amount of data received over the collection interval
+    bytes-per-second-sent:
+      percent: false
+      exporter_name: data_rate_sent_bytes_per_second
+      exporter_desc: Data rate sent over the collection interval
+    bytes-per-second-received:
+      percent: false
+      exporter_name: data_rate_received_bytes_per_second
+      exporter_desc: Data rate received over the collection interval
+    utilization:
+      percent: true
+      exporter_name: bandwidth_usage_ratio
+      exporter_desc: Bandwidth usage ratio of the port
+    mac-address:
+      # type: info
+      percent: false
+      exporter_name: null # mac_address
+      exporter_desc: null # MAC address of the port, or 'N/A'
+    flags:
+      # type: info
+      percent: false
+      exporter_name: null  # Ignored (can be detected from metric values)
+      exporter_desc: null
+
+  partition-attached-network-interface:
+    partition-id:  # the OID, i.e. /api/partitions/{partition-id}
+      # type: info
+      percent: false
+      exporter_name: null  # Ignored (identifies the partition, used in label)
+      exporter_desc: null
+    bytes-sent:
+      # type: counter
+      percent: false
+      exporter_name: bytes_sent_count
+      exporter_desc: Number of Bytes in unicast packets that were sent
+    bytes-received:
+      # type: counter
+      percent: false
+      exporter_name: bytes_received_count
+      exporter_desc: Number of Bytes in unicast packets that were received
+    packets-sent:
+      # type: counter
+      percent: false
+      exporter_name: packets_sent_count
+      exporter_desc: Number of unicast packets that were sent
+    packets-received:
+      # type: counter
+      percent: false
+      exporter_name: packets_received_count
+      exporter_desc: Number of unicast packets that were received
+    packets-sent-dropped:
+      # type: counter
+      percent: false
+      exporter_name: packets_sent_dropped_count
+      exporter_desc: Number of sent packets that were dropped (resource shortage)
+    packets-received-dropped:
+      # type: counter
+      percent: false
+      exporter_name: packets_received_dropped_count
+      exporter_desc: Number of received packets that were dropped (resource shortage)
+    packets-sent-discarded:
+      # type: counter
+      percent: false
+      exporter_name: packets_sent_discarded_count
+      exporter_desc: Number of sent packets that were discarded (malformed)
+    packets-received-discarded:
+      # type: counter
+      percent: false
+      exporter_name: packets_received_discarded_count
+      exporter_desc: Number of received packets that were discarded (malformed)
+    multicast-packets-sent:
+      # type: counter
+      percent: false
+      exporter_name: multicast_packets_sent_count
+      exporter_desc: Number of multicast packets sent
+    multicast-packets-received:
+      # type: counter
+      percent: false
+      exporter_name: multicast_packets_received_count
+      exporter_desc: Number of multicast packets received
+    broadcast-packets-sent:
+      # type: counter
+      percent: false
+      exporter_name: broadcast_packets_sent_count
+      exporter_desc: Number of broadcast packets sent
+    broadcast-packets-received:
+      # type: counter
+      percent: false
+      exporter_name: broadcast_packets_received_count
+      exporter_desc: Number of broadcast packets received
+    interval-bytes-sent:
+      percent: false
+      exporter_name: data_sent_bytes
+      exporter_desc: Amount of data sent over the collection interval
+    interval-bytes-received:
+      percent: false
+      exporter_name: data_received_bytes
+      exporter_desc: Amount of data received over the collection interval
+    bytes-per-second-sent:
+      percent: false
+      exporter_name: data_rate_sent_bytes_per_second
+      exporter_desc: Data rate sent over the collection interval
+    bytes-per-second-received:
+      percent: false
+      exporter_name: data_rate_received_bytes_per_second
+      exporter_desc: Data rate received over the collection interval
+    flags:
+      # type: info
+      percent: false
+      exporter_name: null  # Ignored (can be detected from metric values)
+      exporter_desc: null
+
+  # Available for CPCs in any mode
+
+  zcpc-environmentals-and-power:
+    temperature-celsius:
+      percent: false
+      exporter_name: null  # Ignored (duplicate of ambient_temperature_celsius)
+      exporter_desc: null
+    humidity:
+      percent: false
+      exporter_name: humidity_percent
+      exporter_desc: Relative humidity
+    dew-point-celsius:
+      percent: false
+      exporter_name: dew_point_celsius
+      exporter_desc: Dew point
+    power-consumption-watts:
+      percent: false
+      exporter_name: null  # Ignored (duplicate of power_watts)
+      exporter_desc: null
+    heat-load:
+      percent: false
+      exporter_name: heat_load_total_btu_per_hour
+      exporter_desc: Total heat load of the CPC
+    heat-load-forced-air:
+      percent: false
+      exporter_name: heat_load_forced_air_btu_per_hour
+      exporter_desc: Heat load of the CPC covered by forced-air
+    heat-load-water:
+      percent: false
+      exporter_name: heat_load_water_btu_per_hour
+      exporter_desc: Heat load of the CPC covered by water
+    exhaust-temperature-celsius:
+      percent: false
+      exporter_name: exhaust_temperature_celsius
+      exporter_desc: Exhaust temperature of the CPC
+
+  zcpc-processor-usage:
+    processor-name:
+      # type: info
+      percent: false
+      exporter_name: null  # Ignored (used as label)
+      exporter_desc: null
+    processor-type:
+      # type: info
+      percent: false
+      exporter_name: null  # Ignored (redundant with processor-name)
+      exporter_desc: null
+    processor-usage:
+      percent: true
+      exporter_name: usage_ratio
+      exporter_desc: Utilization of the processor
+    smt-usage:
+      percent: false
+      exporter_name: smt_mode_percent
+      exporter_desc: Percentage of time the processor was in in SMT mode - -1 if not supported
+    thread-0-usage:
+      percent: true
+      exporter_name: smt_thread0_usage_ratio
+      exporter_desc: Utilization of thread 0 of the processor when in SMT mode - -1 if not supported
+    thread-1-usage:
+      percent: true
+      exporter_name: smt_thread1_usage_ratio
+      exporter_desc: Utilization of thread 1 of the processor when in SMT mode - -1 if not supported
+
+  environmental-power-status:
+    # linecord-one-name:
+    #   # type: info
+    #   percent: false
+    #   exporter_name: power_cord1_name
+    #   exporter_desc: Line cord 1 identifier - "not-connected" if not available
+    linecord-one-power-phase-A:
+      percent: false
+      exporter_name: power_cord1_phaseA_watts
+      exporter_desc: Power in Phase A of line cord 1 - 0 if not available
+    linecord-one-power-phase-B:
+      percent: false
+      exporter_name: power_cord1_phaseB_watts
+      exporter_desc: Power in Phase B of line cord 1 - 0 if not available
+    linecord-one-power-phase-C:
+      percent: false
+      exporter_name: power_cord1_phaseC_watts
+      exporter_desc: Power in Phase C of line cord 1 - 0 if not available
+    # linecord-two-name:
+    #   # type: info
+    #   percent: false
+    #   exporter_name: power_cord1_name
+    #   exporter_desc: Line cord 2 identifier - "not-connected" if not available
+    linecord-two-power-phase-A:
+      percent: false
+      exporter_name: power_cord1_phaseA_watts
+      exporter_desc: Power in Phase A of line cord 2 - 0 if not available
+    linecord-two-power-phase-B:
+      percent: false
+      exporter_name: power_cord1_phaseA_watts
+      exporter_desc: Power in Phase B of line cord 2 - 0 if not available
+    linecord-two-power-phase-C:
+      percent: false
+      exporter_name: power_cord1_phaseA_watts
+      exporter_desc: Power in Phase C of line cord 2 - 0 if not available
+    # linecord-three-name:
+    #   # type: info
+    #   percent: false
+    #   exporter_name: power_cord1_name
+    #   exporter_desc: Line cord 3 identifier - "not-connected" if not available
+    linecord-three-power-phase-A:
+      percent: false
+      exporter_name: power_cord1_phaseA_watts
+      exporter_desc: Power in Phase A of line cord 3 - 0 if not available
+    linecord-three-power-phase-B:
+      percent: false
+      exporter_name: power_cord1_phaseA_watts
+      exporter_desc: Power in Phase B of line cord 3 - 0 if not available
+    linecord-three-power-phase-C:
+      percent: false
+      exporter_name: power_cord1_phaseA_watts
+      exporter_desc: Power in Phase C of line cord 3 - 0 if not available
+    # linecord-four-name:
+    #   # type: info
+    #   percent: false
+    #   exporter_name: power_cord1_name
+    #   exporter_desc: Line cord 4 identifier - "not-connected" if not available
+    linecord-four-power-phase-A:
+      percent: false
+      exporter_name: power_cord1_phaseA_watts
+      exporter_desc: Power in Phase A of line cord 4 - 0 if not available
+    linecord-four-power-phase-B:
+      percent: false
+      exporter_name: power_cord1_phaseA_watts
+      exporter_desc: Power in Phase B of line cord 4 - 0 if not available
+    linecord-four-power-phase-C:
+      percent: false
+      exporter_name: power_cord1_phaseA_watts
+      exporter_desc: Power in Phase C of line cord 4 - 0 if not available
+    # linecord-five-name:
+    #   # type: info
+    #   percent: false
+    #   exporter_name: power_cord1_name
+    #   exporter_desc: Line cord 5 identifier - "not-connected" if not available
+    linecord-five-power-phase-A:
+      percent: false
+      exporter_name: power_cord1_phaseA_watts
+      exporter_desc: Power in Phase A of line cord 5 - 0 if not available
+    linecord-five-power-phase-B:
+      percent: false
+      exporter_name: power_cord1_phaseA_watts
+      exporter_desc: Power in Phase B of line cord 5 - 0 if not available
+    linecord-five-power-phase-C:
+      percent: false
+      exporter_name: power_cord1_phaseA_watts
+      exporter_desc: Power in Phase C of line cord 5 - 0 if not available
+    # linecord-six-name:
+    #   # type: info
+    #   percent: false
+    #   exporter_name: power_cord1_name
+    #   exporter_desc: Line cord 6 identifier - "not-connected" if not available
+    linecord-six-power-phase-A:
+      percent: false
+      exporter_name: power_cord1_phaseA_watts
+      exporter_desc: Power in Phase A of line cord 6 - 0 if not available
+    linecord-six-power-phase-B:
+      percent: false
+      exporter_name: power_cord1_phaseA_watts
+      exporter_desc: Power in Phase B of line cord 6 - 0 if not available
+    linecord-six-power-phase-C:
+      percent: false
+      exporter_name: power_cord1_phaseA_watts
+      exporter_desc: Power in Phase C of line cord 6 - 0 if not available
+    # linecord-seven-name:
+    #   # type: info
+    #   percent: false
+    #   exporter_name: power_cord1_name
+    #   exporter_desc: Line cord 7 identifier - "not-connected" if not available
+    linecord-seven-power-phase-A:
+      percent: false
+      exporter_name: power_cord1_phaseA_watts
+      exporter_desc: Power in Phase A of line cord 7 - 0 if not available
+    linecord-seven-power-phase-B:
+      percent: false
+      exporter_name: power_cord1_phaseA_watts
+      exporter_desc: Power in Phase B of line cord 7 - 0 if not available
+    linecord-seven-power-phase-C:
+      percent: false
+      exporter_name: power_cord1_phaseA_watts
+      exporter_desc: Power in Phase C of line cord 7 - 0 if not available
+    # linecord-eight-name:
+    #   # type: info
+    #   percent: false
+    #   exporter_name: power_cord1_name
+    #   exporter_desc: Line cord 8 identifier - "not-connected" if not available
+    linecord-eight-power-phase-A:
+      percent: false
+      exporter_name: power_cord1_phaseA_watts
+      exporter_desc: Power in Phase A of line cord 8 - 0 if not available
+    linecord-eight-power-phase-B:
+      percent: false
+      exporter_name: power_cord1_phaseA_watts
+      exporter_desc: Power in Phase B of line cord 8 - 0 if not available
+    linecord-eight-power-phase-C:
+      percent: false
+      exporter_name: power_cord1_phaseA_watts
+      exporter_desc: Power in Phase C of line cord 8 - 0 if not available

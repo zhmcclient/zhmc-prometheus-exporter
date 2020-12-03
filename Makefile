@@ -100,10 +100,12 @@ sdist_file := $(dist_dir)/$(package_name)-$(package_version).tar.gz
 
 doc_dir := docs
 doc_build_dir := build_docs
-doc_build_file := $(doc_build_dir)/html/index.html
+doc_build_file := $(doc_build_dir)/index.html
 doc_dependent_files := \
     $(wildcard $(doc_dir)/*.*) \
 		$(wildcard $(doc_dir)/*/*.*) \
+		examples/metrics.yaml \
+		examples/hmccreds.yaml \
     $(package_py_files) \
 
 ifeq ($(python_version),3.4)
@@ -124,7 +126,7 @@ help:
 	@echo "  pylint     - Perform pylint checks"
 	@echo "  test       - Perform unit tests including coverage checker"
 	@echo "  build      - Build the distribution files in $(dist_dir)"
-	@echo "  builddoc   - Build the documentation in $(doc_build_file)"
+	@echo "  builddoc   - Build the documentation in $(doc_build_dir)"
 	@echo "  all        - Do all of the above"
 	@echo "  upload     - Upload the package to Pypi"
 	@echo "  clean      - Remove any temporary files"
@@ -251,7 +253,7 @@ develop_$(pymn).done: install_$(pymn).done dev-requirements.txt
 	@echo "Done: Installed prerequisites for development"
 	echo "done" >$@
 
-$(doc_build_file): develop_$(pymn).done
+$(doc_build_file): develop_$(pymn).done $(doc_dependent_files)
 ifeq ($(python_version),3.4)
 	@echo "Warning: Skipping Sphinx doc build on Python $(python_version)" >&2
 else

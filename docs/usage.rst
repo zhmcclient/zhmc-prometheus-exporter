@@ -160,8 +160,10 @@ The :ref:`sample metric definition file` in the Git repository states in its
 header up to which HMC version or Z machine generation the metrics are defined.
 
 The following table shows the mapping between HMC metric groups and exported
-Prometheus metrics in the standard metric definition. For more details on the
-HMC metrics, see section "Metric Groups" in the :term:`HMC API` book.
+Prometheus metrics in the standard metric definition. Note that ensemble and
+zBX related metrics are not covered in the standard metric definition (support
+for them has been removed in z15). For more details on the HMC metrics, see
+section "Metric Groups" in the :term:`HMC API` book.
 
 ====================================  ====  ===========================  ======================
 HMC Metric Group                      Mode  Prometheus Metrics           Prometheus Labels
@@ -175,12 +177,16 @@ roce-usage                            C     zhmc_roce_adapter_*          cpc, ad
 dpm-system-usage-overview             D     zhmc_cpc_*                   cpc
 partition-usage                       D     zhmc_partition_*             cpc, partition
 adapter-usage                         D     zhmc_adapter_*               cpc, adapter
-virtualization-host-cpu-memory-usage  E     zhmc_virtualization_host_*   cpc, partition
+network-physical-adapter-port         D     zhmc_port_*                  cpc, adapter, port
+partition-attached-network-interface  D     zhmc_nic_*                   cpc, partition, nic
+zcpc-environmentals-and-power         C+D   zhmc_cpc_*                   cpc
+environmental-power-status            C+D   zhmc_cpc_*                   cpc
+zcpc-processor-usage                  C+D   zhmc_processor_*             cpc, processor
 ====================================  ====  ===========================  ======================
 
 Legend:
 
-* Mode: The operational mode of the CPC: C=Classic, D=DPM, E=Ensemble
+* Mode: The operational mode of the CPC: C=Classic, D=DPM
 
 As you can see, the ``zhmc_cpc_*`` and ``zhmc_partition_*`` metrics are used
 for both DPM mode and classic mode. The names of the metrics are equal if and
@@ -189,9 +195,9 @@ only if they have the same meaning in both modes.
 The following table shows the Prometheus metrics in the standard metric
 definition:
 
-===============================================  ====  ===========================================================
+===============================================  ====  ==================================================================
 Prometheus Metric                                Mode  Description
-===============================================  ====  ===========================================================
+===============================================  ====  ==================================================================
 zhmc_cpc_processor_usage_ratio                   C+D   Usage ratio across all processors of the CPC
 zhmc_cpc_shared_processor_usage_ratio            C+D   Usage ratio across all shared processors of the CPC
 zhmc_cpc_dedicated_processor_usage_ratio         C     Usage ratio across all dedicated processors of the CPC
@@ -235,7 +241,74 @@ zhmc_partition_crypto_adapter_usage_ratio        D     Usage ratio of all crypto
 zhmc_partition_network_adapter_usage_ratio       D     Usage ratio of all network adapters of the partition
 zhmc_partition_storage_adapter_usage_ratio       D     Usage ratio of all storage adapters of the partition
 zhmc_partition_zvm_paging_rate_pages_per_second  C     z/VM paging rate in pages/sec
-===============================================  ====  ===========================================================
+zhmc_port_bytes_sent_count                       D     Number of Bytes in unicast packets that were sent
+zhmc_port_bytes_received_count                   D     Number of Bytes in unicast packets that were received
+zhmc_port_packets_sent_count                     D     Number of unicast packets that were sent
+zhmc_port_packets_received_count                 D     Number of unicast packets that were received
+zhmc_port_packets_sent_dropped_count             D     Number of sent packets that were dropped (resource shortage)
+zhmc_port_packets_received_dropped_count         D     Number of received packets that were dropped (resource shortage)
+zhmc_port_packets_sent_discarded_count           D     Number of sent packets that were discarded (malformed)
+zhmc_port_packets_received_discarded_count       D     Number of received packets that were discarded (malformed)
+zhmc_port_multicast_packets_sent_count           D     Number of multicast packets sent
+zhmc_port_multicast_packets_received_count       D     Number of multicast packets received
+zhmc_port_broadcast_packets_sent_count           D     Number of broadcast packets sent
+zhmc_port_broadcast_packets_received_count       D     Number of broadcast packets received
+zhmc_port_data_sent_bytes                        D     Amount of data sent over the collection interval
+zhmc_port_data_received_bytes                    D     Amount of data received over the collection interval
+zhmc_port_data_rate_sent_bytes_per_second        D     Data rate sent over the collection interval
+zhmc_port_data_rate_received_bytes_per_second    D     Data rate received over the collection interval
+zhmc_port_bandwidth_usage_ratio                  D     Bandwidth usage ratio of the port
+zhmc_nic_bytes_sent_count                        D     Number of Bytes in unicast packets that were sent
+zhmc_nic_bytes_received_count                    D     Number of Bytes in unicast packets that were received
+zhmc_nic_packets_sent_count                      D     Number of unicast packets that were sent
+zhmc_nic_packets_received_count                  D     Number of unicast packets that were received
+zhmc_nic_packets_sent_dropped_count              D     Number of sent packets that were dropped (resource shortage)
+zhmc_nic_packets_received_dropped_count          D     Number of received packets that were dropped (resource shortage)
+zhmc_nic_packets_sent_discarded_count            D     Number of sent packets that were discarded (malformed)
+zhmc_nic_packets_received_discarded_count        D     Number of received packets that were discarded (malformed)
+zhmc_nic_multicast_packets_sent_count            D     Number of multicast packets sent
+zhmc_nic_multicast_packets_received_count        D     Number of multicast packets received
+zhmc_nic_broadcast_packets_sent_count            D     Number of broadcast packets sent
+zhmc_nic_broadcast_packets_received_count        D     Number of broadcast packets received
+zhmc_nic_data_sent_bytes                         D     Amount of data sent over the collection interval
+zhmc_nic_data_received_bytes                     D     Amount of data received over the collection interval
+zhmc_nic_data_rate_sent_bytes_per_second         D     Data rate sent over the collection interval
+zhmc_nic_data_rate_received_bytes_per_second     D     Data rate received over the collection interval
+zhmc_cpc_humidity_percent                        C+D   Relative humidity
+zhmc_cpc_dew_point_celsius                       C+D   Dew point
+zhmc_cpc_heat_load_total_btu_per_hour            C+D   Total heat load of the CPC
+zhmc_cpc_heat_load_forced_air_btu_per_hour       C+D   Heat load of the CPC covered by forced-air
+zhmc_cpc_heat_load_water_btu_per_hour            C+D   Heat load of the CPC covered by water
+zhmc_cpc_exhaust_temperature_celsius             C+D   Exhaust temperature of the CPC
+zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase A of line cord 1 - 0 if not available
+zhmc_cpc_power_cord1_phaseB_watts                C+D   Power in Phase B of line cord 1 - 0 if not available
+zhmc_cpc_power_cord1_phaseC_watts                C+D   Power in Phase C of line cord 1 - 0 if not available
+zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase A of line cord 2 - 0 if not available
+zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase B of line cord 2 - 0 if not available
+zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase C of line cord 2 - 0 if not available
+zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase A of line cord 3 - 0 if not available
+zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase B of line cord 3 - 0 if not available
+zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase C of line cord 3 - 0 if not available
+zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase A of line cord 4 - 0 if not available
+zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase B of line cord 4 - 0 if not available
+zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase C of line cord 4 - 0 if not available
+zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase A of line cord 5 - 0 if not available
+zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase B of line cord 5 - 0 if not available
+zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase C of line cord 5 - 0 if not available
+zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase A of line cord 6 - 0 if not available
+zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase B of line cord 6 - 0 if not available
+zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase C of line cord 6 - 0 if not available
+zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase A of line cord 7 - 0 if not available
+zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase B of line cord 7 - 0 if not available
+zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase C of line cord 7 - 0 if not available
+zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase A of line cord 8 - 0 if not available
+zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase B of line cord 8 - 0 if not available
+zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase C of line cord 8 - 0 if not available
+zhmc_processor_usage_ratio                       C+D   Usage ratio of the processor
+zhmc_processor_smt_mode_percent                  C+D   Percentage of time the processor was in in SMT mode
+zhmc_processor_smt_thread0_usage_ratio           C+D   Usage ratio of thread 0 of the processor when in SMT mode
+zhmc_processor_smt_thread1_usage_ratio           C+D   Usage ratio of thread 1 of the processor when in SMT mode
+===============================================  ====  ==================================================================
 
 HMC credentials file
 --------------------
@@ -325,6 +398,11 @@ Where:
     reported by the HMC for the metric. This is useful for resources that
     are inside of the CPC, such as adapters or partitions, to get back to the
     CPC containing them.
+
+  - ``resource.parent.parent`` the name of the grand parent resource of the
+    resource reported by the HMC for the metric. This is useful for resources
+    that are inside of the CPC at the second level, such as NICs or adapter
+    ports, to get back to the CPC containing them.
 
   - ``{hmc-metric-name}`` the name of the HMC metric within the same metric
     group whose metric value should be used as a label value. This can be used
