@@ -162,40 +162,28 @@ Help for metric definition file
 The metric definition file is a YAML file that defines which metrics are
 exported to prometheus and under which names.
 
-The following example shows a complete metric definition file that defines
+The following example shows a valid metric definition file that defines
 a small subset of metrics and metric groups for DPM mode to be exported. For
 more details and a full list of metrics and metric groups, see the
 documentation at https://zhmc-prometheus-exporter.readthedocs.io/.
 
 ---
 metric_groups:
-  dpm-system-usage-overview:
-    prefix: dpm
-    fetch: True
   partition-usage:
     prefix: partition
-    fetch: True
+    fetch: true
+    labels:
+      - name: cpc
+        value: resource.parent
+      - name: partition
+        value: resource
   # ...
 metrics:
-  dpm-system-usage-overview:
-    network-usage:
-      percent: True
-      exporter_name: network_usage_ratio
-      exporter_desc: DPM total network usage
-    temperature-celsius:
-      percent: False
-      exporter_name: temperature_celsius
-      exporter_desc: DPM temperature
-    # ...
   partition-usage:
-    accelerator-usage:
-      percent: True
-      exporter_name: accelerator_usage_ratio
-      exporter_desc: Partition accelerator usage
-    crypto-usage:
-      percent: True
-      exporter_name: crypto_usage_ratio
-      exporter_desc: Partition crypto usage
+    processor-usage:
+      percent: true
+      exporter_name: processor_usage_ratio
+      exporter_desc: Usage ratio across all processors of the partition
     # ...
   # ...
 """)

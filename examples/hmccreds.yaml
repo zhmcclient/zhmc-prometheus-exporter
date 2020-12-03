@@ -1,3 +1,5 @@
+# Sample HMC credentials file for the Z HMC Prometheus Exporter.
+
 metrics:
   hmc: 9.10.11.12
   userid: user
