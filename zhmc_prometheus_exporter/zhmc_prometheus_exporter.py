@@ -24,6 +24,7 @@ import time
 import ipaddress
 import warnings
 from collections import OrderedDict
+from contextlib import contextmanager
 import urllib3
 
 import yaml
@@ -66,6 +67,36 @@ class ProperExit(Exception):
 class ImproperExit(Exception):
     """Terminating because something went wrong"""
     pass
+
+
+@contextmanager
+def zhmc_exceptions(session, hmccreds_filename):
+    # pylint: disable=invalid-name
+    """
+    Context manager that handles zhmcclient exceptions by raising the
+    appropriate exporter exceptions.
+
+    Example::
+
+        with zhmc_exceptions(session, hmccreds_filename):
+            client = zhmcclient.Client(session)
+            version_info = client.version_info()
+    """
+    try:
+        yield
+    except zhmcclient.ConnectionError as exc:
+        raise ConnectionError("Connection error using IP address {} defined "
+                              "in HMC credentials file {}: {}".
+                              format(session.host, hmccreds_filename, exc))
+    except zhmcclient.AuthError as exc:
+        raise AuthError("Authentication error when logging on to the "
+                        "HMC at {} using userid '{}' defined in HMC "
+                        "credentials file {}: {}".
+                        format(session.host, session.userid, hmccreds_filename,
+                               exc))
+    except zhmcclient.Error as exc:
+        raise OtherError("Error returned from HMC at {}: {}".
+                         format(session.host, exc))
 
 
 def parse_args(args):
@@ -278,8 +309,8 @@ def check_metrics_yaml(yaml_metric_groups, yaml_metrics, filename):
                                             "metric '{}' in metric group '{}' "
                                             "in the 'metrics' section in "
                                             "metric definition file {}".
-                                            format(fetch, metric, metric_group,
-                                                   filename))
+                                            format(percent, metric,
+                                                   metric_group, filename))
             if "exporter_name" not in yaml_metrics[metric_group][metric]:
                 raise YAMLInfoNotFoundError("The 'exporter_name' property is "
                                             "missing in metric '{}' in metric "
@@ -313,57 +344,37 @@ def create_session(cred_dict):
     return session
 
 
-def get_version_info(session, filename):
-    """Return the HMC API version as tuple(major,minor)."""
-    try:
+def get_hmc_version(session, hmccreds_filename):
+    """
+    Return the HMC version as a string "v.r.m".
+    """
+    with zhmc_exceptions(session, hmccreds_filename):
         client = zhmcclient.Client(session)
-        version_info = client.version_info()
-    except zhmcclient.ConnectionError as exc:
-        raise ConnectionError("Connection error using IP address {} defined "
-                              "in HMC credentials file {}: {}".
-                              format(session.host, filename, exc))
-    except zhmcclient.AuthError as exc:
-        raise AuthError("Authentication error when logging on to the "
-                        "HMC at {} using userid '{}' defined in HMC "
-                        "credentials file {}: {}".
-                        format(session.host, session.userid, filename,
-                               exc))
-    except zhmcclient.Error as exc:
-        raise OtherError("Error returned from HMC at {}: {}".
-                         format(session.host, exc))
-    return version_info
+        version_dict = client.query_api_version()
+    hmc_version = version_dict['hmc-version']
+    return hmc_version
 
 
-def create_metrics_context(session, yaml_metric_groups, filename):
+def create_metrics_context(session, yaml_metric_groups, hmccreds_filename):
     """Creating a context is mandatory for reading metrics from the Z HMC.
     Takes the session, the metric_groups dictionary from the metrics YAML file
     for fetch/do not fetch information, and the name of the YAML file for error
     output.
     Returns the context.
     """
-    try:
+    fetched_metric_groups = []
+    for metric_group in yaml_metric_groups:
+        if yaml_metric_groups[metric_group]["fetch"]:
+            fetched_metric_groups.append(metric_group)
+    verbose("Creating a metrics context on the HMC for metric groups:")
+    for metric_group in fetched_metric_groups:
+        verbose("  {}".format(metric_group))
+    with zhmc_exceptions(session, hmccreds_filename):
         client = zhmcclient.Client(session)
-        fetched_metric_groups = []
-        for metric_group in yaml_metric_groups:
-            if yaml_metric_groups[metric_group]["fetch"]:
-                fetched_metric_groups.append(metric_group)
         context = client.metrics_contexts.create(
             {"anticipated-frequency-seconds": 15,
              "metric-groups": fetched_metric_groups})
-        return context
-    except zhmcclient.ConnectionError as exc:
-        raise ConnectionError("Connection error using IP address {} defined "
-                              "in HMC credentials file {}: {}".
-                              format(session.host, filename, exc))
-    except zhmcclient.AuthError as exc:
-        raise AuthError("Authentication error when logging on to the "
-                        "HMC at {} using userid '{}' defined in HMC "
-                        "credentials file {}: {}".
-                        format(session.host, session.userid, filename,
-                               exc))
-    except zhmcclient.Error as exc:
-        raise OtherError("Error returned from HMC at {}: {}".
-                         format(session.host, exc))
+    return context
 
 
 def delete_metrics_context(session, context):
@@ -407,6 +418,7 @@ class ResourceCache(object):
         try:
             _resource = self._resources[uri]
         except KeyError:
+            verbose2("Finding resource for {}".format(uri))
             _resource = object_value.resource  # Takes time to find on HMC
             self._resources[uri] = _resource
         return _resource
@@ -536,30 +548,32 @@ class ZHMCUsageCollector():
         and the name of the YAML file for error output.
         """
         verbose2("Collecting metrics")
-        try:
-            verbose2("Fetching metrics from HMC")
-            metrics_object = retrieve_metrics(self.context)
-        except zhmcclient.HTTPError as exc:
-            if exc.http_status == 404 and exc.reason == 1:
-                # Disable this line because it leads sometimes to
-                # an exception within the exception handling.
-                # delete_metrics_context(self.session, self.context)
-                verbose2(" Recreating a metrics context on the HMC")
-                self.session = create_session(self.yaml_creds)
-                self.context = create_metrics_context(self.session,
-                                                      self.yaml_metric_groups,
-                                                      self.filename_creds)
+
+        with zhmc_exceptions(self.session, self.filename_creds):
+            try:
                 verbose2("Fetching metrics from HMC")
                 metrics_object = retrieve_metrics(self.context)
-            else:
-                raise
+            except zhmcclient.HTTPError as exc:
+                if exc.http_status == 404 and exc.reason == 1:
+                    # Disable this line because it leads sometimes to
+                    # an exception within the exception handling.
+                    # delete_metrics_context(self.session, self.context)
+                    verbose2(" Recreating a metrics context on the HMC")
+                    self.session = create_session(self.yaml_creds)
+                    self.context = create_metrics_context(
+                        self.session, self.yaml_metric_groups,
+                        self.filename_creds)
+                    verbose2("Fetching metrics from HMC")
+                    metrics_object = retrieve_metrics(self.context)
+                else:
+                    raise
 
-        verbose2("Building family objects")
-        family_objects = build_family_objects(metrics_object,
-                                              self.yaml_metric_groups,
-                                              self.yaml_metrics,
-                                              self.filename_metrics,
-                                              self.resource_cache)
+            verbose2("Building family objects")
+            family_objects = build_family_objects(metrics_object,
+                                                  self.yaml_metric_groups,
+                                                  self.yaml_metrics,
+                                                  self.filename_metrics,
+                                                  self.resource_cache)
 
         verbose2("Returning family objects")
         # Yield all family objects
@@ -646,13 +660,9 @@ def main():
         verbose("Creating a session with HMC {}".format(yaml_creds['hmc']))
         session = create_session(yaml_creds)
 
-        version_info = get_version_info(session, args.c)
-        verbose("HMC API version: {}.{}".
-                format(version_info[0], version_info[1]))
+        hmc_version = get_hmc_version(session, args.c)
+        verbose("HMC version: {}".format(hmc_version))
 
-        verbose("Creating a metrics context on the HMC for metric groups:")
-        for metric_group in yaml_metric_groups:
-            verbose("  {}".format(metric_group))
         try:
             context = create_metrics_context(session, yaml_metric_groups,
                                              args.c)
