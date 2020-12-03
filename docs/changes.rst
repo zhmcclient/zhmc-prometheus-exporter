@@ -73,6 +73,10 @@ Released: not yet
 
 * Showing the HMC API version as a verbose message.
 
+* Removed ensemble/zBX related metrics from the sample metric definition file.
+
+* Added all missing metrics up to z15 to the sample metric definition file.
+
 **Cleanup:**
 
 * Removed the use of 'pbr' to simplify installation and development
