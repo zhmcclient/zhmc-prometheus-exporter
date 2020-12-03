@@ -345,7 +345,7 @@ class TestMetrics(unittest.TestCase):
         self.assertEqual(family.samples, [sample1])
 
         # pylint: disable=protected-access
-        self.assertEqual(family._labelnames, ("label1", "resource"))
+        self.assertEqual(set(family._labelnames), set(["label1", "resource"]))
 
         teardown_metrics_context(context)
 
