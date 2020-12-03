@@ -1,5 +1,6 @@
-# Example zhmc-prometheus-export metric definition file with all metrics
-# supported up to HMC 2.15.0 (z15), except ensemble/zBX metrics.
+# Sample metric definition file for the Z HMC Prometheus Exporter.
+# Defines all metrics up to HMC version 2.15.0 (z15), except for ensemble/zBX
+# related metrics which are not supported by the Z HMC Prometheus Exporter.
 
 metric_groups:
 
