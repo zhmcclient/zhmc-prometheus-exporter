@@ -31,9 +31,17 @@ Released: not yet
 * Docs: Fixed the names of the Prometheus metrics of the line cord power metrics.
   (see issue #89)
 
+* Added missing dependency to 'urllib3' Python package.
+
 **Enhancements:**
 
 **Cleanup:**
+
+* The metric definition and HMC credentials YAML files are now validated using
+  a schema definition (using JSON schema). This improved the ability to
+  enhance these files, and allowed to get rid of error-prone manual validation
+  code. The schema validation files are part of the installed Python package.
+  This adds a dependency to the 'jsonschema' package. (see issue #81)
 
 **Known issues:**
 
