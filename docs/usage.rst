@@ -280,30 +280,30 @@ zhmc_cpc_heat_load_total_btu_per_hour            C+D   Total heat load of the CP
 zhmc_cpc_heat_load_forced_air_btu_per_hour       C+D   Heat load of the CPC covered by forced-air
 zhmc_cpc_heat_load_water_btu_per_hour            C+D   Heat load of the CPC covered by water
 zhmc_cpc_exhaust_temperature_celsius             C+D   Exhaust temperature of the CPC
-zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase A of line cord 1 - 0 if not available
-zhmc_cpc_power_cord1_phaseB_watts                C+D   Power in Phase B of line cord 1 - 0 if not available
-zhmc_cpc_power_cord1_phaseC_watts                C+D   Power in Phase C of line cord 1 - 0 if not available
-zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase A of line cord 2 - 0 if not available
-zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase B of line cord 2 - 0 if not available
-zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase C of line cord 2 - 0 if not available
-zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase A of line cord 3 - 0 if not available
-zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase B of line cord 3 - 0 if not available
-zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase C of line cord 3 - 0 if not available
-zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase A of line cord 4 - 0 if not available
-zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase B of line cord 4 - 0 if not available
-zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase C of line cord 4 - 0 if not available
-zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase A of line cord 5 - 0 if not available
-zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase B of line cord 5 - 0 if not available
-zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase C of line cord 5 - 0 if not available
-zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase A of line cord 6 - 0 if not available
-zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase B of line cord 6 - 0 if not available
-zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase C of line cord 6 - 0 if not available
-zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase A of line cord 7 - 0 if not available
-zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase B of line cord 7 - 0 if not available
-zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase C of line cord 7 - 0 if not available
-zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase A of line cord 8 - 0 if not available
-zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase B of line cord 8 - 0 if not available
-zhmc_cpc_power_cord1_phaseA_watts                C+D   Power in Phase C of line cord 8 - 0 if not available
+zhmc_cpc_power_cord1_phase_a_watts               C+D   Power in Phase A of line cord 1 - 0 if not available
+zhmc_cpc_power_cord1_phase_b_watts               C+D   Power in Phase B of line cord 1 - 0 if not available
+zhmc_cpc_power_cord1_phase_c_watts               C+D   Power in Phase C of line cord 1 - 0 if not available
+zhmc_cpc_power_cord2_phase_a_watts               C+D   Power in Phase A of line cord 2 - 0 if not available
+zhmc_cpc_power_cord2_phase_b_watts               C+D   Power in Phase B of line cord 2 - 0 if not available
+zhmc_cpc_power_cord2_phase_c_watts               C+D   Power in Phase C of line cord 2 - 0 if not available
+zhmc_cpc_power_cord3_phase_a_watts               C+D   Power in Phase A of line cord 3 - 0 if not available
+zhmc_cpc_power_cord3_phase_b_watts               C+D   Power in Phase B of line cord 3 - 0 if not available
+zhmc_cpc_power_cord3_phase_c_watts               C+D   Power in Phase C of line cord 3 - 0 if not available
+zhmc_cpc_power_cord4_phase_a_watts               C+D   Power in Phase A of line cord 4 - 0 if not available
+zhmc_cpc_power_cord4_phase_b_watts               C+D   Power in Phase B of line cord 4 - 0 if not available
+zhmc_cpc_power_cord4_phase_c_watts               C+D   Power in Phase C of line cord 4 - 0 if not available
+zhmc_cpc_power_cord5_phase_a_watts               C+D   Power in Phase A of line cord 5 - 0 if not available
+zhmc_cpc_power_cord5_phase_b_watts               C+D   Power in Phase B of line cord 5 - 0 if not available
+zhmc_cpc_power_cord5_phase_c_watts               C+D   Power in Phase C of line cord 5 - 0 if not available
+zhmc_cpc_power_cord6_phase_a_watts               C+D   Power in Phase A of line cord 6 - 0 if not available
+zhmc_cpc_power_cord6_phase_b_watts               C+D   Power in Phase B of line cord 6 - 0 if not available
+zhmc_cpc_power_cord6_phase_c_watts               C+D   Power in Phase C of line cord 6 - 0 if not available
+zhmc_cpc_power_cord7_phase_a_watts               C+D   Power in Phase A of line cord 7 - 0 if not available
+zhmc_cpc_power_cord7_phase_b_watts               C+D   Power in Phase B of line cord 7 - 0 if not available
+zhmc_cpc_power_cord7_phase_c_watts               C+D   Power in Phase C of line cord 7 - 0 if not available
+zhmc_cpc_power_cord8_phase_a_watts               C+D   Power in Phase A of line cord 8 - 0 if not available
+zhmc_cpc_power_cord8_phase_b_watts               C+D   Power in Phase B of line cord 8 - 0 if not available
+zhmc_cpc_power_cord8_phase_c_watts               C+D   Power in Phase C of line cord 8 - 0 if not available
 zhmc_processor_usage_ratio                       C+D   Usage ratio of the processor
 zhmc_processor_smt_mode_percent                  C+D   Percentage of time the processor was in in SMT mode
 zhmc_processor_smt_thread0_usage_ratio           C+D   Usage ratio of thread 0 of the processor when in SMT mode
