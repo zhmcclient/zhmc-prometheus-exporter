@@ -1,0 +1,75 @@
+# This is a JSON Schema in YAML format.
+
+title: Metric definition schema
+description: JSON schema for the metric definition file
+type: object
+required:
+  - metric_groups
+  - metrics
+additionalProperties: false
+properties:
+  metric_groups:
+    description: The HMC metric groups and their mapping to Prometheus
+    type: object
+    additionalProperties: false
+    patternProperties:
+      "^[a-z0-9\\-]+$":
+        description: "Key: Name of the HMC metric group"
+        type: object
+        required:
+          - prefix
+          - fetch
+        additionalProperties: false
+        properties:
+          prefix:
+            description: "<prefix> part of Prometheus metric name (format: zhmc_<prefix>_<metric_unit>)"
+            type: string
+          fetch:
+            description: "Indicates whether the metric group should be fetched from the HMC"
+            type: boolean
+          labels:
+            description: "Prometheus labels to be added to all metrics of this metric group"
+            type: array
+            default: []
+            items:
+              - type: object
+                required:
+                  - name
+                  - value
+                additionalProperties: false
+                properties:
+                  name:
+                    description: "Label name"
+                    type: string
+                  value:
+                    description: "Label value. There are some keywords with special handling - see documentation for details"
+                    type: string
+  metrics:
+    description: The HMC metrics and their mapping to Prometheus
+    type: object
+    additionalProperties: false
+    patternProperties:
+      "^[a-z0-9\\-]+$":
+        description: "Key: Name of the HMC metric group"
+        type: object
+        additionalProperties: false
+        patternProperties:
+          "^[a-zA-Z0-9\\-]+$":
+            description: "Key: Name of the HMC metric within its metric group"
+            type: object
+            required:
+              - exporter_name
+              - exporter_desc
+            additionalProperties: false
+            properties:
+              exporter_name:
+                description: "<metric_unit> part of Prometheus metric name (format: zhmc_<prefix>_<metric_unit>); Null causes the metric not to be exported to Prometheus"
+                type: [string, "null"]
+                pattern: "^[a-zA-Z0-9_]+$"
+              exporter_desc:
+                description: "HELP description of Prometheus metric"
+                type: [string, "null"]
+              percent:
+                description: "Indicates whether the HMC metric value is represented as percentage with a value of 100 meaning 100%"
+                type: boolean
+                default: false

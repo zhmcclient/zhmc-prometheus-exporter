@@ -1,0 +1,44 @@
+# This is a JSON Schema in YAML format.
+
+title: HMC credentials schema
+description: JSON schema for the HMC credentials file
+type: object
+required:
+  - metrics
+additionalProperties: false
+properties:
+  metrics:
+    description: The HMC host and credentials
+    type: object
+    required:
+      - hmc
+      - userid
+      - password
+    additionalProperties: false
+    properties:
+      hmc:
+        description: "Hostname or IP address of HMC"
+        type: string
+      userid:
+        description: "Userid used by the exporter to log on to the HMC"
+        type: string
+      password:
+        description: "Password of the HCM userid"
+        type: string
+  extra_labels:
+    description: "Additional Prometheus labels to be added to all metrics"
+    type: array
+    default: []
+    items:
+      - type: object
+        required:
+          - name
+          - value
+        additionalProperties: false
+        properties:
+          name:
+            description: "Label name"
+            type: string
+          value:
+            description: "Label value. Always handled as literal strings - no keywords with speacial handling"
+            type: string

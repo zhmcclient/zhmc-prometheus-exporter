@@ -88,6 +88,9 @@ setuptools.setup(
     packages=[
         'zhmc_prometheus_exporter'
     ],
+    package_data={
+        'zhmc_prometheus_exporter': ['schemas/*.yaml'],
+    },
     entry_points={
         'console_scripts': [
             'zhmc_prometheus_exporter = '

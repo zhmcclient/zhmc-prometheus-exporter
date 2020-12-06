@@ -20,18 +20,22 @@ IBM Z HMC Prometheus Exporter
 
 import argparse
 import sys
+import os
 import time
-import ipaddress
 import warnings
 from contextlib import contextmanager
+
 import urllib3
 import yaml
+import jsonschema
 import zhmcclient
 from prometheus_client import start_http_server
 from prometheus_client.core import GaugeMetricFamily, REGISTRY
 
 DEFAULT_CREDS_FILE = '/etc/zhmc-prometheus-exporter/hmccreds.yaml'
 DEFAULT_METRICS_FILE = '/etc/zhmc-prometheus-exporter/metrics.yaml'
+METRICS_SCHEMA_FILE = os.path.join(os.path.dirname(__file__),
+                                   'schemas', 'metrics_schema.yaml')
 
 
 class YAMLInfoNotFoundError(Exception):
@@ -191,132 +195,80 @@ metrics:
 """)
 
 
-def parse_yaml_file(yamlfile, name):
-    """Takes a YAML file name.
-    Returns a parsed version of that file i.e. nests of dictionaries and lists.
+def parse_yaml_file(yamlfile, name, schemafilename=None):
     """
+    Returns the parsed content of a YAML file as a Python object.
+    Optionally validates against a specified JSON schema file in YAML format.
+
+    Raises:
+        ImproperExit
+    """
+
     try:
-        with open(yamlfile, "r") as yamlcontent:
-            return yaml.safe_load(yamlcontent)
-    except PermissionError:
-        raise PermissionError("Permission error reading {} {}".
-                              format(name, yamlfile))
-    except FileNotFoundError:
-        raise FileNotFoundError("Cannot find {} {}".
-                                format(name, yamlfile))
+        with open(yamlfile, "r") as fp:
+            yaml_obj = yaml.safe_load(fp)
+    except FileNotFoundError as exc:
+        new_exc = ImproperExit(
+            "Cannot find {} {}: {}".
+            format(name, yamlfile, exc))
+        new_exc.__cause__ = None  # pylint: disable=invalid-name
+        raise new_exc
+    except PermissionError as exc:
+        new_exc = ImproperExit(
+            "Permission error reading {} {}: {}".
+            format(name, yamlfile, exc))
+        new_exc.__cause__ = None  # pylint: disable=invalid-name
+        raise new_exc
+    except yaml.YAMLError as exc:
+        new_exc = ImproperExit(
+            "YAML error reading {} {}: {}".
+            format(name, yamlfile, exc))
+        new_exc.__cause__ = None  # pylint: disable=invalid-name
+        raise new_exc
 
+    if schemafilename:
 
-def parse_yaml_sections(yamlcontent, sought_sections, filename):
-    """Takes nests of dictionaries and lists, the required sections,
-    and the name of the YAML file for error output.
-    Returns a list of the parsed sections as dictionaries.
-    """
-    parsed_sections = []
-    for sought_section in sought_sections:
-        section = yamlcontent.get(sought_section, None)
-        if section is None:
-            raise YAMLInfoNotFoundError("Section {} not found in file {}".
-                                        format(sought_section, filename))
-        parsed_sections.append(section)
-    return parsed_sections
+        schemafile = os.path.join(
+            os.path.dirname(__file__), 'schemas', schemafilename)
+        try:
+            with open(schemafile, 'r') as fp:
+                schema = yaml.safe_load(fp)
+        except FileNotFoundError as exc:
+            new_exc = ImproperExit(
+                "Internal error: Cannot find schema file {}: {}".
+                format(schemafile, exc))
+            new_exc.__cause__ = None  # pylint: disable=invalid-name
+            raise new_exc
+        except PermissionError as exc:
+            new_exc = ImproperExit(
+                "Internal error: Permission error reading schema file {}: {}".
+                format(schemafile, exc))
+            new_exc.__cause__ = None  # pylint: disable=invalid-name
+            raise new_exc
+        except yaml.YAMLError as exc:
+            new_exc = ImproperExit(
+                "Internal error: YAML error reading schema file {}: {}".
+                format(schemafile, exc))
+            new_exc.__cause__ = None  # pylint: disable=invalid-name
+            raise new_exc
 
+        try:
+            jsonschema.validate(yaml_obj, schema)
+        except jsonschema.exceptions.SchemaError as exc:
+            new_exc = ImproperExit(
+                "Internal error: Invalid JSON schema file {}: {}".
+                format(schemafile, exc))
+            new_exc.__cause__ = None
+            raise new_exc
+        except jsonschema.exceptions.ValidationError as exc:
+            new_exc = ImproperExit(
+                "Schema validation of {} {} failed on element '{}': {}".
+                format(name, yamlfile,
+                       '.'.join(str(e) for e in exc.absolute_path), exc))
+            new_exc.__cause__ = None
+            raise new_exc
 
-def check_creds_yaml(yaml_creds, filename):
-    """Verify all required information in the credentials YAML file is given.
-    Takes the dictionary retrieved from parse_yaml_sections and the name of
-    the YAML file for error output.
-    """
-    if "hmc" not in yaml_creds:
-        raise YAMLInfoNotFoundError("The 'hmc' property is missing in "
-                                    "HMC credentials file {}".
-                                    format(filename))
-    try:
-        ipaddress.ip_address(yaml_creds["hmc"])
-    except ValueError:
-        raise YAMLInfoNotFoundError("The 'hmc' property specifies an invalid "
-                                    "IP address '{}' in HMC credentials file "
-                                    "{}".
-                                    format(yaml_creds["hmc"], filename))
-    if "userid" not in yaml_creds:
-        raise YAMLInfoNotFoundError("The 'userid' property is missing in "
-                                    "HMC credentials file {}".
-                                    format(filename))
-    if "password" not in yaml_creds:
-        raise YAMLInfoNotFoundError("The 'password' property is missing in "
-                                    "HMC credentials file {}".
-                                    format(filename))
-
-
-def check_metrics_yaml(yaml_metric_groups, yaml_metrics, filename):
-    """Verify all required information in the metrics YAML file is given.
-    Takes the metric_groups dictionary from the metrics YAML file that
-    specifies the known groups, the exporter prefix, and whether the metric
-    group should actually be fetched, the metrics dictionary from the metrics
-    YAML file that specifies the metrics per group, a percent boolean value,
-    the name, and the description for the exporter, and the name of the YAML
-    file for error output.
-    """
-    for metric_group in yaml_metric_groups:
-        if "prefix" not in yaml_metric_groups[metric_group]:
-            raise YAMLInfoNotFoundError("The 'prefix' property is missing in "
-                                        "metric group '{}' in the "
-                                        "'metric_groups' section in metric "
-                                        "definition file {}".
-                                        format(metric_group, filename))
-        if "fetch" not in yaml_metric_groups[metric_group]:
-            raise YAMLInfoNotFoundError("The 'fetch' property is missing in "
-                                        "metric group '{}' in the "
-                                        "'metric_groups' section in metric "
-                                        "definition file {}".
-                                        format(metric_group, filename))
-        fetch = yaml_metric_groups[metric_group]["fetch"]
-        if fetch not in (True, False):
-            raise YAMLInfoNotFoundError("The 'fetch' property has an invalid "
-                                        "boolean value '{}' in metric group "
-                                        "'{}' in the 'metric_groups' section "
-                                        "in metric definition file {}".
-                                        format(fetch, metric_group, filename))
-    for metric_group in yaml_metrics:
-        if metric_group not in yaml_metric_groups:
-            raise YAMLInfoNotFoundError("The metric group '{}' specified in "
-                                        "the 'metrics' section is not defined "
-                                        "in the 'metric_groups' section in "
-                                        "metric definition file {}".
-                                        format(metric_group, filename))
-        for metric in yaml_metrics[metric_group]:
-            if "percent" not in yaml_metrics[metric_group][metric]:
-                raise YAMLInfoNotFoundError("The 'percent' property is "
-                                            "missing in metric '{}' in metric "
-                                            "group '{}' in the 'metrics' "
-                                            "section in metric definition file "
-                                            "{}".
-                                            format(metric, metric_group,
-                                                   filename))
-            percent = yaml_metrics[metric_group][metric]["percent"]
-            if percent not in (True, False):
-                raise YAMLInfoNotFoundError("The 'percent' property has an "
-                                            "invalid boolean value '{}' in "
-                                            "metric '{}' in metric group '{}' "
-                                            "in the 'metrics' section in "
-                                            "metric definition file {}".
-                                            format(percent, metric,
-                                                   metric_group, filename))
-            if "exporter_name" not in yaml_metrics[metric_group][metric]:
-                raise YAMLInfoNotFoundError("The 'exporter_name' property is "
-                                            "missing in metric '{}' in metric "
-                                            "group '{}' in the 'metrics' "
-                                            "section in metric definition file "
-                                            "{}".
-                                            format(metric, metric_group,
-                                                   filename))
-            if "exporter_desc" not in yaml_metrics[metric_group][metric]:
-                raise YAMLInfoNotFoundError("The 'exporter_desc' property is "
-                                            "missing in metric '{}' in metric "
-                                            "group '{}' in the 'metrics' "
-                                            "section in metric definition file "
-                                            "{}".
-                                            format(metric, metric_group,
-                                                   filename))
+    return yaml_obj
 
 
 # Metrics context creation & deletion and retrieval derived from
@@ -621,46 +573,16 @@ def main():
         VERBOSE_LEVEL = args.verbose
 
         verbose("Parsing HMC credentials file: {}".format(args.c))
-        try:
-            raw_yaml_creds = parse_yaml_file(args.c, 'HMC credentials file')
-        # These will be thrown upon wrong user input
-        # The user should not see a traceback then
-        except (PermissionError, FileNotFoundError) as error_message:
-            raise ImproperExit(error_message)
-        try:
-            yaml_creds = parse_yaml_sections(raw_yaml_creds, ("metrics",),
-                                             args.c)[0]
-        except (AttributeError, YAMLInfoNotFoundError) as error_message:
-            raise ImproperExit(error_message)
-        if "extra_labels" in raw_yaml_creds:
-            try:
-                yaml_extra_labels = parse_yaml_sections(
-                    raw_yaml_creds, ("extra_labels",), args.c)[0]
-            except (AttributeError, YAMLInfoNotFoundError) as error_message:
-                raise ImproperExit(error_message)
-        else:
-            yaml_extra_labels = []
+        yaml_creds_content = parse_yaml_file(
+            args.c, 'HMC credentials file', 'hmccreds_schema.yaml')
+        yaml_creds = yaml_creds_content["metrics"]
+        yaml_extra_labels = yaml_creds_content.get("extra_labels", [])
 
-        verbose("Parsing metric definition file: {}".format(args.c))
-        try:
-            check_creds_yaml(yaml_creds, args.c)
-        except YAMLInfoNotFoundError as error_message:
-            raise ImproperExit(error_message)
-        try:
-            raw_yaml_metrics = parse_yaml_file(args.m, 'metric definition file')
-        except (PermissionError, FileNotFoundError) as error_message:
-            raise ImproperExit(error_message)
-        try:
-            parsed_yaml_sections = parse_yaml_sections(
-                raw_yaml_metrics, ("metric_groups", "metrics"), args.m)
-            yaml_metric_groups = parsed_yaml_sections[0]
-            yaml_metrics = parsed_yaml_sections[1]
-        except (AttributeError, YAMLInfoNotFoundError) as error_message:
-            raise ImproperExit(error_message)
-        try:
-            check_metrics_yaml(yaml_metric_groups, yaml_metrics, args.m)
-        except YAMLInfoNotFoundError as error_message:
-            raise ImproperExit(error_message)
+        verbose("Parsing metric definition file: {}".format(args.m))
+        yaml_metric_content = parse_yaml_file(
+            args.m, 'metric definition file', 'metrics_schema.yaml')
+        yaml_metric_groups = yaml_metric_content['metric_groups']
+        yaml_metrics = yaml_metric_content['metrics']
 
         # Unregister the default collectors (Python, Platform)
         if hasattr(REGISTRY, '_collector_to_names'):
@@ -677,8 +599,8 @@ def main():
         try:
             context = create_metrics_context(session, yaml_metric_groups,
                                              args.c)
-        except (ConnectionError, AuthError, OtherError) as error_message:
-            raise ImproperExit(error_message)
+        except (ConnectionError, AuthError, OtherError) as exc:
+            raise ImproperExit(exc)
 
         resource_cache = ResourceCache()
         coll = ZHMCUsageCollector(
@@ -701,8 +623,8 @@ def main():
         print("Exporter interrupted before server start.")
         delete_metrics_context(session, context)
         sys.exit(1)
-    except ImproperExit as error_message:
-        print("Error: {}".format(error_message))
+    except ImproperExit as exc:
+        print("Error: {}".format(exc))
         delete_metrics_context(session, context)
         sys.exit(1)
     except ProperExit:

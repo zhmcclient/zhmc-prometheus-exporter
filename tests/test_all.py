@@ -84,119 +84,17 @@ class TestParseYaml(unittest.TestCase):
             pass
         # Make it unreadable (mode 000)
         os.chmod(filename, not stat.S_IRWXU)
-        with self.assertRaises(PermissionError):
-            (zhmc_prometheus_exporter.
-             parse_yaml_file(filename, 'test file'))
+        with self.assertRaises(zhmc_prometheus_exporter.ImproperExit):
+            zhmc_prometheus_exporter.parse_yaml_file(
+                filename, 'test file')
         os.remove(filename)
 
     def test_not_found_error(self):
         """Tests if file not found is correctly handled."""
         filename = str(hashlib.sha256(str(time.time()).encode("utf-8")).
                        hexdigest())
-        with self.assertRaises(FileNotFoundError):
+        with self.assertRaises(zhmc_prometheus_exporter.ImproperExit):
             zhmc_prometheus_exporter.parse_yaml_file(filename, 'test file')
-
-
-class TestParseSections(unittest.TestCase):
-    """Tests parse_yaml_sections."""
-
-    def test_normal_input(self):
-        """Tests with some generic input."""
-        sample_dict = {"hmc": "127.0.0.1", "userid": "user", "password": "pwd"}
-        sample_dict_wrap = {"metrics": sample_dict}
-        cred_dict = (zhmc_prometheus_exporter.
-                     parse_yaml_sections(sample_dict_wrap,
-                                         ("metrics",),
-                                         "filename")[0])
-        self.assertEqual(cred_dict, sample_dict)
-
-    def test_section_error(self):
-        """Tests for a missing section."""
-        with self.assertRaises(zhmc_prometheus_exporter.YAMLInfoNotFoundError):
-            (zhmc_prometheus_exporter.
-             parse_yaml_sections({}, ("metrics",), "filename"))
-
-    def test_attribute_error(self):
-        """Tests for something that is not YAML."""
-        with self.assertRaises(AttributeError):
-            (zhmc_prometheus_exporter.
-             parse_yaml_sections("notyaml", ("metrics",), "filename"))
-
-
-class TestCheckCreds(unittest.TestCase):
-    """Tests check_creds_yaml."""
-
-    def test_check_creds_yaml(self):
-        """Tests all sorts of missing, incorrect, and correct information."""
-        missing_hmc = {"userid": "user", "password": "pwd"}
-        incorrect_ip = {"hmc": "256.0.0.1",
-                        "userid": "user",
-                        "password": "pwd"}
-        missing_user = {"hmc": "127.0.0.1", "password": "pwd"}
-        missing_pwd = {"hmc": "127.0.0.1", "userid": "user"}
-        correct = {"hmc": "127.0.0.1", "userid": "user", "password": "pwd"}
-        with self.assertRaises(zhmc_prometheus_exporter.YAMLInfoNotFoundError):
-            zhmc_prometheus_exporter.check_creds_yaml(missing_hmc, "filename")
-        with self.assertRaises(zhmc_prometheus_exporter.YAMLInfoNotFoundError):
-            zhmc_prometheus_exporter.check_creds_yaml(incorrect_ip, "filename")
-        with self.assertRaises(zhmc_prometheus_exporter.YAMLInfoNotFoundError):
-            zhmc_prometheus_exporter.check_creds_yaml(missing_user, "filename")
-        with self.assertRaises(zhmc_prometheus_exporter.YAMLInfoNotFoundError):
-            zhmc_prometheus_exporter.check_creds_yaml(missing_pwd, "filename")
-        zhmc_prometheus_exporter.check_creds_yaml(correct, "filename")
-
-
-class TestCheckMetrics(unittest.TestCase):
-    """Tests check_metrics_yaml."""
-
-    def test_check_metrics_yaml(self):
-        """Tests all sorts of missing, incorrect, and correct information."""
-        bad_prefix = {"metric_group": {"fetch": True}}
-        bad_fetch = {"metric_group": {"prefix": "pre"}}
-        bad_fetch_format = {"metric_group": {"prefix": "pre",
-                                             "fetch": "none"}}
-        correct_groups = {"metric_group": {"prefix": "pre", "fetch": True}}
-        bad_percent = {"metric_group": {"metric": {"exporter_name": "name",
-                                                   "exporter_desc": "desc"}}}
-        bad_percent_format = {"metric_group": {"metric": {
-            "percent": "none",
-            "exporter_name": "name",
-            "exporter_desc": "desc"}}}
-        bad_name = {"metric_group": {"metric": {"percent": True,
-                                                "exporter_desc": "desc"}}}
-        bad_desc = {"metric_group": {"metric": {"percent": True,
-                                                "exporter_name": "name"}}}
-        correct_metric = {"metric_group": {"metric": {
-            "percent": True,
-            "exporter_name": "name",
-            "exporter_desc": "desc"}}}
-        with self.assertRaises(zhmc_prometheus_exporter.YAMLInfoNotFoundError):
-            (zhmc_prometheus_exporter.
-             check_metrics_yaml(bad_prefix, correct_metric, "filename"))
-        with self.assertRaises(zhmc_prometheus_exporter.YAMLInfoNotFoundError):
-            (zhmc_prometheus_exporter.
-             check_metrics_yaml(bad_fetch, correct_metric, "filename"))
-        with self.assertRaises(zhmc_prometheus_exporter.YAMLInfoNotFoundError):
-            (zhmc_prometheus_exporter.
-             check_metrics_yaml(bad_fetch_format, correct_metric, "filename"))
-        with self.assertRaises(zhmc_prometheus_exporter.YAMLInfoNotFoundError):
-            (zhmc_prometheus_exporter.
-             check_metrics_yaml({}, correct_metric, "filename"))
-        with self.assertRaises(zhmc_prometheus_exporter.YAMLInfoNotFoundError):
-            (zhmc_prometheus_exporter.
-             check_metrics_yaml(correct_groups, bad_percent, "filename"))
-        with self.assertRaises(zhmc_prometheus_exporter.YAMLInfoNotFoundError):
-            zhmc_prometheus_exporter.check_metrics_yaml(correct_groups,
-                                                        bad_percent_format,
-                                                        "filename")
-        with self.assertRaises(zhmc_prometheus_exporter.YAMLInfoNotFoundError):
-            (zhmc_prometheus_exporter.
-             check_metrics_yaml(correct_groups, bad_name, "filename"))
-        with self.assertRaises(zhmc_prometheus_exporter.YAMLInfoNotFoundError):
-            (zhmc_prometheus_exporter.
-             check_metrics_yaml(correct_groups, bad_desc, "filename"))
-        (zhmc_prometheus_exporter.
-         check_metrics_yaml(correct_groups, correct_metric, "filename"))
 
 
 # Fake HMC derived from
