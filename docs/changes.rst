@@ -28,6 +28,9 @@ Released: not yet
 
 **Bug fixes:**
 
+* Docs: Fixed the names of the Prometheus metrics of the line cord power metrics.
+  (see issue #89)
+
 **Enhancements:**
 
 **Cleanup:**
