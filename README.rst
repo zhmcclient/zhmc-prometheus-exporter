@@ -66,10 +66,10 @@ Quickstart
   Download the `sample HMC credentials file`_ as ``hmccreds.yaml`` and edit
   that copy accordingly.
 
-  For details, see `The HMC credentials file`_.
+  For details, see `HMC credentials file`_.
 
-.. _The HMC credentials file: https://zhmc-prometheus-exporter.readthedocs.io/en/stable/usage.html#the-hmc-credentials-file
-.. _sample HMC credentials file: https://zhmc-prometheus-exporter.readthedocs.io/en/stable/appendix.html#sample-hmc-credentials-file
+.. _HMC credentials file: https://zhmc-prometheus-exporter.readthedocs.io/en/stable/usage.html#hmc-credentials-file
+.. _sample HMC credentials file: https://zhmc-prometheus-exporter.readthedocs.io/en/stable/usage.html#sample-hmc-credentials-file
 
 * Provide a *metric definition file* for use by the exporter.
 
@@ -85,10 +85,10 @@ Quickstart
   metric descriptions, or if you want to optimize access time by disabling
   metrics not needed.
 
-  For details, see `The metric definition file`_.
+  For details, see `Metric definition file`_.
 
-.. _The metric definition file: https://zhmc-prometheus-exporter.readthedocs.io/en/stable/usage.html#the-metric-definition-file
-.. _sample metric definition file: https://zhmc-prometheus-exporter.readthedocs.io/en/stable/appendix.html#sample-metric-definition-file
+.. _Metric definition file: https://zhmc-prometheus-exporter.readthedocs.io/en/stable/usage.html#metric-definition-file
+.. _sample metric definition file: https://zhmc-prometheus-exporter.readthedocs.io/en/stable/usage.html#sample-metric-definition-file
 
 * Run the exporter as follows:
 

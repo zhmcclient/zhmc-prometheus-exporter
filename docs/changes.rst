@@ -33,6 +33,9 @@ Released: not yet
 
 * Added missing dependency to 'urllib3' Python package.
 
+* README: Fixed the links to the metric definition and HMC credentials files
+  (see issue #88).
+
 **Enhancements:**
 
 **Cleanup:**
