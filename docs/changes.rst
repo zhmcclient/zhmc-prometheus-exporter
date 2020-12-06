@@ -36,6 +36,9 @@ Released: not yet
 * README: Fixed the links to the metric definition and HMC credentials files
   (see issue #88).
 
+* Dockerfile: Fixed that all files from the package are included in the Docker
+  image (see issue #91).
+
 **Enhancements:**
 
 **Cleanup:**
