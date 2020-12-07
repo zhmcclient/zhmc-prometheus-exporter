@@ -17,14 +17,10 @@ Change log
 ----------
 
 
-Version 0.6.0.dev1
-^^^^^^^^^^^^^^^^^^
+Version 0.6.0
+^^^^^^^^^^^^^
 
-Released: not yet
-
-**Incompatible changes:**
-
-**Deprecations:**
+Released: 2020-12-07
 
 **Bug fixes:**
 
@@ -54,12 +50,6 @@ Released: not yet
   enhance these files, and allowed to get rid of error-prone manual validation
   code. The schema validation files are part of the installed Python package.
   This adds a dependency to the 'jsonschema' package. (see issue #81)
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 0.5.0
