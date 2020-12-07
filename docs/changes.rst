@@ -41,6 +41,12 @@ Released: not yet
 
 **Enhancements:**
 
+* Added support for specifying a new optional property `if` in the definition of
+  metric groups in the metric definition file, which specifies a Python
+  expression representing a condition under which the metric group is fetched.
+  The HMC version can be specified in the expression as a `hmc_version` variable.
+  (see issue #77)
+
 **Cleanup:**
 
 * The metric definition and HMC credentials YAML files are now validated using

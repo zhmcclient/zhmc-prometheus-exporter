@@ -33,7 +33,8 @@ metric_groups:
 
   crypto-usage:
     prefix: crypto_adapter
-    fetch: true  # hmc_version >= 2.12.0
+    fetch: true
+    if: "hmc_version>='2.12.0'"
     labels:
       - name: cpc
         value: resource
@@ -42,7 +43,8 @@ metric_groups:
 
   flash-memory-usage:
     prefix: flash_memory_adapter
-    fetch: true  # hmc_version >= 2.12.0
+    fetch: true
+    if: "hmc_version>='2.12.0'"
     labels:
       - name: cpc
         value: resource
@@ -51,7 +53,8 @@ metric_groups:
 
   roce-usage:
     prefix: roce_adapter
-    fetch: true  # hmc_version >= 2.12.1
+    fetch: true
+    if: "hmc_version>='2.12.1'"
     labels:
       - name: cpc
         value: resource
@@ -62,14 +65,16 @@ metric_groups:
 
   dpm-system-usage-overview:
     prefix: cpc
-    fetch: true  # hmc_version >= 2.13.1
+    fetch: true
+    if: "hmc_version>='2.13.1'"
     labels:
       - name: cpc
         value: resource
 
   partition-usage:
     prefix: partition
-    fetch: true  # hmc_version >= 2.13.1
+    fetch: true
+    if: "hmc_version>='2.13.1'"
     labels:
       - name: cpc
         value: resource.parent
@@ -78,7 +83,8 @@ metric_groups:
 
   adapter-usage:
     prefix: adapter
-    fetch: true  # hmc_version >= 2.13.1
+    fetch: true
+    if: "hmc_version>='2.13.1'"
     labels:
       - name: cpc
         value: resource.parent
@@ -87,7 +93,8 @@ metric_groups:
 
   network-physical-adapter-port:
     prefix: port
-    fetch: true  # hmc_version >= 2.13.1
+    fetch: true
+    if: "hmc_version>='2.13.1'"
     labels:
       - name: cpc
         value: resource.parent
@@ -98,7 +105,8 @@ metric_groups:
 
   partition-attached-network-interface:
     prefix: nic
-    fetch: true  # hmc_version >= 2.13.1
+    fetch: false  # Takes about 1 minute for the initial processing
+    if: "hmc_version>='2.13.1'"
     labels:
       - name: cpc
         value: resource.parent.parent
@@ -127,7 +135,8 @@ metric_groups:
 
   environmental-power-status:
     prefix: cpc
-    fetch: true  # hmc_version >= 2.15.0
+    fetch: true
+    if: "hmc_version>='2.15.0'"
     labels:
       - name: cpc
         value: resource
