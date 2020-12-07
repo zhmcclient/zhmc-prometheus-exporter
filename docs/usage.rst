@@ -378,6 +378,7 @@ The metric definition file is in YAML format and has the following structure:
       {hmc-metric-group}:
         prefix: {resource-type}
         fetch: {fetch-bool}
+        if: {fetch-condition}  # optional
         labels:
           # list of labels:
           - name: {label-name}
@@ -401,6 +402,17 @@ Where:
 * ``{resource-type}`` is a short lower case term for the type of resource
   the metric applies to, for example ``cpc`` or ``partition``. It is used
   in the Prometheus metric name directly after the initial ``zhmc_``.
+
+* ``{fetch-bool}`` is a boolean indicating whether the user wants this metric
+  group to be fetched from the HMC. For the metric group to actually be fetched,
+  the ``if`` property, if specified, also needs to evaluate to True.
+
+* ``{fetch-condition}`` is a string that is evaluated as a Python expression and
+  that indicates whether the metric group can be fetched. For the metric group
+  to actually be fetched, the ``fetch`` property also needs to be True.
+  The expression may contain the ``hmc_version`` variable which evaluates to
+  the HMC version. The HMC versions are evaluated as tuples of integers,
+  padding them to 3 version parts by appending 0 if needed.
 
 * ``{label-name}`` is the label name.
 
@@ -445,10 +457,6 @@ Where:
               percent: True
               exporter_name: usage_ratio
               exporter_desc: Usage ratio of the channel
-
-* ``{fetch-bool}`` is a boolean indicating whether the metric group is retrieved
-  from the HMC. This needs to be True for metrics that are exported, and can be
-  set to False to optimize the retrieval for metrics that are not exported.
 
 * ``{percent-bool}`` is a boolean indicating whether the metric value should
   be divided by 100. The reason for this is that the HMC metrics represent

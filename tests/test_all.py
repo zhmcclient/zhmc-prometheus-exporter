@@ -97,6 +97,80 @@ class TestParseYaml(unittest.TestCase):
             zhmc_prometheus_exporter.parse_yaml_file(filename, 'test file')
 
 
+TESTCASES_SPLIT_VERSION = [
+    # (version_str, pad_to, exp_result)
+    ('', 0, (0,)),
+    ('', 1, (0,)),
+    ('', 2, (0, 0)),
+    ('.', 0, (0, 0)),
+    ('.', 2, (0, 0)),
+    ('.', 3, (0, 0, 0)),
+    ('1', 0, (1,)),
+    ('1', 1, (1,)),
+    ('1', 2, (1, 0)),
+    ('1.', 0, (1, 0)),
+    ('1.', 2, (1, 0)),
+    ('1.', 3, (1, 0, 0)),
+    ('1.2', 0, (1, 2)),
+    ('1.2', 2, (1, 2)),
+    ('1.2', 3, (1, 2, 0)),
+    ('13.23.42', 0, (13, 23, 42)),
+    ('1.002', 0, (1, 2)),
+]
+
+
+@pytest.mark.parametrize(
+    "version_str, pad_to, exp_result", TESTCASES_SPLIT_VERSION
+)
+def test_split_version(version_str, pad_to, exp_result):
+    """
+    Tests split_version().
+    """
+
+    # The code to be tested
+    result = zhmc_prometheus_exporter.split_version(version_str, pad_to)
+
+    assert result == exp_result
+
+
+TESTCASES_EVAL_CONDITION = [
+    # (condition, hmc_version, exp_result)
+    ('True', '', True),
+    ('False', '', False),
+    ('"a" == "a"', '', True),
+    ('1 == 1', '', True),
+    ('1 >= 1', '', True),
+    ('1 > 1', '', False),
+    ('hmc_version == "2.14"', '2.14', True),
+    ("hmc_version == '2.14'", '2.14', True),
+    ("hmc_version >= '2.14'", '2.4', False),
+    ("hmc_version >= '2.14'", '2.14.0', True),
+    ("hmc_version >= '2.14'", '2.14.1', True),
+    ("hmc_version <= '2.14'", '2.14.0', True),
+    ("hmc_version <= '2.14'", '2.14.1', False),
+    ("hmc_version >= '2.14.0'", '2.14', True),
+    ("hmc_version >= '2.14.1'", '2.14', False),
+    ("hmc_version <= '2.14.0'", '2.14', True),
+    ("hmc_version <= '2.14.1'", '2.14', True),
+    ("hmc_version >= '2.14' and hmc_version <= '2.15'", '2.14', True),
+    ("hmc_version >= '2.14' and hmc_version <= '2.15'", '2.16', False),
+]
+
+
+@pytest.mark.parametrize(
+    "condition, hmc_version, exp_result", TESTCASES_EVAL_CONDITION
+)
+def test_eval_condition(condition, hmc_version, exp_result):
+    """
+    Tests eval_condition().
+    """
+
+    # The code to be tested
+    result = zhmc_prometheus_exporter.eval_condition(condition, hmc_version)
+
+    assert result == exp_result
+
+
 # Fake HMC derived from
 # github.com/zhmcclient/python-zhmcclient/zhmcclient_mock/_hmc.py
 class TestCreateContext(unittest.TestCase):
@@ -109,7 +183,7 @@ class TestCreateContext(unittest.TestCase):
         context = zhmc_prometheus_exporter.create_metrics_context(
             session,
             {"dpm-system-usage-overview": {"prefix": "pre", "fetch": True}},
-            "filename")
+            "filename", '2.14')
         # pylint: disable=protected-access
         self.assertEqual(type(context), zhmcclient._metrics.MetricsContext)
         context.delete()
@@ -123,7 +197,7 @@ class TestCreateContext(unittest.TestCase):
         session = zhmc_prometheus_exporter.create_session(cred_dict)
         with self.assertRaises(zhmc_prometheus_exporter.ConnectionError):
             zhmc_prometheus_exporter.create_metrics_context(
-                session, {}, "filename")
+                session, {}, "filename", '2.14')
 
 
 class TestDeleteContext(unittest.TestCase):
@@ -259,7 +333,7 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
         yaml_metric_groups = {"dpm-system-usage-overview": {"prefix": "pre",
                                                             "fetch": True}}
         context = zhmc_prometheus_exporter.create_metrics_context(
-            session, yaml_metric_groups, "filename")
+            session, yaml_metric_groups, "filename", '2.14')
         yaml_metrics = {"dpm-system-usage-overview": {"metric-1": {
             "percent": True,
             "exporter_name": "metric1",
@@ -267,7 +341,7 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
         yaml_extra_labels = []
         my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
             cred_dict, session, context, yaml_metric_groups, yaml_metrics,
-            yaml_extra_labels, "filename", "filename", resource_cache=None)
+            yaml_extra_labels, "filename", "filename", None, '2.14')
         self.assertEqual(my_zhmc_usage_collector.yaml_creds, cred_dict)
         self.assertEqual(my_zhmc_usage_collector.session, session)
         self.assertEqual(my_zhmc_usage_collector.context, context)
@@ -285,7 +359,7 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
         yaml_metric_groups = {"dpm-system-usage-overview": {"prefix": "pre",
                                                             "fetch": True}}
         context = zhmc_prometheus_exporter.create_metrics_context(
-            session, yaml_metric_groups, "filename")
+            session, yaml_metric_groups, "filename", '2.14')
         yaml_metrics = {"dpm-system-usage-overview": {"metric-1": {
             "percent": True,
             "exporter_name": "metric1",
@@ -293,7 +367,7 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
         yaml_extra_labels = []
         my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
             cred_dict, session, context, yaml_metric_groups, yaml_metrics,
-            yaml_extra_labels, "filename", "filename", resource_cache=None)
+            yaml_extra_labels, "filename", "filename", None, '2.14')
         collected = list(my_zhmc_usage_collector.collect())
         self.assertEqual(len(collected), 1)
         self.assertEqual(type(collected[0]),

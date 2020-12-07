@@ -21,6 +21,7 @@ IBM Z HMC Prometheus Exporter
 import argparse
 import sys
 import os
+import re
 import time
 import warnings
 from contextlib import contextmanager
@@ -271,6 +272,71 @@ def parse_yaml_file(yamlfile, name, schemafilename=None):
     return yaml_obj
 
 
+def split_version(version_str, pad_to):
+    """
+    Return a tuple with the version parts as integers.
+
+    Parameters:
+
+      version_str (string): Version string, where the parts are separated by
+        dot. The version parts must be decimal numbers. Example: '2.14'
+
+      pad_to (int): Minimum number of version parts to return, padding the
+        least significant version parts with 0. Example: '2.14' padded to
+        3 results in (2, 14, 0).
+
+    Returns:
+
+      tuple(int, ...): Tuple of version parts, as integers.
+    """
+    version_info = []
+    for v in version_str.strip('"\'').split('.'):
+        if v == '':
+            v = 0
+        vint = int(v)  # May raise ValueError
+        version_info.append(vint)
+    while len(version_info) < pad_to:
+        version_info.append(0)
+        pad_to -= 1
+    return tuple(version_info)
+
+
+MNU_PATTERN = r'\d+(?:\.\d+(?:\.\d+)?)?'  # M.N.U
+COND_PATTERN = '^(.*?)("{mnu}"|\'{mnu}\')(.*)$'.format(mnu=MNU_PATTERN)
+COND_PATTERN = re.compile(COND_PATTERN)
+
+
+def eval_condition(condition, hmc_version):
+    """
+    Evaluate a condition expression and return a boolean indicating whether
+    the condition is true.
+
+    Any version string in the condition expression is converted to a tuple of
+    integers before evaluating the expression.
+
+    Parameters:
+
+      condition (string): Python expression to evaluate as a condition. The
+        remaining parameters are valid variables to use in the expression.
+
+      hmc_version (string): Expression variable: HMC version as a string.
+
+    Returns:
+
+      bool: Evaluated condition
+    """
+    hmc_version = split_version(hmc_version, 3)
+    while True:
+        m = COND_PATTERN.match(condition)
+        if m is None:
+            break
+        condition = "{}{}{}".format(
+            m.group(1), split_version(m.group(2), 3), m.group(3))
+    # pylint: disable=eval-used
+    condition = eval(condition, None, dict(hmc_version=hmc_version))
+    return condition
+
+
 # Metrics context creation & deletion and retrieval derived from
 # github.com/zhmcclient/python-zhmcclient/examples/metrics.py
 def create_session(cred_dict):
@@ -297,7 +363,8 @@ def get_hmc_version(session, hmccreds_filename):
     return hmc_version
 
 
-def create_metrics_context(session, yaml_metric_groups, hmccreds_filename):
+def create_metrics_context(
+        session, yaml_metric_groups, hmccreds_filename, hmc_version):
     """Creating a context is mandatory for reading metrics from the Z HMC.
     Takes the session, the metric_groups dictionary from the metrics YAML file
     for fetch/do not fetch information, and the name of the YAML file for error
@@ -306,7 +373,11 @@ def create_metrics_context(session, yaml_metric_groups, hmccreds_filename):
     """
     fetched_metric_groups = []
     for metric_group in yaml_metric_groups:
-        if yaml_metric_groups[metric_group]["fetch"]:
+        mg_dict = yaml_metric_groups[metric_group]
+        fetch = mg_dict["fetch"]
+        if fetch and "if" in mg_dict:
+            fetch = eval_condition(mg_dict["if"], hmc_version)
+        if fetch:
             fetched_metric_groups.append(metric_group)
     verbose("Creating a metrics context on the HMC for metric groups:")
     for metric_group in fetched_metric_groups:
@@ -485,7 +556,7 @@ class ZHMCUsageCollector():
 
     def __init__(self, yaml_creds, session, context, yaml_metric_groups,
                  yaml_metrics, yaml_extra_labels, filename_metrics,
-                 filename_creds, resource_cache):
+                 filename_creds, resource_cache, hmc_version):
         self.session = session
         self.context = context
         self.yaml_creds = yaml_creds
@@ -495,6 +566,7 @@ class ZHMCUsageCollector():
         self.filename_metrics = filename_metrics
         self.filename_creds = filename_creds
         self.resource_cache = resource_cache
+        self.hmc_version = hmc_version
 
     def collect(self):
         """Yield the metrics for exporting.
@@ -516,7 +588,7 @@ class ZHMCUsageCollector():
                     self.session = create_session(self.yaml_creds)
                     self.context = create_metrics_context(
                         self.session, self.yaml_metric_groups,
-                        self.filename_creds)
+                        self.filename_creds, self.hmc_version)
                     verbose2("Fetching metrics from HMC")
                     metrics_object = retrieve_metrics(self.context)
                 else:
@@ -598,14 +670,14 @@ def main():
 
         try:
             context = create_metrics_context(session, yaml_metric_groups,
-                                             args.c)
+                                             args.c, hmc_version)
         except (ConnectionError, AuthError, OtherError) as exc:
             raise ImproperExit(exc)
 
         resource_cache = ResourceCache()
         coll = ZHMCUsageCollector(
             yaml_creds, session, context, yaml_metric_groups, yaml_metrics,
-            yaml_extra_labels, args.m, args.c, resource_cache)
+            yaml_extra_labels, args.m, args.c, resource_cache, hmc_version)
 
         verbose("Registering the collector and performing first collection")
         REGISTRY.register(coll)  # Performs a first collection

@@ -27,6 +27,9 @@ properties:
           fetch:
             description: "Indicates whether the metric group should be fetched from the HMC"
             type: boolean
+          if:
+            description: "Condition for fetching the metric group from the HMC, as an expression using certain variables."
+            type: string
           labels:
             description: "Prometheus labels to be added to all metrics of this metric group"
             type: array
