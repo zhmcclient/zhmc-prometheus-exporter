@@ -35,8 +35,6 @@ from prometheus_client.core import GaugeMetricFamily, REGISTRY
 
 DEFAULT_CREDS_FILE = '/etc/zhmc-prometheus-exporter/hmccreds.yaml'
 DEFAULT_METRICS_FILE = '/etc/zhmc-prometheus-exporter/metrics.yaml'
-METRICS_SCHEMA_FILE = os.path.join(os.path.dirname(__file__),
-                                   'schemas', 'metrics_schema.yaml')
 
 
 class YAMLInfoNotFoundError(Exception):
@@ -374,7 +372,9 @@ def create_metrics_context(
     fetched_metric_groups = []
     for metric_group in yaml_metric_groups:
         mg_dict = yaml_metric_groups[metric_group]
+        # fetch is required in the metrics schema:
         fetch = mg_dict["fetch"]
+        # if is optional in the metrics schema:
         if fetch and "if" in mg_dict:
             fetch = eval_condition(mg_dict["if"], hmc_version)
         if fetch:
@@ -438,7 +438,7 @@ class ResourceCache(object):
 
 
 def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
-                         metrics_filename, yaml_extra_labels,
+                         metrics_filename, extra_labels,
                          resource_cache=None):
     """
     Go through all retrieved metrics and build the Prometheus Family objects.
@@ -449,15 +449,6 @@ def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
       family_name:
         GaugeMetricFamily object
     """
-
-    extra_labels = dict()
-    for item in yaml_extra_labels:
-        # name, value assumed to be present for now - will be validated once
-        # schema validation is implemented.
-        extra_labels[item['name']] = item['value']
-    extra_labels_str = ','.join(
-        ['{}="{}"'.format(k, v) for k, v in extra_labels.items()])
-    verbose("Using extra labels: {}".format(extra_labels_str))
 
     family_objects = {}
     for metric_group_value in metrics_object.metric_group_values:
@@ -480,18 +471,14 @@ def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
             metric_values = object_value.metrics
 
             # Calculate the resource labels:
-            # metric_groups:
-            #   {metric}:
-            #     labels:
-            #       - name: partition  # default: resource
-            #         value: resource  # default: resource
-            yaml_labels = yaml_metric_group.get('labels', None)
-            if not yaml_labels:
-                yaml_labels = [{}]
             labels = dict(extra_labels)
+            # labels is optional in the metrics schema:
+            default_labels = [dict(name='resource', value='resource')]
+            yaml_labels = yaml_metric_group.get('labels', default_labels)
             for item in yaml_labels:
-                label_name = item.get('name', 'resource')
-                item_value = item.get('value', 'resource')
+                # name, value are required in the metrics schema:
+                label_name = item['name']
+                item_value = item['value']
                 if item_value == 'resource':
                     label_value = str(resource.name)
                 elif item_value == 'resource.parent':
@@ -523,21 +510,25 @@ def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
                     continue
 
                 # Skip metrics that are defined to be ignored
-                if not yaml_metric.get("exporter_name", None):
+                # exporter_name is required in the metrics schema:
+                if not yaml_metric["exporter_name"]:
                     continue
 
                 # Transform HMC percentages (value 100 means 100% = 1) to
                 # Prometheus values (value 1 means 100% = 1)
+                # percent is optional in the metrics schema:
                 if yaml_metric.get("percent", False):
                     metric_value /= 100
 
                 # Create a Family object, if needed
+                # prefix,exporter_name are required in the metrics schema:
                 family_name = "zhmc_{}_{}".format(
                     yaml_metric_group["prefix"],
                     yaml_metric["exporter_name"])
                 try:
                     family_object = family_objects[family_name]
                 except KeyError:
+                    # exporter_desc is required in the metrics schema:
                     family_object = GaugeMetricFamily(
                         family_name,
                         yaml_metric["exporter_desc"],
@@ -555,14 +546,14 @@ class ZHMCUsageCollector():
     """Collects the usage for exporting."""
 
     def __init__(self, yaml_creds, session, context, yaml_metric_groups,
-                 yaml_metrics, yaml_extra_labels, filename_metrics,
+                 yaml_metrics, extra_labels, filename_metrics,
                  filename_creds, resource_cache, hmc_version):
         self.session = session
         self.context = context
         self.yaml_creds = yaml_creds
         self.yaml_metric_groups = yaml_metric_groups
         self.yaml_metrics = yaml_metrics
-        self.yaml_extra_labels = yaml_extra_labels
+        self.extra_labels = extra_labels
         self.filename_metrics = filename_metrics
         self.filename_creds = filename_creds
         self.resource_cache = resource_cache
@@ -599,7 +590,7 @@ class ZHMCUsageCollector():
                                                   self.yaml_metric_groups,
                                                   self.yaml_metrics,
                                                   self.filename_metrics,
-                                                  self.yaml_extra_labels,
+                                                  self.extra_labels,
                                                   self.resource_cache)
 
         verbose2("Returning family objects")
@@ -647,12 +638,15 @@ def main():
         verbose("Parsing HMC credentials file: {}".format(args.c))
         yaml_creds_content = parse_yaml_file(
             args.c, 'HMC credentials file', 'hmccreds_schema.yaml')
+        # metrics is required in the metrics schema:
         yaml_creds = yaml_creds_content["metrics"]
+        # extra_labels is optional in the metrics schema:
         yaml_extra_labels = yaml_creds_content.get("extra_labels", [])
 
         verbose("Parsing metric definition file: {}".format(args.m))
         yaml_metric_content = parse_yaml_file(
             args.m, 'metric definition file', 'metrics_schema.yaml')
+        # metric_groups and metrics are required in the metrics schema:
         yaml_metric_groups = yaml_metric_content['metric_groups']
         yaml_metrics = yaml_metric_content['metrics']
 
@@ -662,6 +656,7 @@ def main():
             for coll in list(REGISTRY._collector_to_names.keys()):
                 REGISTRY.unregister(coll)
 
+        # hmc is required in the HMC creds schema:
         verbose("Creating a session with HMC {}".format(yaml_creds['hmc']))
         session = create_session(yaml_creds)
 
@@ -674,10 +669,18 @@ def main():
         except (ConnectionError, AuthError, OtherError) as exc:
             raise ImproperExit(exc)
 
+        extra_labels = dict()
+        for item in yaml_extra_labels:
+            # name, value are required in the HMC creds schema:
+            extra_labels[item['name']] = item['value']
+        extra_labels_str = ','.join(
+            ['{}="{}"'.format(k, v) for k, v in extra_labels.items()])
+        verbose("Using extra labels: {}".format(extra_labels_str))
+
         resource_cache = ResourceCache()
         coll = ZHMCUsageCollector(
             yaml_creds, session, context, yaml_metric_groups, yaml_metrics,
-            yaml_extra_labels, args.m, args.c, resource_cache, hmc_version)
+            extra_labels, args.m, args.c, resource_cache, hmc_version)
 
         verbose("Registering the collector and performing first collection")
         REGISTRY.register(coll)  # Performs a first collection

@@ -291,16 +291,14 @@ class TestMetrics(unittest.TestCase):
                 }
             }
         }
-        yaml_extra_labels = [
-            {"name": "label1", "value": "value1"},
-        ]
+        extra_labels = {"label1": "value1"}
 
         context = setup_metrics_context()
         metrics_object = zhmc_prometheus_exporter.retrieve_metrics(context)
 
         families = zhmc_prometheus_exporter.build_family_objects(
             metrics_object, yaml_metric_groups, yaml_metrics, 'file',
-            yaml_extra_labels)
+            extra_labels)
 
         assert len(families) == 1
         assert "zhmc_pre_metric1" in families
@@ -338,10 +336,10 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
             "percent": True,
             "exporter_name": "metric1",
             "exporter_desc": "metric1 description"}}}
-        yaml_extra_labels = []
+        extra_labels = {}
         my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
             cred_dict, session, context, yaml_metric_groups, yaml_metrics,
-            yaml_extra_labels, "filename", "filename", None, '2.14')
+            extra_labels, "filename", "filename", None, '2.14')
         self.assertEqual(my_zhmc_usage_collector.yaml_creds, cred_dict)
         self.assertEqual(my_zhmc_usage_collector.session, session)
         self.assertEqual(my_zhmc_usage_collector.context, context)
@@ -364,10 +362,10 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
             "percent": True,
             "exporter_name": "metric1",
             "exporter_desc": "metric1 description"}}}
-        yaml_extra_labels = []
+        extra_labels = {}
         my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
             cred_dict, session, context, yaml_metric_groups, yaml_metrics,
-            yaml_extra_labels, "filename", "filename", None, '2.14')
+            extra_labels, "filename", "filename", None, '2.14')
         collected = list(my_zhmc_usage_collector.collect())
         self.assertEqual(len(collected), 1)
         self.assertEqual(type(collected[0]),
