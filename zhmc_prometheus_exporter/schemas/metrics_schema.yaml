@@ -30,23 +30,26 @@ properties:
           if:
             description: "Condition for fetching the metric group from the HMC, as an expression using certain variables."
             type: string
+            default: null
           labels:
             description: "Prometheus labels to be added to all metrics of this metric group"
             type: array
-            default: []
+            default:
+              - name: resource
+                value: resource
             items:
-              - type: object
-                required:
-                  - name
-                  - value
-                additionalProperties: false
-                properties:
-                  name:
-                    description: "Label name"
-                    type: string
-                  value:
-                    description: "Label value. There are some keywords with special handling - see documentation for details"
-                    type: string
+              type: object
+              required:
+                - name
+                - value
+              additionalProperties: false
+              properties:
+                name:
+                  description: "Label name"
+                  type: string
+                value:
+                  description: "Label value. There are some keywords with special handling - see documentation for details"
+                  type: string
   metrics:
     description: The HMC metrics and their mapping to Prometheus
     type: object
