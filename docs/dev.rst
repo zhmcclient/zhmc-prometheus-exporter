@@ -285,10 +285,6 @@ local clone of the zhmc-ansible-modules Git repo.
     have succeeded, merge the Pull Request (no review is needed). This
     automatically deletes the branch on GitHub.
 
-    This also triggers a build of the documentation on ReadTheDocs.
-    Verify that the released version is shown on ReadTheDocs at
-    https://zhmc-prometheus-exporter.readthedocs.io/
-
 12. Add a new tag for the version that is being released and push it to
     the remote repo. Clean up the local repo:
 
@@ -305,7 +301,18 @@ local clone of the zhmc-ansible-modules Git repo.
 
     You can see the tags in GitHub via Code -> Releases -> Tags.
 
-14. Upload the package to PyPI:
+14. On ReadTheDocs, activate the new version ``M.N.U``:
+
+    * Go to https://readthedocs.org/projects/zhmc-prometheus-exporter/versions/
+      and log in.
+
+    * Activate the new version ``M.N.U``.
+
+      This triggers a build of that version. Verify that the build succeeds
+      and that new version is shown in the version selection popup at
+      https://zhmc-prometheus-exporter.readthedocs.io/
+
+15. Upload the package to PyPI:
 
     .. code-block:: sh
 
