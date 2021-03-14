@@ -234,7 +234,8 @@ clobber: clean
 install_base_$(pymn).done:
 	@echo "Installing base packages..."
 	-$(call RM_FUNC,$@)
-	python -m pip install --upgrade --upgrade-strategy eager pip setuptools wheel
+	bash -c 'pv=$$(python -m pip --version); if [[ $$pv =~ (^pip [1-8]\..*) ]]; then python -m pip install pip==9.0.1; fi'
+	python -m pip install --upgrade pip setuptools wheel
 	@echo "Done: Installed base packages"
 	echo "done" >$@
 
