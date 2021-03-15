@@ -69,29 +69,36 @@ The ``zhmc_prometheus_exporter`` command supports the following arguments:
 
 .. code-block:: text
 
-    zhmc_prometheus_exporter [-p PORT] [-c CREDS_FILE] [-m METRICS_FILE] [-h]
-                             [--help-creds] [--help-metrics]
+    usage: zhmc_prometheus_exporter [-h] [-c CREDS_FILE] [-m METRICS_FILE]
+                                    [-p PORT] [--log-dest DEST] [--log-comp COMP]
+                                    [--verbose] [--help-creds] [--help-metrics]
 
     IBM Z HMC Exporter - a Prometheus exporter for metrics from the IBM Z HMC
 
     optional arguments:
 
-      -p PORT          port for exporting.
-                       Default: 9291
-
-      -c CREDS_FILE    path name of HMC credentials file.
-                       Use --help-creds for details.
-                       Default: /etc/zhmc-prometheus-exporter/hmccreds.yaml
-
-      -m METRICS_FILE  path name of metric definition file.
-                       Use --help-metrics for details.
-                       Default: /etc/zhmc-prometheus-exporter/metrics.yaml
-
       -h, --help       show this help message and exit
+
+      -c CREDS_FILE    path name of HMC credentials file. Use --help-creds for
+                       details. Default: /etc/zhmc-prometheus-exporter/hmccreds.yaml
+
+      -m METRICS_FILE  path name of metric definition file. Use --help-metrics for
+                       details. Default: /etc/zhmc-prometheus-exporter/metrics.yaml
+
+      -p PORT          port for exporting. Default: 9291
+
+      --log-dest DEST  enable logging and set the log destination to one of:
+                       stderr,none,FILE. Default: none
+
+      --log-comp COMP  set the components to log to one of: hmc. May be specified
+                       multiple times. Default: hmc
+
+      --verbose, -v    increase the verbosity level (max: 2)
 
       --help-creds     show help for HMC credentials file and exit
 
       --help-metrics   show help for metric definition file and exit
+
 
 Exported metric concepts
 ------------------------
@@ -548,3 +555,22 @@ Perform these steps for setting it up:
   Create a dashboard in Grafana by importing the sample dashboard
   (``examples/grafana.json`` in the Git repo). It will use the data source
   ``ZHMC_Prometheus``.
+
+
+Logging
+-------
+
+The exporter supports logging the interactions with the HMC to stderr or to
+a file. Logging is enabled by using the ``--log-dest DEST`` option where
+``DEST`` can be the keyword ``stderr`` or the path name of a log file.
+
+Examples:
+
+.. code-block:: bash
+
+    $ zhmc_prometheus_exporter --log-dest stderr ...
+    $ zhmc_prometheus_exporter --log-dest mylog.log ...
+
+At this point, only the HMC interactions can be logged, so the only valid value
+for the ``--log-comp`` option is ``hmc``. That is also the default component
+that is logged (when enabled via ``--log-dest``).

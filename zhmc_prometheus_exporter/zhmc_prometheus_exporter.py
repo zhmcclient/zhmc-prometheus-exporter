@@ -24,9 +24,11 @@ import os
 import re
 import time
 import warnings
+import logging
 from contextlib import contextmanager
 from pprint import pprint
 
+import six
 import urllib3
 import yaml
 import jsonschema
@@ -36,6 +38,16 @@ from prometheus_client.core import GaugeMetricFamily, REGISTRY
 
 DEFAULT_CREDS_FILE = '/etc/zhmc-prometheus-exporter/hmccreds.yaml'
 DEFAULT_METRICS_FILE = '/etc/zhmc-prometheus-exporter/metrics.yaml'
+
+# Logger names+levels by log component
+LOGGER_NAMES = {
+    'hmc': (zhmcclient.HMC_LOGGER_NAME, logging.DEBUG),
+}
+VALID_LOG_COMPONENTS = LOGGER_NAMES.keys()
+DEFAULT_LOG_COMPONENTS = ['hmc']
+
+VALID_LOG_DESTINATIONS = ['stderr']
+VALID_LOG_DESTINATIONS_DISPLAY = VALID_LOG_DESTINATIONS + ['FILE']
 
 
 class YAMLInfoNotFoundError(Exception):
@@ -68,6 +80,11 @@ class ProperExit(Exception):
 
 class ImproperExit(Exception):
     """Terminating because something went wrong"""
+    pass
+
+
+class EarlyExit(Exception):
+    """Terminating before the server was started"""
     pass
 
 
@@ -119,6 +136,17 @@ def parse_args(args):
     parser.add_argument("-p", metavar="PORT",
                         default="9291",
                         help="port for exporting. Default: 9291")
+    parser.add_argument("--log", metavar="DEST", default=None,
+                        help="enable logging and set the log destination "
+                        "to one of: {dests}. Default: No logging".
+                        format(dests=', '.join(VALID_LOG_DESTINATIONS_DISPLAY)))
+    parser.add_argument("--log-comp", metavar="COMP", action='append',
+                        default=DEFAULT_LOG_COMPONENTS,
+                        help="set the components to log to one of: {comps}. "
+                        "May be specified multiple times. "
+                        "Default: {def_comp}".
+                        format(comps=', '.join(VALID_LOG_COMPONENTS),
+                               def_comp='+'.join(DEFAULT_LOG_COMPONENTS)))
     parser.add_argument("--verbose", "-v", action='count', default=0,
                         help="increase the verbosity level (max: 2)")
     parser.add_argument("--help-creds", action='store_true',
@@ -193,6 +221,22 @@ metrics:
     # ...
   # ...
 """)
+
+
+def validate_option(option_name, option_value, allowed_values):
+    """
+    Validate the option value against the allowed option values
+    and return the value, if it passes. raises EarlyExit otherwise.
+
+    Raises:
+      EarlyExit: Invalid command line usage.
+    """
+    if option_value not in allowed_values:
+        raise EarlyExit(
+            "Invalid value {val} for {opt} option. Allowed are: {allowed}".
+            format(opt=option_name, val=option_value,
+                   allowed=', '.join(allowed_values)))
+    return option_value
 
 
 def parse_yaml_file(yamlfile, name, schemafilename=None):
@@ -630,6 +674,42 @@ def verbose2(message):
         print(message)
 
 
+def setup_logging(log_dest, log_comps):
+    """
+    Set up Python logging as specified in the command line.
+
+    Raises:
+        EarlyExit
+    """
+    for log_comp in log_comps:
+        validate_option('--log-comp', log_comp, VALID_LOG_COMPONENTS)
+
+    if log_dest is None:
+        handler = None
+    elif log_dest == 'stderr':
+        verbose("Logging components [{comps}] to stderr".
+                format(comps=', '.join(log_comps)))
+        handler = logging.StreamHandler(stream=sys.stderr)
+    elif isinstance(log_dest, six.string_types):
+        verbose("Logging components [{comps}] to file {fn}".
+                format(comps=', '.join(log_comps), fn=log_dest))
+        handler = logging.FileHandler(log_dest)
+    else:
+        raise EarlyExit(
+            "Invalid value {val} for --log option. Allowed are: {allowed}".
+            format(val=log_dest,
+                   allowed=', '.join(VALID_LOG_DESTINATIONS_DISPLAY)))
+
+    if handler:
+        fs = '%(levelname)s %(name)s: %(message)s'
+        handler.setFormatter(logging.Formatter(fs))
+        for log_comp in log_comps:
+            name, level = LOGGER_NAMES[log_comp]
+            logger = logging.getLogger(name)
+            logger.addHandler(handler)
+            logger.setLevel(level)
+
+
 def main():
     """Puts the exporter together."""
     # If the session and context keys are not created, their destruction
@@ -648,6 +728,8 @@ def main():
             help_metrics()
             sys.exit(0)
         VERBOSE_LEVEL = args.verbose
+
+        setup_logging(args.log, args.log_comp)
 
         verbose("Parsing HMC credentials file: {}".format(args.c))
         yaml_creds_content = parse_yaml_file(
@@ -711,6 +793,9 @@ def main():
     except KeyboardInterrupt:
         print("Exporter interrupted before server start.")
         delete_metrics_context(session, context)
+        sys.exit(1)
+    except EarlyExit as exc:
+        print("Error: {}".format(exc))
         sys.exit(1)
     except ImproperExit as exc:
         print("Error: {}".format(exc))
