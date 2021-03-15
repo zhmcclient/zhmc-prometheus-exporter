@@ -25,6 +25,7 @@ import re
 import time
 import warnings
 from contextlib import contextmanager
+from pprint import pprint
 
 import urllib3
 import yaml
@@ -432,7 +433,20 @@ class ResourceCache(object):
             _resource = self._resources[uri]
         except KeyError:
             verbose2("Finding resource for {}".format(uri))
-            _resource = object_value.resource  # Takes time to find on HMC
+            try:
+                _resource = object_value.resource  # Takes time to find on HMC
+            except zhmcclient.MetricsResourceNotFound as exc:
+                # TODO: Figure out what to do with debug prints
+                verbose2("Debug: Dump of current resource cache in exporter:")
+                pprint(sorted(self._resources))
+                verbose2("Debug: List of resources found:")
+                res_dict = dict()
+                for mgr in exc.managers:
+                    resources = mgr.list()
+                    for res in resources:
+                        res_dict[res.uri] = res
+                pprint(sorted(res_dict))
+                raise
             self._resources[uri] = _resource
         return _resource
 
