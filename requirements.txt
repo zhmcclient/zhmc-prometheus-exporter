@@ -5,6 +5,7 @@ git+https://github.com/zhmcclient/python-zhmcclient@master#egg=zhmcclient
 prometheus-client>=0.3.1 # Apache-2.0
 urllib3>=1.24.0
 jsonschema>=2.6.0
+six>=1.14.0 # MIT
 
 # PyYAML pulled in by zhmcclient examples
 # PyYAML 5.3 fixes narrow build error, and has removed support for Python 3.4

@@ -33,6 +33,9 @@ Released: not yet
 
 **Enhancements:**
 
+* Added support for logging the HMC interactions with new options `--log-dest`
+  and `--log-comp`. (issue #121)
+
 **Cleanup:**
 
 **Known issues:**
