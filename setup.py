@@ -115,6 +115,9 @@ setuptools.setup(
         'https://github.com/zhmcclient/zhmc-prometheus-exporter/issues',
         'Documentation':
         'https://zhmc-prometheus-exporter.readthedocs.io/en/latest/',
+        'Change Log':
+        'https://zhmc-prometheus-exporter.readthedocs.io/en/latest/'
+        'changes.html',
         'Source Code':
         'https://github.com/zhmcclient/zhmc-prometheus-exporter',
     },
