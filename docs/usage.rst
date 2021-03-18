@@ -188,7 +188,7 @@ network-physical-adapter-port         D     zhmc_port_*                  cpc, ad
 partition-attached-network-interface  D     zhmc_nic_*                   cpc, partition, nic
 zcpc-environmentals-and-power         C+D   zhmc_cpc_*                   cpc
 environmental-power-status            C+D   zhmc_cpc_*                   cpc
-zcpc-processor-usage                  C+D   zhmc_processor_*             cpc, processor
+zcpc-processor-usage                  C+D   zhmc_processor_*             cpc, processor, type
 ====================================  ====  ===========================  ======================
 
 Legend:

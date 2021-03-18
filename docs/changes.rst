@@ -36,6 +36,9 @@ Released: not yet
 * Added support for logging the HMC interactions with new options `--log-dest`
   and `--log-comp`. (issue #121)
 
+* Added the processor type as a label on the metrics of the 'zcpc-processor-usage'
+  metrics group. (issue #102)
+
 **Cleanup:**
 
 **Known issues:**
