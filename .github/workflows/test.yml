@@ -35,11 +35,6 @@ jobs:
               { \
                 \"os\": \"ubuntu-latest\", \
                 \"python-version\": \"3.4\", \
-                \"package_level\": \"minimum\" \
-              }, \
-              { \
-                \"os\": \"ubuntu-latest\", \
-                \"python-version\": \"3.4\", \
                 \"package_level\": \"latest\" \
               }, \
               { \
@@ -52,11 +47,6 @@ jobs:
               { \
                 \"os\": \"ubuntu-18.04\", \
                 \"python-version\": \"3.4\", \
-                \"package_level\": \"minimum\" \
-              }, \
-              { \
-                \"os\": \"ubuntu-18.04\", \
-                \"python-version\": \"3.4\", \
                 \"package_level\": \"latest\" \
               } \
             ] \
@@ -65,13 +55,8 @@ jobs:
           echo "::set-output name=matrix::{ \
             \"os\": [ \"ubuntu-latest\" ], \
             \"python-version\": [ \"3.9\" ], \
-            \"package_level\": [ \"minimum\", \"latest\" ], \
+            \"package_level\": [ \"latest\" ], \
             \"include\": [ \
-              { \
-                \"os\": \"ubuntu-18.04\", \
-                \"python-version\": \"3.4\", \
-                \"package_level\": \"minimum\" \
-              }, \
               { \
                 \"os\": \"ubuntu-18.04\", \
                 \"python-version\": \"3.4\", \
