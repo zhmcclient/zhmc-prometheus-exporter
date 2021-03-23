@@ -39,6 +39,8 @@ Released: not yet
 * Added the processor type as a label on the metrics of the 'zcpc-processor-usage'
   metrics group. (issue #102)
 
+* Increased minimum version of zhmcclient to 0.29.0.
+
 **Cleanup:**
 
 **Known issues:**

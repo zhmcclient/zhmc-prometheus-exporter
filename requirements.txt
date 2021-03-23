@@ -1,6 +1,4 @@
-# TODO: Enable zhmcclient 0.29.0 again once released.
-git+https://github.com/zhmcclient/python-zhmcclient@master#egg=zhmcclient
-# zhmcclient>=0.29.0 # Apache-2.0
+zhmcclient>=0.29.0 # Apache-2.0
 
 prometheus-client>=0.3.1 # Apache-2.0
 urllib3>=1.24.0
