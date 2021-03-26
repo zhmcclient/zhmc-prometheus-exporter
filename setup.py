@@ -107,8 +107,8 @@ setuptools.setup(
     license='Apache License, Version 2.0',
     author='Jakob Naucke',
     author_email='jakob.naucke@ibm.com',
-    maintainer='Andreas Maier',
-    maintainer_email='maiera@de.ibm.com',
+    maintainer='Andreas Maier, Kathir Velusamy',
+    maintainer_email='maiera@de.ibm.com, kathir.velu@in.ibm.com',
     url='https://github.com/zhmcclient/zhmc-prometheus-exporter',
     project_urls={
         'Bug Tracker':
@@ -118,8 +118,6 @@ setuptools.setup(
         'Change Log':
         'https://zhmc-prometheus-exporter.readthedocs.io/en/latest/'
         'changes.html',
-        'Source Code':
-        'https://github.com/zhmcclient/zhmc-prometheus-exporter',
     },
 
     options={'bdist_wheel': {'universal': True}},
