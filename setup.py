@@ -114,9 +114,9 @@ setuptools.setup(
         'Bug Tracker':
         'https://github.com/zhmcclient/zhmc-prometheus-exporter/issues',
         'Documentation':
-        'https://zhmc-prometheus-exporter.readthedocs.io/en/latest/',
+        'https://zhmc-prometheus-exporter.readthedocs.io/en/stable/',
         'Change Log':
-        'https://zhmc-prometheus-exporter.readthedocs.io/en/latest/'
+        'https://zhmc-prometheus-exporter.readthedocs.io/en/stable/'
         'changes.html',
     },
 
