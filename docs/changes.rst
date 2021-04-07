@@ -17,14 +17,10 @@ Change log
 ----------
 
 
-Version 0.7.0.dev1
-^^^^^^^^^^^^^^^^^^
+Version 0.7.0
+^^^^^^^^^^^^^
 
-Released: not yet
-
-**Incompatible changes:**
-
-**Deprecations:**
+Released: 2021-04-07
 
 **Bug fixes:**
 
@@ -40,14 +36,6 @@ Released: not yet
   metrics group. (issue #102)
 
 * Increased minimum version of zhmcclient to 0.30.0.
-
-**Cleanup:**
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 0.6.0
