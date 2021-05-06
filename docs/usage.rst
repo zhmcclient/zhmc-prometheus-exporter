@@ -487,6 +487,17 @@ The file can be downloaded from the Git repo as
 .. literalinclude:: ../examples/metrics.yaml
   :language: yaml
 
+Sample output to Prometheus
+---------------------------
+
+The following is sample output of the exporter to Prometheus. It is from a z14
+system in DPM mode and was created with an extra label ``pod=wdc04-05``, and
+with all metric groups enabled. The data has been reduced to show only three
+example partitions (but all adapters and processors):
+
+.. literalinclude:: ../examples/prometheus.out
+  :language: text
+
 Demo setup with Grafana
 -----------------------
 
