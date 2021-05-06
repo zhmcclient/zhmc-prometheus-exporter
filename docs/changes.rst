@@ -41,6 +41,8 @@ Released: not yet
 
 * Increased minimum version of zhmcclient to 0.30.0.
 
+* Docs: Added sample Prometheus output from the exporter.
+
 **Cleanup:**
 
 **Known issues:**
