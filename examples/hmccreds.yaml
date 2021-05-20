@@ -4,6 +4,7 @@ metrics:
   hmc: 9.10.11.12
   userid: user
   password: password
+  verify_cert: true
 
 extra_labels:
   - name: pod

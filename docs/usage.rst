@@ -100,6 +100,72 @@ The ``zhmc_prometheus_exporter`` command supports the following arguments:
       --help-metrics   show help for metric definition file and exit
 
 
+HMC certificate
+---------------
+
+By default, the HMC is configured with a self-signed certificate. That is the
+X.509 certificate presented by the HMC as the server certificate during SSL/TLS
+handshake at its Web Services API.
+
+Starting with version 0.7, the 'zhmc_prometheus_exporter' command will reject
+self-signed certificates by default.
+
+The HMC should be configured to use a CA-verifiable certificate. This can be
+done in the HMC task "Certificate Management". See also the :term:`HMC Security`
+book and Chapter 3 "Invoking API operations" in the :term:`HMC API` book.
+
+Starting with version 0.7, the 'zhmc_prometheus_exporter' command provides
+control knobs for the verification of the HMC certificate via the
+``verify_cert`` attribute in the :ref:`HMC credentials file`, as follows:
+
+* Not specified or specified as ``true`` (default): Verify the HMC certificate
+  using the CA certificates from the first of these locations:
+
+  - The certificate file or directory in the ``REQUESTS_CA_BUNDLE`` environment
+    variable, if set
+  - The certificate file or directory in the ``CURL_CA_BUNDLE`` environment
+    variable, if set
+  - The `Python 'certifi' package <https://pypi.org/project/certifi/>`_
+    (which contains the
+    `Mozilla Included CA Certificate List <https://wiki.mozilla.org/CA/Included_Certificates>`_).
+
+* Specified with a string value: An absolute path or a path relative to the
+  directory of the HMC credentials file. Verify the HMC certificate using the CA
+  certificates in the specified certificate file or directory.
+
+* Specified as ``false``: Do not verify the HMC certificate.
+  Not verifying the HMC certificate means that hostname mismatches, expired
+  certificates, revoked certificates, or otherwise invalid certificates will not
+  be detected. Since this mode makes the connection vulnerable to
+  man-in-the-middle attacks, it is insecure and should not be used in production
+  environments.
+
+If a certificate file is specified (using any of the ways listed above), that
+file must be in PEM format and must contain all CA certificates that are
+supposed to be used. Usually they are in the order from leaf to root, but
+that is not a hard requirement. The single certificates are concatenated
+in the file.
+
+If a certificate directory is specified (using any of the ways listed above),
+it must contain PEM files with all CA certificates that are supposed to be used,
+and copies of the PEM files or symbolic links to them in the hashed format
+created by the OpenSSL command ``c_rehash``.
+
+An X.509 certificate in PEM format is base64-encoded, begins with the line
+``-----BEGIN CERTIFICATE-----``, and ends with the line
+``-----END CERTIFICATE-----``.
+More information about the PEM format is for example on this
+`www.ssl.com page <https://www.ssl.com/guide/pem-der-crt-and-cer-x-509-encodings-and-conversions>`_
+or in this `serverfault.com answer <https://serverfault.com/a/9717/330351>`_.
+
+Note that setting the ``REQUESTS_CA_BUNDLE`` or ``CURL_CA_BUNDLE`` environment
+variables influences other programs that use these variables, too.
+
+For more information, see the
+`Security <https://python-zhmcclient.readthedocs.io/en/latest/security.html>`_
+section in the documentation of the 'zhmcclient' package.
+
+
 Exported metric concepts
 ------------------------
 
@@ -337,6 +403,7 @@ The HMC credentials file is in YAML format and has the following structure:
       hmc: {hmc-ip-address}
       userid: {hmc-userid}
       password: {hmc-password}
+      verify_cert: {verify-cert}
 
     extra_labels:  # optional
       # list of labels:
@@ -350,6 +417,9 @@ Where:
 * ``{hmc-userid}`` is the userid on the HMC to be used for logging on.
 
 * ``{hmc-password}`` is the password of that userid.
+
+* ``{verify-cert}`` controls whether and how the HMC server certificate is
+  verified. For details, see :ref:`HMC certificate`.
 
 * ``{label-name}`` is the label name.
 

@@ -133,6 +133,10 @@ def zhmc_exceptions(session, hmccreds_filename):
             format(session.host, session.userid, hmccreds_filename, exc))
         new_exc.__cause__ = None
         raise new_exc  # AuthError
+    except (IOError, OSError) as exc:
+        new_exc = OtherError(str(exc))
+        new_exc.__cause__ = None
+        raise new_exc  # OtherError
     except zhmcclient.Error as exc:
         new_exc = OtherError(
             "Error returned from HMC at {}: {}".format(session.host, exc))
@@ -403,18 +407,33 @@ def eval_condition(condition, hmc_version):
 
 # Metrics context creation & deletion and retrieval derived from
 # github.com/zhmcclient/python-zhmcclient/examples/metrics.py
-def create_session(cred_dict):
-    """To create a context, a session must be created first.
-    Takes a dictionary with the HMC IP, the user ID, and a password.
-    Returns the session.
+def create_session(cred_dict, hmccreds_filename):
+    """
+    To create a context, a session must be created first.
+
+    Parameters:
+      cred_dict (dict): 'metric' object from the HMC credentials file,
+        specifying items: hmc, userid, password, verify_cert.
+      hmccreds_filename (string): Path name of HMC credentials file.
+
+    Returns:
+      zhmcclient.Session
     """
 
     # These warnings do not concern us
     urllib3.disable_warnings()
 
+    verify_cert = cred_dict.get("verify_cert", True)
+    if isinstance(verify_cert, six.string_types):
+        if not os.path.isabs(verify_cert):
+            verify_cert = os.path.join(
+                os.path.dirname(hmccreds_filename), verify_cert)
+    verbose("HMC certificate validation: {}".format(verify_cert))
+
     session = zhmcclient.Session(cred_dict["hmc"],
                                  cred_dict["userid"],
                                  cred_dict["password"],
+                                 verify_cert=verify_cert,
                                  retry_timeout_config=RETRY_TIMEOUT_CONFIG)
     return session
 
@@ -635,11 +654,11 @@ class ZHMCUsageCollector():
     """Collects the usage for exporting."""
 
     def __init__(self, yaml_creds, session, context, yaml_metric_groups,
-                 yaml_metrics, extra_labels, filename_metrics,
-                 filename_creds, resource_cache, hmc_version):
+                 yaml_metrics, extra_labels, filename_metrics, filename_creds,
+                 resource_cache, hmc_version):
+        self.yaml_creds = yaml_creds
         self.session = session
         self.context = context
-        self.yaml_creds = yaml_creds
         self.yaml_metric_groups = yaml_metric_groups
         self.yaml_metrics = yaml_metrics
         self.extra_labels = extra_labels
@@ -676,7 +695,8 @@ class ZHMCUsageCollector():
                         log_exporter(
                             "Recreating the metrics context after HTTP "
                             "status {}.{}".format(exc.http_status, exc.reason))
-                        self.session = create_session(self.yaml_creds)
+                        self.session = create_session(
+                            self.yaml_creds, self.filename_creds)
                         self.context = create_metrics_context(
                             self.session, self.yaml_metric_groups,
                             self.hmc_version)
@@ -806,6 +826,7 @@ def main():
         if args.help_metrics:
             help_metrics()
             sys.exit(0)
+
         VERBOSE_LEVEL = args.verbose
 
         setup_logging(args.log, args.log_comp)
@@ -841,9 +862,7 @@ def main():
                 "retries.".format(r=RETRY_TIMEOUT_CONFIG))
 
         # hmc is required in the HMC creds schema:
-        verbose("Creating a session with HMC {} (user: {})".
-                format(yaml_creds['hmc'], yaml_creds['userid']))
-        session = create_session(yaml_creds)
+        session = create_session(yaml_creds, hmccreds_filename)
 
         try:
             with zhmc_exceptions(session, hmccreds_filename):
