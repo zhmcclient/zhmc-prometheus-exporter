@@ -39,15 +39,32 @@ from prometheus_client.core import GaugeMetricFamily, REGISTRY
 DEFAULT_CREDS_FILE = '/etc/zhmc-prometheus-exporter/hmccreds.yaml'
 DEFAULT_METRICS_FILE = '/etc/zhmc-prometheus-exporter/metrics.yaml'
 
+EXPORTER_LOGGER_NAME = 'zhmcexporter'
+
 # Logger names+levels by log component
 LOGGER_NAMES = {
     'hmc': (zhmcclient.HMC_LOGGER_NAME, logging.DEBUG),
+    'exporter': (EXPORTER_LOGGER_NAME, logging.INFO),
 }
 VALID_LOG_COMPONENTS = LOGGER_NAMES.keys()
-DEFAULT_LOG_COMPONENTS = ['hmc']
 
 VALID_LOG_DESTINATIONS = ['stderr']
 VALID_LOG_DESTINATIONS_DISPLAY = VALID_LOG_DESTINATIONS + ['FILE']
+
+# Sleep time in seconds when retrying metrics retrieval
+RETRY_SLEEP_TIME = 10
+
+# Retry / timeout configuration for zhmcclient (used at the socket level)
+RETRY_TIMEOUT_CONFIG = zhmcclient.RetryTimeoutConfig(
+    connect_timeout=10,
+    connect_retries=2,
+    read_timeout=10,
+    read_retries=2,
+    max_redirects=zhmcclient.DEFAULT_MAX_REDIRECTS,
+    operation_timeout=zhmcclient.DEFAULT_OPERATION_TIMEOUT,
+    status_timeout=zhmcclient.DEFAULT_STATUS_TIMEOUT,
+    name_uri_cache_timetolive=zhmcclient.DEFAULT_NAME_URI_CACHE_TIMETOLIVE,
+)
 
 
 class YAMLInfoNotFoundError(Exception):
@@ -104,18 +121,23 @@ def zhmc_exceptions(session, hmccreds_filename):
     try:
         yield
     except zhmcclient.ConnectionError as exc:
-        raise ConnectionError("Connection error using IP address {} defined "
-                              "in HMC credentials file {}: {}".
-                              format(session.host, hmccreds_filename, exc))
+        new_exc = ConnectionError(
+            "Connection error using IP address {} defined in HMC credentials "
+            "file {}: {}".format(session.host, hmccreds_filename, exc))
+        new_exc.__cause__ = None
+        raise new_exc  # ConnectionError
     except zhmcclient.AuthError as exc:
-        raise AuthError("Authentication error when logging on to the "
-                        "HMC at {} using userid '{}' defined in HMC "
-                        "credentials file {}: {}".
-                        format(session.host, session.userid, hmccreds_filename,
-                               exc))
+        new_exc = AuthError(
+            "Authentication error when logging on to the HMC at {} using "
+            "userid '{}' defined in HMC credentials file {}: {}".
+            format(session.host, session.userid, hmccreds_filename, exc))
+        new_exc.__cause__ = None
+        raise new_exc  # AuthError
     except zhmcclient.Error as exc:
-        raise OtherError("Error returned from HMC at {}: {}".
-                         format(session.host, exc))
+        new_exc = OtherError(
+            "Error returned from HMC at {}: {}".format(session.host, exc))
+        new_exc.__cause__ = None
+        raise new_exc  # OtherError
 
 
 def parse_args(args):
@@ -141,12 +163,11 @@ def parse_args(args):
                         "to one of: {dests}. Default: No logging".
                         format(dests=', '.join(VALID_LOG_DESTINATIONS_DISPLAY)))
     parser.add_argument("--log-comp", metavar="COMP", action='append',
-                        default=DEFAULT_LOG_COMPONENTS,
+                        default=[],
                         help="set the components to log to one of: {comps}. "
                         "May be specified multiple times. "
-                        "Default: {def_comp}".
-                        format(comps=', '.join(VALID_LOG_COMPONENTS),
-                               def_comp='+'.join(DEFAULT_LOG_COMPONENTS)))
+                        "Default: no components".
+                        format(comps=', '.join(VALID_LOG_COMPONENTS)))
     parser.add_argument("--verbose", "-v", action='count', default=0,
                         help="increase the verbosity level (max: 2)")
     parser.add_argument("--help-creds", action='store_true',
@@ -387,32 +408,39 @@ def create_session(cred_dict):
     Takes a dictionary with the HMC IP, the user ID, and a password.
     Returns the session.
     """
+
     # These warnings do not concern us
     urllib3.disable_warnings()
+
     session = zhmcclient.Session(cred_dict["hmc"],
                                  cred_dict["userid"],
-                                 cred_dict["password"])
+                                 cred_dict["password"],
+                                 retry_timeout_config=RETRY_TIMEOUT_CONFIG)
     return session
 
 
-def get_hmc_version(session, hmccreds_filename):
+def get_hmc_version(session):
     """
     Return the HMC version as a string "v.r.m".
+
+    Raises: zhmccclient exceptions
     """
-    with zhmc_exceptions(session, hmccreds_filename):
-        client = zhmcclient.Client(session)
-        version_dict = client.query_api_version()
+    client = zhmcclient.Client(session)
+    version_dict = client.query_api_version()
     hmc_version = version_dict['hmc-version']
     return hmc_version
 
 
-def create_metrics_context(
-        session, yaml_metric_groups, hmccreds_filename, hmc_version):
-    """Creating a context is mandatory for reading metrics from the Z HMC.
+def create_metrics_context(session, yaml_metric_groups, hmc_version):
+    """
+    Creating a context is mandatory for reading metrics from the Z HMC.
     Takes the session, the metric_groups dictionary from the metrics YAML file
     for fetch/do not fetch information, and the name of the YAML file for error
     output.
+
     Returns the context.
+
+    Raises: zhmccclient exceptions
     """
     fetched_metric_groups = []
     for metric_group in yaml_metric_groups:
@@ -427,11 +455,10 @@ def create_metrics_context(
     verbose("Creating a metrics context on the HMC for metric groups:")
     for metric_group in fetched_metric_groups:
         verbose("  {}".format(metric_group))
-    with zhmc_exceptions(session, hmccreds_filename):
-        client = zhmcclient.Client(session)
-        context = client.metrics_contexts.create(
-            {"anticipated-frequency-seconds": 15,
-             "metric-groups": fetched_metric_groups})
+    client = zhmcclient.Client(session)
+    context = client.metrics_contexts.create(
+        {"anticipated-frequency-seconds": 15,
+         "metric-groups": fetched_metric_groups})
     return context
 
 
@@ -439,6 +466,8 @@ def delete_metrics_context(session, context):
     """The previously created context must also be deleted.
     Takes the session and context.
     Omitting this deletion may have unintended consequences.
+
+    Raises: zhmccclient exceptions
     """
     # Destruction should not be attempted if context/session were not created
     if context:
@@ -452,6 +481,8 @@ def retrieve_metrics(context):
     Retrieve metrics from the Z HMC.
     Takes the metrics context.
     Returns a zhmcclient.MetricsResponse object.
+
+    Raises: zhmccclient exceptions
     """
     retrieved_metrics = context.get_metrics()
     metrics_object = zhmcclient.MetricsResponse(context, retrieved_metrics)
@@ -618,60 +649,105 @@ class ZHMCUsageCollector():
         self.hmc_version = hmc_version
 
     def collect(self):
-        """Yield the metrics for exporting.
+        """
+        Yield the metrics for exporting.
         Uses the context, the metric groups and the metrics from the YAML file,
         and the name of the YAML file for error output.
+
+        Retries indefinitely in case of connection problems with the HMC or
+        in case of HTTP errors. HTTP 404.1 is automatically handled by
+        refreshing the metrics context.
+
+        Raises exception in case of authentication errors or other errors.
         """
-        verbose2("Collecting metrics")
+        log_exporter("Collecting metrics")
 
         with zhmc_exceptions(self.session, self.filename_creds):
-            try:
-                verbose2("Fetching metrics from HMC")
-                metrics_object = retrieve_metrics(self.context)
-            except zhmcclient.HTTPError as exc:
-                if exc.http_status == 404 and exc.reason == 1:
-                    # Disable this line because it leads sometimes to
-                    # an exception within the exception handling.
-                    # delete_metrics_context(self.session, self.context)
-                    verbose2(" Recreating a metrics context on the HMC")
-                    self.session = create_session(self.yaml_creds)
-                    self.context = create_metrics_context(
-                        self.session, self.yaml_metric_groups,
-                        self.filename_creds, self.hmc_version)
-                    verbose2("Fetching metrics from HMC")
+
+            while True:
+                log_exporter("Fetching metrics from HMC")
+                try:
                     metrics_object = retrieve_metrics(self.context)
-                else:
+                except zhmcclient.HTTPError as exc:
+                    if exc.http_status == 404 and exc.reason == 1:
+                        # Disable this line because it leads sometimes to
+                        # an exception within the exception handling.
+                        # delete_metrics_context(self.session, self.context)
+                        log_exporter(
+                            "Recreating the metrics context after HTTP "
+                            "status {}.{}".format(exc.http_status, exc.reason))
+                        self.session = create_session(self.yaml_creds)
+                        self.context = create_metrics_context(
+                            self.session, self.yaml_metric_groups,
+                            self.hmc_version)
+                        continue
+                    log_exporter(
+                        "Retrying after HTTP status {}.{}: {}".
+                        format(exc.http_status, exc.reason, exc))
+                    time.sleep(RETRY_SLEEP_TIME)
+                    continue
+                except zhmcclient.ConnectionError as exc:
+                    log_exporter(
+                        "Retrying after Connection error: {}".format(exc))
+                    time.sleep(RETRY_SLEEP_TIME)
+                    continue
+                except zhmcclient.AuthError as exc:
+                    log_exporter(
+                        "Abandoning after Authentication error: {}".format(exc))
                     raise
+                except Exception as exc:
+                    log_exporter(
+                        "Abandoning after exception {}: {}".
+                        format(exc.__class__.__name__, exc))
+                    raise
+                break
 
-            verbose2("Building family objects")
-            family_objects = build_family_objects(metrics_object,
-                                                  self.yaml_metric_groups,
-                                                  self.yaml_metrics,
-                                                  self.filename_metrics,
-                                                  self.extra_labels,
-                                                  self.resource_cache)
+        log_exporter("Building family objects")
+        family_objects = build_family_objects(metrics_object,
+                                              self.yaml_metric_groups,
+                                              self.yaml_metrics,
+                                              self.filename_metrics,
+                                              self.extra_labels,
+                                              self.resource_cache)
 
-        verbose2("Returning family objects")
+        log_exporter("Returning family objects")
         # Yield all family objects
         for family_name in family_objects:
             yield family_objects[family_name]
 
-        verbose2("Done collecting metrics")
+        log_exporter("Done collecting metrics")
 
 
 VERBOSE_LEVEL = 0
 
 
-def verbose(message):
-    """Print a message at verbosity level 1"""
+def verbose(message, log=True):
+    """Print a message at verbosity level 1, and log it"""
     if VERBOSE_LEVEL >= 1:
         print(message)
+    if log:
+        log_exporter(message)
 
 
-def verbose2(message):
-    """Print a message at verbosity level 2"""
+def verbose2(message, log=True):
+    """Print a message at verbosity level 2, and log it"""
     if VERBOSE_LEVEL >= 2:
         print(message)
+    if log:
+        log_exporter(message)
+
+
+def info(message, log=True):
+    """Print a message, and log it"""
+    print(message)
+    if log:
+        log_exporter(message)
+
+
+def log_exporter(message):
+    """Log a message to the exporter log"""
+    logger = logging.getLogger(EXPORTER_LOGGER_NAME)
+    logger.info(message)
 
 
 def setup_logging(log_dest, log_comps):
@@ -688,11 +764,11 @@ def setup_logging(log_dest, log_comps):
         handler = None
     elif log_dest == 'stderr':
         verbose("Logging components [{comps}] to stderr".
-                format(comps=', '.join(log_comps)))
+                format(comps=', '.join(log_comps)), log=False)
         handler = logging.StreamHandler(stream=sys.stderr)
     elif isinstance(log_dest, six.string_types):
         verbose("Logging components [{comps}] to file {fn}".
-                format(comps=', '.join(log_comps), fn=log_dest))
+                format(comps=', '.join(log_comps), fn=log_dest), log=False)
         handler = logging.FileHandler(log_dest)
     else:
         raise EarlyExit(
@@ -701,13 +777,16 @@ def setup_logging(log_dest, log_comps):
                    allowed=', '.join(VALID_LOG_DESTINATIONS_DISPLAY)))
 
     if handler:
-        fs = '%(levelname)s %(name)s: %(message)s'
+        fs = '%(asctime)s %(name)s: %(message)s'
         handler.setFormatter(logging.Formatter(fs))
-        for log_comp in log_comps:
+        for log_comp in LOGGER_NAMES:
             name, level = LOGGER_NAMES[log_comp]
             logger = logging.getLogger(name)
-            logger.addHandler(handler)
-            logger.setLevel(level)
+            if log_comp in log_comps:
+                logger.addHandler(handler)
+                logger.setLevel(level)
+            else:
+                logger.setLevel(logging.NOTSET)
 
 
 def main():
@@ -731,9 +810,13 @@ def main():
 
         setup_logging(args.log, args.log_comp)
 
-        verbose("Parsing HMC credentials file: {}".format(args.c))
+        log_exporter("---------------- zhmc_prometheus_exporter command "
+                     "started ----------------")
+
+        hmccreds_filename = args.c
+        verbose("Parsing HMC credentials file: {}".format(hmccreds_filename))
         yaml_creds_content = parse_yaml_file(
-            args.c, 'HMC credentials file', 'hmccreds_schema.yaml')
+            hmccreds_filename, 'HMC credentials file', 'hmccreds_schema.yaml')
         # metrics is required in the metrics schema:
         yaml_creds = yaml_creds_content["metrics"]
         # extra_labels is optional in the metrics schema:
@@ -752,16 +835,22 @@ def main():
             for coll in list(REGISTRY._collector_to_names.keys()):
                 REGISTRY.unregister(coll)
 
+        verbose("Timeout/retry configuration: "
+                "connect: {r.connect_timeout} sec / {r.connect_retries} "
+                "retries, read: {r.read_timeout} sec / {r.read_retries} "
+                "retries.".format(r=RETRY_TIMEOUT_CONFIG))
+
         # hmc is required in the HMC creds schema:
-        verbose("Creating a session with HMC {}".format(yaml_creds['hmc']))
+        verbose("Creating a session with HMC {} (user: {})".
+                format(yaml_creds['hmc'], yaml_creds['userid']))
         session = create_session(yaml_creds)
 
-        hmc_version = get_hmc_version(session, args.c)
-        verbose("HMC version: {}".format(hmc_version))
-
         try:
-            context = create_metrics_context(session, yaml_metric_groups,
-                                             args.c, hmc_version)
+            with zhmc_exceptions(session, hmccreds_filename):
+                hmc_version = get_hmc_version(session)
+                verbose("HMC version: {}".format(hmc_version))
+                context = create_metrics_context(
+                    session, yaml_metric_groups, hmc_version)
         except (ConnectionError, AuthError, OtherError) as exc:
             raise ImproperExit(exc)
 
@@ -776,7 +865,8 @@ def main():
         resource_cache = ResourceCache()
         coll = ZHMCUsageCollector(
             yaml_creds, session, context, yaml_metric_groups, yaml_metrics,
-            extra_labels, args.m, args.c, resource_cache, hmc_version)
+            extra_labels, args.m, hmccreds_filename, resource_cache,
+            hmc_version)
 
         verbose("Registering the collector and performing first collection")
         REGISTRY.register(coll)  # Performs a first collection
@@ -791,18 +881,18 @@ def main():
             except KeyboardInterrupt:
                 raise ProperExit
     except KeyboardInterrupt:
-        print("Exporter interrupted before server start.")
+        info("Exporter interrupted before server start.")
         delete_metrics_context(session, context)
         sys.exit(1)
     except EarlyExit as exc:
-        print("Error: {}".format(exc))
+        info("Error: {}".format(exc), log=False)
         sys.exit(1)
     except ImproperExit as exc:
-        print("Error: {}".format(exc))
+        info("Error: {}".format(exc))
         delete_metrics_context(session, context)
         sys.exit(1)
     except ProperExit:
-        print("Exporter interrupted after server start.")
+        info("Exporter interrupted after server start.")
         delete_metrics_context(session, context)
         sys.exit(0)
 
