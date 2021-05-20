@@ -24,6 +24,15 @@ Released: not yet
 
 **Incompatible changes:**
 
+* The zhmc_prometheus_exporter command now verifies HMC server certificates by
+  default, using the CA certificates in the 'certifi' Python package. This
+  verification will reject the self-signed certificates the HMC is set up with
+  initially. To deal with this, install a CA-verifiable certificate in the HMC
+  and specify the correct CA certificates with the new 'verify_cert' attribute
+  in the HMC credentials file.
+  As a temporary quick fix, you can disable the verification with that new
+  attribute.
+
 **Deprecations:**
 
 **Bug fixes:**
@@ -55,6 +64,10 @@ Released: not yet
   lowering the retry and timeout parameters for connection and reads. This
   only affects how quickly the exporter reacts to connectivity issues, it does
   not lower the allowable response time of the HMC.
+
+* The zhmc_prometheus_exporter command now supports verification of the HMC
+  server certificate. There is a new configuration attributes in the HMC
+  credentials file ('verify_cert') that controls the verification behavior.
 
 **Cleanup:**
 

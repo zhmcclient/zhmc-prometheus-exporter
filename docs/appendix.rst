@@ -64,3 +64,6 @@ Bibliography
    HMC API 2.15.0
        `IBM SC27-2638, IBM Z Hardware Management Console Web Services API (Version 2.15.0) <https://www.ibm.com/support/pages/node/6019720>`_
        (covers both GA1 and GA2)
+
+   HMC Security
+       `Hardware Management Console Security <https://www.ibm.com/support/pages/node/6017320>`_

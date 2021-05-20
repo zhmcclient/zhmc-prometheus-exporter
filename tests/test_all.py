@@ -192,7 +192,8 @@ class TestCreateContext(unittest.TestCase):
     def test_timeout(self):
         """Tests a timeout with an IP where no HMC is sitting."""
         cred_dict = {"hmc": "192.168.0.0", "userid": "user", "password": "pwd"}
-        session = zhmc_prometheus_exporter.create_session(cred_dict)
+        session = zhmc_prometheus_exporter.create_session(
+            cred_dict, "filename")
         with self.assertRaises(zhmcclient.ConnectionError):
             zhmc_prometheus_exporter.create_metrics_context(
                 session, {}, '2.14')
