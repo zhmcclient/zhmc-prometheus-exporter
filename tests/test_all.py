@@ -183,21 +183,19 @@ class TestCreateContext(unittest.TestCase):
         context = zhmc_prometheus_exporter.create_metrics_context(
             session,
             {"dpm-system-usage-overview": {"prefix": "pre", "fetch": True}},
-            "filename", '2.14')
+            '2.14')
         # pylint: disable=protected-access
         self.assertEqual(type(context), zhmcclient._metrics.MetricsContext)
         context.delete()
         session.logoff()
 
     def test_timeout(self):
-        """Tests a timeout with an IP where no HMC is sitting.
-        Omitting this test improves test time by three orders of magnitude.
-        """
+        """Tests a timeout with an IP where no HMC is sitting."""
         cred_dict = {"hmc": "192.168.0.0", "userid": "user", "password": "pwd"}
         session = zhmc_prometheus_exporter.create_session(cred_dict)
-        with self.assertRaises(zhmc_prometheus_exporter.ConnectionError):
+        with self.assertRaises(zhmcclient.ConnectionError):
             zhmc_prometheus_exporter.create_metrics_context(
-                session, {}, "filename", '2.14')
+                session, {}, '2.14')
 
 
 class TestDeleteContext(unittest.TestCase):
@@ -331,7 +329,7 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
         yaml_metric_groups = {"dpm-system-usage-overview": {"prefix": "pre",
                                                             "fetch": True}}
         context = zhmc_prometheus_exporter.create_metrics_context(
-            session, yaml_metric_groups, "filename", '2.14')
+            session, yaml_metric_groups, '2.14')
         yaml_metrics = {"dpm-system-usage-overview": {"metric-1": {
             "percent": True,
             "exporter_name": "metric1",
@@ -357,7 +355,7 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
         yaml_metric_groups = {"dpm-system-usage-overview": {"prefix": "pre",
                                                             "fetch": True}}
         context = zhmc_prometheus_exporter.create_metrics_context(
-            session, yaml_metric_groups, "filename", '2.14')
+            session, yaml_metric_groups, '2.14')
         yaml_metrics = {"dpm-system-usage-overview": {"metric-1": {
             "percent": True,
             "exporter_name": "metric1",

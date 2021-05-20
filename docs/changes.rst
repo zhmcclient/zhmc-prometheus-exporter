@@ -43,6 +43,19 @@ Released: not yet
 
 * Docs: Added sample Prometheus output from the exporter.
 
+* Improved error handling and recovery. Once the exporter is up and running,
+  any connectivity loss is now recovered by retrying eternally.
+
+* Added exporter level activities to the log, as a new log component "exporter".
+  All messages that would be displayed at the highest verbosity level are now
+  also logged, regardless of the actual verbosity level.
+  Changed the log format by removing the level name and adding the timestamp.
+
+* Changed the retry/timeout configuration used for the zhmcclient session,
+  lowering the retry and timeout parameters for connection and reads. This
+  only affects how quickly the exporter reacts to connectivity issues, it does
+  not lower the allowable response time of the HMC.
+
 **Cleanup:**
 
 **Known issues:**
