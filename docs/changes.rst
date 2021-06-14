@@ -33,6 +33,13 @@ Released: not yet
   As a temporary quick fix, you can disable the verification with that new
   attribute.
 
+* The zhmcclient version 0.31.0 used as a minimum verifies HMC certificates
+  by default. Using HMCs with self-signed certificates or with certificates
+  signed by CAs other than those handled by the Mozilla CA Certificate list
+  requires specifying 'verify: false' in the HMC credentials file, or
+  specifying 'ca_certs' with the path to an appropriate CA certificate file
+  or directory.
+
 **Deprecations:**
 
 **Bug fixes:**
@@ -48,7 +55,7 @@ Released: not yet
 * Added the processor type as a label on the metrics of the 'zcpc-processor-usage'
   metrics group. (issue #102)
 
-* Increased minimum version of zhmcclient to 0.30.0.
+* Increased minimum version of zhmcclient to 0.31.0.
 
 * Docs: Added sample Prometheus output from the exporter.
 
