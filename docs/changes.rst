@@ -31,6 +31,10 @@ Released: not yet
 * Mitigated the coveralls HTTP status 422 by pinning coveralls-python to
   <3.0.0.
 
+* Pinned zhmcclient to <0.31.0 to avoid its incompatible verify_cert parameter.
+  The future version 0.7.0 will support the verify_cert parameter of zhmcclient.
+  (issue #145)
+
 **Enhancements:**
 
 **Cleanup:**
