@@ -17,14 +17,10 @@ Change log
 ----------
 
 
-Version 0.6.1.dev1
-^^^^^^^^^^^^^^^^^^
+Version 0.6.1
+^^^^^^^^^^^^^
 
-Released: not yet
-
-**Incompatible changes:**
-
-**Deprecations:**
+Released: 2021-06-14
 
 **Bug fixes:**
 
@@ -34,16 +30,6 @@ Released: not yet
 * Pinned zhmcclient to <0.31.0 to avoid its incompatible verify_cert parameter.
   The future version 0.7.0 will support the verify_cert parameter of zhmcclient.
   (issue #145)
-
-**Enhancements:**
-
-**Cleanup:**
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 0.6.0
