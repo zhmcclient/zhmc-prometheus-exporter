@@ -17,10 +17,12 @@ Change log
 ----------
 
 
-Version 0.7.0.dev1
-^^^^^^^^^^^^^^^^^^
+Version 0.7.0
+^^^^^^^^^^^^^
 
-Released: not yet
+Released: 2021-06-15
+
+This version contains all fixes up to version 0.6.1.
 
 **Incompatible changes:**
 
@@ -30,17 +32,8 @@ Released: not yet
   initially. To deal with this, install a CA-verifiable certificate in the HMC
   and specify the correct CA certificates with the new 'verify_cert' attribute
   in the HMC credentials file.
-  As a temporary quick fix, you can disable the verification with that new
-  attribute.
-
-* The zhmcclient version 0.31.0 used as a minimum verifies HMC certificates
-  by default. Using HMCs with self-signed certificates or with certificates
-  signed by CAs other than those handled by the Mozilla CA Certificate list
-  requires specifying 'verify: false' in the HMC credentials file, or
-  specifying 'ca_certs' with the path to an appropriate CA certificate file
-  or directory.
-
-**Deprecations:**
+  As a temporary quick fix or in non-production environments, you can also
+  disable the verification with that new attribute.
 
 **Bug fixes:**
 
@@ -49,13 +42,14 @@ Released: not yet
 
 **Enhancements:**
 
+* Increased minimum version of zhmcclient to 0.31.0, mainly driven by its
+  support for verifying HMC certificates.
+
 * Added support for logging the HMC interactions with new options `--log-dest`
   and `--log-comp`. (issue #121)
 
 * Added the processor type as a label on the metrics of the 'zcpc-processor-usage'
   metrics group. (issue #102)
-
-* Increased minimum version of zhmcclient to 0.31.0.
 
 * Docs: Added sample Prometheus output from the exporter.
 
@@ -75,14 +69,6 @@ Released: not yet
 * The zhmc_prometheus_exporter command now supports verification of the HMC
   server certificate. There is a new configuration attributes in the HMC
   credentials file ('verify_cert') that controls the verification behavior.
-
-**Cleanup:**
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 0.6.0
