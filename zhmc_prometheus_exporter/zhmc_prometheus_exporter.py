@@ -732,8 +732,8 @@ class ZHMCUsageCollector():
 
         log_exporter("Returning family objects")
         # Yield all family objects
-        for family_name in family_objects:
-            yield family_objects[family_name]
+        for family_obj in family_objects.values():
+            yield family_obj
 
         log_exporter("Done collecting metrics")
 
@@ -799,8 +799,8 @@ def setup_logging(log_dest, log_comps):
     if handler:
         fs = '%(asctime)s %(name)s: %(message)s'
         handler.setFormatter(logging.Formatter(fs))
-        for log_comp in LOGGER_NAMES:
-            name, level = LOGGER_NAMES[log_comp]
+        for log_comp, log_item in LOGGER_NAMES.items():
+            name, level = log_item
             logger = logging.getLogger(name)
             if log_comp in log_comps:
                 logger.addHandler(handler)
