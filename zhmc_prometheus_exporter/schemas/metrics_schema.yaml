@@ -9,18 +9,26 @@ required:
 additionalProperties: false
 properties:
   metric_groups:
-    description: The HMC metric groups and their mapping to Prometheus
+    description: The HMC and resource metric groups and their mapping to Prometheus
     type: object
     additionalProperties: false
     patternProperties:
       "^[a-z0-9\\-]+$":
-        description: "Key: Name of the HMC metric group"
+        description: "Key: Name of the HMC or resource metric group"
         type: object
         required:
           - prefix
           - fetch
         additionalProperties: false
         properties:
+          type:
+            description: "The type of metric group: metric - an HMC metric group in which the metric values come from the HMC metric service; resource - an artificial metric group in which the metric values come from resource properties."
+            type: string
+            enum: [metric, resource]
+            default: metric
+          resource:
+            description: "The resource class path for a resource metric group, starting at the zhmcclient.Client object (e.g. 'cpc.partition')."
+            type: string
           prefix:
             description: "<prefix> part of Prometheus metric name (format: zhmc_<prefix>_<metric_unit>)"
             type: string
@@ -57,17 +65,53 @@ properties:
     patternProperties:
       "^[a-z0-9\\-]+$":
         description: "Key: Name of the HMC metric group"
-        type: object
-        additionalProperties: false
-        patternProperties:
-          "^[a-zA-Z0-9\\-]+$":
-            description: "Key: Name of the HMC metric within its metric group"
+        oneOf:
+        - description: "Value: Mapping to Promentheus metrics in dictionary format (must be used for HMC metric values, can be used for HMC property based metrics)"
+          type: object
+          additionalProperties: false
+          patternProperties:
+            "^[a-zA-Z0-9\\-]+$":
+              description: "Key: Name of the HMC metric within its HMC metric group, or HMC resource property name"
+              type: object
+              required:
+                - exporter_name
+                - exporter_desc
+              additionalProperties: false
+              properties:
+                exporter_name:
+                  description: "<metric_unit> part of Prometheus metric name (format: zhmc_<prefix>_<metric_unit>); Null causes the metric not to be exported to Prometheus"
+                  type: [string, "null"]
+                  pattern: "^[a-zA-Z0-9_]+$"
+                exporter_desc:
+                  description: "HELP description of Prometheus metric"
+                  type: [string, "null"]
+                percent:
+                  description: "Indicates whether the original HMC value is represented as percentage with a value of 100 meaning 100%"
+                  type: boolean
+                  default: false
+                valuemap:
+                  description: "Defines how string values in the original HMC value are mapped into integer values exported by Prometheus"
+                  type: object
+                  additionalProperties: false
+                  patternProperties:
+                    "^[a-zA-Z0-9\\-]+$":
+                      description: "Key: String value in original HMC value. Value: Integer value exported by Prometheus"
+                      type: integer
+        - description: "Value: Mapping to Promentheus metrics in list format (can be used for HMC property based metrics)"
+          type: array
+          items:
             type: object
             required:
               - exporter_name
               - exporter_desc
             additionalProperties: false
             properties:
+              property_name:
+                description: "Name of the HMC property on the resource to use as the metric value"
+                type: string
+              properties_expression:
+                description: "Jinja2 expression on 'properties' variable to use as the metric value"
+                type: string
               exporter_name:
                 description: "<metric_unit> part of Prometheus metric name (format: zhmc_<prefix>_<metric_unit>); Null causes the metric not to be exported to Prometheus"
                 type: [string, "null"]
@@ -76,6 +120,14 @@ properties:
                 description: "HELP description of Prometheus metric"
                 type: [string, "null"]
               percent:
-                description: "Indicates whether the HMC metric value is represented as percentage with a value of 100 meaning 100%"
+                description: "Indicates whether the original HMC value is represented as percentage with a value of 100 meaning 100%"
                 type: boolean
                 default: false
+              valuemap:
+                description: "Defines how string values in the original HMC value are mapped into integer values exported by Prometheus"
+                type: object
+                additionalProperties: false
+                patternProperties:
+                  "^[a-zA-Z0-9\\-]+$":
+                    description: "Key: String value in original HMC value. Value: Integer value exported by Prometheus"
+                    type: integer

@@ -28,6 +28,7 @@ import logging
 from contextlib import contextmanager
 from pprint import pprint
 
+import jinja2
 import six
 import urllib3
 import yaml
@@ -58,7 +59,7 @@ RETRY_SLEEP_TIME = 10
 RETRY_TIMEOUT_CONFIG = zhmcclient.RetryTimeoutConfig(
     connect_timeout=10,
     connect_retries=2,
-    read_timeout=10,
+    read_timeout=120,
     read_retries=2,
     max_redirects=zhmcclient.DEFAULT_MAX_REDIRECTS,
     operation_timeout=zhmcclient.DEFAULT_OPERATION_TIMEOUT,
@@ -374,6 +375,22 @@ COND_PATTERN = '^(.*?)("{mnu}"|\'{mnu}\')(.*)$'.format(mnu=MNU_PATTERN)
 COND_PATTERN = re.compile(COND_PATTERN)
 
 
+def resource_str(resource_obj):
+    """
+    Return a human readable string identifying the resource object, for
+    messages.
+    """
+    res_class = resource_obj.properties['class']
+    if res_class == 'cpc':
+        res_str = "CPC '{}'".format(resource_obj.name)
+    elif res_class in ('partition', 'logical-partition'):
+        res_str = "partition '{}' on CPC '{}'". \
+            format(resource_obj.name, resource_obj.manager.parent.name)
+    else:
+        raise ValueError("Resource class {} is not supported".format(res_class))
+    return res_str
+
+
 def eval_condition(condition, hmc_version):
     """
     Evaluate a condition expression and return a boolean indicating whether
@@ -457,40 +474,105 @@ def create_metrics_context(session, yaml_metric_groups, hmc_version):
     for fetch/do not fetch information, and the name of the YAML file for error
     output.
 
-    Returns the context.
+    Returns a tuple(context, resources), where context is the metric context
+      and resources is a dict(key: metric group name, value: list of
+      auto-enabled resource objects for the metric group).
 
     Raises: zhmccclient exceptions
     """
-    fetched_metric_groups = []
+    fetched_hmc_metric_groups = []
+    fetched_res_metric_groups = []
     for metric_group in yaml_metric_groups:
         mg_dict = yaml_metric_groups[metric_group]
+        mg_type = mg_dict.get("type", 'hmc')
         # fetch is required in the metrics schema:
         fetch = mg_dict["fetch"]
         # if is optional in the metrics schema:
         if fetch and "if" in mg_dict:
             fetch = eval_condition(mg_dict["if"], hmc_version)
         if fetch:
-            fetched_metric_groups.append(metric_group)
-    verbose("Creating a metrics context on the HMC for metric groups:")
-    for metric_group in fetched_metric_groups:
-        verbose("  {}".format(metric_group))
+            if mg_type == 'hmc':
+                fetched_hmc_metric_groups.append(metric_group)
+            else:
+                assert mg_type == 'resource'  # ensured by enum
+                fetched_res_metric_groups.append(metric_group)
+
     client = zhmcclient.Client(session)
+
+    verbose("Creating a metrics context on the HMC for HMC metric groups:")
+    for metric_group in fetched_hmc_metric_groups:
+        verbose("  {}".format(metric_group))
     context = client.metrics_contexts.create(
         {"anticipated-frequency-seconds": 15,
-         "metric-groups": fetched_metric_groups})
-    return context
+         "metric-groups": fetched_hmc_metric_groups})
+
+    verbose("Retrieving resources from the HMC for resource metric groups:")
+    resources = {}
+    for metric_group in fetched_res_metric_groups:
+        verbose("  {}".format(metric_group))
+        try:
+            resource_path = yaml_metric_groups[metric_group]['resource']
+        except KeyError:
+            new_exc = ImproperExit(
+                "Missing 'resource' item in resource metric group {} in "
+                "metrics file".
+                format(metric_group))
+            new_exc.__cause__ = None  # pylint: disable=invalid-name
+            raise new_exc
+        if resource_path == 'cpc':
+            resources[metric_group] = []
+            cpcs = client.cpcs.list()
+            for cpc in cpcs:
+                verbose("Enabling auto-update for CPC {}".format(cpc.name))
+                cpc.enable_auto_update()
+                resources[metric_group].append(cpc)
+        elif resource_path == 'cpc.partition':
+            resources[metric_group] = []
+            cpcs = client.cpcs.list()
+            for cpc in cpcs:
+                partitions = cpc.partitions.list()
+                for partition in partitions:
+                    verbose("Enabling auto-update for partition {}.{}".
+                            format(cpc.name, partition.name))
+                    partition.enable_auto_update()
+                    resources[metric_group].append(partition)
+        elif resource_path == 'cpc.logical-partition':
+            resources[metric_group] = []
+            cpcs = client.cpcs.list()
+            for cpc in cpcs:
+                lpars = cpc.lpars.list()
+                for lpar in lpars:
+                    verbose("Enabling auto-update for LPAR {}.{}".
+                            format(cpc.name, lpar.name))
+                    lpar.enable_auto_update()
+                    resources[metric_group].append(lpar)
+        else:
+            new_exc = ImproperExit(
+                "Invalid 'resource' item in resource metric group {} in "
+                "metrics file: {}".
+                format(metric_group, resource_path))
+            new_exc.__cause__ = None  # pylint: disable=invalid-name
+            raise new_exc
+
+    return context, resources
 
 
-def delete_metrics_context(session, context):
-    """The previously created context must also be deleted.
-    Takes the session and context.
-    Omitting this deletion may have unintended consequences.
+def cleanup(session, context, resources):
+    """
+    Clean up:
+    - delete the metric context
+    - disable auto-update on resources
+    - logoff from the HMC session
 
     Raises: zhmccclient exceptions
     """
     # Destruction should not be attempted if context/session were not created
     if context:
         context.delete()
+    if resources:
+        for res_list in resources.values():
+            for res in res_list:
+                res.disable_auto_update()
     if session:
         session.logoff()
 
@@ -599,6 +681,7 @@ def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
                 labels[label_name] = label_value
 
             for metric in metric_values:
+
                 try:
                     yaml_metric = yaml_metrics[metric_group][metric]
                 except KeyError:
@@ -649,16 +732,171 @@ def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
     return family_objects
 
 
+def build_family_objects_res(
+        resources, yaml_metric_groups, yaml_metrics, metrics_filename,
+        extra_labels):
+    """
+    Go through all auto-updated resources and build the Prometheus Family
+    objects for them.
+
+    Returns a dictionary of Prometheus Family objects with the following
+    structure:
+
+      family_name:
+        GaugeMetricFamily object
+    """
+    env = jinja2.Environment()
+
+    family_objects = {}
+    for metric_group, res_list in resources.items():
+
+        yaml_metric_group = yaml_metric_groups[metric_group]
+        for resource in res_list:
+
+            # Calculate the resource labels:
+            labels = dict(extra_labels)
+            # labels is optional in the metrics schema:
+            default_labels = [dict(name='resource', value='resource')]
+            yaml_labels = yaml_metric_group.get('labels', default_labels)
+            for item in yaml_labels:
+                # name, value are required in the metrics schema:
+                label_name = item['name']
+                item_value = item['value']
+                if item_value == 'resource':
+                    label_value = str(resource.name)
+                elif item_value == 'resource.parent':
+                    label_value = str(resource.manager.parent.name)
+                elif item_value == 'resource.parent.parent':
+                    label_value = \
+                        str(resource.manager.parent.manager.parent.name)
+                else:
+                    label_value = 'unknown'
+                labels[label_name] = label_value
+
+            yaml_mg = yaml_metrics[metric_group]
+            if isinstance(yaml_mg, dict):
+                yaml_mg_iter = yaml_mg.items()
+            else:
+                yaml_mg_iter = yaml_mg
+            for item in yaml_mg_iter:
+                if isinstance(yaml_mg, dict):
+                    prop_name, yaml_metric = item
+                else:
+                    yaml_metric = item
+                    prop_name = yaml_metric.get('property_name', None)
+
+                exporter_name = yaml_metric["exporter_name"]
+
+                if prop_name:
+                    try:
+                        metric_value = resource.properties[prop_name]
+                    except KeyError:
+                        # Skip resource properties that do not exist on older
+                        # CPC/HMC versions.
+                        continue
+                else:
+                    prop_expr = yaml_metric.get('properties_expression', None)
+                    if not prop_expr:
+                        new_exc = ImproperExit(
+                            "Metric definition for exporter name '{}' in "
+                            "metric definition file {} has neither "
+                            "'property_name' nor 'properties_expression'".
+                            format(exporter_name, metrics_filename))
+                        new_exc.__cause__ = None  # pylint: disable=invalid-name
+                        raise new_exc
+
+                    try:
+                        func = env.compile_expression(
+                            prop_expr, undefined_to_none=False)
+                    except jinja2.exceptions.TemplateError as exc:
+                        new_exc = ImproperExit(
+                            "Error compiling properties expression {!r} "
+                            "defined for exporter name '{}' "
+                            "in metric definition file {}: {}: {}".
+                            format(prop_expr, exporter_name, metrics_filename,
+                                   exc.__class__.__name__, exc))
+                        new_exc.__cause__ = None  # pylint: disable=invalid-name
+                        raise new_exc
+
+                    try:
+                        metric_value = func(properties=resource.properties)
+                    except jinja2.exceptions.UndefinedError as exc:
+                        new_exc = ImproperExit(
+                            "Error evaluating properties expression {!r} "
+                            "defined for exporter name '{}' "
+                            "in metric definition file {}: {}: {}".
+                            format(prop_expr, exporter_name, metrics_filename,
+                                   exc.__class__.__name__, exc))
+                        new_exc.__cause__ = None  # pylint: disable=invalid-name
+                        raise new_exc
+
+                # Skip resource properties that have a null value. An example
+                # are some LPAR/partition properties that are null when the
+                # partition is not active. Prometheus cannot represent null
+                # values (It can represent the NaN float value but that would
+                # not really be the right choice).
+                if metric_value is None:
+                    continue
+
+                # Skip metrics that are defined to be ignored
+                # exporter_name is required in the metrics schema:
+                if not yaml_metric["exporter_name"]:
+                    continue
+
+                # Transform the HMC value using the valuemap, if defined:
+                valuemap = yaml_metric.get('valuemap', None)
+                if valuemap:
+                    try:
+                        metric_value = valuemap[metric_value]
+                    except KeyError:
+                        warnings.warn(
+                            "Skipping property '{}' of resource metric group "
+                            "'{}' in metric definition file {}, because its "
+                            "valuemap does not define a mapping for "
+                            "value {!r} returned for {}".
+                            format(prop_name, metric_group, metrics_filename,
+                                   metric_value, resource_str(resource)))
+                        continue
+
+                # Transform HMC percentages (value 100 means 100% = 1) to
+                # Prometheus values (value 1 means 100% = 1)
+                # percent is optional in the metrics schema:
+                if yaml_metric.get("percent", False):
+                    metric_value /= 100
+
+                # Create a Family object, if needed
+                # prefix,exporter_name are required in the metrics schema:
+                family_name = "zhmc_{}_{}".format(
+                    yaml_metric_group["prefix"],
+                    yaml_metric["exporter_name"])
+                try:
+                    family_object = family_objects[family_name]
+                except KeyError:
+                    # exporter_desc is required in the metrics schema:
+                    family_object = GaugeMetricFamily(
+                        family_name,
+                        yaml_metric["exporter_desc"],
+                        labels=list(labels.keys()))
+                    family_objects[family_name] = family_object
+
+                # Add the metric value to the Family object
+                family_object.add_metric(list(labels.values()), metric_value)
+
+    return family_objects
+
+
 class ZHMCUsageCollector():
     # pylint: disable=too-few-public-methods
     """Collects the usage for exporting."""
 
-    def __init__(self, yaml_creds, session, context, yaml_metric_groups,
+    def __init__(self, yaml_creds, session, context, resources,
+                 yaml_metric_groups,
                  yaml_metrics, extra_labels, filename_metrics, filename_creds,
                  resource_cache, hmc_version):
         self.yaml_creds = yaml_creds
         self.session = session
         self.context = context
+        self.resources = resources
         self.yaml_metric_groups = yaml_metric_groups
         self.yaml_metrics = yaml_metrics
         self.extra_labels = extra_labels
@@ -689,9 +927,6 @@ class ZHMCUsageCollector():
                     metrics_object = retrieve_metrics(self.context)
                 except zhmcclient.HTTPError as exc:
                     if exc.http_status == 404 and exc.reason == 1:
-                        # Disable this line because it leads sometimes to
-                        # an exception within the exception handling.
-                        # delete_metrics_context(self.session, self.context)
                         log_exporter(
                             "Recreating the metrics context after HTTP "
                             "status {}.{}".format(exc.http_status, exc.reason))
@@ -722,13 +957,17 @@ class ZHMCUsageCollector():
                     raise
                 break
 
-        log_exporter("Building family objects")
-        family_objects = build_family_objects(metrics_object,
-                                              self.yaml_metric_groups,
-                                              self.yaml_metrics,
-                                              self.filename_metrics,
-                                              self.extra_labels,
-                                              self.resource_cache)
+        log_exporter("Building family objects for HMC metrics")
+        family_objects = build_family_objects(
+            metrics_object, self.yaml_metric_groups,
+            self.yaml_metrics, self.filename_metrics,
+            self.extra_labels, self.resource_cache)
+
+        log_exporter("Building family objects for resource metrics")
+        family_objects.update(build_family_objects_res(
+            self.resources, self.yaml_metric_groups,
+            self.yaml_metrics, self.filename_metrics,
+            self.extra_labels))
 
         log_exporter("Returning family objects")
         # Yield all family objects
@@ -816,8 +1055,9 @@ def main():
 
     global VERBOSE_LEVEL  # pylint: disable=global-statement
 
-    session = False
-    context = False
+    session = None
+    context = None
+    resources = None
     try:
         args = parse_args(sys.argv[1:])
         if args.help_creds:
@@ -850,6 +1090,18 @@ def main():
         yaml_metric_groups = yaml_metric_content['metric_groups']
         yaml_metrics = yaml_metric_content['metrics']
 
+        # Check that the correct format is used in the metrics section
+        for mg, yaml_m in yaml_metrics.items():
+            yaml_mg = yaml_metric_groups[mg]
+            mg_type = yaml_mg.get('type', 'metric')
+            if mg_type == 'metric' and not isinstance(yaml_m, dict):
+                new_exc = ImproperExit(
+                    "Metrics for metric group '{}' of type 'metric' must use "
+                    "the dictionary format in metric definition file {}".
+                    format(mg, args.m))
+                new_exc.__cause__ = None  # pylint: disable=invalid-name
+                raise new_exc
+
         # Unregister the default collectors (Python, Platform)
         if hasattr(REGISTRY, '_collector_to_names'):
             # pylint: disable=protected-access
@@ -868,7 +1120,7 @@ def main():
             with zhmc_exceptions(session, hmccreds_filename):
                 hmc_version = get_hmc_version(session)
                 verbose("HMC version: {}".format(hmc_version))
-                context = create_metrics_context(
+                context, resources = create_metrics_context(
                     session, yaml_metric_groups, hmc_version)
         except (ConnectionError, AuthError, OtherError) as exc:
             raise ImproperExit(exc)
@@ -883,9 +1135,9 @@ def main():
 
         resource_cache = ResourceCache()
         coll = ZHMCUsageCollector(
-            yaml_creds, session, context, yaml_metric_groups, yaml_metrics,
-            extra_labels, args.m, hmccreds_filename, resource_cache,
-            hmc_version)
+            yaml_creds, session, context, resources, yaml_metric_groups,
+            yaml_metrics, extra_labels, args.m, hmccreds_filename,
+            resource_cache, hmc_version)
 
         verbose("Registering the collector and performing first collection")
         REGISTRY.register(coll)  # Performs a first collection
@@ -901,18 +1153,18 @@ def main():
                 raise ProperExit
     except KeyboardInterrupt:
         info("Exporter interrupted before server start.")
-        delete_metrics_context(session, context)
+        cleanup(session, context, resources)
         sys.exit(1)
     except EarlyExit as exc:
         info("Error: {}".format(exc), log=False)
         sys.exit(1)
     except ImproperExit as exc:
         info("Error: {}".format(exc))
-        delete_metrics_context(session, context)
+        cleanup(session, context, resources)
         sys.exit(1)
     except ProperExit:
         info("Exporter interrupted after server start.")
-        delete_metrics_context(session, context)
+        cleanup(session, context, resources)
         sys.exit(0)
 
 
