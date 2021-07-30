@@ -108,11 +108,7 @@ doc_dependent_files := \
 		examples/hmccreds.yaml \
     $(package_py_files) \
 
-ifeq ($(python_version),3.4)
-  pytest_cov_opts :=
-else
-  pytest_cov_opts := --cov $(package_name) --cov-config .coveragerc --cov-report=html:htmlcov
-endif
+pytest_cov_opts := --cov $(package_name) --cov-config .coveragerc --cov-report=html:htmlcov
 
 .PHONY: help
 help:
@@ -255,13 +251,9 @@ develop_$(pymn).done: install_$(pymn).done dev-requirements.txt
 	echo "done" >$@
 
 $(doc_build_file): develop_$(pymn).done $(doc_dependent_files)
-ifeq ($(python_version),3.4)
-	@echo "Warning: Skipping Sphinx doc build on Python $(python_version)" >&2
-else
 	@echo "Generating HTML documentation..."
 	sphinx-build -b html $(doc_dir) $(doc_build_dir)
 	@echo "Done: Generated HTML documentation with main file: $@"
-endif
 
 $(bdist_file): _check_version develop_$(pymn).done
 	@echo "Creating binary distribution archive $@..."

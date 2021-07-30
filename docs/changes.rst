@@ -26,6 +26,8 @@ Released: not yet
 
 **Incompatible changes:**
 
+* Dropped support for Python 3.4. (issue #155)
+
 **Deprecations:**
 
 **Bug fixes:**
