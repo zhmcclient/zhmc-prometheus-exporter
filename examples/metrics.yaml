@@ -661,62 +661,62 @@ metrics:
       exporter_name: null  # Ignored (identifies the port, used in label)
       exporter_desc: null
     bytes-sent:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: bytes_sent_count
       exporter_desc: Number of Bytes in unicast packets that were sent
     bytes-received:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: bytes_received_count
       exporter_desc: Number of Bytes in unicast packets that were received
     packets-sent:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_sent_count
       exporter_desc: Number of unicast packets that were sent
     packets-received:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_received_count
       exporter_desc: Number of unicast packets that were received
     packets-sent-dropped:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_sent_dropped_count
       exporter_desc: Number of sent packets that were dropped (resource shortage)
     packets-received-dropped:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_received_dropped_count
       exporter_desc: Number of received packets that were dropped (resource shortage)
     packets-sent-discarded:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_sent_discarded_count
       exporter_desc: Number of sent packets that were discarded (malformed)
     packets-received-discarded:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_received_discarded_count
       exporter_desc: Number of received packets that were discarded (malformed)
     multicast-packets-sent:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: multicast_packets_sent_count
       exporter_desc: Number of multicast packets sent
     multicast-packets-received:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: multicast_packets_received_count
       exporter_desc: Number of multicast packets received
     broadcast-packets-sent:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: broadcast_packets_sent_count
       exporter_desc: Number of broadcast packets sent
     broadcast-packets-received:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: broadcast_packets_received_count
       exporter_desc: Number of broadcast packets received
@@ -758,62 +758,62 @@ metrics:
       exporter_name: null  # Ignored (identifies the partition, used in label)
       exporter_desc: null
     bytes-sent:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: bytes_sent_count
       exporter_desc: Number of Bytes in unicast packets that were sent
     bytes-received:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: bytes_received_count
       exporter_desc: Number of Bytes in unicast packets that were received
     packets-sent:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_sent_count
       exporter_desc: Number of unicast packets that were sent
     packets-received:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_received_count
       exporter_desc: Number of unicast packets that were received
     packets-sent-dropped:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_sent_dropped_count
       exporter_desc: Number of sent packets that were dropped (resource shortage)
     packets-received-dropped:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_received_dropped_count
       exporter_desc: Number of received packets that were dropped (resource shortage)
     packets-sent-discarded:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_sent_discarded_count
       exporter_desc: Number of sent packets that were discarded (malformed)
     packets-received-discarded:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_received_discarded_count
       exporter_desc: Number of received packets that were discarded (malformed)
     multicast-packets-sent:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: multicast_packets_sent_count
       exporter_desc: Number of multicast packets sent
     multicast-packets-received:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: multicast_packets_received_count
       exporter_desc: Number of multicast packets received
     broadcast-packets-sent:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: broadcast_packets_sent_count
       exporter_desc: Number of broadcast packets sent
     broadcast-packets-received:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: broadcast_packets_received_count
       exporter_desc: Number of broadcast packets received

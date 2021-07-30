@@ -35,7 +35,8 @@ import yaml
 import jsonschema
 import zhmcclient
 from prometheus_client import start_http_server
-from prometheus_client.core import GaugeMetricFamily, REGISTRY
+from prometheus_client.core import GaugeMetricFamily, CounterMetricFamily, \
+    REGISTRY
 
 DEFAULT_CREDS_FILE = '/etc/zhmc-prometheus-exporter/hmccreds.yaml'
 DEFAULT_METRICS_FILE = '/etc/zhmc-prometheus-exporter/metrics.yaml'
@@ -720,10 +721,18 @@ def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
                     family_object = family_objects[family_name]
                 except KeyError:
                     # exporter_desc is required in the metrics schema:
-                    family_object = GaugeMetricFamily(
-                        family_name,
-                        yaml_metric["exporter_desc"],
-                        labels=list(labels.keys()))
+                    metric_type = yaml_metric.get("metric_type", "gauge")
+                    if metric_type == "gauge":
+                        family_object = GaugeMetricFamily(
+                            family_name,
+                            yaml_metric["exporter_desc"],
+                            labels=list(labels.keys()))
+                    else:
+                        assert metric_type == "counter"  # ensured by schema
+                        family_object = CounterMetricFamily(
+                            family_name,
+                            yaml_metric["exporter_desc"],
+                            labels=list(labels.keys()))
                     family_objects[family_name] = family_object
 
                 # Add the metric value to the Family object
@@ -873,10 +882,18 @@ def build_family_objects_res(
                     family_object = family_objects[family_name]
                 except KeyError:
                     # exporter_desc is required in the metrics schema:
-                    family_object = GaugeMetricFamily(
-                        family_name,
-                        yaml_metric["exporter_desc"],
-                        labels=list(labels.keys()))
+                    metric_type = yaml_metric.get("metric_type", "gauge")
+                    if metric_type == "gauge":
+                        family_object = GaugeMetricFamily(
+                            family_name,
+                            yaml_metric["exporter_desc"],
+                            labels=list(labels.keys()))
+                    else:
+                        assert metric_type == "counter"  # ensured by schema
+                        family_object = CounterMetricFamily(
+                            family_name,
+                            yaml_metric["exporter_desc"],
+                            labels=list(labels.keys()))
                     family_objects[family_name] = family_object
 
                 # Add the metric value to the Family object
