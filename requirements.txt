@@ -13,16 +13,10 @@ jsonschema>=2.6.0
 six>=1.14.0 # MIT
 
 # PyYAML pulled in by zhmcclient examples
-# PyYAML 5.3 fixes narrow build error, and has removed support for Python 3.4
-PyYAML>=5.1; python_version == '2.7'
-PyYAML>=5.1,<5.3; python_version == '3.4'
-PyYAML>=5.1; python_version > '3.4'
+# PyYAML 5.3 fixes narrow build error
+PyYAML>=5.1
 
 # pyrsistent is pulled in by jsonschema.
 # Before its version 0.17.0, pyrsistent did not or not correctly declare its
 # required Python versions in the package metadata.
-# pyrsistent 0.16.0 removed support for Python 2.7.
-# pyrsistent 0.15.0 removed support for Python 3.4.
-pyrsistent>=0.14.0,<0.16.0; python_version == '2.7'
-pyrsistent>=0.14.0,<0.15.0; python_version == '3.4'
-pyrsistent>=0.14.0; python_version >= '3.5'
+pyrsistent>=0.14.0
