@@ -61,6 +61,17 @@ metric_groups:
       - name: adapter_pchid
         value: channel-id
 
+  logical-partition-resource:
+    type: resource
+    resource: cpc.logical-partition
+    prefix: partition
+    fetch: true
+    labels:
+      - name: cpc
+        value: resource.parent
+      - name: partition
+        value: resource
+
   # Available for CPCs in DPM mode
 
   dpm-system-usage-overview:
@@ -115,6 +126,17 @@ metric_groups:
       - name: nic
         value: resource
 
+  partition-resource:
+    type: resource
+    resource: cpc.partition
+    prefix: partition
+    fetch: true
+    labels:
+      - name: cpc
+        value: resource.parent
+      - name: partition
+        value: resource
+
   # Available for CPCs in any mode
 
   zcpc-environmentals-and-power:
@@ -139,6 +161,15 @@ metric_groups:
     prefix: cpc
     fetch: true
     if: "hmc_version>='2.15.0'"
+    labels:
+      - name: cpc
+        value: resource
+
+  cpc-resource:
+    type: resource
+    resource: cpc
+    prefix: cpc
+    fetch: true
     labels:
       - name: cpc
         value: resource
@@ -218,14 +249,17 @@ metrics:
       exporter_desc: Usage ratio across all dedicated zAAP processors of the CPC
     # aap-all-processor-usage does not seem to exist
     cbp-all-processor-usage:
+      # since HMC/SE version 2.14.0
       percent: true
       exporter_name: cbp_processor_usage_ratio
       exporter_desc: Usage ratio across all CBP processors of the CPC
     cbp-shared-processor-usage:
+      # since HMC/SE version 2.14.0
       percent: true
       exporter_name: cbp_shared_processor_usage_ratio
       exporter_desc: Usage ratio across all shared CBP processors of the CPC
     cbp-dedicated-processor-usage:
+      # since HMC/SE version 2.14.0
       percent: true
       exporter_name: cbp_dedicated_processor_usage_ratio
       exporter_desc: Usage ratio across all dedicated CBP processors of the CPC
@@ -264,6 +298,7 @@ metrics:
       exporter_name: iip_processor_usage_ratio
       exporter_desc: Usage ratio across all IIP processors of the partition
     cbp-processor-usage:
+      # since HMC/SE version 2.14.0
       percent: true
       exporter_name: cbp_processor_usage_ratio
       exporter_desc: Usage ratio across all CBP processors of the partition
@@ -319,6 +354,225 @@ metrics:
       percent: true
       exporter_name: usage_ratio
       exporter_desc: Usage ratio of the RoCE adapter
+
+  logical-partition-resource:  # can be in dictionary or list format
+    - property_name: defined-capacity
+      exporter_name: defined_capacity_msu_per_hour
+      exporter_desc: Defined capacity expressed in terms of Millions of Service Units (MSU)s per hour
+    - property_name: workload-manager-enabled
+      exporter_name: workload_manager_is_enabled
+      exporter_desc: Boolean indicating whether the z/OS Workload Manager is allowed to change processing weight related properties of the partition
+    - property_name: processor-usage
+      exporter_name: processor_mode_int
+      exporter_desc: Allocation mode for processors to the active partition as an integer (0=shared, 1=dedicated)
+      valuemap:
+        shared: 0
+        dedicated: 1
+    - property_name: number-general-purpose-processors
+      exporter_name: cp_processor_count
+      exporter_desc: Number of CP processors currently allocated to the active partition
+    - property_name: number-reserved-general-purpose-processors
+      exporter_name: cp_reserved_processor_count
+      exporter_desc: Number of CP processors reserved for the active partition (this is the maximum when increasing the number)
+    - property_name: initial-processing-weight
+      exporter_name: cp_initial_processing_weight
+      exporter_desc: Initial CP processing weight for the active partition in shared mode (1..999)
+    - property_name: minimum-processing-weight
+      exporter_name: cp_minimum_processing_weight
+      exporter_desc: Minimum CP processing weight for the active partition in shared mode (1..999)
+    - property_name: maximum-processing-weight
+      exporter_name: cp_maximum_processing_weight
+      exporter_desc: Maximum CP processing weight for the active partition in shared mode (1..999)
+    - property_name: current-processing-weight
+      exporter_name: cp_current_processing_weight
+      exporter_desc: Current CP processing weight for the active partition in shared mode (1..999)
+    - properties_expression: "properties['absolute-processing-capping'].type == 'processor'"
+      exporter_name: cp_processor_count_is_capped
+      exporter_desc: Boolean indicating whether absolute capping is enabled for CP processors
+    - properties_expression: "properties['absolute-processing-capping'].value if properties['absolute-processing-capping'].type == 'processor' else 0"
+      exporter_name: cp_processor_count_cap
+      exporter_desc: Maximum number of CP processors that can be used if absolute capping is enabled, else 0
+    - property_name: initial-processing-weight-capped
+      exporter_name: cp_initial_processing_weight_is_capped
+      exporter_desc: Boolean indicating whether the initial CP processing weight is capped
+    - property_name: current-processing-weight-capped
+      exporter_name: cp_current_processing_weight_is_capped
+      exporter_desc: Boolean indicating whether the current CP processing weight is capped
+    - property_name: number-ifl-processors
+      exporter_name: ifl_processor_count
+      exporter_desc: Number of IFL processors currently allocated to the active partition
+    - property_name: number-reserved-ifl-processors
+      exporter_name: ifl_reserved_processor_count
+      exporter_desc: Number of IFL processors reserved for the active partition (this is the maximum when increasing the number)
+    - property_name: initial-ifl-processing-weight
+      exporter_name: ifl_initial_processing_weight
+      exporter_desc: Initial IFL processing weight for the active partition in shared mode (1..999)
+    - property_name: minimum-ifl-processing-weight
+      exporter_name: ifl_minimum_processing_weight
+      exporter_desc: Minimum IFL processing weight for the active partition in shared mode (1..999)
+    - property_name: maximum-ifl-processing-weight
+      exporter_name: ifl_maximum_processing_weight
+      exporter_desc: Maximum IFL processing weight for the active partition in shared mode (1..999)
+    - property_name: current-ifl-processing-weight
+      exporter_name: ifl_current_processing_weight
+      exporter_desc: Current IFL processing weight for the active partition in shared mode (1..999)
+    - properties_expression: "properties['absolute-ifl-capping'].type == 'processor'"
+      exporter_name: ifl_processor_count_is_capped
+      exporter_desc: Boolean indicating whether absolute capping is enabled for IFL processors
+    - properties_expression: "properties['absolute-ifl-capping'].value if properties['absolute-ifl-capping'].type == 'processor' else 0"
+      exporter_name: ifl_processor_count_cap
+      exporter_desc: Maximum number of IFL processors that can be used if absolute capping is enabled, else 0
+    - property_name: initial-ifl-processing-weight-capped
+      exporter_name: ifl_initial_processing_weight_is_capped
+      exporter_desc: Boolean indicating whether the initial IFL processing weight is capped
+    - property_name: current-ifl-processing-weight-capped
+      exporter_name: ifl_current_processing_weight_is_capped
+      exporter_desc: Boolean indicating whether the current IFL processing weight is capped
+    - property_name: number-icf-processors
+      exporter_name: icf_processor_count
+      exporter_desc: Number of ICF processors currently allocated to the active partition
+    - property_name: number-reserved-icf-processors
+      exporter_name: icf_reserved_processor_count
+      exporter_desc: Number of ICF processors reserved for the active partition (this is the maximum when increasing the number)
+    - property_name: initial-cf-processing-weight
+      exporter_name: icf_initial_processing_weight
+      exporter_desc: Initial ICF processing weight for the active partition in shared mode (1..999)
+    - property_name: minimum-cf-processing-weight
+      exporter_name: icf_minimum_processing_weight
+      exporter_desc: Minimum ICF processing weight for the active partition in shared mode (1..999)
+    - property_name: maximum-cf-processing-weight
+      exporter_name: icf_maximum_processing_weight
+      exporter_desc: Maximum ICF processing weight for the active partition in shared mode (1..999)
+    - property_name: current-cf-processing-weight
+      exporter_name: icf_current_processing_weight
+      exporter_desc: Current ICF processing weight for the active partition in shared mode (1..999)
+    - properties_expression: "properties['absolute-cf-capping'].type == 'processor'"
+      exporter_name: icf_processor_count_is_capped
+      exporter_desc: Boolean indicating whether absolute capping is enabled for ICF processors
+    - properties_expression: "properties['absolute-cf-capping'].value if properties['absolute-cf-capping'].type == 'processor' else 0"
+      exporter_name: icf_processor_count_cap
+      exporter_desc: Maximum number of ICF processors that can be used if absolute capping is enabled, else 0
+    - property_name: initial-cf-processing-weight-capped
+      exporter_name: icf_initial_processing_weight_is_capped
+      exporter_desc: Boolean indicating whether the initial ICF processing weight is capped
+    - property_name: current-cf-processing-weight-capped
+      exporter_name: icf_current_processing_weight_is_capped
+      exporter_desc: Boolean indicating whether the current ICF processing weight is capped
+    - property_name: number-ziip-processors
+      exporter_name: iip_processor_count
+      exporter_desc: Number of zIIP processors currently allocated to the active partition
+    - property_name: number-reserved-ziip-processors
+      exporter_name: iip_reserved_processor_count
+      exporter_desc: Number of zIIP processors reserved for the active partition (this is the maximum when increasing the number)
+    - property_name: initial-ziip-processing-weight
+      exporter_name: iip_initial_processing_weight
+      exporter_desc: Initial zIIP processing weight for the active partition in shared mode (1..999)
+    - property_name: minimum-ziip-processing-weight
+      exporter_name: iip_minimum_processing_weight
+      exporter_desc: Minimum zIIP processing weight for the active partition in shared mode (1..999)
+    - property_name: maximum-ziip-processing-weight
+      exporter_name: iip_maximum_processing_weight
+      exporter_desc: Maximum zIIP processing weight for the active partition in shared mode (1..999)
+    - property_name: current-ziip-processing-weight
+      exporter_name: iip_current_processing_weight
+      exporter_desc: Current zIIP processing weight for the active partition in shared mode (1..999)
+    - properties_expression: "properties['absolute-ziip-capping'].type == 'processor'"
+      exporter_name: iip_processor_count_is_capped
+      exporter_desc: Boolean indicating whether absolute capping is enabled for zIIP processors
+    - properties_expression: "properties['absolute-ziip-capping'].value if properties['absolute-ziip-capping'].type == 'processor' else 0"
+      exporter_name: iip_processor_count_cap
+      exporter_desc: Maximum number of zIIP processors that can be used if absolute capping is enabled, else 0
+    - property_name: initial-ziip-processing-weight-capped
+      exporter_name: iip_initial_processing_weight_is_capped
+      exporter_desc: Boolean indicating whether the initial zIIP processing weight is capped
+    - property_name: current-ziip-processing-weight-capped
+      exporter_name: iip_current_processing_weight_is_capped
+      exporter_desc: Boolean indicating whether the current zIIP processing weight is capped
+    # Note: number-...-processors/cores properties do not exist in 2.15 for AAP processors
+    - property_name: initial-aap-processing-weight
+      exporter_name: aap_initial_processing_weight
+      exporter_desc: Initial zAAP processing weight for the active partition in shared mode (1..999)
+    - property_name: minimum-aap-processing-weight
+      exporter_name: aap_minimum_processing_weight
+      exporter_desc: Minimum zAAP processing weight for the active partition in shared mode (1..999)
+    - property_name: maximum-aap-processing-weight
+      exporter_name: aap_maximum_processing_weight
+      exporter_desc: Maximum zAAP processing weight for the active partition in shared mode (1..999)
+    - property_name: current-aap-processing-weight
+      exporter_name: aap_current_processing_weight
+      exporter_desc: Current zAAP processing weight for the active partition in shared mode (1..999)
+    - properties_expression: "properties['absolute-aap-capping'].type == 'processor'"
+      exporter_name: aap_processor_count_is_capped
+      exporter_desc: Boolean indicating whether absolute capping is enabled for zAAP processors
+    - properties_expression: "properties['absolute-aap-capping'].value if properties['absolute-aap-capping'].type == 'processor' else 0"
+      exporter_name: aap_processor_count_cap
+      exporter_desc: Maximum number of zAAP processors that can be used if absolute capping is enabled, else 0
+    - property_name: initial-aap-processing-weight-capped
+      exporter_name: aap_initial_processing_weight_is_capped
+      exporter_desc: Boolean indicating whether the initial zAAP processing weight is capped
+    - property_name: current-aap-processing-weight-capped
+      exporter_name: aap_current_processing_weight_is_capped
+      exporter_desc: Boolean indicating whether the current zAAP processing weight is capped
+    # Note: number-...-processors/cores properties do not exist in 2.15 for CBP processors
+    - property_name: initial-cbp-processing-weight
+      # since HMC/SE version 2.14.0
+      exporter_name: cbp_initial_processing_weight
+      exporter_desc: Initial CBP processing weight for the active partition in shared mode (1..999)
+    - property_name: minimum-cbp-processing-weight
+      # since HMC/SE version 2.14.0
+      exporter_name: cbp_minimum_processing_weight
+      exporter_desc: Minimum CBP processing weight for the active partition in shared mode (1..999)
+    - property_name: maximum-cbp-processing-weight
+      # since HMC/SE version 2.14.0
+      exporter_name: cbp_maximum_processing_weight
+      exporter_desc: Maximum CBP processing weight for the active partition in shared mode (1..999)
+    - property_name: current-cbp-processing-weight
+      # since HMC/SE version 2.14.0
+      exporter_name: cbp_current_processing_weight
+      exporter_desc: Current CBP processing weight for the active partition in shared mode (1..999)
+    - properties_expression: "properties['absolute-cbp-capping'].type == 'processor'"
+      # since HMC/SE version 2.14.0
+      exporter_name: cbp_processor_count_is_capped
+      exporter_desc: Boolean indicating whether absolute capping is enabled for CBP processors
+    - properties_expression: "properties['absolute-cbp-capping'].value if properties['absolute-cbp-capping'].type == 'processor' else 0"
+      # since HMC/SE version 2.14.0
+      exporter_name: cbp_processor_count_cap
+      exporter_desc: Maximum number of CBP processors that can be used if absolute capping is enabled, else 0
+    - property_name: initial-cbp-processing-weight-capped
+      # since HMC/SE version 2.14.0
+      exporter_name: cbp_initial_processing_weight_is_capped
+      exporter_desc: Boolean indicating whether the initial CBP processing weight is capped
+    - property_name: current-cbp-processing-weight-capped
+      # since HMC/SE version 2.14.0
+      exporter_name: cbp_current_processing_weight_is_capped
+      exporter_desc: Boolean indicating whether the current CBP processing weight is capped
+    - properties_expression: "properties['storage-central-allocation']|map(attribute='initial')|sum"
+      exporter_name: initial_central_memory_mib
+      exporter_desc: Amount of central memory initially allocated to the active partition in MiB, else 0
+    - properties_expression: "properties['storage-central-allocation']|map(attribute='current')|sum"
+      exporter_name: current_central_memory_mib
+      exporter_desc: Amount of central memory currently allocated to the active partition, in MiB, else 0
+    - properties_expression: "properties['storage-central-allocation']|map(attribute='maximum')|sum"
+      exporter_name: maximum_central_memory_mib
+      exporter_desc: Maximum amount of central memory to which the operating system running in the active partition can increase, in MiB
+    - properties_expression: "properties['storage-expanded-allocation']|map(attribute='initial')|sum"
+      exporter_name: initial_expanded_memory_mib
+      exporter_desc: Amount of expanded memory initially allocated to the active partition in MiB, else 0
+    - properties_expression: "properties['storage-expanded-allocation']|map(attribute='current')|sum"
+      exporter_name: current_expanded_memory_mib
+      exporter_desc: Amount of expanded memory currently allocated to the active partition, in MiB, else 0
+    - properties_expression: "properties['storage-expanded-allocation']|map(attribute='maximum')|sum"
+      exporter_name: maximum_expanded_memory_mib
+      exporter_desc: Maximum amount of expanded memory to which the operating system running in the active partition can increase, in MiB
+    - property_name: initial-vfm-storage
+      exporter_name: initial_vfm_memory_gib
+      exporter_desc: Initial amount of IBM Virtual Flash Memory (VFM) to be allocated at partition activation, in GiB
+    - property_name: maximum-vfm-storage
+      exporter_name: maximum_vfm_memory_gib
+      exporter_desc: Maximum amount of IBM Virtual Flash Memory (VFM) that can be allocated to the active partition, in GiB
+    - property_name: current-vfm-storage
+      exporter_name: current_vfm_memory_gib
+      exporter_desc: Current amount of IBM Virtual Flash Memory (VFM) that is allocated to the active partition, in GiB
 
   # Available for CPCs in DPM mode
 
@@ -407,62 +661,62 @@ metrics:
       exporter_name: null  # Ignored (identifies the port, used in label)
       exporter_desc: null
     bytes-sent:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: bytes_sent_count
       exporter_desc: Number of Bytes in unicast packets that were sent
     bytes-received:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: bytes_received_count
       exporter_desc: Number of Bytes in unicast packets that were received
     packets-sent:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_sent_count
       exporter_desc: Number of unicast packets that were sent
     packets-received:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_received_count
       exporter_desc: Number of unicast packets that were received
     packets-sent-dropped:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_sent_dropped_count
       exporter_desc: Number of sent packets that were dropped (resource shortage)
     packets-received-dropped:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_received_dropped_count
       exporter_desc: Number of received packets that were dropped (resource shortage)
     packets-sent-discarded:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_sent_discarded_count
       exporter_desc: Number of sent packets that were discarded (malformed)
     packets-received-discarded:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_received_discarded_count
       exporter_desc: Number of received packets that were discarded (malformed)
     multicast-packets-sent:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: multicast_packets_sent_count
       exporter_desc: Number of multicast packets sent
     multicast-packets-received:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: multicast_packets_received_count
       exporter_desc: Number of multicast packets received
     broadcast-packets-sent:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: broadcast_packets_sent_count
       exporter_desc: Number of broadcast packets sent
     broadcast-packets-received:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: broadcast_packets_received_count
       exporter_desc: Number of broadcast packets received
@@ -504,62 +758,62 @@ metrics:
       exporter_name: null  # Ignored (identifies the partition, used in label)
       exporter_desc: null
     bytes-sent:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: bytes_sent_count
       exporter_desc: Number of Bytes in unicast packets that were sent
     bytes-received:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: bytes_received_count
       exporter_desc: Number of Bytes in unicast packets that were received
     packets-sent:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_sent_count
       exporter_desc: Number of unicast packets that were sent
     packets-received:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_received_count
       exporter_desc: Number of unicast packets that were received
     packets-sent-dropped:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_sent_dropped_count
       exporter_desc: Number of sent packets that were dropped (resource shortage)
     packets-received-dropped:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_received_dropped_count
       exporter_desc: Number of received packets that were dropped (resource shortage)
     packets-sent-discarded:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_sent_discarded_count
       exporter_desc: Number of sent packets that were discarded (malformed)
     packets-received-discarded:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: packets_received_discarded_count
       exporter_desc: Number of received packets that were discarded (malformed)
     multicast-packets-sent:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: multicast_packets_sent_count
       exporter_desc: Number of multicast packets sent
     multicast-packets-received:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: multicast_packets_received_count
       exporter_desc: Number of multicast packets received
     broadcast-packets-sent:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: broadcast_packets_sent_count
       exporter_desc: Number of broadcast packets sent
     broadcast-packets-received:
-      # type: counter
+      metric_type: counter
       percent: false
       exporter_name: broadcast_packets_received_count
       exporter_desc: Number of broadcast packets received
@@ -584,6 +838,74 @@ metrics:
       percent: false
       exporter_name: null  # Ignored (can be detected from metric values)
       exporter_desc: null
+
+  partition-resource:  # can be in dictionary or list format
+    - property_name: processor-mode
+      exporter_name: processor_mode_int
+      exporter_desc: Allocation mode for processors to the active partition as an integer (0=shared, 1=dedicated)
+      valuemap:
+        shared: 0
+        dedicated: 1
+    - property_name: threads-per-processor
+      exporter_name: threads_per_processor_ratio
+      exporter_desc: Number of threads per allocated processor the operating system running in the partition is configured to use
+    - property_name: cp-processors
+      exporter_name: cp_processor_count
+      exporter_desc: Number of CP processors allocated to the active partition
+    - property_name: initial-cp-processing-weight
+      exporter_name: cp_initial_processing_weight
+      exporter_desc: Initial CP processing weight for the active partition in shared mode (1..999)
+    - property_name: minimum-cp-processing-weight
+      exporter_name: cp_minimum_processing_weight
+      exporter_desc: Minimum CP processing weight for the active partition in shared mode (1..999)
+    - property_name: maximum-cp-processing-weight
+      exporter_name: cp_maximum_processing_weight
+      exporter_desc: Maximum CP processing weight for the active partition in shared mode (1..999)
+    - property_name: current-cp-processing-weight
+      exporter_name: cp_current_processing_weight
+      exporter_desc: Current CP processing weight for the active partition in shared mode (1..999)
+    - properties_expression: "properties['cp-absolute-processor-capping']"
+      exporter_name: cp_processor_count_is_capped
+      exporter_desc: Boolean indicating whether absolute capping is enabled for CP processors
+    - properties_expression: "properties['cp-absolute-processor-capping-value'] if properties['cp-absolute-processor-capping'] else 0"
+      exporter_name: cp_processor_count_cap
+      exporter_desc: Maximum number of CP processors that can be used if absolute capping is enabled, else 0
+    - property_name: cp-processing-weight-capped
+      exporter_name: cp_initial_processing_weight_is_capped
+      exporter_desc: Boolean indicating whether the initial CP processing weight is capped
+    - property_name: ifl-processors
+      exporter_name: ifl_processor_count
+      exporter_desc: Number of IFL processors allocated to the active partition
+    - property_name: initial-ifl-processing-weight
+      exporter_name: ifl_initial_processing_weight
+      exporter_desc: Initial IFL processing weight for the active partition in shared mode (1..999)
+    - property_name: minimum-ifl-processing-weight
+      exporter_name: ifl_minimum_processing_weight
+      exporter_desc: Minimum IFL processing weight for the active partition in shared mode (1..999)
+    - property_name: maximum-ifl-processing-weight
+      exporter_name: ifl_maximum_processing_weight
+      exporter_desc: Maximum IFL processing weight for the active partition in shared mode (1..999)
+    - property_name: current-ifl-processing-weight
+      exporter_name: ifl_current_processing_weight
+      exporter_desc: Current IFL processing weight for the active partition in shared mode (1..999)
+    - properties_expression: "properties['ifl-absolute-processor-capping']"
+      exporter_name: ifl_processor_count_is_capped
+      exporter_desc: Boolean indicating whether absolute capping is enabled for IFL processors
+    - properties_expression: "properties['ifl-absolute-processor-capping-value'] if properties['ifl-absolute-processor-capping'] else 0"
+      exporter_name: ifl_processor_count_cap
+      exporter_desc: Maximum number of IFL processors that can be used if absolute capping is enabled, else 0
+    - property_name: ifl-processing-weight-capped
+      exporter_name: ifl_initial_processing_weight_is_capped
+      exporter_desc: Boolean indicating whether the initial IFL processing weight is capped
+    - property_name: initial-memory
+      exporter_name: initial_memory_mib
+      exporter_desc: Initial amount of memory allocated to the partition when it becomes active, in MiB
+    - property_name: reserved-memory
+      exporter_name: reserved_memory_mib
+      exporter_desc: Amount of reserved memory (maximum memory minus initial memory), in MiB
+    - property_name: maximum-memory
+      exporter_name: maximum_memory_mib
+      exporter_desc: Maximum amount of memory to which the operating system running in the partition can increase the memory allocation, in MiB
 
   # Available for CPCs in any mode
 
@@ -786,3 +1108,65 @@ metrics:
       percent: true
       exporter_name: smt_thread1_usage_ratio
       exporter_desc: Usage ratio of thread 1 of the processor when in SMT mode - -1 if not supported
+
+  cpc-resource:  # can be in dictionary or list format
+    processor-count-general-purpose:
+      exporter_name: cp_processor_count
+      exporter_desc: Number of active CP processors
+    processor-count-ifl:
+      exporter_name: ifl_processor_count
+      exporter_desc: Number of active IFL processors
+    processor-count-icf:
+      exporter_name: icf_processor_count
+      exporter_desc: Number of active ICF processors
+    processor-count-iip:
+      exporter_name: iip_processor_count
+      exporter_desc: Number of active zIIP processors
+    processor-count-aap:
+      exporter_name: aap_processor_count
+      exporter_desc: Number of active zAAP processors
+    processor-count-cbp:
+      # since HMC/SE version 2.14.0
+      exporter_name: cbp_processor_count
+      exporter_desc: Number of active CBP processors
+    processor-count-service-assist:
+      exporter_name: sap_processor_count
+      exporter_desc: Number of active SAP processors
+    processor-count-defective:
+      exporter_name: defective_processor_count
+      exporter_desc: Number of defective processors of all processor types
+    processor-count-spare:
+      exporter_name: spare_processor_count
+      exporter_desc: Number of spare processors of all processor types
+    storage-total-installed:
+      # since HMC/SE version 2.13.1
+      exporter_name: total_memory_mib
+      exporter_desc: Total amount of installed memory, in MiB
+    storage-hardware-system-area:
+      # since HMC/SE version 2.13.1
+      exporter_name: hsa_memory_mib
+      exporter_desc: Amount of memory reserved for the base hardware system area (HSA), in MiB
+    storage-customer:
+      # since HMC/SE version 2.13.1
+      exporter_name: partition_memory_mib
+      exporter_desc: Amount of memory for use by partitions, in MiB
+    storage-customer-central:
+      # since HMC/SE version 2.13.1
+      exporter_name: partition_central_memory_mib
+      exporter_desc: Amount of memory allocated as central storage across the active partitions, in MiB
+    storage-customer-expanded:
+      # since HMC/SE version 2.13.1
+      exporter_name: partition_expanded_memory_mib
+      exporter_desc: Amount of memory allocated as expanded storage across the active partitions, in MiB
+    storage-customer-available:
+      # since HMC/SE version 2.13.1
+      exporter_name: available_memory_mib
+      exporter_desc: Amount of memory not allocated to active partitions, in MiB
+    storage-vfm-increment-size:
+      # since HMC/SE version 2.14.0
+      exporter_name: vfm_increment_gib
+      exporter_desc: Increment size of IBM Virtual Flash Memory (VFM), in GiB
+    storage-vfm-total:
+      # since HMC/SE version 2.14.0
+      exporter_name: total_vfm_gib
+      exporter_desc: Total amount of installed IBM Virtual Flash Memory (VFM), in GiB

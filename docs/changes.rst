@@ -28,6 +28,23 @@ Released: not yet
 
 * Dropped support for Python 3.4. (issue #155)
 
+* Changed some network metrics to be represented using Prometheus counter metric
+  types. Specifically, the following metrics at the NIC and port level have been
+  changed to counters: (issue #160)
+
+  - bytes_sent_count
+  - bytes_received_count
+  - packets_sent_count
+  - packets_received_count
+  - packets_sent_dropped_count
+  - packets_received_dropped_count
+  - packets_sent_discarded_count
+  - packets_received_discarded_count
+  - multicast_packets_sent_count
+  - multicast_packets_received_count
+  - broadcast_packets_sent_count
+  - broadcast_packets_received_count
+
 **Deprecations:**
 
 **Bug fixes:**
@@ -35,6 +52,9 @@ Released: not yet
 * Fixed new isues reported by Pylint 2.9.
 
 **Enhancements:**
+
+* Added support for metrics based on resource properties of CPCs, partitions
+  (DPM mode) and LPARs (classic mode). (issue #112)
 
 **Cleanup:**
 

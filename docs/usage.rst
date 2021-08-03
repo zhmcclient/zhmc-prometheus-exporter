@@ -225,40 +225,64 @@ usage percentages of two partitions in a single CPC:
 Available metrics
 -----------------
 
-The exporter code is agnostic to the actual set of metrics supported by the
-HMC. A new metric can immediately be supported by just adding it to the
-:ref:`metric definition file`.
+The exporter supports two types of metrics. These metrics are differently
+retrieved from the HMC, but they are exported to Prometheus in the same way:
+
+* HMC metric service based - These metrics are retrieved from the HMC using the
+  "Get Metric Context" operation each time Prometheus retrieves metrics from the
+  exporter.
+
+* HMC resource property based - These metrics are actually the values of
+  properties of HMC resources, such as the number of processors assigned
+  to a partition. The exporter maintains representations of the corresponding
+  resources in memory. These representations are automatically and
+  asynchronously updated via HMC object notifications. When Prometheus retrieves
+  these metrics from the exporter, the exporter always has up-to-date resource
+  representations and can immediately return them without having to turn around
+  for getting them from the HMC.
+
+The exporter code is agnostic to the actual set of metrics supported by the HMC.
+A new metric exposed by the HMC metric service or a new property added to one of
+the auto-updated resources can immediately be supported by just adding it to
+the :ref:`metric definition file`.
 
 The :ref:`sample metric definition file` in the Git repository states in its
 header up to which HMC version or Z machine generation the metrics are defined.
 
-The following table shows the mapping between HMC metric groups and exported
-Prometheus metrics in the standard metric definition. Note that ensemble and
-zBX related metrics are not covered in the standard metric definition (support
-for them has been removed in z15). For more details on the HMC metrics, see
-section "Metric Groups" in the :term:`HMC API` book.
+The following table shows the mapping between exporter metric groups and
+exported Prometheus metrics in the standard metric definition. Note that
+ensemble and zBX related metrics are not covered in the standard metric
+definition (support for them has been removed in z15). For more details on the
+HMC metrics, see section "Metric Groups" in the :term:`HMC API` book.
+For more details on the resource properties of CPC and Partition (DPM mode)
+and Logical Partition (classic mode), see the corresponding data models
+in the :term:`HMC API` book.
 
-====================================  ====  ===========================  ======================
-HMC Metric Group                      Mode  Prometheus Metrics           Prometheus Labels
-====================================  ====  ===========================  ======================
-cpc-usage-overview                    C     zhmc_cpc_*                   cpc
-logical-partition-usage               C     zhmc_partition_*             cpc, partition
-channel-usage                         C     zhmc_channel_*               cpc, channel_css_chpid
-crypto-usage                          C     zhmc_crypto_adapter_*        cpc, adapter_pchid
-flash-memory-usage                    C     zhmc_flash_memory_adapter_*  cpc, adapter_pchid
-roce-usage                            C     zhmc_roce_adapter_*          cpc, adapter_pchid
-dpm-system-usage-overview             D     zhmc_cpc_*                   cpc
-partition-usage                       D     zhmc_partition_*             cpc, partition
-adapter-usage                         D     zhmc_adapter_*               cpc, adapter
-network-physical-adapter-port         D     zhmc_port_*                  cpc, adapter, port
-partition-attached-network-interface  D     zhmc_nic_*                   cpc, partition, nic
-zcpc-environmentals-and-power         C+D   zhmc_cpc_*                   cpc
-environmental-power-status            C+D   zhmc_cpc_*                   cpc
-zcpc-processor-usage                  C+D   zhmc_processor_*             cpc, processor, type
-====================================  ====  ===========================  ======================
+====================================  ====  ====  ===========================  ======================
+Exporter Metric Group                 Type  Mode  Prometheus Metrics           Prometheus Labels
+====================================  ====  ====  ===========================  ======================
+cpc-usage-overview                    M     C     zhmc_cpc_*                   cpc
+logical-partition-usage               M     C     zhmc_partition_*             cpc, partition
+channel-usage                         M     C     zhmc_channel_*               cpc, channel_css_chpid
+crypto-usage                          M     C     zhmc_crypto_adapter_*        cpc, adapter_pchid
+flash-memory-usage                    M     C     zhmc_flash_memory_adapter_*  cpc, adapter_pchid
+roce-usage                            M     C     zhmc_roce_adapter_*          cpc, adapter_pchid
+dpm-system-usage-overview             M     D     zhmc_cpc_*                   cpc
+partition-usage                       M     D     zhmc_partition_*             cpc, partition
+adapter-usage                         M     D     zhmc_adapter_*               cpc, adapter
+network-physical-adapter-port         M     D     zhmc_port_*                  cpc, adapter, port
+partition-attached-network-interface  M     D     zhmc_nic_*                   cpc, partition, nic
+zcpc-environmentals-and-power         M     C+D   zhmc_cpc_*                   cpc
+environmental-power-status            M     C+D   zhmc_cpc_*                   cpc
+zcpc-processor-usage                  M     C+D   zhmc_processor_*             cpc, processor, type
+cpc-resource                          R     C+D   zhmc_cpc_*                   cpc
+partition-resource                    R     D     zhmc_partition_*             cpc, partition
+logical-partition-resource            R     C     zhmc_partition_*             cpc, partition
+====================================  ====  ====  ===========================  ======================
 
 Legend:
 
+* Type:: The type of the metric group: M=metric service, R=resource property
 * Mode: The operational mode of the CPC: C=Classic, D=DPM
 
 As you can see, the ``zhmc_cpc_*`` and ``zhmc_partition_*`` metrics are used
@@ -266,122 +290,225 @@ for both DPM mode and classic mode. The names of the metrics are equal if and
 only if they have the same meaning in both modes.
 
 The following table shows the Prometheus metrics in the standard metric
-definition:
+definition. This includes both metric service and resource property based metrics:
 
-===============================================  ====  ==================================================================
-Prometheus Metric                                Mode  Description
-===============================================  ====  ==================================================================
-zhmc_cpc_processor_usage_ratio                   C+D   Usage ratio across all processors of the CPC
-zhmc_cpc_shared_processor_usage_ratio            C+D   Usage ratio across all shared processors of the CPC
-zhmc_cpc_dedicated_processor_usage_ratio         C     Usage ratio across all dedicated processors of the CPC
-zhmc_cpc_cp_processor_usage_ratio                C+D   Usage ratio across all CP processors of the CPC
-zhmc_cpc_cp_shared_processor_usage_ratio         C+D   Usage ratio across all shared CP processors of the CPC
-zhmc_cpc_cp_dedicated_processor_usage_ratio      C     Usage ratio across all dedicated CP processors of the CPC
-zhmc_cpc_ifl_processor_usage_ratio               C+D   Usage ratio across all IFL processors of the CPC
-zhmc_cpc_ifl_shared_processor_usage_ratio        C+D   Usage ratio across all shared IFL processors of the CPC
-zhmc_cpc_ifl_dedicated_processor_usage_ratio     C     Usage ratio across all dedicated IFL processors of the CPC
-zhmc_cpc_aap_shared_processor_usage_ratio        C     Usage ratio across all shared zAAP processors of the CPC
-zhmc_cpc_aap_dedicated_processor_usage_ratio     C     Usage ratio across all dedicated zAAP processors of the CPC
-zhmc_cpc_cbp_processor_usage_ratio               C     Usage ratio across all CBP processors of the CPC
-zhmc_cpc_cbp_shared_processor_usage_ratio        C     Usage ratio across all shared CBP processors of the CPC
-zhmc_cpc_cbp_dedicated_processor_usage_ratio     C     Usage ratio across all dedicated CBP processors of the CPC
-zhmc_cpc_icf_processor_usage_ratio               C     Usage ratio across all ICF processors of the CPC
-zhmc_cpc_icf_shared_processor_usage_ratio        C     Usage ratio across all shared ICF processors of the CPC
-zhmc_cpc_icf_dedicated_processor_usage_ratio     C     Usage ratio across all dedicated ICF processors of the CPC
-zhmc_cpc_iip_processor_usage_ratio               C     Usage ratio across all zIIP processors of the CPC
-zhmc_cpc_iip_shared_processor_usage_ratio        C     Usage ratio across all shared zIIP processors of the CPC
-zhmc_cpc_iip_dedicated_processor_usage_ratio     C     Usage ratio across all dedicated zIIP processors of the CPC
-zhmc_cpc_channel_usage_ratio                     C     Usage ratio across all channels of the CPC
-zhmc_cpc_accelerator_adapter_usage_ratio         D     Usage ratio across all accelerator adapters of the CPC
-zhmc_cpc_crypto_adapter_usage_ratio              D     Usage ratio across all crypto adapters of the CPC
-zhmc_cpc_network_adapter_usage_ratio             D     Usage ratio across all network adapters of the CPC
-zhmc_cpc_storage_adapter_usage_ratio             D     Usage ratio across all storage adapters of the CPC
-zhmc_cpc_power_watts                             C+D   Power consumption of the CPC
-zhmc_cpc_ambient_temperature_celsius             C+D   Ambient temperature of the CPC
-zhmc_crypto_adapter_usage_ratio                  C     Usage ratio of the crypto adapter
-zhmc_flash_memory_adapter_usage_ratio            C     Usage ratio of the flash memory adapter
-zhmc_adapter_usage_ratio                         D     Usage ratio of the adapter
-zhmc_channel_usage_ratio                         C     Usage ratio of the channel
-zhmc_roce_adapter_usage_ratio                    C     Usage ratio of the RoCE adapter
-zhmc_partition_processor_usage_ratio             C+D   Usage ratio across all processors of the partition
-zhmc_partition_cp_processor_usage_ratio          C     Usage ratio across all CP processors of the partition
-zhmc_partition_ifl_processor_usage_ratio         C     Usage ratio across all IFL processors of the partition
-zhmc_partition_icf_processor_usage_ratio         C     Usage ratio across all ICF processors of the partition
-zhmc_partition_cbp_processor_usage_ratio         C     Usage ratio across all CBP processors of the partition
-zhmc_partition_iip_processor_usage_ratio         C     Usage ratio across all IIP processors of the partition
-zhmc_partition_accelerator_adapter_usage_ratio   D     Usage ratio of all accelerator adapters of the partition
-zhmc_partition_crypto_adapter_usage_ratio        D     Usage ratio of all crypto adapters of the partition
-zhmc_partition_network_adapter_usage_ratio       D     Usage ratio of all network adapters of the partition
-zhmc_partition_storage_adapter_usage_ratio       D     Usage ratio of all storage adapters of the partition
-zhmc_partition_zvm_paging_rate_pages_per_second  C     z/VM paging rate in pages/sec
-zhmc_port_bytes_sent_count                       D     Number of Bytes in unicast packets that were sent
-zhmc_port_bytes_received_count                   D     Number of Bytes in unicast packets that were received
-zhmc_port_packets_sent_count                     D     Number of unicast packets that were sent
-zhmc_port_packets_received_count                 D     Number of unicast packets that were received
-zhmc_port_packets_sent_dropped_count             D     Number of sent packets that were dropped (resource shortage)
-zhmc_port_packets_received_dropped_count         D     Number of received packets that were dropped (resource shortage)
-zhmc_port_packets_sent_discarded_count           D     Number of sent packets that were discarded (malformed)
-zhmc_port_packets_received_discarded_count       D     Number of received packets that were discarded (malformed)
-zhmc_port_multicast_packets_sent_count           D     Number of multicast packets sent
-zhmc_port_multicast_packets_received_count       D     Number of multicast packets received
-zhmc_port_broadcast_packets_sent_count           D     Number of broadcast packets sent
-zhmc_port_broadcast_packets_received_count       D     Number of broadcast packets received
-zhmc_port_data_sent_bytes                        D     Amount of data sent over the collection interval
-zhmc_port_data_received_bytes                    D     Amount of data received over the collection interval
-zhmc_port_data_rate_sent_bytes_per_second        D     Data rate sent over the collection interval
-zhmc_port_data_rate_received_bytes_per_second    D     Data rate received over the collection interval
-zhmc_port_bandwidth_usage_ratio                  D     Bandwidth usage ratio of the port
-zhmc_nic_bytes_sent_count                        D     Number of Bytes in unicast packets that were sent
-zhmc_nic_bytes_received_count                    D     Number of Bytes in unicast packets that were received
-zhmc_nic_packets_sent_count                      D     Number of unicast packets that were sent
-zhmc_nic_packets_received_count                  D     Number of unicast packets that were received
-zhmc_nic_packets_sent_dropped_count              D     Number of sent packets that were dropped (resource shortage)
-zhmc_nic_packets_received_dropped_count          D     Number of received packets that were dropped (resource shortage)
-zhmc_nic_packets_sent_discarded_count            D     Number of sent packets that were discarded (malformed)
-zhmc_nic_packets_received_discarded_count        D     Number of received packets that were discarded (malformed)
-zhmc_nic_multicast_packets_sent_count            D     Number of multicast packets sent
-zhmc_nic_multicast_packets_received_count        D     Number of multicast packets received
-zhmc_nic_broadcast_packets_sent_count            D     Number of broadcast packets sent
-zhmc_nic_broadcast_packets_received_count        D     Number of broadcast packets received
-zhmc_nic_data_sent_bytes                         D     Amount of data sent over the collection interval
-zhmc_nic_data_received_bytes                     D     Amount of data received over the collection interval
-zhmc_nic_data_rate_sent_bytes_per_second         D     Data rate sent over the collection interval
-zhmc_nic_data_rate_received_bytes_per_second     D     Data rate received over the collection interval
-zhmc_cpc_humidity_percent                        C+D   Relative humidity
-zhmc_cpc_dew_point_celsius                       C+D   Dew point
-zhmc_cpc_heat_load_total_btu_per_hour            C+D   Total heat load of the CPC
-zhmc_cpc_heat_load_forced_air_btu_per_hour       C+D   Heat load of the CPC covered by forced-air
-zhmc_cpc_heat_load_water_btu_per_hour            C+D   Heat load of the CPC covered by water
-zhmc_cpc_exhaust_temperature_celsius             C+D   Exhaust temperature of the CPC
-zhmc_cpc_power_cord1_phase_a_watts               C+D   Power in Phase A of line cord 1 - 0 if not available
-zhmc_cpc_power_cord1_phase_b_watts               C+D   Power in Phase B of line cord 1 - 0 if not available
-zhmc_cpc_power_cord1_phase_c_watts               C+D   Power in Phase C of line cord 1 - 0 if not available
-zhmc_cpc_power_cord2_phase_a_watts               C+D   Power in Phase A of line cord 2 - 0 if not available
-zhmc_cpc_power_cord2_phase_b_watts               C+D   Power in Phase B of line cord 2 - 0 if not available
-zhmc_cpc_power_cord2_phase_c_watts               C+D   Power in Phase C of line cord 2 - 0 if not available
-zhmc_cpc_power_cord3_phase_a_watts               C+D   Power in Phase A of line cord 3 - 0 if not available
-zhmc_cpc_power_cord3_phase_b_watts               C+D   Power in Phase B of line cord 3 - 0 if not available
-zhmc_cpc_power_cord3_phase_c_watts               C+D   Power in Phase C of line cord 3 - 0 if not available
-zhmc_cpc_power_cord4_phase_a_watts               C+D   Power in Phase A of line cord 4 - 0 if not available
-zhmc_cpc_power_cord4_phase_b_watts               C+D   Power in Phase B of line cord 4 - 0 if not available
-zhmc_cpc_power_cord4_phase_c_watts               C+D   Power in Phase C of line cord 4 - 0 if not available
-zhmc_cpc_power_cord5_phase_a_watts               C+D   Power in Phase A of line cord 5 - 0 if not available
-zhmc_cpc_power_cord5_phase_b_watts               C+D   Power in Phase B of line cord 5 - 0 if not available
-zhmc_cpc_power_cord5_phase_c_watts               C+D   Power in Phase C of line cord 5 - 0 if not available
-zhmc_cpc_power_cord6_phase_a_watts               C+D   Power in Phase A of line cord 6 - 0 if not available
-zhmc_cpc_power_cord6_phase_b_watts               C+D   Power in Phase B of line cord 6 - 0 if not available
-zhmc_cpc_power_cord6_phase_c_watts               C+D   Power in Phase C of line cord 6 - 0 if not available
-zhmc_cpc_power_cord7_phase_a_watts               C+D   Power in Phase A of line cord 7 - 0 if not available
-zhmc_cpc_power_cord7_phase_b_watts               C+D   Power in Phase B of line cord 7 - 0 if not available
-zhmc_cpc_power_cord7_phase_c_watts               C+D   Power in Phase C of line cord 7 - 0 if not available
-zhmc_cpc_power_cord8_phase_a_watts               C+D   Power in Phase A of line cord 8 - 0 if not available
-zhmc_cpc_power_cord8_phase_b_watts               C+D   Power in Phase B of line cord 8 - 0 if not available
-zhmc_cpc_power_cord8_phase_c_watts               C+D   Power in Phase C of line cord 8 - 0 if not available
-zhmc_processor_usage_ratio                       C+D   Usage ratio of the processor
-zhmc_processor_smt_mode_percent                  C+D   Percentage of time the processor was in in SMT mode
-zhmc_processor_smt_thread0_usage_ratio           C+D   Usage ratio of thread 0 of the processor when in SMT mode
-zhmc_processor_smt_thread1_usage_ratio           C+D   Usage ratio of thread 1 of the processor when in SMT mode
-===============================================  ====  ==================================================================
+======================================================  ====  ====  ==================================================================
+Prometheus Metric                                       Mode  Type  Description
+======================================================  ====  ====  ==================================================================
+
+zhmc_cpc_cp_processor_count                             C+D   G     Number of active CP processors
+zhmc_cpc_ifl_processor_count                            C+D   G     Number of active IFL processors
+zhmc_cpc_icf_processor_count                            C+D   G     Number of active ICF processors
+zhmc_cpc_iip_processor_count                            C+D   G     Number of active zIIP processors
+zhmc_cpc_aap_processor_count                            C+D   G     Number of active zAAP processors
+zhmc_cpc_cbp_processor_count                            C+D   G     Number of active CBP processors
+zhmc_cpc_sap_processor_count                            C+D   G     Number of active SAP processors
+zhmc_cpc_defective_processor_count                      C+D   G     Number of defective processors of all processor types
+zhmc_cpc_spare_processor_count                          C+D   G     Number of spare processors of all processor types
+zhmc_cpc_total_memory_mib                               C+D   G     Total amount of installed memory, in MiB
+zhmc_cpc_hsa_memory_mib                                 C+D   G     Memory reserved for the base hardware system area (HSA), in MiB
+zhmc_cpc_partition_memory_mib                           C+D   G     Memory for use by partitions, in MiB
+zhmc_cpc_partition_central_memory_mib                   C+D   G     Memory allocated as central storage across the active partitions, in MiB
+zhmc_cpc_partition_expanded_memory_mib                  C+D   G     Memory allocated as expanded storage across the active partitions, in MiB
+zhmc_cpc_available_memory_mib                           C+D   G     Memory not allocated to active partitions, in MiB
+zhmc_cpc_vfm_increment_gib                              C+D   G     Increment size of VFM, in GiB
+zhmc_cpc_total_vfm_gib                                  C+D   G     Total amount of installed VFM, in GiB
+zhmc_cpc_processor_usage_ratio                          C+D   G     Usage ratio across all processors of the CPC
+zhmc_cpc_shared_processor_usage_ratio                   C+D   G     Usage ratio across all shared processors of the CPC
+zhmc_cpc_dedicated_processor_usage_ratio                C     G     Usage ratio across all dedicated processors of the CPC
+zhmc_cpc_cp_processor_usage_ratio                       C+D   G     Usage ratio across all CP processors of the CPC
+zhmc_cpc_cp_shared_processor_usage_ratio                C+D   G     Usage ratio across all shared CP processors of the CPC
+zhmc_cpc_cp_dedicated_processor_usage_ratio             C     G     Usage ratio across all dedicated CP processors of the CPC
+zhmc_cpc_ifl_processor_usage_ratio                      C+D   G     Usage ratio across all IFL processors of the CPC
+zhmc_cpc_ifl_shared_processor_usage_ratio               C+D   G     Usage ratio across all shared IFL processors of the CPC
+zhmc_cpc_ifl_dedicated_processor_usage_ratio            C     G     Usage ratio across all dedicated IFL processors of the CPC
+zhmc_cpc_aap_shared_processor_usage_ratio               C     G     Usage ratio across all shared zAAP processors of the CPC
+zhmc_cpc_aap_dedicated_processor_usage_ratio            C     G     Usage ratio across all dedicated zAAP processors of the CPC
+zhmc_cpc_cbp_processor_usage_ratio                      C     G     Usage ratio across all CBP processors of the CPC
+zhmc_cpc_cbp_shared_processor_usage_ratio               C     G     Usage ratio across all shared CBP processors of the CPC
+zhmc_cpc_cbp_dedicated_processor_usage_ratio            C     G     Usage ratio across all dedicated CBP processors of the CPC
+zhmc_cpc_icf_processor_usage_ratio                      C     G     Usage ratio across all ICF processors of the CPC
+zhmc_cpc_icf_shared_processor_usage_ratio               C     G     Usage ratio across all shared ICF processors of the CPC
+zhmc_cpc_icf_dedicated_processor_usage_ratio            C     G     Usage ratio across all dedicated ICF processors of the CPC
+zhmc_cpc_iip_processor_usage_ratio                      C     G     Usage ratio across all zIIP processors of the CPC
+zhmc_cpc_iip_shared_processor_usage_ratio               C     G     Usage ratio across all shared zIIP processors of the CPC
+zhmc_cpc_iip_dedicated_processor_usage_ratio            C     G     Usage ratio across all dedicated zIIP processors of the CPC
+zhmc_cpc_channel_usage_ratio                            C     G     Usage ratio across all channels of the CPC
+zhmc_cpc_accelerator_adapter_usage_ratio                D     G     Usage ratio across all accelerator adapters of the CPC
+zhmc_cpc_crypto_adapter_usage_ratio                     D     G     Usage ratio across all crypto adapters of the CPC
+zhmc_cpc_network_adapter_usage_ratio                    D     G     Usage ratio across all network adapters of the CPC
+zhmc_cpc_storage_adapter_usage_ratio                    D     G     Usage ratio across all storage adapters of the CPC
+zhmc_cpc_power_watts                                    C+D   G     Power consumption of the CPC
+zhmc_cpc_ambient_temperature_celsius                    C+D   G     Ambient temperature of the CPC
+zhmc_cpc_humidity_percent                               C+D   G     Relative humidity
+zhmc_cpc_dew_point_celsius                              C+D   G     Dew point
+zhmc_cpc_heat_load_total_btu_per_hour                   C+D   G     Total heat load of the CPC
+zhmc_cpc_heat_load_forced_air_btu_per_hour              C+D   G     Heat load of the CPC covered by forced-air
+zhmc_cpc_heat_load_water_btu_per_hour                   C+D   G     Heat load of the CPC covered by water
+zhmc_cpc_exhaust_temperature_celsius                    C+D   G     Exhaust temperature of the CPC
+zhmc_cpc_power_cord1_phase_a_watts                      C+D   G     Power in Phase A of line cord 1 - 0 if not available
+zhmc_cpc_power_cord1_phase_b_watts                      C+D   G     Power in Phase B of line cord 1 - 0 if not available
+zhmc_cpc_power_cord1_phase_c_watts                      C+D   G     Power in Phase C of line cord 1 - 0 if not available
+zhmc_cpc_power_cord2_phase_a_watts                      C+D   G     Power in Phase A of line cord 2 - 0 if not available
+zhmc_cpc_power_cord2_phase_b_watts                      C+D   G     Power in Phase B of line cord 2 - 0 if not available
+zhmc_cpc_power_cord2_phase_c_watts                      C+D   G     Power in Phase C of line cord 2 - 0 if not available
+zhmc_cpc_power_cord3_phase_a_watts                      C+D   G     Power in Phase A of line cord 3 - 0 if not available
+zhmc_cpc_power_cord3_phase_b_watts                      C+D   G     Power in Phase B of line cord 3 - 0 if not available
+zhmc_cpc_power_cord3_phase_c_watts                      C+D   G     Power in Phase C of line cord 3 - 0 if not available
+zhmc_cpc_power_cord4_phase_a_watts                      C+D   G     Power in Phase A of line cord 4 - 0 if not available
+zhmc_cpc_power_cord4_phase_b_watts                      C+D   G     Power in Phase B of line cord 4 - 0 if not available
+zhmc_cpc_power_cord4_phase_c_watts                      C+D   G     Power in Phase C of line cord 4 - 0 if not available
+zhmc_cpc_power_cord5_phase_a_watts                      C+D   G     Power in Phase A of line cord 5 - 0 if not available
+zhmc_cpc_power_cord5_phase_b_watts                      C+D   G     Power in Phase B of line cord 5 - 0 if not available
+zhmc_cpc_power_cord5_phase_c_watts                      C+D   G     Power in Phase C of line cord 5 - 0 if not available
+zhmc_cpc_power_cord6_phase_a_watts                      C+D   G     Power in Phase A of line cord 6 - 0 if not available
+zhmc_cpc_power_cord6_phase_b_watts                      C+D   G     Power in Phase B of line cord 6 - 0 if not available
+zhmc_cpc_power_cord6_phase_c_watts                      C+D   G     Power in Phase C of line cord 6 - 0 if not available
+zhmc_cpc_power_cord7_phase_a_watts                      C+D   G     Power in Phase A of line cord 7 - 0 if not available
+zhmc_cpc_power_cord7_phase_b_watts                      C+D   G     Power in Phase B of line cord 7 - 0 if not available
+zhmc_cpc_power_cord7_phase_c_watts                      C+D   G     Power in Phase C of line cord 7 - 0 if not available
+zhmc_cpc_power_cord8_phase_a_watts                      C+D   G     Power in Phase A of line cord 8 - 0 if not available
+zhmc_cpc_power_cord8_phase_b_watts                      C+D   G     Power in Phase B of line cord 8 - 0 if not available
+zhmc_cpc_power_cord8_phase_c_watts                      C+D   G     Power in Phase C of line cord 8 - 0 if not available
+
+zhmc_processor_usage_ratio                              C+D   G     Usage ratio of the processor
+zhmc_processor_smt_mode_percent                         C+D   G     Percentage of time the processor was in in SMT mode
+zhmc_processor_smt_thread0_usage_ratio                  C+D   G     Usage ratio of thread 0 of the processor when in SMT mode
+zhmc_processor_smt_thread1_usage_ratio                  C+D   G     Usage ratio of thread 1 of the processor when in SMT mode
+
+zhmc_partition_processor_usage_ratio                    C+D   G     Usage ratio across all processors of the partition
+zhmc_partition_cp_processor_usage_ratio                 C     G     Usage ratio across all CP processors of the partition
+zhmc_partition_ifl_processor_usage_ratio                C     G     Usage ratio across all IFL processors of the partition
+zhmc_partition_icf_processor_usage_ratio                C     G     Usage ratio across all ICF processors of the partition
+zhmc_partition_cbp_processor_usage_ratio                C     G     Usage ratio across all CBP processors of the partition
+zhmc_partition_iip_processor_usage_ratio                C     G     Usage ratio across all IIP processors of the partition
+zhmc_partition_accelerator_adapter_usage_ratio          D     G     Usage ratio of all accelerator adapters of the partition
+zhmc_partition_crypto_adapter_usage_ratio               D     G     Usage ratio of all crypto adapters of the partition
+zhmc_partition_network_adapter_usage_ratio              D     G     Usage ratio of all network adapters of the partition
+zhmc_partition_storage_adapter_usage_ratio              D     G     Usage ratio of all storage adapters of the partition
+zhmc_partition_zvm_paging_rate_pages_per_second         C     G     z/VM paging rate in pages/sec
+zhmc_partition_processor_mode_int                       C+D   G     Allocation mode for processors as an integer (0=shared, 1=dedicated)
+zhmc_partition_threads_per_processor_ratio              D     G     Number of threads per processor used by OS
+zhmc_partition_defined_capacity_msu_per_hour            C     G     Defined capacity expressed in terms of MSU per hour
+zhmc_partition_workload_manager_is_enabled              C     G     Boolean indicating whether z/OS WLM is allowed to change processing weight related properties
+zhmc_partition_cp_processor_count                       C+D   G     Number of CP processors allocated to the active partition
+zhmc_partition_cp_processor_count_is_capped             C+D   G     Boolean indicating whether absolute capping is enabled for CP processors
+zhmc_partition_cp_processor_count_cap                   C+D   G     Maximum number of CP processors that can be used if absolute capping is enabled, else 0
+zhmc_partition_cp_reserved_processor_count              C     G     Number of CP processors reserved for the active partition
+zhmc_partition_cp_initial_processing_weight             C+D   G     Initial CP processing weight for the active partition in shared mode
+zhmc_partition_cp_minimum_processing_weight             C+D   G     Minimum CP processing weight for the active partition in shared mode
+zhmc_partition_cp_maximum_processing_weight             C+D   G     Maximum CP processing weight for the active partition in shared mode
+zhmc_partition_cp_current_processing_weight             C+D   G     Current CP processing weight for the active partition in shared mode
+zhmc_partition_cp_processor_count_cap                   D     G     Maximum number of CP processors to be used when absolute CP processor capping is enabled
+zhmc_partition_cp_initial_processing_weight_is_capped   C+D   G     Boolean indicating whether the initial CP processing weight is capped or not
+zhmc_partition_cp_current_processing_weight_is_capped   C     G     Boolean indicating whether the current CP processing weight is capped or not
+zhmc_partition_ifl_processor_count                      C+D   G     Number of IFL processors allocated to the active partition
+zhmc_partition_ifl_processor_count_is_capped            C+D   G     Boolean indicating whether absolute capping is enabled for IFL processors
+zhmc_partition_ifl_processor_count_cap                  C+D   G     Maximum number of IFL processors that can be used if absolute capping is enabled, else 0
+zhmc_partition_ifl_reserved_processor_count             C     G     Number of IFL processors reserved for the active partition
+zhmc_partition_ifl_initial_processing_weight            C+D   G     Initial IFL processing weight for the active partition in shared mode
+zhmc_partition_ifl_minimum_processing_weight            C+D   G     Minimum IFL processing weight for the active partition in shared mode
+zhmc_partition_ifl_maximum_processing_weight            C+D   G     Maximum IFL processing weight for the active partition in shared mode
+zhmc_partition_ifl_current_processing_weight            C+D   G     Current IFL processing weight for the active partition in shared mode
+zhmc_partition_ifl_processor_count_cap                  D     G     Maximum number of IFL processors to be used when absolute IFL processor capping is enabled
+zhmc_partition_ifl_initial_processing_weight_is_capped  C+D   G     Boolean indicating whether the initial IFL processing weight is capped or not
+zhmc_partition_ifl_current_processing_weight_is_capped  C     G     Boolean indicating whether the current IFL processing weight is capped or not
+zhmc_partition_icf_processor_count                      C     G     Number of ICF processors currently allocated to the active partition
+zhmc_partition_icf_processor_count_is_capped            C     G     Boolean indicating whether absolute capping is enabled for ICF processors
+zhmc_partition_icf_processor_count_cap                  C     G     Maximum number of ICF processors that can be used if absolute capping is enabled, else 0
+zhmc_partition_icf_reserved_processor_count             C     G     Number of ICF processors reserved for the active partition
+zhmc_partition_icf_initial_processing_weight            C     G     Initial ICF processing weight for the active partition in shared mode
+zhmc_partition_icf_minimum_processing_weight            C     G     Minimum ICF processing weight for the active partition in shared mode
+zhmc_partition_icf_maximum_processing_weight            C     G     Maximum ICF processing weight for the active partition in shared mode
+zhmc_partition_icf_current_processing_weight            C     G     Current ICF processing weight for the active partition in shared mode
+zhmc_partition_icf_initial_processing_weight_is_capped  C     G     Boolean indicating whether the initial ICF processing weight is capped or not
+zhmc_partition_icf_current_processing_weight_is_capped  C     G     Boolean indicating whether the current ICF processing weight is capped or not
+zhmc_partition_iip_processor_count                      C     G     Number of zIIP processors currently allocated to the active partition
+zhmc_partition_iip_processor_count_is_capped            C     G     Boolean indicating whether absolute capping is enabled for zIIP processors
+zhmc_partition_iip_processor_count_cap                  C     G     Maximum number of zIIP processors that can be used if absolute capping is enabled, else 0
+zhmc_partition_iip_reserved_processor_count             C     G     Number of zIIP processors reserved for the active partition
+zhmc_partition_iip_initial_processing_weight            C     G     Initial zIIP processing weight for the active partition in shared mode
+zhmc_partition_iip_minimum_processing_weight            C     G     Minimum zIIP processing weight for the active partition in shared mode
+zhmc_partition_iip_maximum_processing_weight            C     G     Maximum zIIP processing weight for the active partition in shared mode
+zhmc_partition_iip_current_processing_weight            C     G     Current zIIP processing weight for the active partition in shared mode
+zhmc_partition_iip_initial_processing_weight_is_capped  C     G     Boolean indicating whether the initial zIIP processing weight is capped or not
+zhmc_partition_iip_current_processing_weight_is_capped  C     G     Boolean indicating whether the current zIIP processing weight is capped or not
+zhmc_partition_aap_processor_count_is_capped            C     G     Boolean indicating whether absolute capping is enabled for zAAP processors
+zhmc_partition_aap_processor_count_cap                  C     G     Maximum number of zAAP processors that can be used if absolute capping is enabled, else 0
+zhmc_partition_aap_initial_processing_weight            C     G     Initial zAAP processing weight for the active partition in shared mode
+zhmc_partition_aap_minimum_processing_weight            C     G     Minimum zAAP processing weight for the active partition in shared mode
+zhmc_partition_aap_maximum_processing_weight            C     G     Maximum zAAP processing weight for the active partition in shared mode
+zhmc_partition_aap_current_processing_weight            C     G     Current zAAP processing weight for the active partition in shared mode
+zhmc_partition_aap_initial_processing_weight_is_capped  C     G     Boolean indicating whether the initial zAAP processing weight is capped or not
+zhmc_partition_aap_current_processing_weight_is_capped  C     G     Boolean indicating whether the current zAAP processing weight is capped or not
+zhmc_partition_cbp_processor_count_is_capped            C     G     Boolean indicating whether absolute capping is enabled for CBP processors
+zhmc_partition_cbp_processor_count_cap                  C     G     Maximum number of CBP processors that can be used if absolute capping is enabled, else 0
+zhmc_partition_cbp_initial_processing_weight            C     G     Initial CBP processing weight for the active partition in shared mode
+zhmc_partition_cbp_minimum_processing_weight            C     G     Minimum CBP processing weight for the active partition in shared mode
+zhmc_partition_cbp_maximum_processing_weight            C     G     Maximum CBP processing weight for the active partition in shared mode
+zhmc_partition_cbp_current_processing_weight            C     G     Current CBP processing weight for the active partition in shared mode
+zhmc_partition_cbp_initial_processing_weight_is_capped  C     G     Boolean indicating whether the initial CBP processing weight is capped or not
+zhmc_partition_cbp_current_processing_weight_is_capped  C     G     Boolean indicating whether the current CBP processing weight is capped or not
+zhmc_partition_initial_memory_mib                       D     G     Initial amount of memory allocated to the partition when it becomes active, in MiB
+zhmc_partition_reserved_memory_mib                      D     G     Amount of reserved memory (maximum memory minus initial memory), in MiB
+zhmc_partition_maximum_memory_mib                       D     G     Maximum amount of memory to which the OS can increase, in MiB
+zhmc_partition_initial_central_memory_mib               C     G     Amount of central memory initially allocated to the active partition in MiB, else 0
+zhmc_partition_current_central_memory_mib               C     G     Amount of central memory currently allocated to the active partition, in MiB, else 0
+zhmc_partition_maximum_central_memory_mib               C     G     Maximum amount of central memory to which the operating system running in the active partition can increase, in MiB
+zhmc_partition_initial_expanded_memory_mib              C     G     Amount of expanded memory initially allocated to the active partition in MiB, else 0
+zhmc_partition_current_expanded_memory_mib              C     G     Amount of expanded memory currently allocated to the active partition, in MiB, else 0
+zhmc_partition_maximum_expanded_memory_mib              C     G     Maximum amount of expanded memory to which the operating system running in the active partition can increase, in MiB
+zhmc_partition_initial_vfm_memory_gib                   C     G     Initial amount of VFM memory to be allocated at partition activation, in GiB
+zhmc_partition_maximum_vfm_memory_gib                   C     G     Maximum amount of VFM memory that can be allocated to the active partition, in GiB
+zhmc_partition_current_vfm_memory_gib                   C     G     Current amount of VFM memory that is allocated to the active partition, in GiB
+
+zhmc_crypto_adapter_usage_ratio                         C     G     Usage ratio of the crypto adapter
+zhmc_flash_memory_adapter_usage_ratio                   C     G     Usage ratio of the flash memory adapter
+zhmc_adapter_usage_ratio                                D     G     Usage ratio of the adapter
+zhmc_channel_usage_ratio                                C     G     Usage ratio of the channel
+zhmc_roce_adapter_usage_ratio                           C     G     Usage ratio of the RoCE adapter
+zhmc_port_bytes_sent_count                              D     C     Number of Bytes in unicast packets that were sent
+zhmc_port_bytes_received_count                          D     C     Number of Bytes in unicast packets that were received
+zhmc_port_packets_sent_count                            D     C     Number of unicast packets that were sent
+zhmc_port_packets_received_count                        D     C     Number of unicast packets that were received
+zhmc_port_packets_sent_dropped_count                    D     C     Number of sent packets that were dropped (resource shortage)
+zhmc_port_packets_received_dropped_count                D     C     Number of received packets that were dropped (resource shortage)
+zhmc_port_packets_sent_discarded_count                  D     C     Number of sent packets that were discarded (malformed)
+zhmc_port_packets_received_discarded_count              D     C     Number of received packets that were discarded (malformed)
+zhmc_port_multicast_packets_sent_count                  D     C     Number of multicast packets sent
+zhmc_port_multicast_packets_received_count              D     C     Number of multicast packets received
+zhmc_port_broadcast_packets_sent_count                  D     C     Number of broadcast packets sent
+zhmc_port_broadcast_packets_received_count              D     C     Number of broadcast packets received
+zhmc_port_data_sent_bytes                               D     G     Amount of data sent over the collection interval
+zhmc_port_data_received_bytes                           D     G     Amount of data received over the collection interval
+zhmc_port_data_rate_sent_bytes_per_second               D     G     Data rate sent over the collection interval
+zhmc_port_data_rate_received_bytes_per_second           D     G     Data rate received over the collection interval
+zhmc_port_bandwidth_usage_ratio                         D     G     Bandwidth usage ratio of the port
+
+zhmc_nic_bytes_sent_count                               D     C     Number of Bytes in unicast packets that were sent
+zhmc_nic_bytes_received_count                           D     C     Number of Bytes in unicast packets that were received
+zhmc_nic_packets_sent_count                             D     C     Number of unicast packets that were sent
+zhmc_nic_packets_received_count                         D     C     Number of unicast packets that were received
+zhmc_nic_packets_sent_dropped_count                     D     C     Number of sent packets that were dropped (resource shortage)
+zhmc_nic_packets_received_dropped_count                 D     C     Number of received packets that were dropped (resource shortage)
+zhmc_nic_packets_sent_discarded_count                   D     C     Number of sent packets that were discarded (malformed)
+zhmc_nic_packets_received_discarded_count               D     C     Number of received packets that were discarded (malformed)
+zhmc_nic_multicast_packets_sent_count                   D     C     Number of multicast packets sent
+zhmc_nic_multicast_packets_received_count               D     C     Number of multicast packets received
+zhmc_nic_broadcast_packets_sent_count                   D     C     Number of broadcast packets sent
+zhmc_nic_broadcast_packets_received_count               D     C     Number of broadcast packets received
+zhmc_nic_data_sent_bytes                                D     G     Amount of data sent over the collection interval
+zhmc_nic_data_received_bytes                            D     G     Amount of data received over the collection interval
+zhmc_nic_data_rate_sent_bytes_per_second                D     G     Data rate sent over the collection interval
+zhmc_nic_data_rate_received_bytes_per_second            D     G     Data rate received over the collection interval
+
+======================================================  ====  ==================================================================
+
+Legend:
+
+* Mode: The operational mode of the CPC: C=Classic, D=DPM
+* Type: The Prometheus metric type: G=Gauge, C=Counter
+
 
 HMC credentials file
 --------------------
@@ -462,12 +589,24 @@ The metric definition file is in YAML format and has the following structure:
             value: {label-value}
 
     metrics:
-      # dictionary of metric groups and metrics
+      # dictionary of metric groups:
       {hmc-metric-group}:
+
+        # dictionary format for defining metrics:
         {hmc-metric}:
-          percent: {percent-bool}
           exporter_name: {metric}_{unit}
           exporter_desc: {help}
+          metric_type: {metric-type}
+          percent: {percent-bool}
+          valuemap: {valuemap}
+
+        # list format for defining metrics:
+        - property_name: {hmc-metric}                     # either this
+          properties_expression: {properties-expression}  # or this
+          exporter_name: {metric}_{unit}
+          exporter_desc: {help}
+          percent: {percent-bool}
+          valuemap: {valuemap}
 
 Where:
 
@@ -508,7 +647,7 @@ Where:
     that are inside of the CPC at the second level, such as NICs or adapter
     ports, to get back to the CPC containing them.
 
-  - ``{hmc-metric-name}`` the name of the HMC metric within the same metric
+  - ``{hmc-metric}`` the name of the HMC metric within the same metric
     group whose metric value should be used as a label value. This can be used
     to use accompanying HMC metrics that are actually identifiers for resources,
     a labels for the actual metric. Example: The HMC returns metrics group
@@ -535,10 +674,25 @@ Where:
               exporter_name: usage_ratio
               exporter_desc: Usage ratio of the channel
 
+* ``{properties-expression}`` is a Jinja2 expression whose value should be used
+  is as the metric value, for resource based metrics. The expression uses
+  the variable ``properties`` which is the resource properties dictionary of the
+  resource. The ``properties_expression`` attribute is mutually exclusive with
+  ``property_name``.
+
+* ``{metric-type}`` is an optional enum value that defines the Prometheus metric
+  type used for this metric:
+  - "gauge" (default) - For values that can go up and down
+  - "counter" - For values that are monotonically increasing counters
+
 * ``{percent-bool}`` is a boolean indicating whether the metric value should
   be divided by 100. The reason for this is that the HMC metrics represent
   percentages such that a value of 100 means 100% = 1, while Prometheus
   represents them such that a value of 1.0 means 100% = 1.
+
+* ``{valuemap}`` is an optional dictionary for mapping string enumeration values
+  in the original HMC value to integers to be exported to Prometheus. This is
+  used for example for the processor mode (shared, dedicated).
 
 * ``{metric}_{unit}`` is the Prometheus local metric name and unit in
   the full metric name ``zhmc_{resource-type}_{metric}_{unit}``.
@@ -655,3 +809,40 @@ Examples:
 At this point, only the HMC interactions can be logged, so the only valid value
 for the ``--log-comp`` option is ``hmc``. That is also the default component
 that is logged (when enabled via ``--log-dest``).
+
+
+Performance
+-----------
+
+The support for resource property based metric values that was introduced in
+version 0.8 has slowed down the startup of the exporter quite significantly if
+these metrics are enabled.
+
+Here is an elapsed time measurement for the startup of the exporter using an HMC
+in one of our development data centers:
+
+* 11:33 min for preparing auto-update for 143 partitions on two z14 systems in classic mode
+* 0:12 min for preparing auto-update for 98 partitions on two z13 systems in DPM mode
+* 1:30 min for preparing auto-update for the 4 CPCs
+* 10:25 min for all other startup activities (without the
+  partition-attached-network-interface metrics group that would have been 0:48 min)
+
+Once the exporter is up and running, the fetching of metrics by Prometheus from
+the exporter is very fast:
+
+* 0:00.35 min (=350 ms) for fetching metrics with 236 HELP/TYPE lines and 5269
+  metric value lines (size: 500 KB)
+
+In this measurement, the complete set of metrics was enabled for the 4 CPCs
+described above.
+
+This result includes metric values from properties of auto-updated resources
+(which are maintained in the exporter and are updated asynchronously via
+notifications the exporter receives from the HMC) and metric values retrieved
+from the HMC metric service by executing a single HMC operation
+("Get Metric Context").
+
+This was measured with a local web browser that was directed to an exporter
+running on the same local system (a MacBook Pro). The network path between the
+exporter and the targeted HMC went via VPN to the IBM Intranet (via WLAN and
+Internet) and then across a boundary firewall.
