@@ -85,6 +85,11 @@ properties:
                 exporter_desc:
                   description: "HELP description of Prometheus metric"
                   type: [string, "null"]
+                metric_type:
+                  description: "The Prometheus metric type to be used for this metric."
+                  type: string
+                  enum: [gauge, counter]
+                  default: gauge
                 percent:
                   description: "Indicates whether the original HMC value is represented as percentage with a value of 100 meaning 100%"
                   type: boolean
@@ -112,11 +117,6 @@ properties:
               properties_expression:
                 description: "Jinja2 expression on 'properties' variable to use as the metric value"
                 type: string
-              metric_type:
-                description: "The Prometheus metric type to be used for this metric."
-                type: string
-                enum: [gauge, counter]
-                default: gauge
               exporter_name:
                 description: "<metric_unit> part of Prometheus metric name (format: zhmc_<prefix>_<metric_unit>); Null causes the metric not to be exported to Prometheus"
                 type: [string, "null"]
@@ -124,6 +124,11 @@ properties:
               exporter_desc:
                 description: "HELP description of Prometheus metric"
                 type: [string, "null"]
+              metric_type:
+                description: "The Prometheus metric type to be used for this metric."
+                type: string
+                enum: [gauge, counter]
+                default: gauge
               percent:
                 description: "Indicates whether the original HMC value is represented as percentage with a value of 100 meaning 100%"
                 type: boolean
