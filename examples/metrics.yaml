@@ -361,7 +361,7 @@ metrics:
       exporter_desc: Defined capacity expressed in terms of Millions of Service Units (MSU)s per hour
     - property_name: workload-manager-enabled
       exporter_name: workload_manager_is_enabled
-      exporter_desc: Boolean indicating whether the z/OS Workload Manager is allowed to change processing weight related properties of the partition
+      exporter_desc: Boolean indicating whether the z/OS Workload Manager is allowed to change processing weight related properties of the partition (0=false, 1=true)
     - property_name: processor-usage
       exporter_name: processor_mode_int
       exporter_desc: Allocation mode for processors to the active partition as an integer (0=shared, 1=dedicated)
@@ -388,16 +388,16 @@ metrics:
       exporter_desc: Current CP processing weight for the active partition in shared mode (1..999)
     - properties_expression: "properties['absolute-processing-capping'].type == 'processor'"
       exporter_name: cp_processor_count_is_capped
-      exporter_desc: Boolean indicating whether absolute capping is enabled for CP processors
+      exporter_desc: Boolean indicating whether absolute capping is enabled for CP processors (0=false, 1=true)
     - properties_expression: "properties['absolute-processing-capping'].value if properties['absolute-processing-capping'].type == 'processor' else 0"
       exporter_name: cp_processor_count_cap
       exporter_desc: Maximum number of CP processors that can be used if absolute capping is enabled, else 0
     - property_name: initial-processing-weight-capped
       exporter_name: cp_initial_processing_weight_is_capped
-      exporter_desc: Boolean indicating whether the initial CP processing weight is capped
+      exporter_desc: Boolean indicating whether the initial CP processing weight is capped (0=false, 1=true)
     - property_name: current-processing-weight-capped
       exporter_name: cp_current_processing_weight_is_capped
-      exporter_desc: Boolean indicating whether the current CP processing weight is capped
+      exporter_desc: Boolean indicating whether the current CP processing weight is capped (0=false, 1=true)
     - property_name: number-ifl-processors
       exporter_name: ifl_processor_count
       exporter_desc: Number of IFL processors currently allocated to the active partition
@@ -418,16 +418,16 @@ metrics:
       exporter_desc: Current IFL processing weight for the active partition in shared mode (1..999)
     - properties_expression: "properties['absolute-ifl-capping'].type == 'processor'"
       exporter_name: ifl_processor_count_is_capped
-      exporter_desc: Boolean indicating whether absolute capping is enabled for IFL processors
+      exporter_desc: Boolean indicating whether absolute capping is enabled for IFL processors (0=false, 1=true)
     - properties_expression: "properties['absolute-ifl-capping'].value if properties['absolute-ifl-capping'].type == 'processor' else 0"
       exporter_name: ifl_processor_count_cap
       exporter_desc: Maximum number of IFL processors that can be used if absolute capping is enabled, else 0
     - property_name: initial-ifl-processing-weight-capped
       exporter_name: ifl_initial_processing_weight_is_capped
-      exporter_desc: Boolean indicating whether the initial IFL processing weight is capped
+      exporter_desc: Boolean indicating whether the initial IFL processing weight is capped (0=false, 1=true)
     - property_name: current-ifl-processing-weight-capped
       exporter_name: ifl_current_processing_weight_is_capped
-      exporter_desc: Boolean indicating whether the current IFL processing weight is capped
+      exporter_desc: Boolean indicating whether the current IFL processing weight is capped (0=false, 1=true)
     - property_name: number-icf-processors
       exporter_name: icf_processor_count
       exporter_desc: Number of ICF processors currently allocated to the active partition
@@ -448,16 +448,16 @@ metrics:
       exporter_desc: Current ICF processing weight for the active partition in shared mode (1..999)
     - properties_expression: "properties['absolute-cf-capping'].type == 'processor'"
       exporter_name: icf_processor_count_is_capped
-      exporter_desc: Boolean indicating whether absolute capping is enabled for ICF processors
+      exporter_desc: Boolean indicating whether absolute capping is enabled for ICF processors (0=false, 1=true)
     - properties_expression: "properties['absolute-cf-capping'].value if properties['absolute-cf-capping'].type == 'processor' else 0"
       exporter_name: icf_processor_count_cap
       exporter_desc: Maximum number of ICF processors that can be used if absolute capping is enabled, else 0
     - property_name: initial-cf-processing-weight-capped
       exporter_name: icf_initial_processing_weight_is_capped
-      exporter_desc: Boolean indicating whether the initial ICF processing weight is capped
+      exporter_desc: Boolean indicating whether the initial ICF processing weight is capped (0=false, 1=true)
     - property_name: current-cf-processing-weight-capped
       exporter_name: icf_current_processing_weight_is_capped
-      exporter_desc: Boolean indicating whether the current ICF processing weight is capped
+      exporter_desc: Boolean indicating whether the current ICF processing weight is capped (0=false, 1=true)
     - property_name: number-ziip-processors
       exporter_name: iip_processor_count
       exporter_desc: Number of zIIP processors currently allocated to the active partition
@@ -478,16 +478,16 @@ metrics:
       exporter_desc: Current zIIP processing weight for the active partition in shared mode (1..999)
     - properties_expression: "properties['absolute-ziip-capping'].type == 'processor'"
       exporter_name: iip_processor_count_is_capped
-      exporter_desc: Boolean indicating whether absolute capping is enabled for zIIP processors
+      exporter_desc: Boolean indicating whether absolute capping is enabled for zIIP processors (0=false, 1=true)
     - properties_expression: "properties['absolute-ziip-capping'].value if properties['absolute-ziip-capping'].type == 'processor' else 0"
       exporter_name: iip_processor_count_cap
       exporter_desc: Maximum number of zIIP processors that can be used if absolute capping is enabled, else 0
     - property_name: initial-ziip-processing-weight-capped
       exporter_name: iip_initial_processing_weight_is_capped
-      exporter_desc: Boolean indicating whether the initial zIIP processing weight is capped
+      exporter_desc: Boolean indicating whether the initial zIIP processing weight is capped (0=false, 1=true)
     - property_name: current-ziip-processing-weight-capped
       exporter_name: iip_current_processing_weight_is_capped
-      exporter_desc: Boolean indicating whether the current zIIP processing weight is capped
+      exporter_desc: Boolean indicating whether the current zIIP processing weight is capped (0=false, 1=true)
     # Note: number-...-processors/cores properties do not exist in 2.15 for AAP processors
     - property_name: initial-aap-processing-weight
       exporter_name: aap_initial_processing_weight
@@ -503,16 +503,16 @@ metrics:
       exporter_desc: Current zAAP processing weight for the active partition in shared mode (1..999)
     - properties_expression: "properties['absolute-aap-capping'].type == 'processor'"
       exporter_name: aap_processor_count_is_capped
-      exporter_desc: Boolean indicating whether absolute capping is enabled for zAAP processors
+      exporter_desc: Boolean indicating whether absolute capping is enabled for zAAP processors (0=false, 1=true)
     - properties_expression: "properties['absolute-aap-capping'].value if properties['absolute-aap-capping'].type == 'processor' else 0"
       exporter_name: aap_processor_count_cap
       exporter_desc: Maximum number of zAAP processors that can be used if absolute capping is enabled, else 0
     - property_name: initial-aap-processing-weight-capped
       exporter_name: aap_initial_processing_weight_is_capped
-      exporter_desc: Boolean indicating whether the initial zAAP processing weight is capped
+      exporter_desc: Boolean indicating whether the initial zAAP processing weight is capped (0=false, 1=true)
     - property_name: current-aap-processing-weight-capped
       exporter_name: aap_current_processing_weight_is_capped
-      exporter_desc: Boolean indicating whether the current zAAP processing weight is capped
+      exporter_desc: Boolean indicating whether the current zAAP processing weight is capped (0=false, 1=true)
     # Note: number-...-processors/cores properties do not exist in 2.15 for CBP processors
     - property_name: initial-cbp-processing-weight
       # since HMC/SE version 2.14.0
@@ -533,7 +533,7 @@ metrics:
     - properties_expression: "properties['absolute-cbp-capping'].type == 'processor'"
       # since HMC/SE version 2.14.0
       exporter_name: cbp_processor_count_is_capped
-      exporter_desc: Boolean indicating whether absolute capping is enabled for CBP processors
+      exporter_desc: Boolean indicating whether absolute capping is enabled for CBP processors (0=false, 1=true)
     - properties_expression: "properties['absolute-cbp-capping'].value if properties['absolute-cbp-capping'].type == 'processor' else 0"
       # since HMC/SE version 2.14.0
       exporter_name: cbp_processor_count_cap
@@ -541,11 +541,11 @@ metrics:
     - property_name: initial-cbp-processing-weight-capped
       # since HMC/SE version 2.14.0
       exporter_name: cbp_initial_processing_weight_is_capped
-      exporter_desc: Boolean indicating whether the initial CBP processing weight is capped
+      exporter_desc: Boolean indicating whether the initial CBP processing weight is capped (0=false, 1=true)
     - property_name: current-cbp-processing-weight-capped
       # since HMC/SE version 2.14.0
       exporter_name: cbp_current_processing_weight_is_capped
-      exporter_desc: Boolean indicating whether the current CBP processing weight is capped
+      exporter_desc: Boolean indicating whether the current CBP processing weight is capped (0=false, 1=true)
     - properties_expression: "properties['storage-central-allocation']|map(attribute='initial')|sum"
       exporter_name: initial_central_memory_mib
       exporter_desc: Amount of central memory initially allocated to the active partition in MiB, else 0
@@ -866,13 +866,13 @@ metrics:
       exporter_desc: Current CP processing weight for the active partition in shared mode (1..999)
     - properties_expression: "properties['cp-absolute-processor-capping']"
       exporter_name: cp_processor_count_is_capped
-      exporter_desc: Boolean indicating whether absolute capping is enabled for CP processors
+      exporter_desc: Boolean indicating whether absolute capping is enabled for CP processors (0=false, 1=true)
     - properties_expression: "properties['cp-absolute-processor-capping-value'] if properties['cp-absolute-processor-capping'] else 0"
       exporter_name: cp_processor_count_cap
       exporter_desc: Maximum number of CP processors that can be used if absolute capping is enabled, else 0
     - property_name: cp-processing-weight-capped
       exporter_name: cp_initial_processing_weight_is_capped
-      exporter_desc: Boolean indicating whether the initial CP processing weight is capped
+      exporter_desc: Boolean indicating whether the initial CP processing weight is capped (0=false, 1=true)
     - property_name: ifl-processors
       exporter_name: ifl_processor_count
       exporter_desc: Number of IFL processors allocated to the active partition
@@ -890,13 +890,13 @@ metrics:
       exporter_desc: Current IFL processing weight for the active partition in shared mode (1..999)
     - properties_expression: "properties['ifl-absolute-processor-capping']"
       exporter_name: ifl_processor_count_is_capped
-      exporter_desc: Boolean indicating whether absolute capping is enabled for IFL processors
+      exporter_desc: Boolean indicating whether absolute capping is enabled for IFL processors (0=false, 1=true)
     - properties_expression: "properties['ifl-absolute-processor-capping-value'] if properties['ifl-absolute-processor-capping'] else 0"
       exporter_name: ifl_processor_count_cap
       exporter_desc: Maximum number of IFL processors that can be used if absolute capping is enabled, else 0
     - property_name: ifl-processing-weight-capped
       exporter_name: ifl_initial_processing_weight_is_capped
-      exporter_desc: Boolean indicating whether the initial IFL processing weight is capped
+      exporter_desc: Boolean indicating whether the initial IFL processing weight is capped (0=false, 1=true)
     - property_name: initial-memory
       exporter_name: initial_memory_mib
       exporter_desc: Initial amount of memory allocated to the partition when it becomes active, in MiB
