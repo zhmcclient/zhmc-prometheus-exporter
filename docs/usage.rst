@@ -387,9 +387,9 @@ zhmc_partition_zvm_paging_rate_pages_per_second         C     G     z/VM paging 
 zhmc_partition_processor_mode_int                       C+D   G     Allocation mode for processors as an integer (0=shared, 1=dedicated)
 zhmc_partition_threads_per_processor_ratio              D     G     Number of threads per processor used by OS
 zhmc_partition_defined_capacity_msu_per_hour            C     G     Defined capacity expressed in terms of MSU per hour
-zhmc_partition_workload_manager_is_enabled              C     G     Boolean indicating whether z/OS WLM is allowed to change processing weight related properties
+zhmc_partition_workload_manager_is_enabled              C     G     Boolean indicating whether z/OS WLM is allowed to change processing weight related properties (0=false, 1=true)
 zhmc_partition_cp_processor_count                       C+D   G     Number of CP processors allocated to the active partition
-zhmc_partition_cp_processor_count_is_capped             C+D   G     Boolean indicating whether absolute capping is enabled for CP processors
+zhmc_partition_cp_processor_count_is_capped             C+D   G     Boolean indicating whether absolute capping is enabled for CP processors (0=false, 1=true)
 zhmc_partition_cp_processor_count_cap                   C+D   G     Maximum number of CP processors that can be used if absolute capping is enabled, else 0
 zhmc_partition_cp_reserved_processor_count              C     G     Number of CP processors reserved for the active partition
 zhmc_partition_cp_initial_processing_weight             C+D   G     Initial CP processing weight for the active partition in shared mode
@@ -397,10 +397,10 @@ zhmc_partition_cp_minimum_processing_weight             C+D   G     Minimum CP p
 zhmc_partition_cp_maximum_processing_weight             C+D   G     Maximum CP processing weight for the active partition in shared mode
 zhmc_partition_cp_current_processing_weight             C+D   G     Current CP processing weight for the active partition in shared mode
 zhmc_partition_cp_processor_count_cap                   D     G     Maximum number of CP processors to be used when absolute CP processor capping is enabled
-zhmc_partition_cp_initial_processing_weight_is_capped   C+D   G     Boolean indicating whether the initial CP processing weight is capped or not
-zhmc_partition_cp_current_processing_weight_is_capped   C     G     Boolean indicating whether the current CP processing weight is capped or not
+zhmc_partition_cp_initial_processing_weight_is_capped   C+D   G     Boolean indicating whether the initial CP processing weight is capped (0=false, 1=true)
+zhmc_partition_cp_current_processing_weight_is_capped   C     G     Boolean indicating whether the current CP processing weight is capped (0=false, 1=true)
 zhmc_partition_ifl_processor_count                      C+D   G     Number of IFL processors allocated to the active partition
-zhmc_partition_ifl_processor_count_is_capped            C+D   G     Boolean indicating whether absolute capping is enabled for IFL processors
+zhmc_partition_ifl_processor_count_is_capped            C+D   G     Boolean indicating whether absolute capping is enabled for IFL processors (0=false, 1=true)
 zhmc_partition_ifl_processor_count_cap                  C+D   G     Maximum number of IFL processors that can be used if absolute capping is enabled, else 0
 zhmc_partition_ifl_reserved_processor_count             C     G     Number of IFL processors reserved for the active partition
 zhmc_partition_ifl_initial_processing_weight            C+D   G     Initial IFL processing weight for the active partition in shared mode
@@ -408,44 +408,44 @@ zhmc_partition_ifl_minimum_processing_weight            C+D   G     Minimum IFL 
 zhmc_partition_ifl_maximum_processing_weight            C+D   G     Maximum IFL processing weight for the active partition in shared mode
 zhmc_partition_ifl_current_processing_weight            C+D   G     Current IFL processing weight for the active partition in shared mode
 zhmc_partition_ifl_processor_count_cap                  D     G     Maximum number of IFL processors to be used when absolute IFL processor capping is enabled
-zhmc_partition_ifl_initial_processing_weight_is_capped  C+D   G     Boolean indicating whether the initial IFL processing weight is capped or not
-zhmc_partition_ifl_current_processing_weight_is_capped  C     G     Boolean indicating whether the current IFL processing weight is capped or not
+zhmc_partition_ifl_initial_processing_weight_is_capped  C+D   G     Boolean indicating whether the initial IFL processing weight is capped (0=false, 1=true)
+zhmc_partition_ifl_current_processing_weight_is_capped  C     G     Boolean indicating whether the current IFL processing weight is capped (0=false, 1=true)
 zhmc_partition_icf_processor_count                      C     G     Number of ICF processors currently allocated to the active partition
-zhmc_partition_icf_processor_count_is_capped            C     G     Boolean indicating whether absolute capping is enabled for ICF processors
+zhmc_partition_icf_processor_count_is_capped            C     G     Boolean indicating whether absolute capping is enabled for ICF processors (0=false, 1=true)
 zhmc_partition_icf_processor_count_cap                  C     G     Maximum number of ICF processors that can be used if absolute capping is enabled, else 0
 zhmc_partition_icf_reserved_processor_count             C     G     Number of ICF processors reserved for the active partition
 zhmc_partition_icf_initial_processing_weight            C     G     Initial ICF processing weight for the active partition in shared mode
 zhmc_partition_icf_minimum_processing_weight            C     G     Minimum ICF processing weight for the active partition in shared mode
 zhmc_partition_icf_maximum_processing_weight            C     G     Maximum ICF processing weight for the active partition in shared mode
 zhmc_partition_icf_current_processing_weight            C     G     Current ICF processing weight for the active partition in shared mode
-zhmc_partition_icf_initial_processing_weight_is_capped  C     G     Boolean indicating whether the initial ICF processing weight is capped or not
-zhmc_partition_icf_current_processing_weight_is_capped  C     G     Boolean indicating whether the current ICF processing weight is capped or not
+zhmc_partition_icf_initial_processing_weight_is_capped  C     G     Boolean indicating whether the initial ICF processing weight is capped (0=false, 1=true)
+zhmc_partition_icf_current_processing_weight_is_capped  C     G     Boolean indicating whether the current ICF processing weight is capped (0=false, 1=true)
 zhmc_partition_iip_processor_count                      C     G     Number of zIIP processors currently allocated to the active partition
-zhmc_partition_iip_processor_count_is_capped            C     G     Boolean indicating whether absolute capping is enabled for zIIP processors
+zhmc_partition_iip_processor_count_is_capped            C     G     Boolean indicating whether absolute capping is enabled for zIIP processors (0=false, 1=true)
 zhmc_partition_iip_processor_count_cap                  C     G     Maximum number of zIIP processors that can be used if absolute capping is enabled, else 0
 zhmc_partition_iip_reserved_processor_count             C     G     Number of zIIP processors reserved for the active partition
 zhmc_partition_iip_initial_processing_weight            C     G     Initial zIIP processing weight for the active partition in shared mode
 zhmc_partition_iip_minimum_processing_weight            C     G     Minimum zIIP processing weight for the active partition in shared mode
 zhmc_partition_iip_maximum_processing_weight            C     G     Maximum zIIP processing weight for the active partition in shared mode
 zhmc_partition_iip_current_processing_weight            C     G     Current zIIP processing weight for the active partition in shared mode
-zhmc_partition_iip_initial_processing_weight_is_capped  C     G     Boolean indicating whether the initial zIIP processing weight is capped or not
-zhmc_partition_iip_current_processing_weight_is_capped  C     G     Boolean indicating whether the current zIIP processing weight is capped or not
-zhmc_partition_aap_processor_count_is_capped            C     G     Boolean indicating whether absolute capping is enabled for zAAP processors
+zhmc_partition_iip_initial_processing_weight_is_capped  C     G     Boolean indicating whether the initial zIIP processing weight is capped (0=false, 1=true)
+zhmc_partition_iip_current_processing_weight_is_capped  C     G     Boolean indicating whether the current zIIP processing weight is capped (0=false, 1=true)
+zhmc_partition_aap_processor_count_is_capped            C     G     Boolean indicating whether absolute capping is enabled for zAAP processors (0=false, 1=true)
 zhmc_partition_aap_processor_count_cap                  C     G     Maximum number of zAAP processors that can be used if absolute capping is enabled, else 0
 zhmc_partition_aap_initial_processing_weight            C     G     Initial zAAP processing weight for the active partition in shared mode
 zhmc_partition_aap_minimum_processing_weight            C     G     Minimum zAAP processing weight for the active partition in shared mode
 zhmc_partition_aap_maximum_processing_weight            C     G     Maximum zAAP processing weight for the active partition in shared mode
 zhmc_partition_aap_current_processing_weight            C     G     Current zAAP processing weight for the active partition in shared mode
-zhmc_partition_aap_initial_processing_weight_is_capped  C     G     Boolean indicating whether the initial zAAP processing weight is capped or not
-zhmc_partition_aap_current_processing_weight_is_capped  C     G     Boolean indicating whether the current zAAP processing weight is capped or not
-zhmc_partition_cbp_processor_count_is_capped            C     G     Boolean indicating whether absolute capping is enabled for CBP processors
+zhmc_partition_aap_initial_processing_weight_is_capped  C     G     Boolean indicating whether the initial zAAP processing weight is capped (0=false, 1=true)
+zhmc_partition_aap_current_processing_weight_is_capped  C     G     Boolean indicating whether the current zAAP processing weight is capped (0=false, 1=true)
+zhmc_partition_cbp_processor_count_is_capped            C     G     Boolean indicating whether absolute capping is enabled for CBP processors (0=false, 1=true)
 zhmc_partition_cbp_processor_count_cap                  C     G     Maximum number of CBP processors that can be used if absolute capping is enabled, else 0
 zhmc_partition_cbp_initial_processing_weight            C     G     Initial CBP processing weight for the active partition in shared mode
 zhmc_partition_cbp_minimum_processing_weight            C     G     Minimum CBP processing weight for the active partition in shared mode
 zhmc_partition_cbp_maximum_processing_weight            C     G     Maximum CBP processing weight for the active partition in shared mode
 zhmc_partition_cbp_current_processing_weight            C     G     Current CBP processing weight for the active partition in shared mode
-zhmc_partition_cbp_initial_processing_weight_is_capped  C     G     Boolean indicating whether the initial CBP processing weight is capped or not
-zhmc_partition_cbp_current_processing_weight_is_capped  C     G     Boolean indicating whether the current CBP processing weight is capped or not
+zhmc_partition_cbp_initial_processing_weight_is_capped  C     G     Boolean indicating whether the initial CBP processing weight is capped (0=false, 1=true)
+zhmc_partition_cbp_current_processing_weight_is_capped  C     G     Boolean indicating whether the current CBP processing weight is capped (0=false, 1=true)
 zhmc_partition_initial_memory_mib                       D     G     Initial amount of memory allocated to the partition when it becomes active, in MiB
 zhmc_partition_reserved_memory_mib                      D     G     Amount of reserved memory (maximum memory minus initial memory), in MiB
 zhmc_partition_maximum_memory_mib                       D     G     Maximum amount of memory to which the OS can increase, in MiB
