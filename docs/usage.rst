@@ -295,7 +295,6 @@ definition. This includes both metric service and resource property based metric
 ======================================================  ====  ====  ==================================================================
 Prometheus Metric                                       Mode  Type  Description
 ======================================================  ====  ====  ==================================================================
-
 zhmc_cpc_cp_processor_count                             C+D   G     Number of active CP processors
 zhmc_cpc_ifl_processor_count                            C+D   G     Number of active IFL processors
 zhmc_cpc_icf_processor_count                            C+D   G     Number of active ICF processors
@@ -370,12 +369,10 @@ zhmc_cpc_power_cord7_phase_c_watts                      C+D   G     Power in Pha
 zhmc_cpc_power_cord8_phase_a_watts                      C+D   G     Power in Phase A of line cord 8 - 0 if not available
 zhmc_cpc_power_cord8_phase_b_watts                      C+D   G     Power in Phase B of line cord 8 - 0 if not available
 zhmc_cpc_power_cord8_phase_c_watts                      C+D   G     Power in Phase C of line cord 8 - 0 if not available
-
 zhmc_processor_usage_ratio                              C+D   G     Usage ratio of the processor
 zhmc_processor_smt_mode_percent                         C+D   G     Percentage of time the processor was in in SMT mode
 zhmc_processor_smt_thread0_usage_ratio                  C+D   G     Usage ratio of thread 0 of the processor when in SMT mode
 zhmc_processor_smt_thread1_usage_ratio                  C+D   G     Usage ratio of thread 1 of the processor when in SMT mode
-
 zhmc_partition_processor_usage_ratio                    C+D   G     Usage ratio across all processors of the partition
 zhmc_partition_cp_processor_usage_ratio                 C     G     Usage ratio across all CP processors of the partition
 zhmc_partition_ifl_processor_usage_ratio                C     G     Usage ratio across all IFL processors of the partition
@@ -461,7 +458,6 @@ zhmc_partition_maximum_expanded_memory_mib              C     G     Maximum amou
 zhmc_partition_initial_vfm_memory_gib                   C     G     Initial amount of VFM memory to be allocated at partition activation, in GiB
 zhmc_partition_maximum_vfm_memory_gib                   C     G     Maximum amount of VFM memory that can be allocated to the active partition, in GiB
 zhmc_partition_current_vfm_memory_gib                   C     G     Current amount of VFM memory that is allocated to the active partition, in GiB
-
 zhmc_crypto_adapter_usage_ratio                         C     G     Usage ratio of the crypto adapter
 zhmc_flash_memory_adapter_usage_ratio                   C     G     Usage ratio of the flash memory adapter
 zhmc_adapter_usage_ratio                                D     G     Usage ratio of the adapter
@@ -484,7 +480,6 @@ zhmc_port_data_received_bytes                           D     G     Amount of da
 zhmc_port_data_rate_sent_bytes_per_second               D     G     Data rate sent over the collection interval
 zhmc_port_data_rate_received_bytes_per_second           D     G     Data rate received over the collection interval
 zhmc_port_bandwidth_usage_ratio                         D     G     Bandwidth usage ratio of the port
-
 zhmc_nic_bytes_sent_count                               D     C     Number of Bytes in unicast packets that were sent
 zhmc_nic_bytes_received_count                           D     C     Number of Bytes in unicast packets that were received
 zhmc_nic_packets_sent_count                             D     C     Number of unicast packets that were sent
@@ -501,8 +496,7 @@ zhmc_nic_data_sent_bytes                                D     G     Amount of da
 zhmc_nic_data_received_bytes                            D     G     Amount of data received over the collection interval
 zhmc_nic_data_rate_sent_bytes_per_second                D     G     Data rate sent over the collection interval
 zhmc_nic_data_rate_received_bytes_per_second            D     G     Data rate received over the collection interval
-
-======================================================  ====  ==================================================================
+======================================================  ====  ====  ==================================================================
 
 Legend:
 
