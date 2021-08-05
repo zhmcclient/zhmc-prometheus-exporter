@@ -58,6 +58,9 @@ Released: not yet
 
 * Added support for metrics representing CPC and partition status. (issue #131)
 
+* Increased minimum version of zhmcclient to 1.0.0 to pick up support for
+  auto-updated resources. (issue #156)
+
 **Cleanup:**
 
 **Known issues:**
