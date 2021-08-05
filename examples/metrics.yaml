@@ -573,6 +573,12 @@ metrics:
     - property_name: current-vfm-storage
       exporter_name: current_vfm_memory_gib
       exporter_desc: Current amount of IBM Virtual Flash Memory (VFM) that is allocated to the active partition, in GiB
+    - properties_expression: "{'operating': 0, 'not-operating': 1, 'not-activated': 2, 'exceptions': 10}.get(properties.status, 99)"
+      exporter_name: status_int
+      exporter_desc: "Status as integer (0=operating, 1=not-operating, 2=not-activated, 10=exceptions, 99=unsupported value; see Logical Partition property 'status')"
+    - property_name: has-unacceptable-status
+      exporter_name: has_unacceptable_status
+      exporter_desc: Boolean indicating whether the partition has an unacceptable status (0=false, 1=true)
 
   # Available for CPCs in DPM mode
 
@@ -906,6 +912,12 @@ metrics:
     - property_name: maximum-memory
       exporter_name: maximum_memory_mib
       exporter_desc: Maximum amount of memory to which the operating system running in the partition can increase the memory allocation, in MiB
+    - properties_expression: "{'active': 0, 'degraded': 1, 'paused': 10, 'stopped': 11, 'starting': 12, 'stopping': 13, 'reservation-error': 20, 'terminated': 21, 'communications-not-active': 22, 'status-check': 23}.get(properties.status, 99)"
+      exporter_name: status_int
+      exporter_desc: "Status as integer (0=active, 1=degraded, 10=paused, 11=stopped, 12=starting, 13=stopping, 20=reservation-error, 21=terminated, 22=communications-not-active, 23=status-check, 99=unsupported value; see Partition property 'status')"
+    - property_name: has-unacceptable-status
+      exporter_name: has_unacceptable_status
+      exporter_desc: Boolean indicating whether the partition has an unacceptable status (0=false, 1=true)
 
   # Available for CPCs in any mode
 
@@ -1110,63 +1122,69 @@ metrics:
       exporter_desc: Usage ratio of thread 1 of the processor when in SMT mode - -1 if not supported
 
   cpc-resource:  # can be in dictionary or list format
-    processor-count-general-purpose:
+    - property_name: processor-count-general-purpose
       exporter_name: cp_processor_count
       exporter_desc: Number of active CP processors
-    processor-count-ifl:
+    - property_name: processor-count-ifl
       exporter_name: ifl_processor_count
       exporter_desc: Number of active IFL processors
-    processor-count-icf:
+    - property_name: processor-count-icf
       exporter_name: icf_processor_count
       exporter_desc: Number of active ICF processors
-    processor-count-iip:
+    - property_name: processor-count-iip
       exporter_name: iip_processor_count
       exporter_desc: Number of active zIIP processors
-    processor-count-aap:
+    - property_name: processor-count-aap
       exporter_name: aap_processor_count
       exporter_desc: Number of active zAAP processors
-    processor-count-cbp:
+    - property_name: processor-count-cbp
       # since HMC/SE version 2.14.0
       exporter_name: cbp_processor_count
       exporter_desc: Number of active CBP processors
-    processor-count-service-assist:
+    - property_name: processor-count-service-assist
       exporter_name: sap_processor_count
       exporter_desc: Number of active SAP processors
-    processor-count-defective:
+    - property_name: processor-count-defective
       exporter_name: defective_processor_count
       exporter_desc: Number of defective processors of all processor types
-    processor-count-spare:
+    - property_name: processor-count-spare
       exporter_name: spare_processor_count
       exporter_desc: Number of spare processors of all processor types
-    storage-total-installed:
+    - property_name: storage-total-installed
       # since HMC/SE version 2.13.1
       exporter_name: total_memory_mib
       exporter_desc: Total amount of installed memory, in MiB
-    storage-hardware-system-area:
+    - property_name: storage-hardware-system-area
       # since HMC/SE version 2.13.1
       exporter_name: hsa_memory_mib
       exporter_desc: Amount of memory reserved for the base hardware system area (HSA), in MiB
-    storage-customer:
+    - property_name: storage-customer
       # since HMC/SE version 2.13.1
       exporter_name: partition_memory_mib
       exporter_desc: Amount of memory for use by partitions, in MiB
-    storage-customer-central:
+    - property_name: storage-customer-central
       # since HMC/SE version 2.13.1
       exporter_name: partition_central_memory_mib
       exporter_desc: Amount of memory allocated as central storage across the active partitions, in MiB
-    storage-customer-expanded:
+    - property_name: storage-customer-expanded
       # since HMC/SE version 2.13.1
       exporter_name: partition_expanded_memory_mib
       exporter_desc: Amount of memory allocated as expanded storage across the active partitions, in MiB
-    storage-customer-available:
+    - property_name: storage-customer-available
       # since HMC/SE version 2.13.1
       exporter_name: available_memory_mib
       exporter_desc: Amount of memory not allocated to active partitions, in MiB
-    storage-vfm-increment-size:
+    - property_name: storage-vfm-increment-size
       # since HMC/SE version 2.14.0
       exporter_name: vfm_increment_gib
       exporter_desc: Increment size of IBM Virtual Flash Memory (VFM), in GiB
-    storage-vfm-total:
+    - property_name: storage-vfm-total
       # since HMC/SE version 2.14.0
       exporter_name: total_vfm_gib
       exporter_desc: Total amount of installed IBM Virtual Flash Memory (VFM), in GiB
+    - properties_expression: "{'active': 0, 'operating': 0, 'degraded': 1, 'service-required': 2, 'service': 10, 'exceptions': 11, 'not-communicating': 12, 'status-check': 13, 'not-operating': 14, 'no-powerstatus': 15}.get(properties.status, 99)"
+      exporter_name: status_int
+      exporter_desc: "Status as integer (0=active/=operating, 1=degraded, 2=service-required, 10=service, 11=exceptions, 12=not-communicating, 13=status-check, 14=not-operating, 15=no-power, 99=unsupported value; see CPC property 'status')"
+    - property_name: has-unacceptable-status
+      exporter_name: has_unacceptable_status
+      exporter_desc: Boolean indicating whether the CPC has an unacceptable status (0=false, 1=true)

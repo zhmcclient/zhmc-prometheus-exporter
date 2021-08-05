@@ -829,7 +829,10 @@ def build_family_objects_res(
 
                     try:
                         metric_value = func(properties=resource.properties)
-                    except jinja2.exceptions.UndefinedError as exc:
+                    except Exception as exc:
+                        # Typical exceptions:
+                        # - jinja2.exceptions.UndefinedError
+                        # - TypeError
                         new_exc = ImproperExit(
                             "Error evaluating properties expression {!r} "
                             "defined for exporter name '{}' "

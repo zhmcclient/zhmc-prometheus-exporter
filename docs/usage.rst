@@ -369,6 +369,8 @@ zhmc_cpc_power_cord7_phase_c_watts                      C+D   G     Power in Pha
 zhmc_cpc_power_cord8_phase_a_watts                      C+D   G     Power in Phase A of line cord 8 - 0 if not available
 zhmc_cpc_power_cord8_phase_b_watts                      C+D   G     Power in Phase B of line cord 8 - 0 if not available
 zhmc_cpc_power_cord8_phase_c_watts                      C+D   G     Power in Phase C of line cord 8 - 0 if not available
+zhmc_cpc_status_int                                     C+D   G     Status as integer
+zhmc_cpc_has_unacceptable_status                        C+D   G     Boolean indicating whether the CPC has an unacceptable status
 zhmc_processor_usage_ratio                              C+D   G     Usage ratio of the processor
 zhmc_processor_smt_mode_percent                         C+D   G     Percentage of time the processor was in in SMT mode
 zhmc_processor_smt_thread0_usage_ratio                  C+D   G     Usage ratio of thread 0 of the processor when in SMT mode
@@ -458,6 +460,8 @@ zhmc_partition_maximum_expanded_memory_mib              C     G     Maximum amou
 zhmc_partition_initial_vfm_memory_gib                   C     G     Initial amount of VFM memory to be allocated at partition activation, in GiB
 zhmc_partition_maximum_vfm_memory_gib                   C     G     Maximum amount of VFM memory that can be allocated to the active partition, in GiB
 zhmc_partition_current_vfm_memory_gib                   C     G     Current amount of VFM memory that is allocated to the active partition, in GiB
+zhmc_partition_status_int                               C+D   G     Status as integer (values depend on classic mode vs DPM mode)
+zhmc_partition_has_unacceptable_status                  C+D   G     Boolean indicating whether the partition has an unacceptable status
 zhmc_crypto_adapter_usage_ratio                         C     G     Usage ratio of the crypto adapter
 zhmc_flash_memory_adapter_usage_ratio                   C     G     Usage ratio of the flash memory adapter
 zhmc_adapter_usage_ratio                                D     G     Usage ratio of the adapter

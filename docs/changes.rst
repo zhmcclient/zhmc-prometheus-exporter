@@ -56,6 +56,8 @@ Released: not yet
 * Added support for metrics based on resource properties of CPCs, partitions
   (DPM mode) and LPARs (classic mode). (issue #112)
 
+* Added support for metrics representing CPC and partition status. (issue #131)
+
 **Cleanup:**
 
 **Known issues:**
