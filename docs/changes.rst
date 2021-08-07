@@ -61,6 +61,16 @@ Released: not yet
 * Increased minimum version of zhmcclient to 1.0.0 to pick up support for
   auto-updated resources. (issue #156)
 
+* Added support for testing with minimum package levels. (issue #59)
+
+* Added a new make target 'check_reqs' for checking dependencies declared in
+  the requirements files.
+
+* Increased minimum versions of dependent packages to address install issues
+  on Windows and with minimum package levels:
+  - prometheus-client from 0.3.1 to 0.9.0
+  - jinja2 from 2.0.0 to 2.8
+
 **Cleanup:**
 
 **Known issues:**

@@ -4,18 +4,22 @@
 # of appearance.
 #
 
-# git+https://github.com/zhmcclient/python-zhmcclient.git@master#egg=zhmcclient
-zhmcclient>=1.0.0 # Apache-2.0
+# Direct dependencies for runtime (must be consistent with minimum-constraints.txt)
 
-prometheus-client>=0.3.1 # Apache-2.0
+# git+https://github.com/zhmcclient/python-zhmcclient.git@master#egg=zhmcclient
+zhmcclient>=1.0.0
+
+prometheus-client>=0.9.0
 urllib3>=1.24.0
 jsonschema>=2.6.0
-six>=1.14.0 # MIT
-jinja2>=2.0.0
+six>=1.14.0
+Jinja2>=2.8
 
 # PyYAML pulled in by zhmcclient examples
 # PyYAML 5.3 fixes narrow build error
 PyYAML>=5.1
+
+# Indirect dependencies for runtime (must be consistent with minimum-constraints.txt)
 
 # pyrsistent is pulled in by jsonschema.
 # Before its version 0.17.0, pyrsistent did not or not correctly declare its

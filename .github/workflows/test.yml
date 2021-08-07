@@ -30,13 +30,45 @@ jobs:
           echo "::set-output name=matrix::{ \
             \"os\": [ \"ubuntu-latest\", \"macos-latest\", \"windows-latest\" ], \
             \"python-version\": [ \"3.5\", \"3.6\", \"3.7\", \"3.8\", \"3.9\" ], \
-            \"package_level\": [ \"latest\" ] \
+            \"package_level\": [ \"minimum\", \"latest\" ] \
           }"; \
         else \
           echo "::set-output name=matrix::{ \
-            \"os\": [ \"ubuntu-latest\", \"macos-latest\", \"windows-latest\" ], \
+            \"os\": [ \"ubuntu-latest\" ], \
             \"python-version\": [ \"3.5\", \"3.9\" ], \
-            \"package_level\": [ \"latest\" ] \
+            \"package_level\": [ \"minimum\", \"latest\" ], \
+            \"include\": [ \
+              { \
+                \"os\": \"macos-latest\", \
+                \"python-version\": \"3.5\", \
+                \"package_level\": \"minimum\" \
+              }, \
+              { \
+                \"os\": \"macos-latest\", \
+                \"python-version\": \"3.9\", \
+                \"package_level\": \"minimum\" \
+              }, \
+              { \
+                \"os\": \"macos-latest\", \
+                \"python-version\": \"3.9\", \
+                \"package_level\": \"latest\" \
+              }, \
+              { \
+                \"os\": \"windows-latest\", \
+                \"python-version\": \"3.5\", \
+                \"package_level\": \"minimum\" \
+              }, \
+              { \
+                \"os\": \"windows-latest\", \
+                \"python-version\": \"3.9\", \
+                \"package_level\": \"minimum\" \
+              }, \
+              { \
+                \"os\": \"windows-latest\", \
+                \"python-version\": \"3.9\", \
+                \"package_level\": \"latest\" \
+              } \
+            ] \
           }"; \
         fi
     - name: Show matrix in JSON
@@ -126,6 +158,11 @@ jobs:
         # TESTCASES: TestParseArgs
       run: |
         make test
+    - name: Run check_reqs
+      env:
+        PACKAGE_LEVEL: ${{ matrix.package_level }}
+      run: |
+        make check_reqs
     - name: Send coverage result to coveralls.io
       shell: bash -l {0}
       env:
