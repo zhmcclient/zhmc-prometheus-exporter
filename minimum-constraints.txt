@@ -1,0 +1,179 @@
+# Pip constraints file for runtime and development.
+#
+# This constraints file specifies constraints that match the minimum versions
+# specified in the requirements files for runtime and development. The reason
+# for this approach is that in the CI systems, we want to be able to test with
+# the minimum package versions in order to catch any incorrect minimum versions
+# (see zhmcclient issue #199 as one example where a minimum version was
+# missing).
+
+# The versions specified in this file were the latest versions released on Pypi
+# as of zhmcclient v0.9.0 (2016-12-27, see Travis CI run #576
+# https://travis-ci.org/zhmcclient/python-zhmcclient/builds/186986898).
+
+# Make sure that the package versions in minimum-constraints.txt are also
+# the minimum versions required in requirements.txt and dev-requirements.txt.
+
+
+# Dependencies for installation with Pip (must be installed in a separate pip call)
+#
+# Info: OS-installed package versions for some Linux distros:
+# * RHEL/CentOS 7.4.1708:
+#   Python      2.7.5     2013-05-15
+#   pip         8.1.2     2016-05-11 (epel)
+#   setuptools  0.9.8     2013-07-25
+#   wheel       0.24.0    2014-07-06 (epel)
+#   pbr         1.8.1     2015-10-07 (epel)
+# * Ubuntu 16.04.03:
+#   Python      2.7.12    2016-11-19
+#   pip         8.1.1     2016-03-17
+#   setuptools  20.7.0    2016-04-10
+#   wheel       0.29.0    2016-02-06
+#   pbr         1.8.0     2015-09-14
+# * Ubuntu 17.04:
+#   Python      2.7.12    2016-11-19
+#   pip         9.0.1     2016-11-06
+#   setuptools  33.1.1    2017-01-16
+#   wheel       0.29.0    2016-02-06
+#   pbr         1.10.0    2016-05-23
+# * Ubuntu 18.04:
+#   Python      2.7.15
+#   Python3     3.6.5
+#   pip         9.0.1     (py2+py3)
+#   setuptools  39.0.1    (py2+py3)
+#   wheel       0.30.0    (py2+py3)
+# * Ubuntu 19.04:
+#   Python      2.7.16
+#   Python3     3.7.3
+#   pip         18.1      (py2+py3)
+#   setuptools  40.8.0    (py2+py3)
+#   wheel       0.32.3    (py2+py3)
+
+
+# Base dependencies
+
+# For the base packages, we use the versions from Ubuntu 18.04 as a general
+# minimum, and then increase it to the first version that introduced support
+# for a particular Python version:
+pip==10.0.0; python_version <= '3.6'
+pip==18.1; python_version == '3.7'
+pip==19.3.1; python_version >= '3.8'
+setuptools==39.0.1; python_version <= '3.6'
+setuptools==40.6.0; python_version == '3.7'
+setuptools==41.5.0; python_version >= '3.8'
+wheel==0.30.0; python_version <= '3.6'
+wheel==0.32.0; python_version == '3.7'
+wheel==0.33.5; python_version >= '3.8'
+
+# Direct dependencies for runtime (must be consistent with requirements.txt)
+
+zhmcclient==1.0.0
+
+prometheus-client==0.9.0
+urllib3==1.24.0
+jsonschema==2.6.0
+six==1.14.0
+Jinja2==2.8
+PyYAML==5.1
+
+# Indirect dependencies for runtime that require a version constraint (must be consistent with requirements.txt)
+
+pyrsistent==0.14.0
+
+# Indirect dependencies for runtime that are not in requirements.txt
+
+attrs==18.2.0
+certifi==2019.9.11
+charset-normalizer==2.0.4
+decorator==4.0.11
+docopt==0.6.2
+idna==2.5
+immutable-views==0.6.0
+importlib-metadata==0.12  # Used in some combinations of Python version and package level
+MarkupSafe==0.23
+pytz==2016.10
+requests==2.20.1
+stomp.py==4.1.23
+urllib3==1.23
+typing-extensions==3.7.4  # Used in some combinations of Python version and package level
+zipp==0.5.2  # Used in some combinations of Python version and package level
+
+# Direct dependencies for development (must be consistent with dev-requirements.txt)
+
+# Unit test (imports into testcases):
+pytest==4.4.0
+
+# Coverage reporting (no imports, invoked via coveralls script):
+coverage==5.0
+pytest-cov==2.7.0
+coveralls==2.1.2
+
+# Flake8 (no imports, invoked via flake8 script):
+flake8==3.8.0
+mccabe==0.6.0
+pycodestyle==2.6.0
+pyflakes==2.2.0
+entrypoints==0.3.0
+
+# PyLint (no imports, invoked via pylint script)
+pylint==2.6.0
+astroid==2.4.0
+typed-ast==1.4.0; python_version <= '3.7' and implementation_name=='cpython'
+lazy-object-proxy==1.4.3
+
+# Sphinx (no imports, invoked via sphinx-build script):
+Sphinx==3.0.0
+Pygments==2.5.1
+sphinx-rtd-theme==0.5.0
+sphinxcontrib-fulltoc==1.2.0
+sphinxcontrib-websupport==1.1.2
+
+# Twine (no imports, invoked via twine script):
+# readme-renderer (used by twine, uses Pygments)
+readme-renderer==25.0
+twine==1.15.0
+
+# Package dependency management tools (not used by any make rules)
+pipdeptree==2.0.0
+pip-check-reqs==2.2.0
+
+# Indirect dependencies for development that require a version constraint (must be consistent with dev-requirements.txt)
+
+# None
+
+# Indirect dependencies for development that are not in dev-requirements.txt
+
+alabaster==0.7.9
+atomicwrites==1.4.0  # used with minimum package levels
+Babel==2.3.4
+bleach==2.1.4
+chardet==3.0.4  # used with minimum package levels
+colorama==0.4.0
+contextlib2==0.6.0
+docutils==0.13.1
+html5lib==1.0.1  # used with minimum package levels
+imagesize==0.7.1
+iniconfig==1.1.1; python_version >= "3.6"  # used by pytest since its 6.0.0 which requires py36
+isort==4.2.5
+keyring==18.0.0
+mccabe==0.5.3
+more-itertools==8.0.0  # used with minimum package levels
+packaging==19.2
+pkginfo==1.4.2
+pluggy==0.13.0
+py==1.5.1
+pyparsing==2.4.5
+requests-toolbelt==0.8.0
+rfc3986==1.4.0; python_version >= "3.6"  # used by twine since its 3.2.0 which requires py36
+sphinxcontrib-serializinghtml==1.1.4  # used by sphinxcontrib-websupport
+sphinxcontrib-applehelp==1.0.2
+sphinxcontrib-devhelp==1.0.2
+sphinxcontrib-htmlhelp==1.0.3
+sphinxcontrib-jsmath==1.0.1
+sphinxcontrib-qthelp==1.0.3
+snowballstemmer==1.2.1
+toml==0.10.0  # used by pylint and pytest since some version
+tqdm==4.28.1
+typing==3.6.1
+webencodings==0.5.1
+wrapt==1.11.2

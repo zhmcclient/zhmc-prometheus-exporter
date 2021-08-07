@@ -21,8 +21,9 @@ import datetime
 import hashlib
 import os
 import sys
-import stat
 import unittest
+import stat  # pylint: disable=wrong-import-order  # reported on Windows
+
 import pytest
 import zhmcclient
 import zhmcclient_mock
