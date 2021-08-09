@@ -23,6 +23,6 @@ IBM Z HMC Prometheus Exporter
    intro.rst
    usage.rst
    errors.rst
-   dev.rst
+   development.rst
    appendix.rst
    changes.rst
