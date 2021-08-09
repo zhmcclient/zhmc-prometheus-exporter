@@ -17,7 +17,7 @@ Change log
 ----------
 
 
-Version 0.8.0.dev1
+Version 1.0.0.dev1
 ^^^^^^^^^^^^^^^^^^
 
 This version contains all fixes up to version 0.7.x.

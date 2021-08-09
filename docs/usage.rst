@@ -813,7 +813,7 @@ Performance
 -----------
 
 The support for resource property based metric values that was introduced in
-version 0.8 has slowed down the startup of the exporter quite significantly if
+version 1.0 has slowed down the startup of the exporter quite significantly if
 these metrics are enabled.
 
 Here is an elapsed time measurement for the startup of the exporter using an HMC
