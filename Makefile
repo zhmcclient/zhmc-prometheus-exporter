@@ -304,7 +304,7 @@ develop_$(pymn).done: install_$(pymn).done dev-requirements.txt
 
 $(doc_build_file): develop_$(pymn).done $(doc_dependent_files)
 	@echo "Makefile: Generating HTML documentation with main file: $@"
-	sphinx-build -b html $(doc_dir) $(doc_build_dir)
+	sphinx-build -b html -v $(doc_dir) $(doc_build_dir)
 	@echo "Makefile: Done generating HTML documentation"
 
 $(bdist_file): _check_version develop_$(pymn).done
