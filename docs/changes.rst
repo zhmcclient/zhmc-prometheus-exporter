@@ -17,12 +17,10 @@ Change log
 ----------
 
 
-Version 1.0.0.dev1
-^^^^^^^^^^^^^^^^^^
+Version 1.0.0
+^^^^^^^^^^^^^
 
-This version contains all fixes up to version 0.7.x.
-
-Released: not yet
+Released: 2021-08-08
 
 **Incompatible changes:**
 
@@ -44,8 +42,6 @@ Released: not yet
   - multicast_packets_received_count
   - broadcast_packets_sent_count
   - broadcast_packets_received_count
-
-**Deprecations:**
 
 **Bug fixes:**
 
@@ -70,14 +66,6 @@ Released: not yet
   on Windows and with minimum package levels:
   - prometheus-client from 0.3.1 to 0.9.0
   - jinja2 from 2.0.0 to 2.8
-
-**Cleanup:**
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 0.7.0
