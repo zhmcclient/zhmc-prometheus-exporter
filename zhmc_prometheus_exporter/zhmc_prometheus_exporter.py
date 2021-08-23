@@ -276,7 +276,7 @@ def parse_yaml_file(yamlfile, name, schemafilename=None):
     """
 
     try:
-        with open(yamlfile, "r") as fp:
+        with open(yamlfile, "r", encoding='utf-8') as fp:
             yaml_obj = yaml.safe_load(fp)
     except FileNotFoundError as exc:
         new_exc = ImproperExit(
@@ -302,7 +302,7 @@ def parse_yaml_file(yamlfile, name, schemafilename=None):
         schemafile = os.path.join(
             os.path.dirname(__file__), 'schemas', schemafilename)
         try:
-            with open(schemafile, 'r') as fp:
+            with open(schemafile, 'r', encoding='utf-8') as fp:
                 schema = yaml.safe_load(fp)
         except FileNotFoundError as exc:
             new_exc = ImproperExit(
@@ -617,7 +617,7 @@ class ResourceCache(object):
                 verbose2("Debug: Dump of current resource cache in exporter:")
                 pprint(sorted(self._resources))
                 verbose2("Debug: List of resources found:")
-                res_dict = dict()
+                res_dict = {}
                 for mgr in exc.managers:
                     resources = mgr.list()
                     for res in resources:
@@ -1145,7 +1145,7 @@ def main():
         except (ConnectionError, AuthError, OtherError) as exc:
             raise ImproperExit(exc)
 
-        extra_labels = dict()
+        extra_labels = {}
         for item in yaml_extra_labels:
             # name, value are required in the HMC creds schema:
             extra_labels[item['name']] = item['value']
