@@ -29,7 +29,7 @@ def get_version(version_file):
     requirements list of this package (otherwise it cannot be executed in
     a fresh Python environment).
     """
-    with open(version_file, 'r') as fp:
+    with open(version_file, 'r', encoding='utf-8') as fp:
         version_source = fp.read()
     _globals = {}
     exec(version_source, _globals)  # pylint: disable=exec-used
