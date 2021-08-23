@@ -59,7 +59,7 @@ class TestParseYaml(unittest.TestCase):
         # Get a SHA256 of Unixtime to create a filename that does not exist
         filename = str(hashlib.sha256(str(time.time()).encode("utf-8")).
                        hexdigest())
-        with open(filename, "w+") as testfile:
+        with open(filename, "w+", encoding='utf-8') as testfile:
             testfile.write("""metrics:
   hmc: 127.0.0.1
   userid: user
@@ -81,7 +81,7 @@ class TestParseYaml(unittest.TestCase):
 
         filename = str(hashlib.sha256(str(time.time()).encode("utf-8")).
                        hexdigest())
-        with open(filename, "w+"):
+        with open(filename, "w+", encoding='utf-8'):
             pass
         # Make it unreadable (mode 000)
         os.chmod(filename, not stat.S_IRWXU)
