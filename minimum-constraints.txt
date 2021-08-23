@@ -120,6 +120,7 @@ pylint==2.6.0
 astroid==2.4.0
 typed-ast==1.4.0; python_version <= '3.7' and implementation_name=='cpython'
 lazy-object-proxy==1.4.3
+platformdirs==2.2.0; python_version >= '3.6'
 
 # Sphinx (no imports, invoked via sphinx-build script):
 Sphinx==3.0.0

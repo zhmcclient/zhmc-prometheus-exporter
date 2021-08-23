@@ -30,6 +30,8 @@ Released: not yet
 
 **Bug fixes:**
 
+* Fixed new issues reported by Pylint 2.10.
+
 **Enhancements:**
 
 **Cleanup:**
