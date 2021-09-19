@@ -73,7 +73,7 @@ disable=I0011,
         wildcard-import, unused-wildcard-import,
         locally-enabled, superfluous-parens, useless-object-inheritance,
         consider-using-set-comprehension, unnecessary-pass, useless-return,
-        raise-missing-from
+        raise-missing-from, consider-using-f-string
 
 # Note: The too-many-* messages are excluded temporarily, and should be dealt
 #       with at some point.
