@@ -32,6 +32,9 @@ Released: not yet
 
 * Fixed new issues reported by Pylint 2.10.
 
+* Disabled new Pylint issue 'consider-using-f-string', since f-strings were
+  introduced only in Python 3.6.
+
 **Enhancements:**
 
 **Cleanup:**
