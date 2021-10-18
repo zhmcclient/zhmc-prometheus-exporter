@@ -33,6 +33,13 @@ Released: not yet
 * Disabled new Pylint issue 'consider-using-f-string', since f-strings were
   introduced only in Python 3.6.
 
+* The hmccreds_schema.yml schema incorrectly specified the items of an array
+  as a list. That was tolerated by JSON schema draft 07. When jsonschema 4.0
+  added support for newer JSON schema versions, that broke. Fixed that by
+  changing the array items from a list to its list item object. Also,
+  in order to not fall into future JSON schema incompatibilities again, added
+  $schema: http://json-schema.org/draft-07/schema (issue #180)
+
 **Enhancements:**
 
 **Cleanup:**
