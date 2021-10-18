@@ -42,6 +42,10 @@ Released: not yet
 
 **Enhancements:**
 
+* Changed the "Exporter is up and running" message to be shown also in
+  non-verbose mode to give first-time users a better feedback on when it is
+  ready.
+
 **Cleanup:**
 
 **Known issues:**
