@@ -95,10 +95,15 @@ Quickstart
   .. code-block:: bash
 
       $ zhmc_prometheus_exporter -c hmccreds.yaml -m metrics.yaml
+      Exporter is up and running on port 9291
+
+  Depending on the number of CPCs managed by your HMC, and dependent on how many
+  metrics are enabled, it will take some time until the exporter reports to be
+  up and running. You can see what it does in the mean time by using the ``-v``
+  option. Subsequent requests to the exporter will be sub-second.
 
 * Direct your web browser at http://localhost:9291 to see the exported
-  Prometheus metrics (depending on the number of CPCs managed by your HMC, and
-  dependent on how many metrics are enabled, this may take a moment).
+  Prometheus metrics. Refreshing the browser will update the metrics.
 
 Reporting issues
 ----------------

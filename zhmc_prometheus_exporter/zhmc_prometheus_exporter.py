@@ -1165,7 +1165,7 @@ def main():
         verbose("Starting the HTTP server on port {}".format(args.p))
         start_http_server(int(args.p))
 
-        verbose("Exporter is up and running")
+        info("Exporter is up and running on port {}".format(args.p))
         while True:
             try:
                 time.sleep(1)
