@@ -161,6 +161,9 @@ jobs:
     - name: Run check_reqs
       env:
         PACKAGE_LEVEL: ${{ matrix.package_level }}
+      # TODO: Enable for all package levels again once this issue is fixed:
+      #       https://github.com/r1chardj0n3s/pip-check-reqs/issues/71
+      if: ${{ matrix.package_level == 'minimum' }}
       run: |
         make check_reqs
     - name: Send coverage result to coveralls.io
