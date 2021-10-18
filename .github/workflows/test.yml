@@ -41,12 +41,7 @@ jobs:
               { \
                 \"os\": \"macos-latest\", \
                 \"python-version\": \"3.5\", \
-                \"package_level\": \"minimum\" \
-              }, \
-              { \
-                \"os\": \"macos-latest\", \
-                \"python-version\": \"3.9\", \
-                \"package_level\": \"minimum\" \
+                \"package_level\": \"latest\" \
               }, \
               { \
                 \"os\": \"macos-latest\", \
@@ -56,12 +51,7 @@ jobs:
               { \
                 \"os\": \"windows-latest\", \
                 \"python-version\": \"3.5\", \
-                \"package_level\": \"minimum\" \
-              }, \
-              { \
-                \"os\": \"windows-latest\", \
-                \"python-version\": \"3.9\", \
-                \"package_level\": \"minimum\" \
+                \"package_level\": \"latest\" \
               }, \
               { \
                 \"os\": \"windows-latest\", \
