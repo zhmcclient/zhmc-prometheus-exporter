@@ -1,5 +1,6 @@
 # This is a JSON Schema in YAML format.
 
+$schema: http://json-schema.org/draft-07/schema
 title: Metric definition schema
 description: JSON schema for the metric definition file
 type: object
