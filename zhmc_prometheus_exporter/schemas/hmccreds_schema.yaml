@@ -1,5 +1,6 @@
 # This is a JSON Schema in YAML format.
 
+$schema: http://json-schema.org/draft-07/schema
 title: HMC credentials schema
 description: JSON schema for the HMC credentials file
 type: object
@@ -33,15 +34,15 @@ properties:
     type: array
     default: []
     items:
-      - type: object
-        required:
-          - name
-          - value
-        additionalProperties: false
-        properties:
-          name:
-            description: "Label name"
-            type: string
-          value:
-            description: "Label value. Always handled as literal strings - no keywords with speacial handling"
-            type: string
+      type: object
+      required:
+        - name
+        - value
+      additionalProperties: false
+      properties:
+        name:
+          description: "Label name"
+          type: string
+        value:
+          description: "Label value. Always handled as literal strings - no keywords with speacial handling"
+          type: string
