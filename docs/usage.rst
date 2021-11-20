@@ -100,6 +100,41 @@ The ``zhmc_prometheus_exporter`` command supports the following arguments:
       --help-metrics   show help for metric definition file and exit
 
 
+HMC userid requirements
+-----------------------
+
+This section describes the requirements on the HMC userid that is used by
+the ``zhmc_prometheus_exporter`` command.
+
+To return all metrics supported by the command, the HMC userid must have the
+following permissions:
+
+* Object access permission to the objects for which metrics should be returned.
+
+  If the userid does not have object access permission to a particular object,
+  the exporter will behave as if the object did not exist, i.e. it will
+  successfully return metrics for objects with access permission, and ignore
+  any others.
+
+  The exporter can return metrics for the following types of objects. To
+  return metrics for all existing objects, the userid must have object access
+  permission to all of the following objects:
+
+  - CPCs
+  - On CPCs in DPM mode:
+    - Adapters
+    - Partitions
+    - NICs
+  - On CPCs in classic mode:
+    - LPARs
+
+* Task permission for the "Manage Secure Execution Keys" task.
+
+  This is used by the exporter during the 'Get CPC Properties' operation, but
+  it does not utilize the CPC properties returned that way (room for future
+  optimization).
+
+
 HMC certificate
 ---------------
 
