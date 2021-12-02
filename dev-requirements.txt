@@ -13,10 +13,13 @@ pytest-cov>=2.7.0
 coveralls>=2.1.2,<3.0.0
 
 # Flake8 (no imports, invoked via flake8 script):
-flake8>=3.8.0
+flake8>=3.8.0; python_version <= '3.9'
+flake8>=4.0.0; python_version >= '3.10'
 mccabe>=0.6.0
-pycodestyle>=2.6.0
-pyflakes>=2.2.0
+pycodestyle>=2.6.0; python_version <= '3.9'
+pycodestyle>=2.8.0; python_version >= '3.10'
+pyflakes>=2.2.0; python_version <= '3.9'
+pyflakes>=2.4.0; python_version >= '3.10'
 entrypoints>=0.3.0
 
 # PyLint (no imports, invoked via pylint script)
@@ -34,18 +37,35 @@ lazy-object-proxy>=1.4.3
 platformdirs>=2.2.0; python_version >= '3.6'
 
 # Sphinx (no imports, invoked via sphinx-build script):
-Sphinx>=3.0.0
-Pygments>=2.5.1
-sphinx-rtd-theme>=0.5.0
+# Sphinx 4.0.0 breaks autodocsumm and needs to be excluded
+# Sphinx <4.2.0 fails on Python 3.10 because it tries to import non-existing
+#   types.Union. This also drives docutils>=0.14.
+# Sphinx pins docutils to <0.18 (some versions even to <0.17) but the package
+#   version resolver in the pip version used on py27 ignores package dependencies
+Sphinx>=3.5.4,!=4.0.0; python_version <= '3.9'
+Sphinx>=4.2.0; python_version >= '3.10'
+docutils>=0.13.1; python_version <= '3.9'
+docutils>=0.14; python_version >= '3.10'
+sphinx-git>=10.1.1
+GitPython>=2.1.1
 sphinxcontrib-fulltoc>=1.2.0
 sphinxcontrib-websupport>=1.1.2
+Pygments>=2.5.1
+sphinx-rtd-theme>=0.5.0
+# autodocsumm before 0.2.5 fails on Python 3.10 with TypeError
+autodocsumm>=0.1.13; python_version <= '3.9'
+autodocsumm>=0.2.5; python_version >= '3.10'
+# Babel 2.7.0 fixes an ImportError for MutableMapping which starts failing on Python 3.10
+Babel>=2.7.0
 
 # Twine (no imports, invoked via twine script):
+twine>=1.15.0; python_version == '3.5'
+twine>=3.0.0; python_version >= '3.6'
 # readme-renderer (used by twine, uses Pygments)
 # readme-renderer 25.0 or higher is needed to address issue on Windows with py39
 readme-renderer>=25.0
-twine>=1.15.0
 
 # Package dependency management tools (not used by any make rules)
 pipdeptree>=2.0.0
-pip-check-reqs>=2.2.0
+# pip-check-reqs 2.3.2 solves issues with newer pip versions
+pip-check-reqs>=2.3.2
