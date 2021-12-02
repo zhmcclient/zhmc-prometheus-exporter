@@ -48,6 +48,9 @@ Released: not yet
   non-verbose mode to give first-time users a better feedback on when it is
   ready.
 
+* Support for Python 3.10: Added Python 3.10 in GitHub Actions tests, and in
+  package metadata.
+
 **Cleanup:**
 
 **Known issues:**
