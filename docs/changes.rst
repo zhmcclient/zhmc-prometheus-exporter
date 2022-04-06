@@ -42,6 +42,11 @@ Released: not yet
   in order to not fall into future JSON schema incompatibilities again, added
   $schema: http://json-schema.org/draft-07/schema (issue #180)
 
+* Increased minimum zhmcclient version to 1.2.0 to pick up the automatic
+  presence of metric group definitions in its mock support, and adjusted
+  testcases accordingly. This accomodates the removal of certain metrics
+  related mock functions in zhmcclient 1.2.0 (issue #194)
+
 **Enhancements:**
 
 * Changed the "Exporter is up and running" message to be shown also in
