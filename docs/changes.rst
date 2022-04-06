@@ -47,6 +47,14 @@ Released: not yet
   testcases accordingly. This accomodates the removal of certain metrics
   related mock functions in zhmcclient 1.2.0 (issue #194)
 
+* Made the cleanup when stopping the exporter program more tolerant against
+  meanwhile closed HMC sessions or removed metrics contexts, eliminating
+  exceptions that were previously shown when interrupting the exporter
+  program. (related to issue #193)
+
+* Fixed an AttributeError exception when retrying the metrics collection after
+  the HMC was rebooted. (related to issue #193)
+
 **Enhancements:**
 
 * Changed the "Exporter is up and running" message to be shown also in
@@ -59,7 +67,19 @@ Released: not yet
 * Docs: Documented the authorization requirements for the HMC userid.
   (issue #179)
 
+* Improved the information in authentication related error messages to
+  better distinguish between client (=setup) errors and HMC authentication
+  errors, and to include the HTTP reason code in the latter case.
+  (related to issue #193)
+
+* Showed some more messages in verbose mode for re-creating the HMS session
+  and re-creating the metrics context in case the HMC has rebooted.
+  (related to issue #193)
+
 **Cleanup:**
+
+* Removed an unnecessary recreation of the HMC session when re-creating
+  the metrics context on the HMC. (related to issue #193)
 
 **Known issues:**
 

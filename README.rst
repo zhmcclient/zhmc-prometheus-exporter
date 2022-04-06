@@ -35,6 +35,11 @@ The **IBM Z HMC Prometheus Exporter** is a `Prometheus exporter`_ written in
 Python that retrieves metrics from the `IBM Z`_ Hardware Management Console (HMC)
 and exports them to the `Prometheus`_ monitoring system.
 
+The exporter attempts to stay up as much as possible, for example it performs
+automatic session renewals with the HMC if the logon session expires, and it
+survives HMC reboots and automatically picks up metrics collection again once
+the HMC come back up.
+
 .. _IBM Z: https://www.ibm.com/it-infrastructure/z
 .. _Prometheus exporter: https://prometheus.io/docs/instrumenting/exporters/
 .. _Prometheus: https://prometheus.io

@@ -128,11 +128,23 @@ def zhmc_exceptions(session, hmccreds_filename):
             "file {}: {}".format(session.host, hmccreds_filename, exc))
         new_exc.__cause__ = None
         raise new_exc  # ConnectionError
-    except zhmcclient.AuthError as exc:
+    except zhmcclient.ClientAuthError as exc:
         new_exc = AuthError(
-            "Authentication error when logging on to the HMC at {} using "
-            "userid '{}' defined in HMC credentials file {}: {}".
-            format(session.host, session.userid, hmccreds_filename, exc))
+            "Client authentication error for the HMC at {h} using "
+            "userid '{u}' defined in HMC credentials file {f}: {m}".
+            format(h=session.host, u=session.userid, f=hmccreds_filename,
+                   m=exc))
+        new_exc.__cause__ = None
+        raise new_exc  # AuthError
+    except zhmcclient.ServerAuthError as exc:
+        http_exc = exc.details  # zhmcclient.HTTPError
+        new_exc = AuthError(
+            "Authentication error returned from the HMC at {h} using "
+            "userid '{u}' defined in HMC credentials file {f}: {m} "
+            "(HMC operation {hm} {hu}, HTTP status {hs}.{hr})".
+            format(h=session.host, u=session.userid, f=hmccreds_filename,
+                   m=exc, hm=http_exc.request_method, hu=http_exc.request_uri,
+                   hs=http_exc.http_status, hr=http_exc.reason))
         new_exc.__cause__ = None
         raise new_exc  # AuthError
     except (IOError, OSError) as exc:
@@ -569,13 +581,31 @@ def cleanup(session, context, resources):
     """
     # Destruction should not be attempted if context/session were not created
     if context:
-        context.delete()
+        try:
+            context.delete()
+        except zhmcclient.HTTPError as exc:
+            if exc.http_status == 404 and exc.reason == 1:
+                # The metrics context does not exist anymore
+                pass
+            elif exc.http_status == 403:
+                # The session does not exist anymore
+                pass
     if resources:
         for res_list in resources.values():
             for res in res_list:
-                res.disable_auto_update()
+                try:
+                    res.disable_auto_update()
+                except zhmcclient.HTTPError as exc:
+                    if exc.http_status == 403:
+                        # The session does not exist anymore
+                        pass
     if session:
-        session.logoff()
+        try:
+            session.logoff()
+        except zhmcclient.HTTPError as exc:
+            if exc.http_status == 403:
+                # The session does not exist anymore
+                pass
 
 
 def retrieve_metrics(context):
@@ -947,31 +977,29 @@ class ZHMCUsageCollector():
                     metrics_object = retrieve_metrics(self.context)
                 except zhmcclient.HTTPError as exc:
                     if exc.http_status == 404 and exc.reason == 1:
-                        log_exporter(
+                        verbose(
                             "Recreating the metrics context after HTTP "
                             "status {}.{}".format(exc.http_status, exc.reason))
-                        self.session = create_session(
-                            self.yaml_creds, self.filename_creds)
-                        self.context = create_metrics_context(
+                        self.context, _ = create_metrics_context(
                             self.session, self.yaml_metric_groups,
                             self.hmc_version)
                         continue
-                    log_exporter(
+                    verbose(
                         "Retrying after HTTP status {}.{}: {}".
                         format(exc.http_status, exc.reason, exc))
                     time.sleep(RETRY_SLEEP_TIME)
                     continue
                 except zhmcclient.ConnectionError as exc:
-                    log_exporter(
+                    verbose(
                         "Retrying after Connection error: {}".format(exc))
                     time.sleep(RETRY_SLEEP_TIME)
                     continue
                 except zhmcclient.AuthError as exc:
-                    log_exporter(
+                    verbose(
                         "Abandoning after Authentication error: {}".format(exc))
                     raise
                 except Exception as exc:
-                    log_exporter(
+                    verbose(
                         "Abandoning after exception {}: {}".
                         format(exc.__class__.__name__, exc))
                     raise
