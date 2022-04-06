@@ -81,6 +81,9 @@ Released: not yet
 * Removed an unnecessary recreation of the HMC session when re-creating
   the metrics context on the HMC. (related to issue #193)
 
+* Changed debug messages when metric value resource was not found on HMC, to
+  messages that are output and logged.
+
 **Known issues:**
 
 * See `list of open issues`_.
