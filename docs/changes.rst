@@ -17,16 +17,12 @@ Change log
 ----------
 
 
-Version 1.1.0.dev1
-^^^^^^^^^^^^^^^^^^
+Version 1.1.0
+^^^^^^^^^^^^^
 
-This version contains all fixes up to version 1.0.x.
+This version contains all fixes up to version 1.0.0.
 
-Released: not yet
-
-**Incompatible changes:**
-
-**Deprecations:**
+Released: 2022-04-07
 
 **Bug fixes:**
 
@@ -83,12 +79,6 @@ Released: not yet
 
 * Changed debug messages when metric value resource was not found on HMC, to
   messages that are output and logged.
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 1.0.0
