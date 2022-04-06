@@ -229,16 +229,24 @@ def setup_faked_session():
             }
         }]
     })
-    session.hmc.metrics_contexts.add_metric_group_definition(
-        zhmcclient_mock.FakedMetricGroupDefinition(
-            name="dpm-system-usage-overview",
-            types=[("metric-1", "integer-metric")]))
-    session.hmc.metrics_contexts.add_metric_values(
+    session.hmc.add_metric_values(
         zhmcclient_mock.FakedMetricObjectValues(
             group_name="dpm-system-usage-overview",
             resource_uri="/api/cpcs/cpc_1",
             timestamp=datetime.datetime.now(),
-            values=[("metric-1", 1)]))
+            values=[
+                ("processor-usage", 1),
+                ("network-usage", 2),
+                ("storage-usage", 3),
+                ("accelerator-usage", 4),
+                ("crypto-usage", 5),
+                ("power-consumption-watts", 100),
+                ("temperature-celsius", 10),
+                ("cp-shared-processor-usage", 1),
+                ("cp-dedicated-processor-usage", 2),
+                ("ifl-shared-processor-usage", 3),
+                ("ifl-dedicated-processor-usage", 4),
+            ]))
     return session
 
 
@@ -280,7 +288,19 @@ class TestMetrics(unittest.TestCase):
         assert len(mgv.object_values) == 1
         ov = mgv.object_values[0]
         assert ov.resource.name == 'cpc_1'
-        assert ov.metrics == {'metric-1': 1}
+        assert ov.metrics == {
+            'processor-usage': 1,
+            'network-usage': 2,
+            'storage-usage': 3,
+            'accelerator-usage': 4,
+            'crypto-usage': 5,
+            'power-consumption-watts': 100,
+            'temperature-celsius': 10,
+            'cp-shared-processor-usage': 1,
+            'cp-dedicated-processor-usage': 2,
+            'ifl-shared-processor-usage': 3,
+            'ifl-dedicated-processor-usage': 4,
+        }
 
         teardown_metrics_context(context)
 
@@ -301,10 +321,10 @@ class TestMetrics(unittest.TestCase):
         }
         yaml_metrics = {
             "dpm-system-usage-overview": {
-                "metric-1": {
+                "processor-usage": {
                     "percent": True,
-                    "exporter_name": "metric1",
-                    "exporter_desc": "metric1 description",
+                    "exporter_name": "processor_usage",
+                    "exporter_desc": "processor_usage description",
                 }
             },
             "cpc-resource": {
@@ -325,15 +345,15 @@ class TestMetrics(unittest.TestCase):
             extra_labels)
 
         assert len(families) == 1
-        assert "zhmc_pre_metric1" in families
-        family = families["zhmc_pre_metric1"]
+        assert "zhmc_pre_processor_usage" in families
+        family = families["zhmc_pre_processor_usage"]
         assert isinstance(family, prometheus_client.core.GaugeMetricFamily)
 
-        self.assertEqual(family.name, "zhmc_pre_metric1")
-        self.assertEqual(family.documentation, "metric1 description")
+        self.assertEqual(family.name, "zhmc_pre_processor_usage")
+        self.assertEqual(family.documentation, "processor_usage description")
         self.assertEqual(family.type, "gauge")
         sample1 = prometheus_client.samples.Sample(
-            name='zhmc_pre_metric1',
+            name='zhmc_pre_processor_usage',
             labels={'resource': 'cpc_1', 'label1': 'value1'},
             value=0.01)
         self.assertEqual(family.samples, [sample1])
@@ -377,10 +397,15 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
                                                             "fetch": True}}
         context, resources = zhmc_prometheus_exporter.create_metrics_context(
             session, yaml_metric_groups, '2.14')
-        yaml_metrics = {"dpm-system-usage-overview": {"metric-1": {
-            "percent": True,
-            "exporter_name": "metric1",
-            "exporter_desc": "metric1 description"}}}
+        yaml_metrics = {
+            "dpm-system-usage-overview": {
+                "processor-usage": {
+                    "percent": True,
+                    "exporter_name": "processor_usage",
+                    "exporter_desc": "processor_usage description"
+                }
+            }
+        }
         extra_labels = {}
         my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
             cred_dict, session, context, resources, yaml_metric_groups,
@@ -399,14 +424,23 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
 
         cred_dict = {"hmc": "192.168.0.0", "userid": "user", "password": "pwd"}
         session = setup_faked_session()
-        yaml_metric_groups = {"dpm-system-usage-overview": {"prefix": "pre",
-                                                            "fetch": True}}
+        yaml_metric_groups = {
+            "dpm-system-usage-overview": {
+                "prefix": "pre",
+                "fetch": True
+            }
+        }
         context, resources = zhmc_prometheus_exporter.create_metrics_context(
             session, yaml_metric_groups, '2.14')
-        yaml_metrics = {"dpm-system-usage-overview": {"metric-1": {
-            "percent": True,
-            "exporter_name": "metric1",
-            "exporter_desc": "metric1 description"}}}
+        yaml_metrics = {
+            "dpm-system-usage-overview": {
+                "processor-usage": {
+                    "percent": True,
+                    "exporter_name": "processor_usage",
+                    "exporter_desc": "processor_usage description"
+                }
+            }
+        }
         extra_labels = {}
         my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
             cred_dict, session, context, resources, yaml_metric_groups,
@@ -415,11 +449,13 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
         self.assertEqual(len(collected), 1)
         self.assertEqual(type(collected[0]),
                          prometheus_client.core.GaugeMetricFamily)
-        self.assertEqual(collected[0].name, "zhmc_pre_metric1")
-        self.assertEqual(collected[0].documentation, "metric1 description")
+        self.assertEqual(collected[0].name, "zhmc_pre_processor_usage")
+        self.assertEqual(collected[0].documentation,
+                         "processor_usage description")
         self.assertEqual(collected[0].type, "gauge")
         sample1 = prometheus_client.samples.Sample(
-            name='zhmc_pre_metric1', labels={'resource': 'cpc_1'}, value=0.01)
+            name='zhmc_pre_processor_usage',
+            labels={'resource': 'cpc_1'}, value=0.01)
         self.assertEqual(collected[0].samples, [sample1])
         # pylint: disable=protected-access
         self.assertEqual(collected[0]._labelnames, ("resource",))
