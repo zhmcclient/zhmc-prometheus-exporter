@@ -26,7 +26,6 @@ import time
 import warnings
 import logging
 from contextlib import contextmanager
-from pprint import pprint
 
 import jinja2
 import six
@@ -643,16 +642,19 @@ class ResourceCache(object):
             try:
                 _resource = object_value.resource  # Takes time to find on HMC
             except zhmcclient.MetricsResourceNotFound as exc:
-                # TODO: Figure out what to do with debug prints
-                verbose2("Debug: Dump of current resource cache in exporter:")
-                pprint(sorted(self._resources))
-                verbose2("Debug: List of resources found:")
-                res_dict = {}
+                mgd = object_value.metric_group_definition
+                info("Error: Did not find resource {} specified in metric "
+                     "object value for metric group '{}'".format(uri, mgd.name))
+                info("Error details: Current resource cache:")
+                info(repr(self._resources))
                 for mgr in exc.managers:
+                    info("Error details: List of {} resources found:".
+                         format(mgr.class_name))
+                    res_dict = {}
                     resources = mgr.list()
                     for res in resources:
                         res_dict[res.uri] = res
-                pprint(sorted(res_dict))
+                    info(repr(res_dict))
                 raise
             self._resources[uri] = _resource
         return _resource
