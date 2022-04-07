@@ -17,14 +17,10 @@ Change log
 ----------
 
 
-Version 1.0.1.dev1
-^^^^^^^^^^^^^^^^^^
+Version 1.0.1
+^^^^^^^^^^^^^
 
-Released: not yet
-
-**Incompatible changes:**
-
-**Deprecations:**
+Released: 2022-04-07
 
 **Bug fixes:**
 
@@ -45,14 +41,6 @@ Released: not yet
 * Changed the "Exporter is up and running" message to be shown also in
   non-verbose mode to give first-time users a better feedback on when it is
   ready.
-
-**Cleanup:**
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 1.0.0
