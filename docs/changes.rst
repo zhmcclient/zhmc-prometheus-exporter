@@ -30,6 +30,9 @@ Released: not yet
 
 **Bug fixes:**
 
+* Fixed Pylint config file because pylint 2.14 rejects older options
+  (issue #202)
+
 **Enhancements:**
 
 **Cleanup:**
