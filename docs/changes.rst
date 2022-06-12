@@ -33,6 +33,9 @@ Released: not yet
 * Fixed Pylint config file because pylint 2.14 rejects older options
   (issue #202)
 
+* The read timeout for HMC interactions was increased from 120 sec to 300 sec.
+  The retry count remains at 2. (issue #210)
+
 **Enhancements:**
 
 **Cleanup:**
