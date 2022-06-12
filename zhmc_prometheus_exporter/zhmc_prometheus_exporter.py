@@ -660,12 +660,24 @@ class ResourceCache(object):
             self._resources[uri] = _resource
         return _resource
 
+    def remove(self, uri):
+        """
+        Remove the resource with a specified URI from the cache, if present.
+        If not present, nothing happens.
+        """
+        try:
+            del self._resources[uri]
+        except KeyError:
+            pass
+
 
 def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
                          metrics_filename, extra_labels,
                          resource_cache=None):
     """
     Go through all retrieved metrics and build the Prometheus Family objects.
+
+    Note: resource_cache will be omitted in tests, and is therefore optional.
 
     Returns a dictionary of Prometheus Family objects with the following
     structure:
@@ -776,10 +788,12 @@ def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
 
 def build_family_objects_res(
         resources, yaml_metric_groups, yaml_metrics, metrics_filename,
-        extra_labels):
+        extra_labels, resource_cache=None):
     """
     Go through all auto-updated resources and build the Prometheus Family
     objects for them.
+
+    Note: resource_cache will be omitted in tests, and is therefore optional.
 
     Returns a dictionary of Prometheus Family objects with the following
     structure:
@@ -793,7 +807,29 @@ def build_family_objects_res(
     for metric_group, res_list in resources.items():
 
         yaml_metric_group = yaml_metric_groups[metric_group]
-        for resource in res_list:
+        for i, resource in enumerate(list(res_list)):
+            # Note: We use list() because resources that no longer exist will
+            # be removed from the original list, so this provides a stable
+            # iteration when items are removed from the original list.
+
+            if resource.ceased_existence:
+                try:
+                    res_str = resource.name
+                except zhmcclient.CeasedExistence:
+                    # For attribute 'name', the exception is only raised when
+                    # the name is not yet known locally.
+                    res_str = "with URI {}".format(resource.uri)
+                verbose2("Resource no longer exists on HMC: {} {}".
+                         format(resource.manager.class_name, res_str))
+                # Remove the resource from the list so it no longer show up
+                # in Prometheus data.
+                del res_list[i]
+                # Remove the resource from the resource cache. This does not
+                # influence what is shown in Prometheus data, but it is simply
+                # a cleanup.
+                if resource_cache:
+                    resource_cache.remove(resource.uri)
+                continue
 
             # Calculate the resource labels:
             labels = dict(extra_labels)
@@ -1018,7 +1054,7 @@ class ZHMCUsageCollector():
         family_objects.update(build_family_objects_res(
             self.resources, self.yaml_metric_groups,
             self.yaml_metrics, self.filename_metrics,
-            self.extra_labels))
+            self.extra_labels, self.resource_cache))
 
         log_exporter("Returning family objects")
         # Yield all family objects

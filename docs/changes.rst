@@ -32,6 +32,9 @@ Released: not yet
 
 **Enhancements:**
 
+* HMC resources that no longer exist are automatically removed from the
+  exported metrics. (Issue #203)
+
 **Cleanup:**
 
 **Known issues:**

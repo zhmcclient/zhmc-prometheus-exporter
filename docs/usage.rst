@@ -276,6 +276,10 @@ retrieved from the HMC, but they are exported to Prometheus in the same way:
   representations and can immediately return them without having to turn around
   for getting them from the HMC.
 
+  Resources that no longer exist on the HMC are automatically not exported
+  anymore. Resources that were created on the HMC since the exporter was
+  started are not detected.
+
 The exporter code is agnostic to the actual set of metrics supported by the HMC.
 A new metric exposed by the HMC metric service or a new property added to one of
 the auto-updated resources can immediately be supported by just adding it to
