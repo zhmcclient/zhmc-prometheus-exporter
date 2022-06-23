@@ -38,6 +38,12 @@ Released: not yet
 
 **Enhancements:**
 
+* Increased the minimum version of zhmcclient to 1.3.1, in order to have
+  the exported JMS logger name symbol. (part of issue #209)
+
+* Added support for logging HMC notifications with new "jms" log component.
+  (issue #209)
+
 **Cleanup:**
 
 **Known issues:**
