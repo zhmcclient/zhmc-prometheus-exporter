@@ -574,8 +574,8 @@ metrics:
       exporter_name: current_vfm_memory_gib
       exporter_desc: Current amount of IBM Virtual Flash Memory (VFM) that is allocated to the active partition, in GiB
     - properties_expression: "{'operating': 0, 'not-operating': 1, 'not-activated': 2, 'exceptions': 10}.get(properties.status, 99)"
-      exporter_name: status_int
-      exporter_desc: "Status as integer (0=operating, 1=not-operating, 2=not-activated, 10=exceptions, 99=unsupported value; see Logical Partition property 'status')"
+      exporter_name: lpar_status_int
+      exporter_desc: "LPAR status as integer (0=operating, 1=not-operating, 2=not-activated, 10=exceptions, 99=unsupported value)"
     - property_name: has-unacceptable-status
       exporter_name: has_unacceptable_status
       exporter_desc: Boolean indicating whether the partition has an unacceptable status (0=false, 1=true)
@@ -914,7 +914,7 @@ metrics:
       exporter_desc: Maximum amount of memory to which the operating system running in the partition can increase the memory allocation, in MiB
     - properties_expression: "{'active': 0, 'degraded': 1, 'paused': 10, 'stopped': 11, 'starting': 12, 'stopping': 13, 'reservation-error': 20, 'terminated': 21, 'communications-not-active': 22, 'status-check': 23}.get(properties.status, 99)"
       exporter_name: status_int
-      exporter_desc: "Status as integer (0=active, 1=degraded, 10=paused, 11=stopped, 12=starting, 13=stopping, 20=reservation-error, 21=terminated, 22=communications-not-active, 23=status-check, 99=unsupported value; see Partition property 'status')"
+      exporter_desc: "Partition status as integer (0=active, 1=degraded, 10=paused, 11=stopped, 12=starting, 13=stopping, 20=reservation-error, 21=terminated, 22=communications-not-active, 23=status-check, 99=unsupported value)"
     - property_name: has-unacceptable-status
       exporter_name: has_unacceptable_status
       exporter_desc: Boolean indicating whether the partition has an unacceptable status (0=false, 1=true)
@@ -1184,7 +1184,7 @@ metrics:
       exporter_desc: Total amount of installed IBM Virtual Flash Memory (VFM), in GiB
     - properties_expression: "{'active': 0, 'operating': 0, 'degraded': 1, 'service-required': 2, 'service': 10, 'exceptions': 11, 'not-communicating': 12, 'status-check': 13, 'not-operating': 14, 'no-powerstatus': 15}.get(properties.status, 99)"
       exporter_name: status_int
-      exporter_desc: "Status as integer (0=active/=operating, 1=degraded, 2=service-required, 10=service, 11=exceptions, 12=not-communicating, 13=status-check, 14=not-operating, 15=no-power, 99=unsupported value; see CPC property 'status')"
+      exporter_desc: "Status as integer (0=active/=operating, 1=degraded, 2=service-required, 10=service, 11=exceptions, 12=not-communicating, 13=status-check, 14=not-operating, 15=no-power, 99=unsupported value)"
     - property_name: has-unacceptable-status
       exporter_name: has_unacceptable_status
       exporter_desc: Boolean indicating whether the CPC has an unacceptable status (0=false, 1=true)

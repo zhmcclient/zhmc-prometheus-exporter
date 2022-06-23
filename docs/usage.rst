@@ -495,7 +495,8 @@ zhmc_partition_maximum_expanded_memory_mib              C     G     Maximum amou
 zhmc_partition_initial_vfm_memory_gib                   C     G     Initial amount of VFM memory to be allocated at partition activation, in GiB
 zhmc_partition_maximum_vfm_memory_gib                   C     G     Maximum amount of VFM memory that can be allocated to the active partition, in GiB
 zhmc_partition_current_vfm_memory_gib                   C     G     Current amount of VFM memory that is allocated to the active partition, in GiB
-zhmc_partition_status_int                               C+D   G     Status as integer (values depend on classic mode vs DPM mode)
+zhmc_partition_status_int                               D     G     Partition status as integer (0=active, 1=degraded, 10=paused, 11=stopped, 12=starting, 13=stopping, 20=reservation-error, 21=terminated, 22=communications-not-active, 23=status-check, 99=unsupported value)
+zhmc_partition_lpar_status_int                          C     G     LPAR status as integer (0=operating, 1=not-operating, 2=not-activated, 10=exceptions, 99=unsupported value)
 zhmc_partition_has_unacceptable_status                  C+D   G     Boolean indicating whether the partition has an unacceptable status
 zhmc_crypto_adapter_usage_ratio                         C     G     Usage ratio of the crypto adapter
 zhmc_flash_memory_adapter_usage_ratio                   C     G     Usage ratio of the flash memory adapter
