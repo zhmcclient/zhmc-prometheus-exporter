@@ -67,11 +67,11 @@ zhmc_prometheus_exporter command
 
 The ``zhmc_prometheus_exporter`` command supports the following arguments:
 
+.. When updating the command help, use a 100 char wide terminal
 .. code-block:: text
 
-    usage: zhmc_prometheus_exporter [-h] [-c CREDS_FILE] [-m METRICS_FILE]
-                                    [-p PORT] [--log-dest DEST] [--log-comp COMP]
-                                    [--verbose] [--help-creds] [--help-metrics]
+    usage: zhmc_prometheus_exporter [-h] [-c CREDS_FILE] [-m METRICS_FILE] [-p PORT] [--log DEST]
+                                    [--log-comp COMP] [--verbose] [--help-creds] [--help-metrics]
 
     IBM Z HMC Exporter - a Prometheus exporter for metrics from the IBM Z HMC
 
@@ -79,19 +79,19 @@ The ``zhmc_prometheus_exporter`` command supports the following arguments:
 
       -h, --help       show this help message and exit
 
-      -c CREDS_FILE    path name of HMC credentials file. Use --help-creds for
-                       details. Default: /etc/zhmc-prometheus-exporter/hmccreds.yaml
+      -c CREDS_FILE    path name of HMC credentials file. Use --help-creds for details. Default:
+                       /etc/zhmc-prometheus-exporter/hmccreds.yaml
 
-      -m METRICS_FILE  path name of metric definition file. Use --help-metrics for
-                       details. Default: /etc/zhmc-prometheus-exporter/metrics.yaml
+      -m METRICS_FILE  path name of metric definition file. Use --help-metrics for details. Default:
+                       /etc/zhmc-prometheus-exporter/metrics.yaml
 
       -p PORT          port for exporting. Default: 9291
 
-      --log-dest DEST  enable logging and set the log destination to one of:
-                       stderr,none,FILE. Default: none
+      --log DEST       enable logging and set the log destination to one of: stderr, FILE. Default: No
+                       logging
 
-      --log-comp COMP  set the components to log to one of: hmc. May be specified
-                       multiple times. Default: hmc
+      --log-comp COMP  set the components to log to one of: hmc, jms, exporter. May be specified
+                       multiple times. Default: no components
 
       --verbose, -v    increase the verbosity level (max: 2)
 

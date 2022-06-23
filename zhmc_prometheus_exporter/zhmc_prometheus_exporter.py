@@ -45,6 +45,7 @@ EXPORTER_LOGGER_NAME = 'zhmcexporter'
 # Logger names+levels by log component
 LOGGER_NAMES = {
     'hmc': (zhmcclient.HMC_LOGGER_NAME, logging.DEBUG),
+    'jms': (zhmcclient.JMS_LOGGER_NAME, logging.DEBUG),
     'exporter': (EXPORTER_LOGGER_NAME, logging.INFO),
 }
 VALID_LOG_COMPONENTS = LOGGER_NAMES.keys()
