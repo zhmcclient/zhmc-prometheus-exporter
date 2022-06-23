@@ -26,6 +26,11 @@ Released: not yet
 
 **Incompatible changes:**
 
+* For classic mode CPCs, changed the name of the LPAR status metric from
+  `zhmc_partition_status_int` to `zhmc_partition_lpar_status_int` in order to
+  disambiguate it from the same-named metric for partitions on CPCs in DPM
+  mode. (issue #207)
+
 **Deprecations:**
 
 **Bug fixes:**
