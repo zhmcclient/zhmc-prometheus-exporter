@@ -17,12 +17,10 @@ Change log
 ----------
 
 
-Version 1.2.0.dev1
-^^^^^^^^^^^^^^^^^^
+Version 1.2.0
+^^^^^^^^^^^^^
 
-This version contains all fixes up to version 1.1.x.
-
-Released: not yet
+Released: 2022-06-26
 
 **Incompatible changes:**
 
@@ -30,8 +28,6 @@ Released: not yet
   `zhmc_partition_status_int` to `zhmc_partition_lpar_status_int` in order to
   disambiguate it from the same-named metric for partitions on CPCs in DPM
   mode. (issue #207)
-
-**Deprecations:**
 
 **Bug fixes:**
 
@@ -48,14 +44,6 @@ Released: not yet
 
 * Added support for logging HMC notifications with new "jms" log component.
   (issue #209)
-
-**Cleanup:**
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 1.1.0
