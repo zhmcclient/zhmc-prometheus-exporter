@@ -212,7 +212,8 @@ pylint: develop_$(pymn).done
 check_reqs: develop_$(pymn).done
 	@echo "Makefile: Checking missing dependencies of the package"
 	pip-missing-reqs $(package_dir) --requirements-file=requirements.txt
-	pip-missing-reqs $(package_dir) --requirements-file=minimum-constraints.txt
+# TODO: Remove error ignore marker once zhmcclient 1.4.0 is released
+	-pip-missing-reqs $(package_dir) --requirements-file=minimum-constraints.txt
 	@echo "Makefile: Done checking missing dependencies of the package"
 ifeq ($(PLATFORM),Windows_native)
 # Reason for skipping on Windows is https://github.com/r1chardj0n3s/pip-check-reqs/issues/67
