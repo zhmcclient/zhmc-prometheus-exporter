@@ -71,33 +71,35 @@ The ``zhmc_prometheus_exporter`` command supports the following arguments:
 .. code-block:: text
 
     usage: zhmc_prometheus_exporter [-h] [-c CREDS_FILE] [-m METRICS_FILE] [-p PORT] [--log DEST]
-                                    [--log-comp COMP] [--verbose] [--help-creds] [--help-metrics]
+                                    [--log-comp COMP[=LEVEL]] [--verbose] [--help-creds]
+                                    [--help-metrics]
 
     IBM Z HMC Exporter - a Prometheus exporter for metrics from the IBM Z HMC
 
     optional arguments:
 
-      -h, --help       show this help message and exit
+      -h, --help            show this help message and exit
 
-      -c CREDS_FILE    path name of HMC credentials file. Use --help-creds for details. Default:
-                       /etc/zhmc-prometheus-exporter/hmccreds.yaml
+      -c CREDS_FILE         path name of HMC credentials file. Use --help-creds for details. Default:
+                            /etc/zhmc-prometheus-exporter/hmccreds.yaml
 
-      -m METRICS_FILE  path name of metric definition file. Use --help-metrics for details. Default:
-                       /etc/zhmc-prometheus-exporter/metrics.yaml
+      -m METRICS_FILE       path name of metric definition file. Use --help-metrics for details.
+                            Default: /etc/zhmc-prometheus-exporter/metrics.yaml
 
-      -p PORT          port for exporting. Default: 9291
+      -p PORT               port for exporting. Default: 9291
 
-      --log DEST       enable logging and set the log destination to one of: stderr, FILE. Default: No
-                       logging
+      --log DEST            enable logging and set a log destination (stderr, FILE). Default: no logging
 
-      --log-comp COMP  set the components to log to one of: hmc, jms, exporter. May be specified
-                       multiple times. Default: no components
+      --log-comp COMP[=LEVEL]
+                            set a logging level (error, warning, info, debug, off, default: warning) for a
+                            component (exporter, hmc, jms, all). May be specified multiple times; options
+                            add to the default of: all=warning
 
-      --verbose, -v    increase the verbosity level (max: 2)
+      --verbose, -v         increase the verbosity level (max: 2)
 
-      --help-creds     show help for HMC credentials file and exit
+      --help-creds          show help for HMC credentials file and exit
 
-      --help-metrics   show help for metric definition file and exit
+      --help-metrics        show help for metric definition file and exit
 
 
 HMC userid requirements
@@ -833,20 +835,74 @@ Perform these steps for setting it up:
 Logging
 -------
 
-The exporter supports logging the interactions with the HMC to stderr or to
-a file. Logging is enabled by using the ``--log-dest DEST`` option where
-``DEST`` can be the keyword ``stderr`` or the path name of a log file.
+The exporter supports logging its own activities and the interactions with the
+HMC. By default, logging is disabled.
+
+Logging is enabled by using the ``--log DEST`` option that controls the
+logging destination as follows:
+
+* ``--log stderr`` - log to the Standard Error stream
+* ``--log FILE`` - log to the log file with path name ``FILE``.
+
+There are multiple components that can log. By default, all of them log at the
+warning level. This can be fine tuned by using the ``--log-comp COMP[=LEVEL]``
+option. This option can be specified multiple times, and the specified options
+add in sequence to the default of ``all=warning``.
+
+The components that can be specified in ``COMP`` are:
+
+* ``exporter`` - activities of the exporter.
+  Logger name: ``zhmcexporter``.
+* ``hmc`` - HTTP interactions with the HMC performed by the zhmcclient library.
+  Logger name: ``zhmcclient.hmc``.
+* ``jms`` - JMS notifications from the HMC received by the zhmcclient library.
+  Logger name: ``zhmcclient.jms``.
+* ``all`` - all of these components.
+
+The log levels that can be specified in ``LEVEL`` are:
+
+* ``error`` - Show only errors for the component. Errors are serious conditions
+  that need to be fixed by the user. Some errors may need to be reported as
+  issues. The exporter retries with the HMC in case of certain errors, but some
+  errors cause the exporter to terminate.
+* ``warning`` - Show errors and warnings for the component. Warnings never cause
+  the exporter to terminate, but should be analyzed and may need to be fixed.
+* ``info`` - Show informations, warnings and errors for the component.
+  Informations are useful to understand what is going on.
+* ``debug`` - Show debug info, informations, warnings and errors for the
+  component. Debug info provides a very detailed amount of information that may
+  be useful foo analyzing problems.
+* ``off`` - Show no log messages for the component.
+
+The ``LEVEL`` part can be omitted in the ``--log-comp`` option, and its
+default is ``warning``. This is for compatibility with older versions of the
+exporter.
+
+The default log level for each component is ``warning``, and specifying
+other log levels changes that level only for the specified components but
+keeps the default for those components that are not specified.
 
 Examples:
 
 .. code-block:: bash
 
-    $ zhmc_prometheus_exporter --log-dest stderr ...
-    $ zhmc_prometheus_exporter --log-dest mylog.log ...
+    # log to Standard Error with all=warning
+    $ zhmc_prometheus_exporter --log stderr ...
 
-At this point, only the HMC interactions can be logged, so the only valid value
-for the ``--log-comp`` option is ``hmc``. That is also the default component
-that is logged (when enabled via ``--log-dest``).
+    # log to file mylog.log with all=warning
+    $ zhmc_prometheus_exporter --log mylog.log ...
+
+    # log to file mylog.log with exporter=info, hmc=warning (by default), jms=warning (by default)
+    $ zhmc_prometheus_exporter --log mylog.log --log-comp exporter=info
+
+    # log to file mylog.log with exporter=info, hmc=warning (by default), jms=debug
+    $ zhmc_prometheus_exporter --log mylog.log --log-comp exporter=info --log-comp jms=debug
+
+    # log to file mylog.log with exporter=debug, hmc=debug, jms=debug
+    $ zhmc_prometheus_exporter --log mylog.log --log-comp all=debug
+
+    # log to file mylog.log with exporter=info, hmc=off, jms=off
+    $ zhmc_prometheus_exporter --log mylog.log --log-comp all=off --log-comp exporter=info
 
 
 Performance
