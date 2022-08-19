@@ -26,9 +26,19 @@ Released: not yet
 
 **Incompatible changes:**
 
+* The log format has changed from:
+  "2022-08-17 09:24:41,037 logger: message"
+  to:
+  "2022-08-17 07:24:41-UTC LEVEL logger: message"
+
 **Deprecations:**
 
 **Bug fixes:**
+
+* Fixed that HMC exceptions were not caught during cleaning when exiting.
+
+* Docs: Fixed that the "Logging" section in the documentation described the
+  '--log' option as '--log-dest'.
 
 **Enhancements:**
 
@@ -37,6 +47,15 @@ Released: not yet
 
 * Increased minimum version of zhmcclient to 1.4.0 to pick up fixes and
   required new functions. (issue #220)
+
+* Extended the existing --log-comp option to allow specifying a log level for
+  each component with COMP=LEVEL, and to add support for a component 'all'
+  that affects all components.
+
+* Optimized the log levels of many log messages and the verbosity level of some
+  output messages.
+
+* Added cleanup log and output messages when exiting.
 
 **Cleanup:**
 

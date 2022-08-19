@@ -42,16 +42,34 @@ DEFAULT_METRICS_FILE = '/etc/zhmc-prometheus-exporter/metrics.yaml'
 
 EXPORTER_LOGGER_NAME = 'zhmcexporter'
 
-# Logger names+levels by log component
+# Logger names by log component
 LOGGER_NAMES = {
-    'hmc': (zhmcclient.HMC_LOGGER_NAME, logging.DEBUG),
-    'jms': (zhmcclient.JMS_LOGGER_NAME, logging.DEBUG),
-    'exporter': (EXPORTER_LOGGER_NAME, logging.INFO),
+    'exporter': EXPORTER_LOGGER_NAME,
+    'hmc': zhmcclient.HMC_LOGGER_NAME,
+    'jms': zhmcclient.JMS_LOGGER_NAME,
 }
-VALID_LOG_COMPONENTS = LOGGER_NAMES.keys()
+VALID_LOG_COMPONENTS = list(LOGGER_NAMES.keys()) + ['all']
 
-VALID_LOG_DESTINATIONS = ['stderr']
-VALID_LOG_DESTINATIONS_DISPLAY = VALID_LOG_DESTINATIONS + ['FILE']
+# Log levels by their CLI names
+LOG_LEVELS = {
+    'error': logging.ERROR,
+    'warning': logging.WARNING,
+    'info': logging.INFO,
+    'debug': logging.DEBUG,
+    'off': logging.NOTSET,
+}
+VALID_LOG_LEVELS = list(LOG_LEVELS.keys())
+
+# Defaults for --log-comp option.
+DEFAULT_LOG_LEVEL = 'warning'
+DEFAULT_LOG_COMP = 'all=warning'
+
+# Values for printing messages dependent on verbosity level in command line
+PRINT_ALWAYS = 0
+PRINT_V = 1
+PRINT_VV = 2
+
+VALID_LOG_DESTINATIONS = ['stderr', 'FILE']
 
 # Sleep time in seconds when retrying metrics retrieval
 RETRY_SLEEP_TIME = 10
@@ -176,16 +194,20 @@ def parse_args(args):
     parser.add_argument("-p", metavar="PORT",
                         default="9291",
                         help="port for exporting. Default: 9291")
-    parser.add_argument("--log", metavar="DEST", default=None,
-                        help="enable logging and set the log destination "
-                        "to one of: {dests}. Default: No logging".
-                        format(dests=', '.join(VALID_LOG_DESTINATIONS_DISPLAY)))
-    parser.add_argument("--log-comp", metavar="COMP", action='append',
-                        default=[],
-                        help="set the components to log to one of: {comps}. "
-                        "May be specified multiple times. "
-                        "Default: no components".
-                        format(comps=', '.join(VALID_LOG_COMPONENTS)))
+    parser.add_argument("--log", dest='log_dest', metavar="DEST", default=None,
+                        help="enable logging and set a log destination "
+                        "({dests}). Default: no logging".
+                        format(dests=', '.join(VALID_LOG_DESTINATIONS)))
+    parser.add_argument("--log-comp", dest='log_complevels', action='append',
+                        metavar="COMP[=LEVEL]", default=[DEFAULT_LOG_COMP],
+                        help="set a logging level ({levels}, default: "
+                        "{def_level}) for a component ({comps}). May be "
+                        "specified multiple times; options add to the default "
+                        "of: {def_comp}".
+                        format(levels=', '.join(VALID_LOG_LEVELS),
+                               comps=', '.join(VALID_LOG_COMPONENTS),
+                               def_level=DEFAULT_LOG_LEVEL,
+                               def_comp=DEFAULT_LOG_COMP))
     parser.add_argument("--verbose", "-v", action='count', default=0,
                         help="increase the verbosity level (max: 2)")
     parser.add_argument("--help-creds", action='store_true',
@@ -458,7 +480,8 @@ def create_session(cred_dict, hmccreds_filename):
         if not os.path.isabs(verify_cert):
             verify_cert = os.path.join(
                 os.path.dirname(hmccreds_filename), verify_cert)
-    verbose("HMC certificate validation: {}".format(verify_cert))
+    logprint(logging.INFO, PRINT_V,
+             "HMC certificate validation: {}".format(verify_cert))
 
     session = zhmcclient.Session(cred_dict["hmc"],
                                  cred_dict["userid"],
@@ -512,17 +535,18 @@ def create_metrics_context(session, yaml_metric_groups, hmc_version):
 
     client = zhmcclient.Client(session)
 
-    verbose("Creating a metrics context on the HMC for HMC metric groups:")
-    for metric_group in fetched_hmc_metric_groups:
-        verbose("  {}".format(metric_group))
+    logprint(logging.INFO, PRINT_V,
+             "Creating a metrics context on the HMC for HMC metric "
+             "groups: {}".format(', '.join(fetched_hmc_metric_groups)))
     context = client.metrics_contexts.create(
         {"anticipated-frequency-seconds": 15,
          "metric-groups": fetched_hmc_metric_groups})
 
-    verbose("Retrieving resources from the HMC for resource metric groups:")
     resources = {}
     for metric_group in fetched_res_metric_groups:
-        verbose("  {}".format(metric_group))
+        logprint(logging.INFO, PRINT_V,
+                 "Retrieving resources from the HMC for resource metric "
+                 "group {}".format(metric_group))
         try:
             resource_path = yaml_metric_groups[metric_group]['resource']
         except KeyError:
@@ -536,7 +560,8 @@ def create_metrics_context(session, yaml_metric_groups, hmc_version):
             resources[metric_group] = []
             cpcs = client.cpcs.list()
             for cpc in cpcs:
-                verbose("Enabling auto-update for CPC {}".format(cpc.name))
+                logprint(logging.INFO, PRINT_V,
+                         "Enabling auto-update for CPC {}".format(cpc.name))
                 cpc.enable_auto_update()
                 resources[metric_group].append(cpc)
         elif resource_path == 'cpc.partition':
@@ -545,8 +570,9 @@ def create_metrics_context(session, yaml_metric_groups, hmc_version):
             for cpc in cpcs:
                 partitions = cpc.partitions.list()
                 for partition in partitions:
-                    verbose("Enabling auto-update for partition {}.{}".
-                            format(cpc.name, partition.name))
+                    logprint(logging.INFO, PRINT_V,
+                             "Enabling auto-update for partition {}.{}".
+                             format(cpc.name, partition.name))
                     partition.enable_auto_update()
                     resources[metric_group].append(partition)
         elif resource_path == 'cpc.logical-partition':
@@ -555,8 +581,9 @@ def create_metrics_context(session, yaml_metric_groups, hmc_version):
             for cpc in cpcs:
                 lpars = cpc.lpars.list()
                 for lpar in lpars:
-                    verbose("Enabling auto-update for LPAR {}.{}".
-                            format(cpc.name, lpar.name))
+                    logprint(logging.INFO, PRINT_V,
+                             "Enabling auto-update for LPAR {}.{}".
+                             format(cpc.name, lpar.name))
                     lpar.enable_auto_update()
                     resources[metric_group].append(lpar)
         else:
@@ -576,36 +603,47 @@ def cleanup(session, context, resources):
     - delete the metric context
     - disable auto-update on resources
     - logoff from the HMC session
-
-    Raises: zhmccclient exceptions
     """
-    # Destruction should not be attempted if context/session were not created
-    if context:
-        try:
-            context.delete()
-        except zhmcclient.HTTPError as exc:
-            if exc.http_status == 404 and exc.reason == 1:
-                # The metrics context does not exist anymore
-                pass
-            elif exc.http_status == 403:
-                # The session does not exist anymore
-                pass
-    if resources:
-        for res_list in resources.values():
-            for res in res_list:
-                try:
-                    res.disable_auto_update()
-                except zhmcclient.HTTPError as exc:
-                    if exc.http_status == 403:
-                        # The session does not exist anymore
-                        pass
-    if session:
-        try:
-            session.logoff()
-        except zhmcclient.HTTPError as exc:
-            if exc.http_status == 403:
-                # The session does not exist anymore
-                pass
+
+    try:
+
+        if context:
+            logprint(logging.INFO, PRINT_ALWAYS,
+                     "Cleaning up metrics context on HMC")
+            try:
+                context.delete()
+            except zhmcclient.HTTPError as exc:
+                if exc.http_status == 404 and exc.reason == 1:
+                    # The metrics context does not exist anymore
+                    pass
+                elif exc.http_status == 403:
+                    # The session does not exist anymore
+                    pass
+
+        if resources:
+            logprint(logging.INFO, PRINT_ALWAYS,
+                     "Cleaning up notification subscription on HMC")
+            for res_list in resources.values():
+                for res in res_list:
+                    try:
+                        res.disable_auto_update()
+                    except zhmcclient.HTTPError as exc:
+                        if exc.http_status == 403:
+                            # The session does not exist anymore
+                            pass
+        if session:
+            logprint(logging.INFO, PRINT_ALWAYS,
+                     "Closing session with HMC")
+            try:
+                session.logoff()
+            except zhmcclient.HTTPError as exc:
+                if exc.http_status == 403:
+                    # The session does not exist anymore
+                    pass
+
+    except zhmcclient.Error as exc:
+        logprint(logging.ERROR, PRINT_ALWAYS,
+                 "Error when cleaning up: {}".format(exc))
 
 
 def retrieve_metrics(context):
@@ -639,23 +677,30 @@ class ResourceCache(object):
         try:
             _resource = self._resources[uri]
         except KeyError:
-            verbose2("Finding resource for {}".format(uri))
+            logprint(logging.INFO, PRINT_VV,
+                     "Finding resource for {}".format(uri))
             try:
                 _resource = object_value.resource  # Takes time to find on HMC
             except zhmcclient.MetricsResourceNotFound as exc:
                 mgd = object_value.metric_group_definition
-                info("Error: Did not find resource {} specified in metric "
-                     "object value for metric group '{}'".format(uri, mgd.name))
-                info("Error details: Current resource cache:")
-                info(repr(self._resources))
+                logprint(logging.WARNING, PRINT_ALWAYS,
+                         "Warning: Did not find resource {} specified in "
+                         "ometric bject value for metric group '{}'".
+                         format(uri, mgd.name))
+                logprint(logging.WARNING, PRINT_ALWAYS,
+                         "Warning details: Current resource cache:")
+                logprint(logging.WARNING, PRINT_ALWAYS,
+                         repr(self._resources))
                 for mgr in exc.managers:
-                    info("Error details: List of {} resources found:".
-                         format(mgr.class_name))
+                    logprint(logging.WARNING, PRINT_ALWAYS,
+                             "Warning details: List of {} resources found:".
+                             format(mgr.class_name))
                     res_dict = {}
                     resources = mgr.list()
                     for res in resources:
                         res_dict[res.uri] = res
-                    info(repr(res_dict))
+                    logprint(logging.WARNING, PRINT_ALWAYS,
+                             repr(res_dict))
                 raise
             self._resources[uri] = _resource
         return _resource
@@ -819,7 +864,8 @@ def build_family_objects_res(
                     # For attribute 'name', the exception is only raised when
                     # the name is not yet known locally.
                     res_str = "with URI {}".format(resource.uri)
-                verbose2("Resource no longer exists on HMC: {} {}".
+                logprint(logging.INFO, PRINT_VV,
+                         "Resource no longer exists on HMC: {} {}".
                          format(resource.manager.class_name, res_str))
                 # Remove the resource from the list so it no longer show up
                 # in Prometheus data.
@@ -1006,133 +1052,174 @@ class ZHMCUsageCollector():
 
         Raises exception in case of authentication errors or other errors.
         """
-        log_exporter("Collecting metrics")
+        logprint(logging.INFO, None,
+                 "Collecting metrics")
 
         with zhmc_exceptions(self.session, self.filename_creds):
 
             while True:
-                log_exporter("Fetching metrics from HMC")
+                logprint(logging.DEBUG, None,
+                         "Fetching metrics from HMC")
                 try:
                     metrics_object = retrieve_metrics(self.context)
                 except zhmcclient.HTTPError as exc:
                     if exc.http_status == 404 and exc.reason == 1:
-                        verbose(
-                            "Recreating the metrics context after HTTP "
-                            "status {}.{}".format(exc.http_status, exc.reason))
+                        logprint(logging.INFO, PRINT_V,
+                                 "Recreating the metrics context after HTTP "
+                                 "status {}.{}".
+                                 format(exc.http_status, exc.reason))
                         self.context, _ = create_metrics_context(
                             self.session, self.yaml_metric_groups,
                             self.hmc_version)
                         continue
-                    verbose(
-                        "Retrying after HTTP status {}.{}: {}".
-                        format(exc.http_status, exc.reason, exc))
+                    logprint(logging.WARNING, PRINT_ALWAYS,
+                             "Retrying after HTTP status {}.{}: {}".
+                             format(exc.http_status, exc.reason, exc))
                     time.sleep(RETRY_SLEEP_TIME)
                     continue
                 except zhmcclient.ConnectionError as exc:
-                    verbose(
-                        "Retrying after Connection error: {}".format(exc))
+                    logprint(logging.WARNING, PRINT_ALWAYS,
+                             "Retrying after Connection error: {}".format(exc))
                     time.sleep(RETRY_SLEEP_TIME)
                     continue
                 except zhmcclient.AuthError as exc:
-                    verbose(
-                        "Abandoning after Authentication error: {}".format(exc))
+                    logprint(logging.ERROR, PRINT_ALWAYS,
+                             "Abandoning after Authentication error: {}".
+                             format(exc))
                     raise
                 except Exception as exc:
-                    verbose(
-                        "Abandoning after exception {}: {}".
-                        format(exc.__class__.__name__, exc))
+                    logprint(logging.ERROR, PRINT_ALWAYS,
+                             "Abandoning after exception {}: {}".
+                             format(exc.__class__.__name__, exc))
                     raise
                 break
 
-        log_exporter("Building family objects for HMC metrics")
+        logprint(logging.DEBUG, None,
+                 "Building family objects for HMC metrics")
         family_objects = build_family_objects(
             metrics_object, self.yaml_metric_groups,
             self.yaml_metrics, self.filename_metrics,
             self.extra_labels, self.resource_cache)
 
-        log_exporter("Building family objects for resource metrics")
+        logprint(logging.DEBUG, None,
+                 "Building family objects for resource metrics")
         family_objects.update(build_family_objects_res(
             self.resources, self.yaml_metric_groups,
             self.yaml_metrics, self.filename_metrics,
             self.extra_labels, self.resource_cache))
 
-        log_exporter("Returning family objects")
+        logprint(logging.DEBUG, None,
+                 "Returning family objects")
         # Yield all family objects
         for family_obj in family_objects.values():
             yield family_obj
 
-        log_exporter("Done collecting metrics")
+        logprint(logging.INFO, None,
+                 "Done collecting metrics")
 
 
+# Global variable with the verbosity level from the command line
 VERBOSE_LEVEL = 0
 
+# Global variable indicating that logging is enabled
+LOGGING_ENABLED = False
 
-def verbose(message, log=True):
-    """Print a message at verbosity level 1, and log it"""
-    if VERBOSE_LEVEL >= 1:
+
+def logprint(log_level, print_level, message):
+    """
+    Log a message at the specified log level, and print the message at
+    the specified verbosity level
+
+    Parameters:
+        log_level (int): Python logging level at which the message should be
+          logged (logging.DEBUG, etc.), or None for no logging.
+        print_level (int): Verbosity level at which the message should be
+          printed (1, 2), or None for no printing.
+        message (string): The message.
+    """
+    if print_level is not None and VERBOSE_LEVEL >= print_level:
         print(message)
-    if log:
-        log_exporter(message)
+    if log_level is not None and LOGGING_ENABLED:
+        logger = logging.getLogger(EXPORTER_LOGGER_NAME)
+        logger.log(log_level, message)
 
 
-def verbose2(message, log=True):
-    """Print a message at verbosity level 2, and log it"""
-    if VERBOSE_LEVEL >= 2:
-        print(message)
-    if log:
-        log_exporter(message)
-
-
-def info(message, log=True):
-    """Print a message, and log it"""
-    print(message)
-    if log:
-        log_exporter(message)
-
-
-def log_exporter(message):
-    """Log a message to the exporter log"""
-    logger = logging.getLogger(EXPORTER_LOGGER_NAME)
-    logger.info(message)
-
-
-def setup_logging(log_dest, log_comps):
+def setup_logging(log_dest, log_complevels):
     """
     Set up Python logging as specified in the command line.
 
     Raises:
         EarlyExit
     """
-    for log_comp in log_comps:
-        validate_option('--log-comp', log_comp, VALID_LOG_COMPONENTS)
+    global LOGGING_ENABLED  # pylint: disable=global-statement
 
     if log_dest is None:
+        logprint(None, PRINT_V, "Logging is disabled")
         handler = None
     elif log_dest == 'stderr':
-        verbose("Logging components [{comps}] to stderr".
-                format(comps=', '.join(log_comps)), log=False)
+        logprint(None, PRINT_V, "Logging to the Standard Error stream")
         handler = logging.StreamHandler(stream=sys.stderr)
-    elif isinstance(log_dest, six.string_types):
-        verbose("Logging components [{comps}] to file {fn}".
-                format(comps=', '.join(log_comps), fn=log_dest), log=False)
-        handler = logging.FileHandler(log_dest)
     else:
+        logprint(None, PRINT_V, "Logging to file {fn}".format(fn=log_dest))
+        handler = logging.FileHandler(log_dest)
+
+    if not handler and log_complevels:
         raise EarlyExit(
-            "Invalid value {val} for --log option. Allowed are: {allowed}".
-            format(val=log_dest,
-                   allowed=', '.join(VALID_LOG_DESTINATIONS_DISPLAY)))
+            "--log-comp option cannot be used when logging is disabled; "
+            "use --log option to enable logging.")
 
     if handler:
-        fs = '%(asctime)s %(name)s: %(message)s'
-        handler.setFormatter(logging.Formatter(fs))
-        for log_comp, log_item in LOGGER_NAMES.items():
-            name, level = log_item
-            logger = logging.getLogger(name)
-            if log_comp in log_comps:
-                logger.addHandler(handler)
-                logger.setLevel(level)
+        logger_level_dict = {}  # key: logger_name, value: level
+        if not log_complevels:
+            log_complevels = [DEFAULT_LOG_COMP]
+        for complevel in log_complevels:
+            if '=' in complevel:
+                comp, level = complevel.split('=', 2)
+            else:
+                comp = complevel
+                level = DEFAULT_LOG_LEVEL
+            if level not in LOG_LEVELS:
+                raise EarlyExit(
+                    "Invalid log level {level!r} in --log-comp option. "
+                    "Allowed are: {allowed}".
+                    format(level=level, allowed=', '.join(VALID_LOG_LEVELS)))
+            if comp == 'all':
+                for logger_name in LOGGER_NAMES.values():
+                    logger_level_dict[logger_name] = level
+            else:
+                try:
+                    logger_name = LOGGER_NAMES[comp]
+                except KeyError:
+                    raise EarlyExit(
+                        "Invalid component {comp!r} in --log-comp option. "
+                        "Allowed are: {allowed}".
+                        format(comp=comp,
+                               allowed=', '.join(VALID_LOG_COMPONENTS)))
+                logger_level_dict[logger_name] = level
+
+        complevels = ', '.join(
+            ["{name}={level}".format(name=name, level=level)
+             for name, level in logger_level_dict.items()])
+        logprint(None, PRINT_V,
+                 "Logging components: {complevels}".
+                 format(complevels=complevels))
+
+        fs = '%(asctime)s %(levelname)s %(name)s: %(message)s'
+        dfs = '%Y-%m-%d %H:%M:%S-%Z'
+        logging.Formatter.converter = time.gmtime  # log times in UTC
+        handler.setFormatter(logging.Formatter(fmt=fs, datefmt=dfs))
+        for logger_name in LOGGER_NAMES.values():
+            logger = logging.getLogger(logger_name)
+            if logger_name in logger_level_dict:
+                level = logger_level_dict[logger_name]
+                level_int = LOG_LEVELS[level]
+                if level_int != logging.NOTSET:
+                    logger.addHandler(handler)
+                logger.setLevel(level_int)
             else:
                 logger.setLevel(logging.NOTSET)
+
+        LOGGING_ENABLED = True
 
 
 def main():
@@ -1156,13 +1243,16 @@ def main():
 
         VERBOSE_LEVEL = args.verbose
 
-        setup_logging(args.log, args.log_comp)
+        setup_logging(args.log_dest, args.log_complevels)
 
-        log_exporter("---------------- zhmc_prometheus_exporter command "
-                     "started ----------------")
+        logprint(logging.INFO, None,
+                 "---------------- "
+                 "zhmc_prometheus_exporter started "
+                 "----------------")
 
         hmccreds_filename = args.c
-        verbose("Parsing HMC credentials file: {}".format(hmccreds_filename))
+        logprint(logging.INFO, PRINT_V,
+                 "Parsing HMC credentials file: {}".format(hmccreds_filename))
         yaml_creds_content = parse_yaml_file(
             hmccreds_filename, 'HMC credentials file', 'hmccreds_schema.yaml')
         # metrics is required in the metrics schema:
@@ -1170,7 +1260,8 @@ def main():
         # extra_labels is optional in the metrics schema:
         yaml_extra_labels = yaml_creds_content.get("extra_labels", [])
 
-        verbose("Parsing metric definition file: {}".format(args.m))
+        logprint(logging.INFO, PRINT_V,
+                 "Parsing metric definition file: {}".format(args.m))
         yaml_metric_content = parse_yaml_file(
             args.m, 'metric definition file', 'metrics_schema.yaml')
         # metric_groups and metrics are required in the metrics schema:
@@ -1195,10 +1286,11 @@ def main():
             for coll in list(REGISTRY._collector_to_names.keys()):
                 REGISTRY.unregister(coll)
 
-        verbose("Timeout/retry configuration: "
-                "connect: {r.connect_timeout} sec / {r.connect_retries} "
-                "retries, read: {r.read_timeout} sec / {r.read_retries} "
-                "retries.".format(r=RETRY_TIMEOUT_CONFIG))
+        logprint(logging.INFO, PRINT_V,
+                 "Timeout/retry configuration: "
+                 "connect: {r.connect_timeout} sec / {r.connect_retries} "
+                 "retries, read: {r.read_timeout} sec / {r.read_retries} "
+                 "retries.".format(r=RETRY_TIMEOUT_CONFIG))
 
         # hmc is required in the HMC creds schema:
         session = create_session(yaml_creds, hmccreds_filename)
@@ -1206,7 +1298,8 @@ def main():
         try:
             with zhmc_exceptions(session, hmccreds_filename):
                 hmc_version = get_hmc_version(session)
-                verbose("HMC version: {}".format(hmc_version))
+                logprint(logging.INFO, PRINT_V,
+                         "HMC version: {}".format(hmc_version))
                 context, resources = create_metrics_context(
                     session, yaml_metric_groups, hmc_version)
         except (ConnectionError, AuthError, OtherError) as exc:
@@ -1218,7 +1311,8 @@ def main():
             extra_labels[item['name']] = item['value']
         extra_labels_str = ','.join(
             ['{}="{}"'.format(k, v) for k, v in extra_labels.items()])
-        verbose("Using extra labels: {}".format(extra_labels_str))
+        logprint(logging.INFO, PRINT_V,
+                 "Using extra labels: {}".format(extra_labels_str))
 
         resource_cache = ResourceCache()
         coll = ZHMCUsageCollector(
@@ -1226,33 +1320,49 @@ def main():
             yaml_metrics, extra_labels, args.m, hmccreds_filename,
             resource_cache, hmc_version)
 
-        verbose("Registering the collector and performing first collection")
+        logprint(logging.INFO, PRINT_V,
+                 "Registering the collector and performing first collection")
         REGISTRY.register(coll)  # Performs a first collection
 
-        verbose("Starting the HTTP server on port {}".format(args.p))
+        logprint(logging.INFO, PRINT_V,
+                 "Starting the HTTP server on port {}".format(args.p))
         start_http_server(int(args.p))
 
-        info("Exporter is up and running on port {}".format(args.p))
+        logprint(logging.INFO, PRINT_ALWAYS,
+                 "Exporter is up and running on port {}".format(args.p))
         while True:
             try:
                 time.sleep(1)
             except KeyboardInterrupt:
                 raise ProperExit
     except KeyboardInterrupt:
-        info("Exporter interrupted before server start.")
+        logprint(logging.WARNING, PRINT_ALWAYS,
+                 "Exporter interrupted before server start.")
         cleanup(session, context, resources)
-        sys.exit(1)
+        exit_rc(1)
     except EarlyExit as exc:
-        info("Error: {}".format(exc), log=False)
-        sys.exit(1)
+        logprint(logging.ERROR, PRINT_ALWAYS,
+                 "Error: {}".format(exc))
+        exit_rc(1)
     except ImproperExit as exc:
-        info("Error: {}".format(exc))
+        logprint(logging.ERROR, PRINT_ALWAYS,
+                 "Error: {}".format(exc))
         cleanup(session, context, resources)
-        sys.exit(1)
+        exit_rc(1)
     except ProperExit:
-        info("Exporter interrupted after server start.")
+        logprint(logging.WARNING, PRINT_ALWAYS,
+                 "Exporter interrupted after server start.")
         cleanup(session, context, resources)
-        sys.exit(0)
+        exit_rc(0)
+
+
+def exit_rc(rc):
+    """Exit the script"""
+    logprint(logging.INFO, None,
+             "---------------- "
+             "zhmc_prometheus_exporter terminated "
+             "----------------")
+    sys.exit(rc)
 
 
 if __name__ == "__main__":
