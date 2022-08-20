@@ -35,6 +35,9 @@ Released: not yet
 * HMC resources that no longer exist are automatically removed from the
   exported metrics. (Issue #203)
 
+* Increased minimum version of zhmcclient to 1.4.0 to pick up fixes and
+  required new functions. (issue #220)
+
 **Cleanup:**
 
 **Known issues:**
