@@ -88,12 +88,17 @@ The ``zhmc_prometheus_exporter`` command supports the following arguments:
 
       -p PORT               port for exporting. Default: 9291
 
-      --log DEST            enable logging and set a log destination (stderr, FILE). Default: no logging
+      --log DEST            enable logging and set a log destination (stderr, syslog, FILE). Default:
+                            no logging
 
       --log-comp COMP[=LEVEL]
-                            set a logging level (error, warning, info, debug, off, default: warning) for a
-                            component (exporter, hmc, jms, all). May be specified multiple times; options
-                            add to the default of: all=warning
+                            set a logging level (error, warning, info, debug, off, default: warning)
+                            for a component (exporter, hmc, jms, all). May be specified multiple
+                            times; options add to the default of: all=warning
+
+      --syslog-facility TEXT
+                            syslog facility (user, local0, local1, local2, local3, local4, local5,
+                            local6, local7) when logging to the system log. Default: user
 
       --verbose, -v         increase the verbosity level (max: 2)
 
@@ -842,6 +847,7 @@ Logging is enabled by using the ``--log DEST`` option that controls the
 logging destination as follows:
 
 * ``--log stderr`` - log to the Standard Error stream
+* ``--log syslog`` - log to the System Log (see :ref:`Logging to the System Log`)
 * ``--log FILE`` - log to the log file with path name ``FILE``.
 
 There are multiple components that can log. By default, all of them log at the
@@ -903,6 +909,47 @@ Examples:
 
     # log to file mylog.log with exporter=info, hmc=off, jms=off
     $ zhmc_prometheus_exporter --log mylog.log --log-comp all=off --log-comp exporter=info
+
+
+Logging to the System Log
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When logging to the System Log, the syslog address used by the exporter
+depends on the operating system as follows:
+
+* Linux: ``/dev/log``
+* macOS: ``/var/run/syslog``
+* Windows: UDP port 514 on localhost (requires a syslog demon to run)
+* CygWin: ``/dev/log`` (requires the syslog-ng package to be installed)
+
+For other operating systems, UDP port 514 on localhost is used.
+
+Messages logged to the system log will only show up there if the syslog
+configuration has enabled the syslog facility and the syslog severity levels
+that are used by the exporter.
+The configuration of the syslog depends on the operating system or syslog demon
+that is used and is therefore not described here.
+
+The syslog facility that will be used by the exporter can be specified with the
+``--syslog-facility`` option and defaults to ``user``.
+
+The syslog severity levels (not to be confused with syslog priorities) that will
+be used by the exporter are derived from the Python log levels using the default
+mapping defined by Python logging, which is:
+
+================  =================
+Python log level  Syslog severity
+================  =================
+``ERROR``         3 (Error)
+``WARNING``       4 (Warning)
+``INFO``          6 (Informational)
+``DEBUG``         7 (Debug)
+================  =================
+
+On some systems, the syslog rejects messages that exceed a certain limit.
+For this reason, the exporter truncates the message text to somewhat below
+2048 Bytes, when logging to the system log. Messages are not truncated when
+logging to the Standard Error stream or to a file.
 
 
 Performance

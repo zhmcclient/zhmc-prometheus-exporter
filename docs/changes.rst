@@ -57,6 +57,8 @@ Released: not yet
 
 * Added cleanup log and output messages when exiting.
 
+* Added support for logging to the System Log (syslog). (issue #219)
+
 **Cleanup:**
 
 **Known issues:**
