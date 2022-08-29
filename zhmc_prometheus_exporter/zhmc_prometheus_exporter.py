@@ -21,10 +21,13 @@ IBM Z HMC Prometheus Exporter
 import argparse
 import sys
 import os
+import types
+import platform
 import re
 import time
 import warnings
 import logging
+import logging.handlers
 from contextlib import contextmanager
 
 import jinja2
@@ -69,7 +72,26 @@ PRINT_ALWAYS = 0
 PRINT_V = 1
 PRINT_VV = 2
 
-VALID_LOG_DESTINATIONS = ['stderr', 'FILE']
+VALID_LOG_DESTINATIONS = ['stderr', 'syslog', 'FILE']
+
+# Syslog facilities
+VALID_SYSLOG_FACILITIES = [
+    'user', 'local0', 'local1', 'local2', 'local3', 'local4', 'local5',
+    'local6', 'local7'
+]
+DEFAULT_SYSLOG_FACILITY = 'user'
+
+# Values to use for the 'address' parameter when creating a SysLogHandler.
+# Key: Operating system type, as returned by platform.system(). For CygWin,
+# the returned value is 'CYGWIN_NT-6.1', which is special-cased to 'CYGWIN_NT'.
+# Value: Value for the 'address' parameter.
+SYSLOG_ADDRESS = {
+    'Linux': '/dev/log',
+    'Darwin': '/var/run/syslog',  # macOS / OS-X
+    'Windows': ('localhost', 514),
+    'CYGWIN_NT': '/dev/log',  # Requires syslog-ng pkg
+    'other': ('localhost', 514),  # used if no key matches
+}
 
 # Sleep time in seconds when retrying metrics retrieval
 RETRY_SLEEP_TIME = 10
@@ -208,6 +230,12 @@ def parse_args(args):
                                comps=', '.join(VALID_LOG_COMPONENTS),
                                def_level=DEFAULT_LOG_LEVEL,
                                def_comp=DEFAULT_LOG_COMP))
+    parser.add_argument("--syslog-facility", metavar="TEXT",
+                        default=DEFAULT_SYSLOG_FACILITY,
+                        help="syslog facility ({slfs}) when logging to the "
+                        "system log. Default: {def_slf}".
+                        format(slfs=', '.join(VALID_SYSLOG_FACILITIES),
+                               def_slf=DEFAULT_SYSLOG_FACILITY))
     parser.add_argument("--verbose", "-v", action='count', default=0,
                         help="increase the verbosity level (max: 2)")
     parser.add_argument("--help-creds", action='store_true',
@@ -1141,10 +1169,12 @@ def logprint(log_level, print_level, message):
         print(message)
     if log_level is not None and LOGGING_ENABLED:
         logger = logging.getLogger(EXPORTER_LOGGER_NAME)
+        # Note: This method never raises an exception. Errors during logging
+        # are handled by calling handler.handleError().
         logger.log(log_level, message)
 
 
-def setup_logging(log_dest, log_complevels):
+def setup_logging(log_dest, log_complevels, syslog_facility):
     """
     Set up Python logging as specified in the command line.
 
@@ -1156,12 +1186,47 @@ def setup_logging(log_dest, log_complevels):
     if log_dest is None:
         logprint(None, PRINT_V, "Logging is disabled")
         handler = None
+        dest_str = None
     elif log_dest == 'stderr':
-        logprint(None, PRINT_V, "Logging to the Standard Error stream")
+        dest_str = "the Standard Error stream"
+        logprint(None, PRINT_V, "Logging to {}".format(dest_str))
         handler = logging.StreamHandler(stream=sys.stderr)
+    elif log_dest == 'syslog':
+        system = platform.system()
+        if system.startswith('CYGWIN_NT'):
+            # Value is 'CYGWIN_NT-6.1'; strip off trailing version:
+            system = 'CYGWIN_NT'
+        try:
+            address = SYSLOG_ADDRESS[system]
+        except KeyError:
+            address = SYSLOG_ADDRESS['other']
+        dest_str = ("the System Log at address {a!r} with syslog facility "
+                    "{slf!r}".format(a=address, slf=syslog_facility))
+        logprint(None, PRINT_V, "Logging to {}".format(dest_str))
+        try:
+            facility = logging.handlers.SysLogHandler.facility_names[
+                syslog_facility]
+        except KeyError:
+            valid_slfs = ', '.join(
+                logging.handlers.SysLogHandler.facility_names.keys())
+            raise EarlyExit(
+                "This system ({sys}) does not support syslog facility {slf}. "
+                "Supported are: {slfs}.".
+                format(sys=system, slf=syslog_facility, slfs=valid_slfs))
+        # The following does not raise any exception if the syslog address
+        # cannot be opened. In that case, the first attempt to log something
+        # will fail.
+        handler = logging.handlers.SysLogHandler(
+            address=address, facility=facility)
     else:
-        logprint(None, PRINT_V, "Logging to file {fn}".format(fn=log_dest))
-        handler = logging.FileHandler(log_dest)
+        dest_str = "file {fn}".format(fn=log_dest)
+        logprint(None, PRINT_V, "Logging to {}".format(dest_str))
+        try:
+            handler = logging.FileHandler(log_dest)
+        except OSError as exc:
+            raise EarlyExit(
+                "Cannot log to file {fn}: {exc}: {msg}".
+                format(fn=log_dest, exc=exc.__class__.__name__, msg=exc))
 
     if not handler and log_complevels:
         raise EarlyExit(
@@ -1169,6 +1234,26 @@ def setup_logging(log_dest, log_complevels):
             "use --log option to enable logging.")
 
     if handler:
+
+        def handleError(self, record):
+            """
+            Replacement for built-in method on logging.Handler class.
+
+            This is needed because the SysLogHandler class does not raise
+            an exception when creating the handler object, but only when
+            logging something to it.
+            """
+            _, exc, _ = sys.exc_info()
+            f_record = self.format(record)
+            print("Error: Logging to {d} failed with: {exc}: {msg}. Formatted "
+                  "log record: {r!r}".
+                  format(d=dest_str, exc=exc.__class__.__name__, msg=exc,
+                         r=f_record),
+                  file=sys.stderr)
+            sys.exit(1)
+
+        handler.handleError = types.MethodType(handleError, handler)
+
         logger_level_dict = {}  # key: logger_name, value: level
         if not log_complevels:
             log_complevels = [DEFAULT_LOG_COMP]
@@ -1204,7 +1289,21 @@ def setup_logging(log_dest, log_complevels):
                  "Logging components: {complevels}".
                  format(complevels=complevels))
 
-        fs = '%(asctime)s %(levelname)s %(name)s: %(message)s'
+        if isinstance(handler, logging.handlers.SysLogHandler):
+            # Most syslog implementations fail when the message is longer
+            # than a limit. We use a hard coded limit for now:
+            # * 2048 is the typical maximum length of a syslog message,
+            #   including its headers
+            # * 41 is the max length of the syslog message parts before MESSAGE
+            # * 47 is the max length of the Python format string before message
+            # Example syslog message:
+            #   <34>1 2003-10-11T22:14:15.003Z localhost MESSAGE
+            # where MESSAGE is the formatted Python log message.
+            max_msg = '.{}'.format(2048 - 41 - 47)
+        else:
+            max_msg = ''
+        fs = ('%(asctime)s %(levelname)s %(name)s: %(message){m}s'.
+              format(m=max_msg))
         dfs = '%Y-%m-%d %H:%M:%S-%Z'
         logging.Formatter.converter = time.gmtime  # log times in UTC
         handler.setFormatter(logging.Formatter(fmt=fs, datefmt=dfs))
@@ -1243,7 +1342,7 @@ def main():
 
         VERBOSE_LEVEL = args.verbose
 
-        setup_logging(args.log_dest, args.log_complevels)
+        setup_logging(args.log_dest, args.log_complevels, args.syslog_facility)
 
         logprint(logging.INFO, None,
                  "---------------- "
