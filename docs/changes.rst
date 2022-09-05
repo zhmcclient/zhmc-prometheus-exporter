@@ -17,12 +17,10 @@ Change log
 ----------
 
 
-Version 1.3.0.dev1
-^^^^^^^^^^^^^^^^^^
+Version 1.3.0
+^^^^^^^^^^^^^
 
-This version contains all fixes up to version 1.2.x.
-
-Released: not yet
+Released: 2202-09-05
 
 **Incompatible changes:**
 
@@ -30,8 +28,6 @@ Released: not yet
   "2022-08-17 09:24:41,037 logger: message"
   to:
   "2022-08-17 07:24:41-UTC LEVEL logger: message"
-
-**Deprecations:**
 
 **Bug fixes:**
 
@@ -58,14 +54,6 @@ Released: not yet
 * Added cleanup log and output messages when exiting.
 
 * Added support for logging to the System Log (syslog). (issue #219)
-
-**Cleanup:**
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 1.2.0
