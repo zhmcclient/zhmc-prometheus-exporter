@@ -1344,7 +1344,7 @@ def main():
 
         setup_logging(args.log_dest, args.log_complevels, args.syslog_facility)
 
-        logprint(logging.INFO, None,
+        logprint(logging.WARNING, None,
                  "---------------- "
                  "zhmc_prometheus_exporter started "
                  "----------------")
@@ -1457,7 +1457,7 @@ def main():
 
 def exit_rc(rc):
     """Exit the script"""
-    logprint(logging.INFO, None,
+    logprint(logging.WARNING, None,
              "---------------- "
              "zhmc_prometheus_exporter terminated "
              "----------------")
