@@ -1304,7 +1304,7 @@ def setup_logging(log_dest, log_complevels, syslog_facility):
             max_msg = ''
         fs = ('%(asctime)s %(levelname)s %(name)s: %(message){m}s'.
               format(m=max_msg))
-        dfs = '%Y-%m-%d %H:%M:%S-%Z'
+        dfs = '%Y-%m-%d %H:%M:%S%z'
         logging.Formatter.converter = time.gmtime  # log times in UTC
         handler.setFormatter(logging.Formatter(fmt=fs, datefmt=dfs))
         for logger_name in LOGGER_NAMES.values():
