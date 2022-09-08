@@ -17,6 +17,28 @@ Change log
 ----------
 
 
+Version 1.3.1.dev1
+^^^^^^^^^^^^^^^^^^
+
+Released: not yet
+
+**Incompatible changes:**
+
+**Deprecations:**
+
+**Bug fixes:**
+
+**Enhancements:**
+
+**Cleanup:**
+
+**Known issues:**
+
+* See `list of open issues`_.
+
+.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
+
+
 Version 1.3.0
 ^^^^^^^^^^^^^
 
