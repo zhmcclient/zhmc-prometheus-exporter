@@ -779,8 +779,8 @@ def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
                 resource = object_value.resource
             metric_values = object_value.metrics
 
-            # Calculate the resource labels:
-            labels = dict(extra_labels)
+            # Calculate the resource labels at the metric group level:
+            mg_labels = dict(extra_labels)
             # labels is optional in the metrics schema:
             default_labels = [dict(name='resource', value='resource')]
             yaml_labels = yaml_metric_group.get('labels', default_labels)
@@ -796,8 +796,16 @@ def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
                     label_value = \
                         str(resource.manager.parent.manager.parent.name)
                 else:
-                    label_value = str(metric_values.get(item_value, 'unknown'))
-                labels[label_name] = label_value
+                    if item_value in metric_values:
+                        label_value = str(metric_values[item_value])
+                    else:
+                        logprint(logging.WARNING, PRINT_V,
+                                 "Ignoring label '{}' with unknown metric '{}' "
+                                 "on metric group '{}'".
+                                 format(label_name, item_value, metric_group))
+                        label_name = None
+                if label_name is not None:
+                    mg_labels[label_name] = label_value
 
             for metric in metric_values:
 
@@ -829,6 +837,25 @@ def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
                 # percent is optional in the metrics schema:
                 if yaml_metric.get("percent", False):
                     metric_value /= 100
+
+                # Calculate the resource labels at the metric level:
+                labels = dict(mg_labels)
+                # labels is optional in the metrics schema:
+                yaml_labels = yaml_metric.get('labels', [])
+                for item in yaml_labels:
+                    # name, value are required in the metrics schema:
+                    label_name = item['name']
+                    item_value = item['value']
+                    if label_name == 'valuetype':
+                        label_value = item_value
+                    else:
+                        logprint(logging.WARNING, PRINT_V,
+                                 "Ignoring unknown label '{}' on metric "
+                                 "'{}' in metric group '{}'".
+                                 format(label_name, metric, metric_group))
+                        label_name = None
+                    if label_name is not None:
+                        labels[label_name] = label_value
 
                 # Create a Family object, if needed
                 # prefix,exporter_name are required in the metrics schema:
@@ -905,8 +932,8 @@ def build_family_objects_res(
                     resource_cache.remove(resource.uri)
                 continue
 
-            # Calculate the resource labels:
-            labels = dict(extra_labels)
+            # Calculate the resource labels at the metric group level:
+            mg_labels = dict(extra_labels)
             # labels is optional in the metrics schema:
             default_labels = [dict(name='resource', value='resource')]
             yaml_labels = yaml_metric_group.get('labels', default_labels)
@@ -922,8 +949,17 @@ def build_family_objects_res(
                     label_value = \
                         str(resource.manager.parent.manager.parent.name)
                 else:
-                    label_value = 'unknown'
-                labels[label_name] = label_value
+                    _prop_name = item_value
+                    if _prop_name in resource.properties:
+                        label_value = str(resource.properties[_prop_name])
+                    else:
+                        logprint(logging.WARNING, PRINT_V,
+                                 "Ignoring label '{}' with unknown property "
+                                 "'{}' on metric group '{}'".
+                                 format(label_name, _prop_name, metric_group))
+                        label_name = None
+                if label_name is not None:
+                    mg_labels[label_name] = label_value
 
             yaml_mg = yaml_metrics[metric_group]
             if isinstance(yaml_mg, dict):
@@ -1018,6 +1054,38 @@ def build_family_objects_res(
                 # percent is optional in the metrics schema:
                 if yaml_metric.get("percent", False):
                     metric_value /= 100
+
+                # Calculate the resource labels at the metric level:
+                labels = dict(mg_labels)
+                # labels is optional in the metrics schema:
+                yaml_labels = yaml_metric.get('labels', [])
+                for item in yaml_labels:  # pylint: disable=redefined-outer-name
+                    # name, value are required in the metrics schema:
+                    label_name = item['name']
+                    item_value = item['value']
+                    if label_name == 'valuetype':
+                        label_value = item_value
+                    elif label_name == 'value':
+                        _prop_name = item_value
+                        if _prop_name in resource.properties:
+                            label_value = str(resource.properties[_prop_name])
+                        else:
+                            logprint(logging.WARNING, PRINT_V,
+                                     "Ignoring label '{}' with unknown "
+                                     "property '{}' on exporter name '{}' in "
+                                     "metric group '{}'".
+                                     format(label_name, _prop_name,
+                                            exporter_name, metric_group))
+                            label_name = None
+                    else:
+                        logprint(logging.WARNING, PRINT_V,
+                                 "Ignoring unknown label '{}' on exporter "
+                                 "name '{}' in metric group '{}'".
+                                 format(label_name, exporter_name,
+                                        metric_group))
+                        label_name = None
+                    if label_name is not None:
+                        labels[label_name] = label_value
 
                 # Create a Family object, if needed
                 # prefix,exporter_name are required in the metrics schema:

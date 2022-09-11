@@ -579,8 +579,8 @@ The HMC credentials file is in YAML format and has the following structure:
 
     extra_labels:  # optional
       # list of labels:
-      - name: {label-name}
-        value: {label-value}
+      - name: {extra-label-name}
+        value: {extra-label-value}
 
 Where:
 
@@ -593,9 +593,9 @@ Where:
 * ``{verify-cert}`` controls whether and how the HMC server certificate is
   verified. For details, see :ref:`HMC certificate`.
 
-* ``{label-name}`` is the label name.
+* ``{extra-label-name}`` is the label name.
 
-* ``{label-value}`` is the label value. The string value is used directly
+* ``{extra-label-value}`` is the label value. The string value is used directly
   without any further interpretation.
 
 Sample HMC credentials file
@@ -630,8 +630,8 @@ The metric definition file is in YAML format and has the following structure:
         if: {fetch-condition}  # optional
         labels:
           # list of labels:
-          - name: {label-name}
-            value: {label-value}
+          - name: {mg-label-name}
+            value: {mg-label-value}
 
     metrics:
       # dictionary of metric groups:
@@ -644,6 +644,10 @@ The metric definition file is in YAML format and has the following structure:
           metric_type: {metric-type}
           percent: {percent-bool}
           valuemap: {valuemap}
+          labels:
+            # list of labels:
+            - name: {m-label-name}
+              value: {m-label-value}
 
         # list format for defining metrics:
         - property_name: {hmc-metric}                     # either this
@@ -652,6 +656,10 @@ The metric definition file is in YAML format and has the following structure:
           exporter_desc: {help}
           percent: {percent-bool}
           valuemap: {valuemap}
+          labels:
+            # list of labels:
+            - name: {m-label-name}
+              value: {m-label-value}
 
 Where:
 
@@ -675,9 +683,9 @@ Where:
   the HMC version. The HMC versions are evaluated as tuples of integers,
   padding them to 3 version parts by appending 0 if needed.
 
-* ``{label-name}`` is the label name.
+* ``{mg-label-name}`` is the label name at the metric group level.
 
-* ``{label-value}`` identifies where the label value is taken from, as follows:
+* ``{mg-label-value}`` identifies where the label value is taken from, as follows:
 
   - ``resource`` the name of the resource reported by the HMC for the metric.
     This is the normal case and also the default.
@@ -701,23 +709,32 @@ Where:
     value belongs. The following fragment utilizes the ``channel-name`` metric
     as a label for the ``channel-usage`` metric:
 
-    .. code-block:: yaml
+* ``{m-label-name}``, ``{m-label-value}`` is the label name and value at the
+  single metric level. The label names have specific meanings, and only the
+  following label names are allowed:
 
-        metric_groups:
-          channel-usage:
-            prefix: channel
-            fetch: True
-            labels:
-              - name: cpc
-                value: resource
-              - name: channel_css_chpid
-                value: channel-name
-        metrics:
-          channel-usage:
-            channel-usage:
-              percent: True
-              exporter_name: usage_ratio
-              exporter_desc: Usage ratio of the channel
+  - ``value``: Indicates an alternative string-typed value to an interpreter of
+    the Prometheus metric. Can only be used on resource-based metrics.
+
+    ``{m-label-value}`` is the name of a property on the  HMC resource, and the
+    label value shown in the Prometheus export is the property value. This is
+    used for example for string-typed resource properties, where the Prometheus
+    metric value shows the string value mapped to a floating point value, but
+    the ``value`` label shows the original string value of the HMC resource
+    property.
+
+  - ``valuetype``: Indicates to an interpreter of the Prometheus metric that the
+    floating point value of the Prometheus metric should be converted to a
+    different datatype.
+
+    ``{m-label-value}``) is the name of the datatype as follows:
+
+    - ``bool``: The Prometheus metric value should be converted to a boolean,
+      where 0.0 becomes False, and anything else becomes True.
+
+    - ``int``: The Prometheus metric value should be converted to an integer
+      that is the rounded metric value (i.e. not just cutting off the fractional
+      part of the floating point number).
 
 * ``{properties-expression}`` is a Jinja2 expression whose value should be used
   is as the metric value, for resource based metrics. The expression uses
@@ -743,6 +760,74 @@ Where:
   the full metric name ``zhmc_{resource-type}_{metric}_{unit}``.
 
 * ``{help}`` is the description text that is exported as ``# HELP``.
+
+Example for label definition at the metric group level using another metric
+
+.. code-block:: yaml
+
+    metric_groups:
+      channel-usage:
+        prefix: channel
+        fetch: True
+        labels:
+          - name: cpc    # becomes e.g.: cpc="CPCA"
+            value: resource
+          - name: channel_css_chpid   # becomes e.g.: channel_css_chpid="CHAN01"
+            value: channel-name
+    metrics:
+      channel-usage:
+        channel-usage:
+          percent: True
+          exporter_name: usage_ratio
+          exporter_desc: Usage ratio of the channel
+          # This metric will have the labels defined in its metric group
+
+Example for label definition at the single metric level specifying a different type:
+
+.. code-block:: yaml
+
+    metric_groups:
+      cpc-resource:
+        type: resource
+        resource: cpc
+        prefix: cpc
+        fetch: true
+        labels:
+          - name: cpc    # becomes e.g.: cpc="CPCA"
+            value: resource
+    metrics:
+      cpc-resource:
+        - property_name: has-unacceptable-status
+          exporter_name: has_unacceptable_status
+          exporter_desc: Boolean indicating whether the CPC has an unacceptable status (0=false, 1=true)
+          labels:
+            - name: valuetype    # becomes: valuetype="bool"
+              value: bool
+
+Example for label definition at the single metric level specifying a string value:
+
+.. code-block:: yaml
+
+    metric_groups:
+      logical-partition-resource:
+        type: resource
+        resource: cpc.logical-partition
+        prefix: partition
+        fetch: true
+        labels:
+          - name: cpc    # becomes e.g.: cpc="CPCA"
+            value: resource.parent
+          - name: partition    # becomes e.g.: partition="LPAR1"
+            value: resource
+    metrics:
+      logical-partition-resource:
+        - properties_expression: "{'operating': 0, 'not-operating': 1, 'not-activated': 2, 'exceptions': 10}.get(properties.status, 99)"
+          exporter_name: lpar_status_int
+          exporter_desc: "LPAR status as integer (0=operating, 1=not-operating, 2=not-activated, 10=exceptions, 99=unsupported value)"
+          labels:
+            - name: value   # becomes e.g. value="operating"
+              value: status
+
 
 Sample metric definition file
 -----------------------------
