@@ -17,14 +17,10 @@ Change log
 ----------
 
 
-Version 1.3.2.dev1
-^^^^^^^^^^^^^^^^^^
+Version 1.3.2
+^^^^^^^^^^^^^
 
-Released: not yet
-
-**Incompatible changes:**
-
-**Deprecations:**
+Released: 2022-09-11
 
 **Bug fixes:**
 
@@ -32,16 +28,6 @@ Released: not yet
 
 * Fixed the log entry for version 1.3.0 that showed an incorrect new timestamp
   format.
-
-**Enhancements:**
-
-**Cleanup:**
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 1.3.1
