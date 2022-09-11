@@ -28,6 +28,11 @@ Released: not yet
 
 **Bug fixes:**
 
+* Fixed an erroneous timezone offset in log timestamps. (issue #241)
+
+* Fixed the log entry for version 1.3.0 that showed an incorrect new timestamp
+  format.
+
 **Enhancements:**
 
 **Cleanup:**
@@ -53,14 +58,14 @@ Released: 2022-09-11
 Version 1.3.0
 ^^^^^^^^^^^^^
 
-Released: 2202-09-05
+Released: 2022-09-05
 
 **Incompatible changes:**
 
 * The log format has changed from:
   "2022-08-17 09:24:41,037 logger: message"
   to:
-  "2022-08-17 07:24:41-UTC LEVEL logger: message"
+  "2022-08-17 07:24:41+0000 LEVEL logger: message"
 
 **Bug fixes:**
 
