@@ -30,6 +30,9 @@ Released: not yet
 
 **Bug fixes:**
 
+* Fixed that not using the `--log` option resulted in an error message
+  about invalid use of the `--log-comp` option. (issue #234)
+
 **Enhancements:**
 
 **Cleanup:**
