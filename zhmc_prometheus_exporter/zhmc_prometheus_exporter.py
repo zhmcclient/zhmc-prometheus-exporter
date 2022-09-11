@@ -221,7 +221,7 @@ def parse_args(args):
                         "({dests}). Default: no logging".
                         format(dests=', '.join(VALID_LOG_DESTINATIONS)))
     parser.add_argument("--log-comp", dest='log_complevels', action='append',
-                        metavar="COMP[=LEVEL]", default=[DEFAULT_LOG_COMP],
+                        metavar="COMP[=LEVEL]", default=None,
                         help="set a logging level ({levels}, default: "
                         "{def_level}) for a component ({comps}). May be "
                         "specified multiple times; options add to the default "
