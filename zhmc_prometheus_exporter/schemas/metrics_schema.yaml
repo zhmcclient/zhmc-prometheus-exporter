@@ -103,6 +103,24 @@ properties:
                     "^[a-zA-Z0-9\\-]+$":
                       description: "Key: String value in original HMC value. Value: Integer value exported by Prometheus"
                       type: integer
+                labels:
+                  description: "Prometheus labels to be added to this metric"
+                  type: array
+                  default: []
+                  items:
+                    type: object
+                    required:
+                      - name
+                      - value
+                    additionalProperties: false
+                    properties:
+                      name:
+                        description: "Label name"
+                        type: string
+                        enum: [valuetype, value]
+                      value:
+                        description: "Label value. There are some keywords with special handling - see documentation for details"
+                        type: string
         - description: "Value: Mapping to Promentheus metrics in list format (can be used for HMC property based metrics)"
           type: array
           items:
@@ -142,3 +160,21 @@ properties:
                   "^[a-zA-Z0-9\\-]+$":
                     description: "Key: String value in original HMC value. Value: Integer value exported by Prometheus"
                     type: integer
+              labels:
+                description: "Prometheus labels to be added to this metric"
+                type: array
+                default: []
+                items:
+                  type: object
+                  required:
+                    - name
+                    - value
+                  additionalProperties: false
+                  properties:
+                    name:
+                      description: "Label name"
+                      type: string
+                      enum: [valuetype, value]
+                    value:
+                      description: "Label value. There are some keywords with special handling - see documentation for details"
+                      type: string

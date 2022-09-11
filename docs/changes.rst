@@ -35,6 +35,14 @@ Released: not yet
 
 **Enhancements:**
 
+* Added support for labels on single metric definitions, for defining how the
+  Prometheus metric value should be interpreted. A `value` lebel can define
+  a string-typed property value that should be used instead. This has been
+  used to show the original staus values, e.g. as `value="operating"`.
+  A `valuetype` label can define that the floating point value of the
+  Prometheus metric should be interpreted as a boolean or integer value. This
+  has been used for any boolean metrics. (issue #224)
+
 **Cleanup:**
 
 **Known issues:**

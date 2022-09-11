@@ -362,6 +362,9 @@ metrics:
     - property_name: workload-manager-enabled
       exporter_name: workload_manager_is_enabled
       exporter_desc: Boolean indicating whether the z/OS Workload Manager is allowed to change processing weight related properties of the partition (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     - property_name: processor-usage
       exporter_name: processor_mode_int
       exporter_desc: Allocation mode for processors to the active partition as an integer (0=shared, 1=dedicated)
@@ -389,15 +392,24 @@ metrics:
     - properties_expression: "properties['absolute-processing-capping'].type == 'processor'"
       exporter_name: cp_processor_count_is_capped
       exporter_desc: Boolean indicating whether absolute capping is enabled for CP processors (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     - properties_expression: "properties['absolute-processing-capping'].value if properties['absolute-processing-capping'].type == 'processor' else 0"
       exporter_name: cp_processor_count_cap
       exporter_desc: Maximum number of CP processors that can be used if absolute capping is enabled, else 0
     - property_name: initial-processing-weight-capped
       exporter_name: cp_initial_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the initial CP processing weight is capped (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     - property_name: current-processing-weight-capped
       exporter_name: cp_current_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the current CP processing weight is capped (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     - property_name: number-ifl-processors
       exporter_name: ifl_processor_count
       exporter_desc: Number of IFL processors currently allocated to the active partition
@@ -419,15 +431,24 @@ metrics:
     - properties_expression: "properties['absolute-ifl-capping'].type == 'processor'"
       exporter_name: ifl_processor_count_is_capped
       exporter_desc: Boolean indicating whether absolute capping is enabled for IFL processors (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     - properties_expression: "properties['absolute-ifl-capping'].value if properties['absolute-ifl-capping'].type == 'processor' else 0"
       exporter_name: ifl_processor_count_cap
       exporter_desc: Maximum number of IFL processors that can be used if absolute capping is enabled, else 0
     - property_name: initial-ifl-processing-weight-capped
       exporter_name: ifl_initial_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the initial IFL processing weight is capped (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     - property_name: current-ifl-processing-weight-capped
       exporter_name: ifl_current_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the current IFL processing weight is capped (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     - property_name: number-icf-processors
       exporter_name: icf_processor_count
       exporter_desc: Number of ICF processors currently allocated to the active partition
@@ -449,15 +470,24 @@ metrics:
     - properties_expression: "properties['absolute-cf-capping'].type == 'processor'"
       exporter_name: icf_processor_count_is_capped
       exporter_desc: Boolean indicating whether absolute capping is enabled for ICF processors (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     - properties_expression: "properties['absolute-cf-capping'].value if properties['absolute-cf-capping'].type == 'processor' else 0"
       exporter_name: icf_processor_count_cap
       exporter_desc: Maximum number of ICF processors that can be used if absolute capping is enabled, else 0
     - property_name: initial-cf-processing-weight-capped
       exporter_name: icf_initial_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the initial ICF processing weight is capped (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     - property_name: current-cf-processing-weight-capped
       exporter_name: icf_current_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the current ICF processing weight is capped (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     - property_name: number-ziip-processors
       exporter_name: iip_processor_count
       exporter_desc: Number of zIIP processors currently allocated to the active partition
@@ -479,15 +509,24 @@ metrics:
     - properties_expression: "properties['absolute-ziip-capping'].type == 'processor'"
       exporter_name: iip_processor_count_is_capped
       exporter_desc: Boolean indicating whether absolute capping is enabled for zIIP processors (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     - properties_expression: "properties['absolute-ziip-capping'].value if properties['absolute-ziip-capping'].type == 'processor' else 0"
       exporter_name: iip_processor_count_cap
       exporter_desc: Maximum number of zIIP processors that can be used if absolute capping is enabled, else 0
     - property_name: initial-ziip-processing-weight-capped
       exporter_name: iip_initial_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the initial zIIP processing weight is capped (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     - property_name: current-ziip-processing-weight-capped
       exporter_name: iip_current_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the current zIIP processing weight is capped (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     # Note: number-...-processors/cores properties do not exist in 2.15 for AAP processors
     - property_name: initial-aap-processing-weight
       exporter_name: aap_initial_processing_weight
@@ -504,15 +543,24 @@ metrics:
     - properties_expression: "properties['absolute-aap-capping'].type == 'processor'"
       exporter_name: aap_processor_count_is_capped
       exporter_desc: Boolean indicating whether absolute capping is enabled for zAAP processors (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     - properties_expression: "properties['absolute-aap-capping'].value if properties['absolute-aap-capping'].type == 'processor' else 0"
       exporter_name: aap_processor_count_cap
       exporter_desc: Maximum number of zAAP processors that can be used if absolute capping is enabled, else 0
     - property_name: initial-aap-processing-weight-capped
       exporter_name: aap_initial_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the initial zAAP processing weight is capped (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     - property_name: current-aap-processing-weight-capped
       exporter_name: aap_current_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the current zAAP processing weight is capped (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     # Note: number-...-processors/cores properties do not exist in 2.15 for CBP processors
     - property_name: initial-cbp-processing-weight
       # since HMC/SE version 2.14.0
@@ -534,6 +582,9 @@ metrics:
       # since HMC/SE version 2.14.0
       exporter_name: cbp_processor_count_is_capped
       exporter_desc: Boolean indicating whether absolute capping is enabled for CBP processors (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     - properties_expression: "properties['absolute-cbp-capping'].value if properties['absolute-cbp-capping'].type == 'processor' else 0"
       # since HMC/SE version 2.14.0
       exporter_name: cbp_processor_count_cap
@@ -542,10 +593,16 @@ metrics:
       # since HMC/SE version 2.14.0
       exporter_name: cbp_initial_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the initial CBP processing weight is capped (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     - property_name: current-cbp-processing-weight-capped
       # since HMC/SE version 2.14.0
       exporter_name: cbp_current_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the current CBP processing weight is capped (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     - properties_expression: "properties['storage-central-allocation']|map(attribute='initial')|sum"
       exporter_name: initial_central_memory_mib
       exporter_desc: Amount of central memory initially allocated to the active partition in MiB, else 0
@@ -576,9 +633,15 @@ metrics:
     - properties_expression: "{'operating': 0, 'not-operating': 1, 'not-activated': 2, 'exceptions': 10}.get(properties.status, 99)"
       exporter_name: lpar_status_int
       exporter_desc: "LPAR status as integer (0=operating, 1=not-operating, 2=not-activated, 10=exceptions, 99=unsupported value)"
+      labels:
+        - name: value
+          value: status
     - property_name: has-unacceptable-status
       exporter_name: has_unacceptable_status
       exporter_desc: Boolean indicating whether the partition has an unacceptable status (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
 
   # Available for CPCs in DPM mode
 
@@ -873,12 +936,18 @@ metrics:
     - properties_expression: "properties['cp-absolute-processor-capping']"
       exporter_name: cp_processor_count_is_capped
       exporter_desc: Boolean indicating whether absolute capping is enabled for CP processors (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     - properties_expression: "properties['cp-absolute-processor-capping-value'] if properties['cp-absolute-processor-capping'] else 0"
       exporter_name: cp_processor_count_cap
       exporter_desc: Maximum number of CP processors that can be used if absolute capping is enabled, else 0
     - property_name: cp-processing-weight-capped
       exporter_name: cp_initial_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the initial CP processing weight is capped (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     - property_name: ifl-processors
       exporter_name: ifl_processor_count
       exporter_desc: Number of IFL processors allocated to the active partition
@@ -897,12 +966,18 @@ metrics:
     - properties_expression: "properties['ifl-absolute-processor-capping']"
       exporter_name: ifl_processor_count_is_capped
       exporter_desc: Boolean indicating whether absolute capping is enabled for IFL processors (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     - properties_expression: "properties['ifl-absolute-processor-capping-value'] if properties['ifl-absolute-processor-capping'] else 0"
       exporter_name: ifl_processor_count_cap
       exporter_desc: Maximum number of IFL processors that can be used if absolute capping is enabled, else 0
     - property_name: ifl-processing-weight-capped
       exporter_name: ifl_initial_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the initial IFL processing weight is capped (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
     - property_name: initial-memory
       exporter_name: initial_memory_mib
       exporter_desc: Initial amount of memory allocated to the partition when it becomes active, in MiB
@@ -915,9 +990,15 @@ metrics:
     - properties_expression: "{'active': 0, 'degraded': 1, 'paused': 10, 'stopped': 11, 'starting': 12, 'stopping': 13, 'reservation-error': 20, 'terminated': 21, 'communications-not-active': 22, 'status-check': 23}.get(properties.status, 99)"
       exporter_name: status_int
       exporter_desc: "Partition status as integer (0=active, 1=degraded, 10=paused, 11=stopped, 12=starting, 13=stopping, 20=reservation-error, 21=terminated, 22=communications-not-active, 23=status-check, 99=unsupported value)"
+      labels:
+        - name: value
+          value: status
     - property_name: has-unacceptable-status
       exporter_name: has_unacceptable_status
       exporter_desc: Boolean indicating whether the partition has an unacceptable status (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool
 
   # Available for CPCs in any mode
 
@@ -1185,6 +1266,12 @@ metrics:
     - properties_expression: "{'active': 0, 'operating': 0, 'degraded': 1, 'service-required': 2, 'service': 10, 'exceptions': 11, 'not-communicating': 12, 'status-check': 13, 'not-operating': 14, 'no-powerstatus': 15}.get(properties.status, 99)"
       exporter_name: status_int
       exporter_desc: "Status as integer (0=active/=operating, 1=degraded, 2=service-required, 10=service, 11=exceptions, 12=not-communicating, 13=status-check, 14=not-operating, 15=no-power, 99=unsupported value)"
+      labels:
+        - name: value
+          value: status
     - property_name: has-unacceptable-status
       exporter_name: has_unacceptable_status
       exporter_desc: Boolean indicating whether the CPC has an unacceptable status (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: bool

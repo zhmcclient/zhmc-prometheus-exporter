@@ -616,9 +616,9 @@ zhmc_partition_cp_processor_count_cap{cpc="CPCA",mzr="US-East",partition="WILLVL
 zhmc_partition_cp_processor_count_cap{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 1.0
 # HELP zhmc_partition_cp_initial_processing_weight_is_capped Boolean indicating whether the initial CP processing weight is capped (i.e. a limit) or not (i.e. a target).
 # TYPE zhmc_partition_cp_initial_processing_weight_is_capped gauge
-zhmc_partition_cp_initial_processing_weight_is_capped{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 0.0
-zhmc_partition_cp_initial_processing_weight_is_capped{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_partition_cp_initial_processing_weight_is_capped{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 0.0
+zhmc_partition_cp_initial_processing_weight_is_capped{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05",valuetype="bool"} 0.0
+zhmc_partition_cp_initial_processing_weight_is_capped{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05",valuetype="bool"} 0.0
+zhmc_partition_cp_initial_processing_weight_is_capped{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05",valuetype="bool"} 0.0
 # HELP zhmc_partition_ifl_processor_count Number of IFL processors allocated to the active partition
 # TYPE zhmc_partition_ifl_processor_count gauge
 zhmc_partition_ifl_processor_count{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 2.0
@@ -651,9 +651,9 @@ zhmc_partition_ifl_processor_count_cap{cpc="CPCA",mzr="US-East",partition="WILLV
 zhmc_partition_ifl_processor_count_cap{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 1.0
 # HELP zhmc_partition_ifl_initial_processing_weight_is_capped Boolean indicating whether the initial IFL processing weight is capped (i.e. a limit) or not (i.e. a target).
 # TYPE zhmc_partition_ifl_initial_processing_weight_is_capped gauge
-zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 0.0
-zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 0.0
+zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05",valuetype="bool"} 0.0
+zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05",valuetype="bool"} 0.0
+zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05",valuetype="bool"} 0.0
 # HELP zhmc_partition_initial_memory_mib Initial amount of memory allocated to the partition when it becomes active, in MiB
 # TYPE zhmc_partition_initial_memory_mib gauge
 zhmc_partition_initial_memory_mib{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 68608.0
