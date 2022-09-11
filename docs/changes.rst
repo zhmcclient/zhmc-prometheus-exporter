@@ -33,6 +33,11 @@ Released: not yet
 * Fixed that not using the `--log` option resulted in an error message
   about invalid use of the `--log-comp` option. (issue #234)
 
+* Fixed an erroneous timezone offset in log timestamps. (issue #241)
+
+* Fixed the log entry for version 1.3.0 that showed an incorrect new timestamp
+  format.
+
 **Enhancements:**
 
 * Added support for labels on single metric definitions, for defining how the
@@ -55,14 +60,14 @@ Released: not yet
 Version 1.3.0
 ^^^^^^^^^^^^^
 
-Released: 2202-09-05
+Released: 2022-09-05
 
 **Incompatible changes:**
 
 * The log format has changed from:
   "2022-08-17 09:24:41,037 logger: message"
   to:
-  "2022-08-17 07:24:41-UTC LEVEL logger: message"
+  "2022-08-17 07:24:41+0000 LEVEL logger: message"
 
 **Bug fixes:**
 
