@@ -1372,8 +1372,13 @@ def setup_logging(log_dest, log_complevels, syslog_facility):
             max_msg = ''
         fs = ('%(asctime)s %(levelname)s %(name)s: %(message){m}s'.
               format(m=max_msg))
-        dfs = '%Y-%m-%d %H:%M:%S%z'
+
+        # Set the formatter to always log times in UTC. Since the %z
+        # formatting string does not get adjusted for that, set the timezone
+        # offset always to '+0000'.
+        dfs = '%Y-%m-%d %H:%M:%S+0000'
         logging.Formatter.converter = time.gmtime  # log times in UTC
+
         handler.setFormatter(logging.Formatter(fmt=fs, datefmt=dfs))
         for logger_name in LOGGER_NAMES.values():
             logger = logging.getLogger(logger_name)
