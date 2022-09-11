@@ -17,29 +17,15 @@ Change log
 ----------
 
 
-Version 1.3.1.dev1
-^^^^^^^^^^^^^^^^^^
+Version 1.3.1
+^^^^^^^^^^^^^
 
-Released: not yet
-
-**Incompatible changes:**
-
-**Deprecations:**
+Released: 2022-09-11
 
 **Bug fixes:**
 
 * Fixed that not using the `--log` option resulted in an error message
   about invalid use of the `--log-comp` option. (issue #234)
-
-**Enhancements:**
-
-**Cleanup:**
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 1.3.0
