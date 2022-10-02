@@ -38,6 +38,10 @@ Released: not yet
 * Fixed the log entry for version 1.3.0 that showed an incorrect new timestamp
   format.
 
+* Fixed a flake8 AttributeError when using importlib-metadata 5.0.0 on
+  Python >=3.7, by pinning importlib-metadata to <5.0.0 on these Python
+  versions.
+
 **Enhancements:**
 
 * Added support for labels on single metric definitions, for defining how the
