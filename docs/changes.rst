@@ -45,6 +45,12 @@ Released: not yet
 * Docs: Added a section about the size of captured terminal output and log
   files. (issue #528)
 
+* Added support for automatically detecting newly created resources on the HMC
+  so their resource-based metrics are automatically added the list of exported
+  metrics. Note that newly deleted resources on the HMC were already
+  automatically removed from the list of exported resource-based metrics since
+  version 1.3.0. (issue #227)
+
 **Cleanup:**
 
 **Known issues:**
