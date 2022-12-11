@@ -57,6 +57,8 @@ Released: not yet
 * Simplified release process by adding a new GitHub Actions workflow publish.yml
   to build and publish to PyPI
 
+* Added exporter and zhmcclient version and verbosity level to log.
+
 **Cleanup:**
 
 **Known issues:**
