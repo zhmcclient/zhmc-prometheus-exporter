@@ -42,6 +42,8 @@ Released: not yet
   Python >=3.7, by pinning importlib-metadata to <5.0.0 on these Python
   versions.
 
+* Test: Fixed install error of Python 2.7, 3,5, 3,6 on Ubuntu in GitHub Actions.
+
 **Enhancements:**
 
 * Added support for labels on single metric definitions, for defining how the
