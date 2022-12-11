@@ -596,8 +596,9 @@ def create_metrics_context(session, yaml_metric_groups, hmc_version):
                     cpc.enable_auto_update()
                 except zhmcclient.Error as exc:
                     logprint(logging.ERROR, PRINT_ALWAYS,
-                             "Ignoring CPC {}, because enabling auto-update "
-                             "for it failed with {}: {}".
+                             "Ignoring resource-based metrics for CPC {}, "
+                             "because enabling auto-update for it failed "
+                             "with {}: {}".
                              format(cpc.name, exc.__class__.__name__, exc))
                     continue  # skip this CPC
                 resources[metric_group].append(cpc)
@@ -614,7 +615,8 @@ def create_metrics_context(session, yaml_metric_groups, hmc_version):
                         partition.enable_auto_update()
                     except zhmcclient.Error as exc:
                         logprint(logging.ERROR, PRINT_ALWAYS,
-                                 "Ignoring partition {}.{}, because enabling "
+                                 "Ignoring resource-based metrics for "
+                                 "partition {}.{}, because enabling "
                                  "auto-update for it failed with {}: {}".
                                  format(cpc.name, partition.name,
                                         exc.__class__.__name__, exc))
@@ -633,7 +635,8 @@ def create_metrics_context(session, yaml_metric_groups, hmc_version):
                         lpar.enable_auto_update()
                     except zhmcclient.Error as exc:
                         logprint(logging.ERROR, PRINT_ALWAYS,
-                                 "Ignoring LPAR {}.{}, because enabling "
+                                 "Ignoring resource-based metrics for "
+                                 "LPAR {}.{}, because enabling "
                                  "auto-update for it failed with {}: {}".
                                  format(cpc.name, lpar.name,
                                         exc.__class__.__name__, exc))
