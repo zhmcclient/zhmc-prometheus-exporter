@@ -220,98 +220,69 @@ local clone of the zhmc-prometheus-exporter Git repo.
       add text for any known issues you want users to know about.
     * Remove all empty list items.
 
-5.  When releasing based on the master branch, edit the GitHub workflow file
-    ``test.yml``:
+5.  Commit your changes and push the topic branch to the remote repo:
 
     .. code-block:: sh
 
-        vi .github/workflows/test.yml
-
-    and in the ``on`` section, increase the version of the ``stable_*`` branch
-    to the new stable branch ``stable_M.N`` created earlier:
-
-    .. code-block:: yaml
-
-        on:
-          schedule:
-            . . .
-          push:
-            branches: [ master, stable_M.N ]
-          pull_request:
-            branches: [ master, stable_M.N ]
-
-6.  Commit your changes and push the topic branch to the remote repo:
-
-    .. code-block:: sh
-
-        git status  # Double check the changed files
         git commit -asm "Release ${MNU}"
         git push --set-upstream origin release_${MNU}
 
-7.  On GitHub, create a Pull Request for branch ``release_M.N.U``. This will
-    trigger the CI runs.
+6.  On GitHub, create a Pull Request for branch ``release_M.N.U``.
 
     Important: When creating Pull Requests, GitHub by default targets the
     ``master`` branch. When releasing based on a stable branch, you need to
     change the target branch of the Pull Request to ``stable_M.N``.
 
+    The PR creation will cause the "test" workflow to run. That workflow runs
+    tests for all defined environments, since it discovers by the branch name
+    that this is a PR for a release.
+
+7.  On GitHub, once the checks for that Pull Request have succeeded, merge the
+    Pull Request (no review is needed). This automatically deletes the branch
+    on GitHub.
+
+    If the PR did not succeed, fix the issues.
+
 8.  On GitHub, close milestone ``M.N.U``.
 
-9.  On GitHub, once the checks for the Pull Request for branch ``start_M.N.U``
-    have succeeded, merge the Pull Request (no review is needed). This
-    automatically deletes the branch on GitHub.
+    Verify that the milestone has no open items anymore. If it does have open
+    items, investigate why and fix.
 
-10. Add a new tag for the version that is being released and push it to
-    the remote repo. Clean up the local repo:
+9.  Publish the package
 
     .. code-block:: sh
 
         git checkout ${BRANCH}
         git pull
+        git branch -D release_${MNU}
+        git branch -D -r origin/release_${MNU}
         git tag -f ${MNU}
         git push -f --tags
-        git branch -d release_${MNU}
 
-11. When releasing based on the master branch, create and push a new stable
-    branch for the same minor version:
+    Pushing the new tag will cause the "publish" workflow to run. That workflow
+    builds the package, publishes it on PyPI, creates a release for it on
+    Github, and finally creates a new stable branch on Github if the master
+    branch was released.
 
-    .. code-block:: sh
+10. Verify the publishing
 
-        git checkout -b stable_${MN}
-        git push --set-upstream origin stable_${MN}
-        git checkout ${BRANCH}
+    * Verify that the new version is available on PyPI at
+      https://pypi.python.org/pypi/zhmc-prometheus-exporter/
 
-    Note that no GitHub Pull Request is created for any ``stable_*`` branch.
+    * Verify that the new version has a release on Github at
+      https://github.com/zhmcclient/zhmc-prometheus-exporter/releases
 
-12. On GitHub, edit the new tag ``M.N.U``, and create a release description on
-    it. This will cause it to appear in the Release tab.
+    * Verify that the new version has documentation on ReadTheDocs at
+      https://zhmc-prometheus-exporter.readthedocs.io/en/latest/changes.html
 
-    You can see the tags in GitHub via Code -> Releases -> Tags.
+      The new version ``M.N.U`` should be automatically active on ReadTheDocs,
+      causing the documentation for the new version to be automatically
+      built and published.
 
-13. On ReadTheDocs, activate the new version ``M.N.U``:
+      If you cannot see the new version after some minutes, log in to
+      https://readthedocs.org/projects/zhmc-prometheus-exporter/versions/
+      and activate the new version.
 
-    * Go to https://readthedocs.org/projects/zhmc-prometheus-exporter/versions/
-      and log in.
-
-    * Activate the new version ``M.N.U``.
-
-      This triggers a build of that version. Verify that the build succeeds
-      and that new version is shown in the version selection popup at
-      https://zhmc-prometheus-exporter.readthedocs.io/
-
-14. Upload the package to PyPI:
-
-    .. code-block:: sh
-
-        make upload
-
-    This will show the package version and will ask for confirmation.
-
-    **Attention!** This only works once for each version. You cannot release
-    the same version twice to PyPI.
-
-    Verify that the released version arrived on PyPI at
-    https://pypi.python.org/pypi/zhmc-prometheus-exporter/
 
 Starting a new version
 ----------------------
@@ -425,7 +396,6 @@ local clone of the zhmc-prometheus-exporter Git repo.
 
     .. code-block:: sh
 
-        git status  # Double check the changed files
         git commit -asm "Start ${MNU}"
         git push --set-upstream origin start_${MNU}
 
