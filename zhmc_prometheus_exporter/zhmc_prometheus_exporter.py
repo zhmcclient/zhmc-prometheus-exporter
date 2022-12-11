@@ -40,6 +40,8 @@ from prometheus_client import start_http_server
 from prometheus_client.core import GaugeMetricFamily, CounterMetricFamily, \
     REGISTRY
 
+from ._version import __version__
+
 DEFAULT_CREDS_FILE = '/etc/zhmc-prometheus-exporter/hmccreds.yaml'
 DEFAULT_METRICS_FILE = '/etc/zhmc-prometheus-exporter/metrics.yaml'
 
@@ -1421,6 +1423,16 @@ def main():
                  "---------------- "
                  "zhmc_prometheus_exporter started "
                  "----------------")
+
+        logprint(logging.INFO, PRINT_ALWAYS,
+                 "zhmc_prometheus_exporter version: {}".format(__version__))
+
+        # pylint: disable=no-member
+        logprint(logging.INFO, PRINT_ALWAYS,
+                 "zhmcclient version: {}".format(zhmcclient.__version__))
+
+        logprint(logging.INFO, PRINT_ALWAYS,
+                 "Verbosity level: {}".format(VERBOSE_LEVEL))
 
         hmccreds_filename = args.c
         logprint(logging.INFO, PRINT_V,
