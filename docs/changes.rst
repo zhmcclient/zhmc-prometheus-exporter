@@ -59,6 +59,10 @@ Released: not yet
 
 * Added exporter and zhmcclient version and verbosity level to log.
 
+* When enabling auto-update for a resource fails, the exporter will now record
+  an error log message that the resource is ignored, but will otherwise
+  continue with its operation. Previously, it terminated in such a case.
+
 **Cleanup:**
 
 **Known issues:**

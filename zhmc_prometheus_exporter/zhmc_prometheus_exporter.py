@@ -592,7 +592,14 @@ def create_metrics_context(session, yaml_metric_groups, hmc_version):
             for cpc in cpcs:
                 logprint(logging.INFO, PRINT_V,
                          "Enabling auto-update for CPC {}".format(cpc.name))
-                cpc.enable_auto_update()
+                try:
+                    cpc.enable_auto_update()
+                except zhmcclient.Error as exc:
+                    logprint(logging.ERROR, PRINT_ALWAYS,
+                             "Ignoring CPC {}, because enabling auto-update "
+                             "for it failed with {}: {}".
+                             format(cpc.name, exc.__class__.__name__, exc))
+                    continue  # skip this CPC
                 resources[metric_group].append(cpc)
         elif resource_path == 'cpc.partition':
             resources[metric_group] = []
@@ -603,7 +610,15 @@ def create_metrics_context(session, yaml_metric_groups, hmc_version):
                     logprint(logging.INFO, PRINT_V,
                              "Enabling auto-update for partition {}.{}".
                              format(cpc.name, partition.name))
-                    partition.enable_auto_update()
+                    try:
+                        partition.enable_auto_update()
+                    except zhmcclient.Error as exc:
+                        logprint(logging.ERROR, PRINT_ALWAYS,
+                                 "Ignoring partition {}.{}, because enabling "
+                                 "auto-update for it failed with {}: {}".
+                                 format(cpc.name, partition.name,
+                                        exc.__class__.__name__, exc))
+                        continue  # skip this partition
                     resources[metric_group].append(partition)
         elif resource_path == 'cpc.logical-partition':
             resources[metric_group] = []
@@ -614,7 +629,15 @@ def create_metrics_context(session, yaml_metric_groups, hmc_version):
                     logprint(logging.INFO, PRINT_V,
                              "Enabling auto-update for LPAR {}.{}".
                              format(cpc.name, lpar.name))
-                    lpar.enable_auto_update()
+                    try:
+                        lpar.enable_auto_update()
+                    except zhmcclient.Error as exc:
+                        logprint(logging.ERROR, PRINT_ALWAYS,
+                                 "Ignoring LPAR {}.{}, because enabling "
+                                 "auto-update for it failed with {}: {}".
+                                 format(cpc.name, lpar.name,
+                                        exc.__class__.__name__, exc))
+                        continue  # skip this LPAR
                     resources[metric_group].append(lpar)
         else:
             new_exc = ImproperExit(
