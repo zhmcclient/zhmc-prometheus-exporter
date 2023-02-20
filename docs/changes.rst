@@ -34,6 +34,9 @@ Released: not yet
 
 * Test: Fixed install error of Python 2.7, 3,5, 3,6 on Ubuntu in GitHub Actions.
 
+* Fixed new issues of Pylint 2.16. Fixed versions of Pylint dependents and their
+  Python versions.
+
 **Enhancements:**
 
 **Cleanup:**
