@@ -136,11 +136,13 @@ pyflakes==2.4.0; python_version >= '3.10'
 entrypoints==0.3.0
 
 # PyLint (no imports, invoked via pylint script)
-pylint==2.6.0
-astroid==2.4.0
-# typed-ast is used by astroid on py34..py37
-typed-ast==1.4.0; python_version <= '3.7' and implementation_name=='cpython'
-lazy-object-proxy==1.4.3
+pylint==2.5.2; python_version == '3.5'
+pylint==2.10.0; python_version >= '3.6'
+astroid==2.4.0; python_version == '3.5'
+astroid==2.7.2; python_version >= '3.6'
+typed-ast==1.4.0; python_version >= '3.6' and python_version < '3.8' and implementation_name=='cpython'
+lazy-object-proxy==1.4.3; python_version >= '3.5'
+wrapt==1.11.2; python_version >= '3.5'
 platformdirs==2.2.0; python_version >= '3.6'
 
 # Sphinx (no imports, invoked via sphinx-build script):
@@ -180,6 +182,7 @@ pip-check-reqs==2.3.2
 
 alabaster==0.7.9
 atomicwrites==1.4.0  # used with minimum package levels
+appdirs==1.4.3
 bleach==3.3.0
 chardet==3.0.4  # used with minimum package levels
 colorama==0.4.0
@@ -208,7 +211,6 @@ toml==0.10.0  # used by pylint and pytest since some version
 tqdm==4.28.1
 typing==3.6.1
 webencodings==0.5.1
-wrapt==1.11.2
 
 # used by pylint 2.14 which requires python_version >= '3.7' (or maybe earlier)
 dill==0.2; python_version >= '3.7'
