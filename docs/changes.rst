@@ -66,6 +66,9 @@ Released: not yet
   an error log message that the resource is ignored, but will otherwise
   continue with its operation. Previously, it terminated in such a case.
 
+* Docs: Added sections on HMC setup and setup of firewalls and proxies that
+  may be between you and the HMC. (issues #260 and #261)
+
 **Cleanup:**
 
 **Known issues:**
