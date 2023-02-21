@@ -107,6 +107,40 @@ The ``zhmc_prometheus_exporter`` command supports the following arguments:
       --help-metrics        show help for metric definition file and exit
 
 
+Setting up the HMC
+------------------
+
+Usage of this package requires that the HMC in question is prepared
+accordingly:
+
+* The Web Services API must be enabled on the HMC.
+
+  You can do that in the HMC GUI by selecting "HMC Management" in the left pane,
+  then opening the "Configure API Settings" icon on the pain pane,
+  then selecting the "Web Services" tab on the page that comes up, and
+  finally enabling the Web Services API on that page.
+
+  The above is on a z16 HMC, it may be different on older HMCs.
+
+  If you cannot find this icon, then your userid does not have permission
+  for the respective task on the HMC. In that case, there should be some
+  other HMC admin you can go to to get the Web Services API enabled.
+
+
+Setting up firewalls or proxies
+-------------------------------
+
+If you have to configure firewalls or proxies between the system where you
+run the ``zhmc_prometheus_exporter`` command and the HMC, the following ports
+need to be opened:
+
+* 6794 (TCP) - for the HMC API HTTP server
+* 61612 (TCP) - for the HMC API message broker via JMS over STOMP
+
+For details, see sections "Connecting to the API HTTP server" and
+"Connecting to the API message broker" in the :term:`HMC API` book.
+
+
 HMC userid requirements
 -----------------------
 
