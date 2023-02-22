@@ -12,6 +12,12 @@ pytest>=6.2.5; python_version >= '3.10'
 importlib-metadata>=0.12,<5.0.0; python_version <= '3.7'
 importlib-metadata>=1.1.0; python_version >= '3.8'
 
+# packaging is used by pytest, pip-check-reqs, sphinx
+# packaging>=20.5 is needed by pip-check-reqs 2.4.3 but it requires only packaging>=16.0
+# packaging 21.0 removed support for Python <3.6
+packaging>=20.5; python_version <= '3.5'
+packaging>=21.0; python_version >= '3.6'
+
 # Coverage reporting (no imports, invoked via coveralls script):
 coverage>=5.0
 pytest-cov>=2.7.0
@@ -75,5 +81,9 @@ readme-renderer>=25.0
 
 # Package dependency management tools (not used by any make rules)
 pipdeptree>=2.0.0
-# pip-check-reqs 2.3.2 solves issues with newer pip versions
-pip-check-reqs>=2.3.2
+# pip-check-reqs is not used on Python 2.7
+# pip-check-reqs 2.3.2 is needed to have proper support for pip<21.3.
+# pip-check-reqs 2.4.0 requires Python>=3.8.
+# pip-check-reqs 2.4.3 fixes a speed issue on Python 3.11 and requires pip>=21.2.4
+pip-check-reqs>=2.3.2; python_version >= '3.5' and python_version <= '3.7'
+pip-check-reqs>=2.4.3; python_version >= '3.8'
