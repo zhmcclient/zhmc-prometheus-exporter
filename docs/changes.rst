@@ -87,6 +87,8 @@ Released: not yet
 
 * Addressed issues in test workflow reported by Github Actions. (issue #264)
 
+* Increased minimum versions of pip, setuptools, wheel to more recent versions.
+
 **Known issues:**
 
 * See `list of open issues`_.

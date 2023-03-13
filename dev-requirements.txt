@@ -85,7 +85,7 @@ twine>=3.0.0; python_version >= '3.6'
 readme-renderer>=25.0
 
 # Package dependency management tools (not used by any make rules)
-pipdeptree>=2.0.0
+pipdeptree>=2.2.0
 # pip-check-reqs is not used on Python 2.7
 # pip-check-reqs 2.3.2 is needed to have proper support for pip<21.3.
 # pip-check-reqs 2.4.0 requires Python>=3.8.
