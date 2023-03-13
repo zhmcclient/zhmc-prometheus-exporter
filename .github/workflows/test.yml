@@ -195,6 +195,11 @@ jobs:
       run: |
         echo "Package dependency tree of installed Python packages:"
         pipdeptree --all
+    - name: Run safety
+      env:
+        PACKAGE_LEVEL: ${{ matrix.package_level }}
+      run: |
+        make safety
     - name: Run check_reqs
       env:
         PACKAGE_LEVEL: ${{ matrix.package_level }}
