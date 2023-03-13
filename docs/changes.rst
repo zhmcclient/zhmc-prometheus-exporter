@@ -47,6 +47,9 @@ Released: not yet
 * Fixed new issues of Pylint 2.16. Fixed versions of Pylint dependents and their
   Python versions.
 
+* Added missing packages (pip_check_reqs, pipdeptree) to be checked for their
+  dependencies in minimum-constraints.txt.
+
 **Enhancements:**
 
 * Added support for labels on single metric definitions, for defining how the

@@ -129,7 +129,7 @@ doc_dependent_files := \
     $(package_py_files) \
 
 # Packages whose dependencies are checked using pip-missing-reqs
-check_reqs_packages := pytest coverage coveralls flake8 pylint sphinx twine
+check_reqs_packages := pip_check_reqs pipdeptree build pytest coverage coveralls flake8 pylint sphinx twine
 
 pytest_cov_opts := --cov $(package_name) --cov-config .coveragerc --cov-report=html:htmlcov
 

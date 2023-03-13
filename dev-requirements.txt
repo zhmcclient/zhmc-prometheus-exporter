@@ -6,6 +6,8 @@
 
 # PEP517 package builder, used in Makefile
 build>=0.5.0
+# build up to version 0.9 requires pep517>=0.9.1
+pep517>=0.9.1
 
 # Unit test (imports into testcases):
 # pytest 4.3.1 solves an issue on Python 3 with minimum package levels

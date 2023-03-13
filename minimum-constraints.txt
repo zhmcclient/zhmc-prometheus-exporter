@@ -110,6 +110,8 @@ zipp==0.5.2  # Used in some combinations of Python version and package level
 
 # PEP517 package builder, used in Makefile
 build==0.5.0
+# build up to version 0.9 requires pep517>=0.9.1
+pep517==0.9.1
 
 # Unit test (imports into testcases):
 # pytest 4.3.1 solves an issue on Python 3 with minimum package levels
@@ -203,6 +205,8 @@ more-itertools==8.0.0  # used with minimum package levels
 pkginfo==1.4.2
 py==1.10.0
 pyparsing==2.4.5
+# build is using pyproject-hooks
+pyproject-hooks==1.0.0; python_version >= '3.7'
 requests-toolbelt==0.8.0
 rfc3986==1.4.0; python_version >= "3.6"  # used by twine since its 3.2.0 which requires py36
 sphinxcontrib-applehelp==1.0.2
