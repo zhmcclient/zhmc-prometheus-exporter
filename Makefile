@@ -94,6 +94,8 @@ package_version := $(shell $(PYTHON_CMD) setup.py --version)
 
 python_version := $(shell $(PYTHON_CMD) -c "import sys; sys.stdout.write('{}.{}'.format(sys.version_info[0], sys.version_info[1]))")
 pymn := $(shell $(PYTHON_CMD) -c "import sys; sys.stdout.write('py{}{}'.format(sys.version_info[0], sys.version_info[1]))")
+python_m_version := $(shell $(PYTHON_CMD) -c "import sys; sys.stdout.write('{v[0]}'.format(v=sys.version_info))")
+python_mn_version := $(shell $(PYTHON_CMD) -c "import sys; sys.stdout.write('{v[0]}.{v[1]}'.format(v=sys.version_info))")
 
 package_dir := $(package_name)
 package_py_files := \
@@ -131,6 +133,9 @@ doc_dependent_files := \
 # Packages whose dependencies are checked using pip-missing-reqs
 check_reqs_packages := pip_check_reqs pipdeptree build pytest coverage coveralls flake8 pylint sphinx twine
 
+# Safety policy file
+safety_policy_file := .safety-policy.yml
+
 pytest_cov_opts := --cov $(package_name) --cov-config .coveragerc --cov-report=html:htmlcov
 
 ifeq ($(PACKAGE_LEVEL),minimum)
@@ -154,6 +159,7 @@ help:
 	@echo "  check_reqs - Perform missing dependency checks"
 	@echo "  check      - Perform flake8 checks"
 	@echo "  pylint     - Perform pylint checks"
+	@echo "  safety     - Run safety on sources"
 	@echo "  test       - Perform unit tests including coverage checker"
 	@echo "  build      - Build the distribution files in $(dist_dir)"
 	@echo "  builddoc   - Build the documentation in $(doc_build_dir)"
@@ -221,6 +227,10 @@ pylint: develop_$(pymn).done
 	@echo "Makefile: Done performing pylint checks"
 	@echo "Makefile: $@ done."
 
+.PHONY: safety
+safety: safety_$(pymn).done
+	@echo "Makefile: $@ done."
+
 .PHONY: check_reqs
 check_reqs: develop_$(pymn).done minimum-constraints.txt requirements.txt
 ifeq ($(python_m_version),2)
@@ -240,6 +250,21 @@ else
 endif
 endif
 	@echo "Makefile: $@ done."
+
+safety_$(pymn).done: develop_$(pymn).done Makefile $(safety_policy_file) minimum-constraints.txt
+ifeq ($(python_m_version),2)
+	@echo "Makefile: Warning: Skipping Safety on Python $(python_version)" >&2
+else
+ifeq ($(python_mn_version),3.5)
+	@echo "Makefile: Warning: Skipping Safety on Python $(python_version)" >&2
+else
+	@echo "Makefile: Running Safety"
+	-$(call RM_FUNC,$@)
+	safety check --policy-file $(safety_policy_file) -r minimum-constraints.txt --full-report
+	echo "done" >$@
+	@echo "Makefile: Done running Safety"
+endif
+endif
 
 .PHONY: test
 test: develop_$(pymn).done
