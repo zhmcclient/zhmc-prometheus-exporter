@@ -11,6 +11,8 @@
 /*.egg-info/
 /AUTHORS
 /ChangeLog
+/MANIFEST
+/MANIFEST.in
 
 # Make test
 __pycache__/
