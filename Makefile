@@ -301,8 +301,7 @@ install_base_$(pymn).done:
 install_$(pymn).done: install_base_$(pymn).done requirements.txt setup.py
 	@echo "Makefile: Installing package and its prerequisites with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
 	-$(call RM_FUNC,$@)
-	$(PYTHON_CMD) -m pip install $(pip_level_opts) -r requirements.txt
-	$(PIP_CMD) install -e .
+	$(PYTHON_CMD) -m pip install $(pip_level_opts) -e .
 	@echo "Makefile: Done installing package and its prerequisites"
 	echo "done" >$@
 
