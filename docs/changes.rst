@@ -69,6 +69,12 @@ Released: not yet
 * Docs: Added sections on HMC setup and setup of firewalls and proxies that
   may be between you and the HMC. (issues #260 and #261)
 
+* Added missing environments to weekly full tests (Python 3.5,3.6 on Windows
+  and MacOS).
+
+* Added some critical environments to normal PR tests (Python 3.10/min on
+  Windows).
+
 **Cleanup:**
 
 * Addressed issues in test workflow reported by Github Actions. (issue #264)
