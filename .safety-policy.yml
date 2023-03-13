@@ -19,7 +19,36 @@ security:
     # {id}:                 # vulnerability ID
     #     reason: {text}    # optional: Reason for ignoring it. Will be reported in the Safety reports
     #     expires: {date}   # optional: Date when this ignore will expire
-    ignore-vulnerabilities: []
+    ignore-vulnerabilities:
+        37504:
+            reason: Fixed Twine version requires Python>=3.6 and is used there
+        39611:
+            reason: PyYAML full_load method or FullLoader is not used
+        39621:
+            reason: Fixed Pylint version requires Python>=3.6 and is used there
+        40291:
+            reason: Fixed Pip version requires Python>=3.6 and is used there
+        42559:
+            reason: Fixed Pip version requires Python>=3.6 and is used there; Pip is not shipped with this package
+        43975:
+            reason: Fixed Urllib3 versions are excluded by requests
+        45185:
+            reason: Fixed Pylint version requires Python>=3.6.2 and is used there
+        47833:
+            reason: Fixed Click version requires Python>=3.6 and is used there
+        51457:
+            reason: Py package is not yet fixed (latest version 1.11.0)
+            expires: 2023-03-31
+        51499:
+            reason: Fixed Wheel version requires Python>=3.7 and is used there; Risk is on Pypi side
+        52322:
+            reason: Fixed GitPython version requires Python>=3.7 and is used there
+        52365:
+            reason: Fixed Certifi version requires Python>=3.6 and is used there
+        52495:
+            reason: Fixed Setuptools version requires Python>=3.7 and is used there; Risk is on Pypi side
+        52518:
+            reason: Fixed GitPython version requires Python>=3.7 and is used there
 
     # Continue with exit code 0 when vulnerabilities are found.
-    continue-on-vulnerability-error: True  # TODO: Enable once issues are resolved
+    continue-on-vulnerability-error: False
