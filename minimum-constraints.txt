@@ -85,9 +85,10 @@ urllib3==1.26.5; python_version >= '3.10'
 jsonschema==2.6.0
 six==1.14.0; python_version <= '3.9'
 six==1.16.0; python_version >= '3.10'
-Jinja2==2.8; python_version <= '3.9'
-Jinja2==2.10.2; python_version >= '3.10'
-PyYAML==5.3.1
+Jinja2==2.11.3
+# PyYAML is also used by dparse and python-coveralls
+PyYAML==5.3.1; python_version == '3.5'
+PyYAML==5.4; python_version >= '3.6'
 
 # Indirect dependencies for runtime that require a version constraint (must be consistent with requirements.txt)
 
@@ -97,7 +98,9 @@ pyrsistent==0.14.0
 
 attrs==18.2.0; python_version <= '3.9'
 attrs==19.2.0; python_version >= '3.10'
-certifi==2019.9.11
+# certifi 2022.12.07 fixes safety issue 52365
+certifi==2019.9.11; python_version <= '3.5'
+certifi==2022.12.07; python_version >= '3.6'
 charset-normalizer==2.0.4
 decorator==4.0.11
 docopt==0.6.2
@@ -109,7 +112,7 @@ pytz==2019.1; python_version >= '3.10'
 requests==2.22.0; python_version <= '3.9'
 requests==2.25.0; python_version >= '3.10'
 stomp.py==4.1.23
-typing-extensions==3.7.4  # Used in some combinations of Python version and package level
+typing-extensions==3.10.0  # Used in some combinations of Python version and package level
 zipp==0.5.2  # Used in some combinations of Python version and package level
 
 # Direct dependencies for development (must be consistent with dev-requirements.txt)
@@ -154,11 +157,11 @@ pyflakes==2.2.0; python_version <= '3.9'
 pyflakes==2.4.0; python_version >= '3.10'
 entrypoints==0.3.0
 
-# PyLint (no imports, invoked via pylint script)
+# PyLint (no imports, invoked via pylint script):
 pylint==2.5.2; python_version == '3.5'
-pylint==2.10.0; python_version >= '3.6'
+pylint==2.13.0; python_version >= '3.6'
 astroid==2.4.0; python_version == '3.5'
-astroid==2.7.2; python_version >= '3.6'
+astroid==2.11.0; python_version >= '3.6'
 typed-ast==1.4.0; python_version >= '3.6' and python_version < '3.8' and implementation_name=='cpython'
 lazy-object-proxy==1.4.3; python_version >= '3.5'
 wrapt==1.11.2; python_version >= '3.5'
@@ -170,18 +173,15 @@ Sphinx==4.2.0; python_version >= '3.10'
 docutils==0.13.1; python_version <= '3.9'
 docutils==0.14; python_version >= '3.10'
 sphinx-git==10.1.1
-GitPython==2.1.1
-gitdb2==2.0.0
-gitdb==4.0.1
-smmap2==2.0.1
-smmap==3.0.1
+GitPython==2.1.1; python_version <= '3.6'
+GitPython==3.1.30; python_version >= '3.7'
 sphinxcontrib-fulltoc==1.2.0
 sphinxcontrib-websupport==1.1.2
-Pygments==2.5.1
+Pygments==2.7.4
 sphinx-rtd-theme==0.5.0
 autodocsumm==0.1.13; python_version <= '3.9'
 autodocsumm==0.2.5; python_version >= '3.10'
-Babel==2.7.0
+Babel==2.9.1
 
 # Twine (no imports, invoked via twine script):
 # readme-renderer (used by twine, uses Pygments)
@@ -207,6 +207,9 @@ bleach==3.3.0
 chardet==3.0.4  # used with minimum package levels
 colorama==0.4.0
 contextlib2==0.6.0
+gitdb2==2.0.0; python_version <= '3.6'
+gitdb==4.0.1; python_version == '3.5'
+gitdb==4.0.8; python_version >= '3.6'
 html5lib==1.0.1  # used with minimum package levels
 imagesize==0.7.1
 iniconfig==1.1.1; python_version >= "3.6"  # used by pytest since its 6.0.0 which requires py36
@@ -220,6 +223,7 @@ pyparsing==2.4.5
 pyproject-hooks==1.0.0; python_version >= '3.7'
 requests-toolbelt==0.8.0
 rfc3986==1.4.0; python_version >= "3.6"  # used by twine since its 3.2.0 which requires py36
+smmap==3.0.1
 sphinxcontrib-applehelp==1.0.2
 sphinxcontrib-devhelp==1.0.2
 sphinxcontrib-htmlhelp==1.0.3; python_version <= '3.9'
