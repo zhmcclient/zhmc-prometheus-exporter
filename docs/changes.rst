@@ -148,6 +148,9 @@ Released: not yet
 
 * Docs: Added a link to the description of Jinja2 expressions.
 
+* Added a 'cord' label with the line cord name to all 'zhmc_cpc_power_cord\*'
+  metrics.
+
 **Cleanup:**
 
 * Addressed issues in test workflow reported by Github Actions. (issue #264)
