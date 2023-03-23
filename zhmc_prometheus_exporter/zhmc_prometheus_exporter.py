@@ -456,13 +456,13 @@ def resource_str(resource_obj):
     return res_str
 
 
-def eval_condition(condition, hmc_version):
+def eval_condition(condition, hmc_version, se_version):
     """
-    Evaluate a condition expression and return a boolean indicating whether
-    the condition is true.
+    Evaluate a Python expression as a condition and return a boolean indicating
+    whether the condition is true.
 
-    Any version string in the condition expression is converted to a tuple of
-    integers before evaluating the expression.
+    Any M.N.U version strings in the condition expression are converted to a
+    tuple of integers before evaluating the expression.
 
     Parameters:
 
@@ -471,11 +471,15 @@ def eval_condition(condition, hmc_version):
 
       hmc_version (string): Expression variable: HMC version as a string.
 
+      se_version (string): Expression variable: SE/CPC version as a string.
+
     Returns:
 
       bool: Evaluated condition
     """
     hmc_version = split_version(hmc_version, 3)
+    if se_version:
+        se_version = split_version(se_version, 3)
     while True:
         m = COND_PATTERN.match(condition)
         if m is None:
@@ -483,7 +487,8 @@ def eval_condition(condition, hmc_version):
         condition = "{}{}{}".format(
             m.group(1), split_version(m.group(2), 3), m.group(3))
     # pylint: disable=eval-used
-    condition = eval(condition, None, dict(hmc_version=hmc_version))
+    condition = eval(condition, None,
+                     dict(hmc_version=hmc_version, se_version=se_version))
     return condition
 
 
@@ -521,16 +526,17 @@ def create_session(cred_dict, hmccreds_filename):
     return session
 
 
-def get_hmc_version(session):
+def get_hmc_info(session):
     """
-    Return the HMC version as a string "v.r.m".
+    Return the result of the 'Query API Version' operation. This includes
+    the HMC version, HMC name and other data. For details, see the operation's
+    result description in the HMC WS API book.
 
     Raises: zhmccclient exceptions
     """
     client = zhmcclient.Client(session)
-    version_dict = client.query_api_version()
-    hmc_version = version_dict['hmc-version']
-    return hmc_version
+    hmc_info = client.query_api_version()
+    return hmc_info
 
 
 def create_metrics_context(session, yaml_metric_groups, hmc_version):
@@ -555,7 +561,7 @@ def create_metrics_context(session, yaml_metric_groups, hmc_version):
         fetch = mg_dict["fetch"]
         # if is optional in the metrics schema:
         if fetch and "if" in mg_dict:
-            fetch = eval_condition(mg_dict["if"], hmc_version)
+            fetch = eval_condition(mg_dict["if"], hmc_version, None)
         if fetch:
             if mg_type == 'hmc':
                 fetched_hmc_metric_groups.append(metric_group)
@@ -741,16 +747,23 @@ class ResourceCache(object):
                 mgd = object_value.metric_group_definition
                 logprint(logging.WARNING, PRINT_ALWAYS,
                          "Warning: Did not find resource {} specified in "
-                         "ometric bject value for metric group '{}'".
+                         "metric object value for metric group '{}'".
                          format(uri, mgd.name))
                 logprint(logging.WARNING, PRINT_ALWAYS,
                          "Warning details: Current resource cache:")
                 logprint(logging.WARNING, PRINT_ALWAYS,
                          repr(self._resources))
                 for mgr in exc.managers:
+                    try:
+                        res_class = mgr.class_name
+                    except AttributeError:
+                        logprint(logging.ERROR, PRINT_ALWAYS,
+                                 "Error: Manager object has no class_name "
+                                 "attribute: {!r}".format(mgr))
+                        continue
                     logprint(logging.WARNING, PRINT_ALWAYS,
                              "Warning details: List of {} resources found:".
-                             format(mgr.class_name))
+                             format(res_class))
                     res_dict = {}
                     resources = mgr.list()
                     for res in resources:
@@ -772,9 +785,101 @@ class ResourceCache(object):
             pass
 
 
-def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
-                         metrics_filename, extra_labels,
-                         resource_cache=None):
+def expand_global_label_value(
+        env, label_name, item_value, hmc_info):
+    """
+    Expand a Jinja2 expression on a label value, for a global (extra) label.
+    """
+    try:
+        func = env.compile_expression(item_value)
+    except jinja2.TemplateSyntaxError as exc:
+        logprint(logging.WARNING, PRINT_V,
+                 "Ignoring global label '{}' due to "
+                 "syntax error in the Jinja2 expression in its value: {}".
+                 format(label_name, exc))
+        return None
+    try:
+        value = func(hmc_info=hmc_info)
+    except jinja2.TemplateError as exc:
+        logprint(logging.WARNING, PRINT_V,
+                 "Ignoring global label '{}' due to "
+                 "error in rendering the Jinja2 expression in its value: {}".
+                 format(label_name, exc))
+        return None
+    return str(value)
+
+
+def expand_group_label_value(
+        env, label_name, group_name, item_value, resource_obj,
+        metric_values=None):
+    """
+    Expand a Jinja2 expression on a label value, for a metric group label.
+    """
+    try:
+        func = env.compile_expression(item_value)
+    except jinja2.TemplateSyntaxError as exc:
+        logprint(logging.WARNING, PRINT_V,
+                 "Ignoring label '{}' on metric group '{}' due to "
+                 "syntax error in label value Jinja2 expression: {}".
+                 format(label_name, group_name, exc))
+        return None
+    try:
+        value = func(
+            resource_obj=resource_obj,
+            metric_values=metric_values)
+    except jinja2.TemplateError as exc:
+        logprint(logging.WARNING, PRINT_V,
+                 "Ignoring label '{}' on metric group '{}' due to "
+                 "error in rendering label value Jinja2 expression: {}".
+                 format(label_name, group_name, exc))
+        return None
+    return str(value)
+
+
+def expand_metric_label_value(
+        env, label_name, metric_exporter_name, item_value, resource_obj,
+        metric_values=None):
+    """
+    Expand a Jinja2 expression on a label value, for a metric label.
+    """
+    try:
+        func = env.compile_expression(item_value)
+    except jinja2.TemplateSyntaxError as exc:
+        logprint(logging.WARNING, PRINT_V,
+                 "Ignoring label '{}' on metric with exporter name '{}' due to "
+                 "syntax error in the Jinja2 expression in its value: {}".
+                 format(label_name, metric_exporter_name, exc))
+        return None
+    try:
+        value = func(
+            resource_obj=resource_obj,
+            metric_values=metric_values)
+    except jinja2.TemplateError as exc:
+        logprint(logging.WARNING, PRINT_V,
+                 "Ignoring label '{}' on metric with exporter name '{}' due to "
+                 "error in rendering the Jinja2 expression in its value: {}".
+                 format(label_name, metric_exporter_name, exc))
+        return None
+    return str(value)
+
+
+def cpc_from_resource(resource):
+    """
+    From a given zhmcclient resource object, try to navigate to its CPC
+    and return the zhmcclient.Cpc object.
+    If the resource is not a CPC or part of a CPC, return None.
+    """
+    cpc = resource
+    while True:
+        if cpc is None or cpc.manager.class_name == 'cpc':
+            break
+        cpc = cpc.manager.parent
+    return cpc
+
+
+def build_family_objects(
+        metrics_object, yaml_metric_groups, yaml_metrics, metrics_filename,
+        extra_labels, hmc_version, se_versions, resource_cache=None):
     """
     Go through all retrieved metrics and build the Prometheus Family objects.
 
@@ -786,6 +891,7 @@ def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
       family_name:
         GaugeMetricFamily object
     """
+    env = jinja2.Environment()
 
     family_objects = {}
     for metric_group_value in metrics_object.metric_group_values:
@@ -807,32 +913,27 @@ def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
                 resource = object_value.resource
             metric_values = object_value.metrics
 
+            cpc = cpc_from_resource(resource)
+            if cpc:
+                # This resource is a CPC or part of a CPC
+                se_version = se_versions[cpc.name]
+            else:
+                # This resource is an HMC or part of an HMC
+                se_version = None
+
             # Calculate the resource labels at the metric group level:
             mg_labels = dict(extra_labels)
             # labels is optional in the metrics schema:
-            default_labels = [dict(name='resource', value='resource')]
+            default_labels = [dict(name='resource', value='resource_obj.name')]
             yaml_labels = yaml_metric_group.get('labels', default_labels)
             for item in yaml_labels:
                 # name, value are required in the metrics schema:
                 label_name = item['name']
                 item_value = item['value']
-                if item_value == 'resource':
-                    label_value = str(resource.name)
-                elif item_value == 'resource.parent':
-                    label_value = str(resource.manager.parent.name)
-                elif item_value == 'resource.parent.parent':
-                    label_value = \
-                        str(resource.manager.parent.manager.parent.name)
-                else:
-                    if item_value in metric_values:
-                        label_value = str(metric_values[item_value])
-                    else:
-                        logprint(logging.WARNING, PRINT_V,
-                                 "Ignoring label '{}' with unknown metric '{}' "
-                                 "on metric group '{}'".
-                                 format(label_name, item_value, metric_group))
-                        label_name = None
-                if label_name is not None:
+                label_value = expand_group_label_value(
+                    env, label_name, metric_group, item_value, resource,
+                    metric_values)
+                if label_value is not None:
                     mg_labels[label_name] = label_value
 
             for metric in metric_values:
@@ -860,6 +961,12 @@ def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
                 if not yaml_metric["exporter_name"]:
                     continue
 
+                # Skip conditional metrics that their condition not met
+                if_expr = yaml_metric.get("if", None)
+                if if_expr and \
+                        not eval_condition(if_expr, hmc_version, se_version):
+                    continue
+
                 # Transform HMC percentages (value 100 means 100% = 1) to
                 # Prometheus values (value 1 means 100% = 1)
                 # percent is optional in the metrics schema:
@@ -874,15 +981,10 @@ def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
                     # name, value are required in the metrics schema:
                     label_name = item['name']
                     item_value = item['value']
-                    if label_name == 'valuetype':
-                        label_value = item_value
-                    else:
-                        logprint(logging.WARNING, PRINT_V,
-                                 "Ignoring unknown label '{}' on metric "
-                                 "'{}' in metric group '{}'".
-                                 format(label_name, metric, metric_group))
-                        label_name = None
-                    if label_name is not None:
+                    label_value = expand_metric_label_value(
+                        env, label_name, yaml_metric["exporter_name"],
+                        item_value, resource, metric_values)
+                    if label_value is not None:
                         labels[label_name] = label_value
 
                 # Create a Family object, if needed
@@ -916,7 +1018,7 @@ def build_family_objects(metrics_object, yaml_metric_groups, yaml_metrics,
 
 def build_family_objects_res(
         resources, yaml_metric_groups, yaml_metrics, metrics_filename,
-        extra_labels, resource_cache=None):
+        extra_labels, hmc_version, se_versions, resource_cache=None):
     """
     Go through all auto-updated resources and build the Prometheus Family
     objects for them.
@@ -960,33 +1062,26 @@ def build_family_objects_res(
                     resource_cache.remove(resource.uri)
                 continue
 
+            cpc = cpc_from_resource(resource)
+            if cpc:
+                # This resource is a CPC or part of a CPC
+                se_version = se_versions[cpc.name]
+            else:
+                # This resource is an HMC or part of an HMC
+                se_version = None
+
             # Calculate the resource labels at the metric group level:
             mg_labels = dict(extra_labels)
             # labels is optional in the metrics schema:
-            default_labels = [dict(name='resource', value='resource')]
+            default_labels = [dict(name='resource', value='resource_obj.name')]
             yaml_labels = yaml_metric_group.get('labels', default_labels)
             for item in yaml_labels:
                 # name, value are required in the metrics schema:
                 label_name = item['name']
                 item_value = item['value']
-                if item_value == 'resource':
-                    label_value = str(resource.name)
-                elif item_value == 'resource.parent':
-                    label_value = str(resource.manager.parent.name)
-                elif item_value == 'resource.parent.parent':
-                    label_value = \
-                        str(resource.manager.parent.manager.parent.name)
-                else:
-                    _prop_name = item_value
-                    if _prop_name in resource.properties:
-                        label_value = str(resource.properties[_prop_name])
-                    else:
-                        logprint(logging.WARNING, PRINT_V,
-                                 "Ignoring label '{}' with unknown property "
-                                 "'{}' on metric group '{}'".
-                                 format(label_name, _prop_name, metric_group))
-                        label_name = None
-                if label_name is not None:
+                label_value = expand_group_label_value(
+                    env, label_name, metric_group, item_value, resource)
+                if label_value is not None:
                     mg_labels[label_name] = label_value
 
             yaml_mg = yaml_metrics[metric_group]
@@ -1001,7 +1096,18 @@ def build_family_objects_res(
                     yaml_metric = item
                     prop_name = yaml_metric.get('property_name', None)
 
+                # exporter_name is required in the metrics schema
                 exporter_name = yaml_metric["exporter_name"]
+
+                # Skip metrics that are defined to be ignored
+                if not exporter_name:
+                    continue
+
+                # Skip conditional metrics that their condition not met
+                if_expr = yaml_metric.get("if", None)
+                if if_expr and \
+                        not eval_condition(if_expr, hmc_version, se_version):
+                    continue
 
                 if prop_name:
                     try:
@@ -1036,18 +1142,20 @@ def build_family_objects_res(
 
                     try:
                         metric_value = func(properties=resource.properties)
+                    # pylint: disable=broad-exception-caught,broad-except
                     except Exception as exc:
                         # Typical exceptions:
-                        # - jinja2.exceptions.UndefinedError
+                        # - jinja2.exceptions.UndefinedError, e.g. for missing
+                        #   HMC resource properties
                         # - TypeError
-                        new_exc = ImproperExit(
-                            "Error evaluating properties expression {!r} "
-                            "defined for exporter name '{}' "
-                            "in metric definition file {}: {}: {}".
-                            format(prop_expr, exporter_name, metrics_filename,
+                        logprint(
+                            logging.WARNING, PRINT_ALWAYS,
+                            "Ignoring metric with exporter name '{}' "
+                            "in metric definition file {} due to error "
+                            "evaluating properties expression {}: {}: {}".
+                            format(exporter_name, metrics_filename, prop_expr,
                                    exc.__class__.__name__, exc))
-                        new_exc.__cause__ = None  # pylint: disable=invalid-name
-                        raise new_exc
+                        continue
 
                 # Skip resource properties that have a null value. An example
                 # are some LPAR/partition properties that are null when the
@@ -1057,9 +1165,15 @@ def build_family_objects_res(
                 if metric_value is None:
                     continue
 
-                # Skip metrics that are defined to be ignored
-                # exporter_name is required in the metrics schema:
+                # Skip metrics that are defined to be ignored.
+                # exporter_name is required in the metrics schema.
                 if not yaml_metric["exporter_name"]:
+                    continue
+
+                # Skip conditional metrics that their condition not met
+                if_expr = yaml_metric.get("if", None)
+                if if_expr and \
+                        not eval_condition(if_expr, hmc_version, se_version):
                     continue
 
                 # Transform the HMC value using the valuemap, if defined:
@@ -1091,28 +1205,9 @@ def build_family_objects_res(
                     # name, value are required in the metrics schema:
                     label_name = item['name']
                     item_value = item['value']
-                    if label_name == 'valuetype':
-                        label_value = item_value
-                    elif label_name == 'value':
-                        _prop_name = item_value
-                        if _prop_name in resource.properties:
-                            label_value = str(resource.properties[_prop_name])
-                        else:
-                            logprint(logging.WARNING, PRINT_V,
-                                     "Ignoring label '{}' with unknown "
-                                     "property '{}' on exporter name '{}' in "
-                                     "metric group '{}'".
-                                     format(label_name, _prop_name,
-                                            exporter_name, metric_group))
-                            label_name = None
-                    else:
-                        logprint(logging.WARNING, PRINT_V,
-                                 "Ignoring unknown label '{}' on exporter "
-                                 "name '{}' in metric group '{}'".
-                                 format(label_name, exporter_name,
-                                        metric_group))
-                        label_name = None
-                    if label_name is not None:
+                    label_value = expand_metric_label_value(
+                        env, label_name, exporter_name, item_value, resource)
+                    if label_value is not None:
                         labels[label_name] = label_value
 
                 # Create a Family object, if needed
@@ -1151,7 +1246,7 @@ class ZHMCUsageCollector():
     def __init__(self, yaml_creds, session, context, resources,
                  yaml_metric_groups,
                  yaml_metrics, extra_labels, filename_metrics, filename_creds,
-                 resource_cache, hmc_version):
+                 resource_cache, hmc_version, se_versions):
         self.yaml_creds = yaml_creds
         self.session = session
         self.context = context
@@ -1163,6 +1258,7 @@ class ZHMCUsageCollector():
         self.filename_creds = filename_creds
         self.resource_cache = resource_cache
         self.hmc_version = hmc_version
+        self.se_versions = se_versions
 
     def collect(self):
         """
@@ -1211,6 +1307,7 @@ class ZHMCUsageCollector():
                              "Abandoning after Authentication error: {}".
                              format(exc))
                     raise
+                # pylint: disable=broad-exception-caught,broad-except
                 except Exception as exc:
                     logprint(logging.ERROR, PRINT_ALWAYS,
                              "Abandoning after exception {}: {}".
@@ -1223,14 +1320,16 @@ class ZHMCUsageCollector():
         family_objects = build_family_objects(
             metrics_object, self.yaml_metric_groups,
             self.yaml_metrics, self.filename_metrics,
-            self.extra_labels, self.resource_cache)
+            self.extra_labels, self.hmc_version, self.se_versions,
+            self.resource_cache)
 
         logprint(logging.DEBUG, None,
                  "Building family objects for resource metrics")
         family_objects.update(build_family_objects_res(
             self.resources, self.yaml_metric_groups,
             self.yaml_metrics, self.filename_metrics,
-            self.extra_labels, self.resource_cache))
+            self.extra_labels, self.hmc_version, self.se_versions,
+            self.resource_cache))
 
         logprint(logging.DEBUG, None,
                  "Returning family objects")
@@ -1467,8 +1566,6 @@ def main():
             hmccreds_filename, 'HMC credentials file', 'hmccreds_schema.yaml')
         # metrics is required in the metrics schema:
         yaml_creds = yaml_creds_content["metrics"]
-        # extra_labels is optional in the metrics schema:
-        yaml_extra_labels = yaml_creds_content.get("extra_labels", [])
 
         logprint(logging.INFO, PRINT_V,
                  "Parsing metric definition file: {}".format(args.m))
@@ -1502,23 +1599,47 @@ def main():
                  "retries, read: {r.read_timeout} sec / {r.read_retries} "
                  "retries.".format(r=RETRY_TIMEOUT_CONFIG))
 
+        env = jinja2.Environment()
+
         # hmc is required in the HMC creds schema:
         session = create_session(yaml_creds, hmccreds_filename)
 
         try:
             with zhmc_exceptions(session, hmccreds_filename):
-                hmc_version = get_hmc_version(session)
+                hmc_info = get_hmc_info(session)
+                hmc_version = hmc_info['hmc-version']
+                client = zhmcclient.Client(session)
+                cpc_list = client.cpcs.list()
+                se_versions = {}
+                for cpc in cpc_list:
+                    cpc_name = cpc.name
+                    se_versions[cpc_name] = cpc.prop('se-version')
+                se_versions_str = ', '.join(
+                    ["{}: {}".format(cpc, v)
+                     for cpc, v in se_versions.items()])
                 logprint(logging.INFO, PRINT_V,
                          "HMC version: {}".format(hmc_version))
+                logprint(logging.INFO, PRINT_V,
+                         "Managed CPCs and their SE versions: {}".
+                         format(se_versions_str))
                 context, resources = create_metrics_context(
                     session, yaml_metric_groups, hmc_version)
         except (ConnectionError, AuthError, OtherError) as exc:
             raise ImproperExit(exc)
 
+        # Calculate the resource labels at the global level
+        # extra_labels is optional in the metrics schema:
+        yaml_extra_labels = yaml_creds_content.get("extra_labels", [])
         extra_labels = {}
         for item in yaml_extra_labels:
-            # name, value are required in the HMC creds schema:
-            extra_labels[item['name']] = item['value']
+            # name is required in the HMC creds schema:
+            label_name = item['name']
+            item_value = item['value']
+            label_value = expand_global_label_value(
+                env, label_name, item_value, hmc_info)
+            if label_value is not None:
+                extra_labels[label_name] = label_value
+
         extra_labels_str = ','.join(
             ['{}="{}"'.format(k, v) for k, v in extra_labels.items()])
         logprint(logging.INFO, PRINT_V,
@@ -1528,7 +1649,7 @@ def main():
         coll = ZHMCUsageCollector(
             yaml_creds, session, context, resources, yaml_metric_groups,
             yaml_metrics, extra_labels, args.m, hmccreds_filename,
-            resource_cache, hmc_version)
+            resource_cache, hmc_version, se_versions)
 
         logprint(logging.INFO, PRINT_V,
                  "Registering the collector and performing first collection")

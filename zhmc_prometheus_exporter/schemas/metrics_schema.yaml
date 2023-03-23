@@ -37,7 +37,7 @@ properties:
             description: "Indicates whether the metric group should be fetched from the HMC"
             type: boolean
           if:
-            description: "Condition for fetching the metric group from the HMC, as an expression using certain variables."
+            description: "Condition for fetching the metric group from the HMC, as a Python expression using certain variables"
             type: string
             default: null
           labels:
@@ -57,7 +57,7 @@ properties:
                   description: "Label name"
                   type: string
                 value:
-                  description: "Label value. There are some keywords with special handling - see documentation for details"
+                  description: "Label value, as a Jinja2 expression using certain variables"
                   type: string
   metrics:
     description: The HMC metrics and their mapping to Prometheus
@@ -86,6 +86,10 @@ properties:
                 exporter_desc:
                   description: "HELP description of Prometheus metric"
                   type: [string, "null"]
+                if:
+                  description: "Condition for exporting the metric, as a Python expression using certain variables"
+                  type: string
+                  default: true
                 metric_type:
                   description: "The Prometheus metric type to be used for this metric."
                   type: string
@@ -117,15 +121,15 @@ properties:
                       name:
                         description: "Label name"
                         type: string
-                        enum: [valuetype, value]
                       value:
-                        description: "Label value. There are some keywords with special handling - see documentation for details"
+                        description: "Label value, as a Jinja2 expression using certain variables"
                         type: string
         - description: "Value: Mapping to Promentheus metrics in list format (can be used for HMC property based metrics)"
           type: array
           items:
             type: object
             required:
+              # One of property_name or properties_expression is required - checked at run time
               - exporter_name
               - exporter_desc
             additionalProperties: false
@@ -134,15 +138,19 @@ properties:
                 description: "Name of the HMC property on the resource to use as the metric value"
                 type: string
               properties_expression:
-                description: "Jinja2 expression on 'properties' variable to use as the metric value"
+                description: "Metric value, as a Jinja2 expression using certain variables"
                 type: string
               exporter_name:
-                description: "<metric_unit> part of Prometheus metric name (format: zhmc_<prefix>_<metric_unit>); Null causes the metric not to be exported to Prometheus"
+                description: "Local part of Prometheus metric name (format: zhmc_<prefix>_<exporter_name>); Null causes the metric not to be exported to Prometheus"
                 type: [string, "null"]
                 pattern: "^[a-zA-Z0-9_]+$"
               exporter_desc:
                 description: "HELP description of Prometheus metric"
                 type: [string, "null"]
+              if:
+                description: "Condition for exporting the metric, as a Python expression using certain variables"
+                type: string
+                default: true
               metric_type:
                 description: "The Prometheus metric type to be used for this metric."
                 type: string

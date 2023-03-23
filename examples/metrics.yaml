@@ -11,25 +11,25 @@ metric_groups:
     fetch: true
     labels:
       - name: cpc
-        value: resource
+        value: "resource_obj.name"
 
   logical-partition-usage:
     prefix: partition
     fetch: true
     labels:
       - name: cpc
-        value: resource.parent
+        value: "resource_obj.manager.parent.name"
       - name: partition
-        value: resource
+        value: "resource_obj.name"
 
   channel-usage:
     prefix: channel
     fetch: true
     labels:
       - name: cpc
-        value: resource
+        value: "resource_obj.name"
       - name: channel_css_chpid
-        value: channel-name  # format: 'CSS.CHPID'
+        value: "metric_values['channel-name']"  # format: 'CSS.CHPID'
 
   crypto-usage:
     prefix: crypto_adapter
@@ -37,9 +37,9 @@ metric_groups:
     if: "hmc_version>='2.12.0'"
     labels:
       - name: cpc
-        value: resource
+        value: "resource_obj.name"
       - name: adapter_pchid
-        value: channel-id
+        value: "metric_values['channel-id']"
 
   flash-memory-usage:
     prefix: flash_memory_adapter
@@ -47,9 +47,9 @@ metric_groups:
     if: "hmc_version>='2.12.0'"
     labels:
       - name: cpc
-        value: resource
+        value: "resource_obj.name"
       - name: adapter_pchid
-        value: channel-id
+        value: "metric_values['channel-id']"
 
   roce-usage:
     prefix: roce_adapter
@@ -57,9 +57,9 @@ metric_groups:
     if: "hmc_version>='2.12.1'"
     labels:
       - name: cpc
-        value: resource
+        value: "resource_obj.name"
       - name: adapter_pchid
-        value: channel-id
+        value: "metric_values['channel-id']"
 
   logical-partition-resource:
     type: resource
@@ -68,9 +68,9 @@ metric_groups:
     fetch: true
     labels:
       - name: cpc
-        value: resource.parent
+        value: "resource_obj.manager.parent.name"
       - name: partition
-        value: resource
+        value: "resource_obj.name"
 
   # Available for CPCs in DPM mode
 
@@ -80,7 +80,7 @@ metric_groups:
     if: "hmc_version>='2.13.1'"
     labels:
       - name: cpc
-        value: resource
+        value: "resource_obj.name"
 
   partition-usage:
     prefix: partition
@@ -88,9 +88,9 @@ metric_groups:
     if: "hmc_version>='2.13.1'"
     labels:
       - name: cpc
-        value: resource.parent
+        value: "resource_obj.manager.parent.name"
       - name: partition
-        value: resource
+        value: "resource_obj.name"
 
   adapter-usage:
     prefix: adapter
@@ -98,9 +98,9 @@ metric_groups:
     if: "hmc_version>='2.13.1'"
     labels:
       - name: cpc
-        value: resource.parent
+        value: "resource_obj.manager.parent.name"
       - name: adapter
-        value: resource
+        value: "resource_obj.name"
 
   network-physical-adapter-port:
     prefix: port
@@ -108,11 +108,11 @@ metric_groups:
     if: "hmc_version>='2.13.1'"
     labels:
       - name: cpc
-        value: resource.parent
+        value: "resource_obj.manager.parent.name"
       - name: adapter
-        value: resource
+        value: "resource_obj.name"
       - name: port
-        value: network-port-id
+        value: "metric_values['network-port-id']"
 
   partition-attached-network-interface:
     prefix: nic
@@ -120,11 +120,11 @@ metric_groups:
     if: "hmc_version>='2.13.1'"
     labels:
       - name: cpc
-        value: resource.parent.parent
+        value: "resource_obj.manager.parent.manager.parent.name"
       - name: partition
-        value: resource.parent
+        value: "resource_obj.manager.parent.name"
       - name: nic
-        value: resource
+        value: "resource_obj.name"
 
   partition-resource:
     type: resource
@@ -133,9 +133,9 @@ metric_groups:
     fetch: true
     labels:
       - name: cpc
-        value: resource.parent
+        value: "resource_obj.manager.parent.name"
       - name: partition
-        value: resource
+        value: "resource_obj.name"
 
   # Available for CPCs in any mode
 
@@ -144,18 +144,18 @@ metric_groups:
     fetch: true
     labels:
       - name: cpc
-        value: resource
+        value: "resource_obj.name"
 
   zcpc-processor-usage:
     prefix: processor
     fetch: true
     labels:
       - name: cpc
-        value: resource
+        value: "resource_obj.name"
       - name: processor
-        value: processor-name
+        value: "metric_values['processor-name']"
       - name: type
-        value: processor-type
+        value: "metric_values['processor-type']"
 
   environmental-power-status:
     prefix: cpc
@@ -163,7 +163,7 @@ metric_groups:
     if: "hmc_version>='2.15.0'"
     labels:
       - name: cpc
-        value: resource
+        value: "resource_obj.name"
 
   cpc-resource:
     type: resource
@@ -172,7 +172,7 @@ metric_groups:
     fetch: true
     labels:
       - name: cpc
-        value: resource
+        value: "resource_obj.name"
 
 metrics:
 
@@ -249,17 +249,17 @@ metrics:
       exporter_desc: Usage ratio across all dedicated zAAP processors of the CPC
     # aap-all-processor-usage does not seem to exist
     cbp-all-processor-usage:
-      # since HMC/SE version 2.14.0
+      if: "se_version>='2.14.0' and se_version<='2.15.0'"
       percent: true
       exporter_name: cbp_processor_usage_ratio
       exporter_desc: Usage ratio across all CBP processors of the CPC
     cbp-shared-processor-usage:
-      # since HMC/SE version 2.14.0
+      if: "se_version>='2.14.0' and se_version<='2.15.0'"
       percent: true
       exporter_name: cbp_shared_processor_usage_ratio
       exporter_desc: Usage ratio across all shared CBP processors of the CPC
     cbp-dedicated-processor-usage:
-      # since HMC/SE version 2.14.0
+      if: "se_version>='2.14.0' and se_version<='2.15.0'"
       percent: true
       exporter_name: cbp_dedicated_processor_usage_ratio
       exporter_desc: Usage ratio across all dedicated CBP processors of the CPC
@@ -298,7 +298,7 @@ metrics:
       exporter_name: iip_processor_usage_ratio
       exporter_desc: Usage ratio across all IIP processors of the partition
     cbp-processor-usage:
-      # since HMC/SE version 2.14.0
+      if: "se_version>='2.14.0' and se_version<='2.15.0'"
       percent: true
       exporter_name: cbp_processor_usage_ratio
       exporter_desc: Usage ratio across all CBP processors of the partition
@@ -364,7 +364,7 @@ metrics:
       exporter_desc: Boolean indicating whether the z/OS Workload Manager is allowed to change processing weight related properties of the partition (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
     - property_name: processor-usage
       exporter_name: processor_mode_int
       exporter_desc: Allocation mode for processors to the active partition as an integer (0=shared, 1=dedicated)
@@ -394,7 +394,7 @@ metrics:
       exporter_desc: Boolean indicating whether absolute capping is enabled for CP processors (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
     - properties_expression: "properties['absolute-processing-capping'].value if properties['absolute-processing-capping'].type == 'processor' else 0"
       exporter_name: cp_processor_count_cap
       exporter_desc: Maximum number of CP processors that can be used if absolute capping is enabled, else 0
@@ -403,13 +403,13 @@ metrics:
       exporter_desc: Boolean indicating whether the initial CP processing weight is capped (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
     - property_name: current-processing-weight-capped
       exporter_name: cp_current_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the current CP processing weight is capped (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
     - property_name: number-ifl-processors
       exporter_name: ifl_processor_count
       exporter_desc: Number of IFL processors currently allocated to the active partition
@@ -433,7 +433,7 @@ metrics:
       exporter_desc: Boolean indicating whether absolute capping is enabled for IFL processors (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
     - properties_expression: "properties['absolute-ifl-capping'].value if properties['absolute-ifl-capping'].type == 'processor' else 0"
       exporter_name: ifl_processor_count_cap
       exporter_desc: Maximum number of IFL processors that can be used if absolute capping is enabled, else 0
@@ -442,13 +442,13 @@ metrics:
       exporter_desc: Boolean indicating whether the initial IFL processing weight is capped (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
     - property_name: current-ifl-processing-weight-capped
       exporter_name: ifl_current_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the current IFL processing weight is capped (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
     - property_name: number-icf-processors
       exporter_name: icf_processor_count
       exporter_desc: Number of ICF processors currently allocated to the active partition
@@ -472,7 +472,7 @@ metrics:
       exporter_desc: Boolean indicating whether absolute capping is enabled for ICF processors (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
     - properties_expression: "properties['absolute-cf-capping'].value if properties['absolute-cf-capping'].type == 'processor' else 0"
       exporter_name: icf_processor_count_cap
       exporter_desc: Maximum number of ICF processors that can be used if absolute capping is enabled, else 0
@@ -481,13 +481,13 @@ metrics:
       exporter_desc: Boolean indicating whether the initial ICF processing weight is capped (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
     - property_name: current-cf-processing-weight-capped
       exporter_name: icf_current_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the current ICF processing weight is capped (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
     - property_name: number-ziip-processors
       exporter_name: iip_processor_count
       exporter_desc: Number of zIIP processors currently allocated to the active partition
@@ -511,7 +511,7 @@ metrics:
       exporter_desc: Boolean indicating whether absolute capping is enabled for zIIP processors (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
     - properties_expression: "properties['absolute-ziip-capping'].value if properties['absolute-ziip-capping'].type == 'processor' else 0"
       exporter_name: iip_processor_count_cap
       exporter_desc: Maximum number of zIIP processors that can be used if absolute capping is enabled, else 0
@@ -520,13 +520,13 @@ metrics:
       exporter_desc: Boolean indicating whether the initial zIIP processing weight is capped (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
     - property_name: current-ziip-processing-weight-capped
       exporter_name: iip_current_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the current zIIP processing weight is capped (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
     # Note: number-...-processors/cores properties do not exist in 2.15 for AAP processors
     - property_name: initial-aap-processing-weight
       exporter_name: aap_initial_processing_weight
@@ -545,7 +545,7 @@ metrics:
       exporter_desc: Boolean indicating whether absolute capping is enabled for zAAP processors (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
     - properties_expression: "properties['absolute-aap-capping'].value if properties['absolute-aap-capping'].type == 'processor' else 0"
       exporter_name: aap_processor_count_cap
       exporter_desc: Maximum number of zAAP processors that can be used if absolute capping is enabled, else 0
@@ -554,73 +554,73 @@ metrics:
       exporter_desc: Boolean indicating whether the initial zAAP processing weight is capped (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
     - property_name: current-aap-processing-weight-capped
       exporter_name: aap_current_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the current zAAP processing weight is capped (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
     # Note: number-...-processors/cores properties do not exist in 2.15 for CBP processors
     - property_name: initial-cbp-processing-weight
-      # since HMC/SE version 2.14.0
+      if: "se_version>='2.14.0' and se_version<='2.15.0'"
       exporter_name: cbp_initial_processing_weight
       exporter_desc: Initial CBP processing weight for the active partition in shared mode (1..999)
     - property_name: minimum-cbp-processing-weight
-      # since HMC/SE version 2.14.0
+      if: "se_version>='2.14.0' and se_version<='2.15.0'"
       exporter_name: cbp_minimum_processing_weight
       exporter_desc: Minimum CBP processing weight for the active partition in shared mode (1..999)
     - property_name: maximum-cbp-processing-weight
-      # since HMC/SE version 2.14.0
+      if: "se_version>='2.14.0' and se_version<='2.15.0'"
       exporter_name: cbp_maximum_processing_weight
       exporter_desc: Maximum CBP processing weight for the active partition in shared mode (1..999)
     - property_name: current-cbp-processing-weight
-      # since HMC/SE version 2.14.0
+      if: "se_version>='2.14.0' and se_version<='2.15.0'"
       exporter_name: cbp_current_processing_weight
       exporter_desc: Current CBP processing weight for the active partition in shared mode (1..999)
     - properties_expression: "properties['absolute-cbp-capping'].type == 'processor'"
-      # since HMC/SE version 2.14.0
+      if: "se_version>='2.14.0' and se_version<='2.15.0'"
       exporter_name: cbp_processor_count_is_capped
       exporter_desc: Boolean indicating whether absolute capping is enabled for CBP processors (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
     - properties_expression: "properties['absolute-cbp-capping'].value if properties['absolute-cbp-capping'].type == 'processor' else 0"
-      # since HMC/SE version 2.14.0
+      if: "se_version>='2.14.0' and se_version<='2.15.0'"
       exporter_name: cbp_processor_count_cap
       exporter_desc: Maximum number of CBP processors that can be used if absolute capping is enabled, else 0
     - property_name: initial-cbp-processing-weight-capped
-      # since HMC/SE version 2.14.0
+      if: "se_version>='2.14.0' and se_version<='2.15.0'"
       exporter_name: cbp_initial_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the initial CBP processing weight is capped (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
     - property_name: current-cbp-processing-weight-capped
-      # since HMC/SE version 2.14.0
+      if: "se_version>='2.14.0' and se_version<='2.15.0'"
       exporter_name: cbp_current_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the current CBP processing weight is capped (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
-    - properties_expression: "properties['storage-central-allocation']|map(attribute='initial')|sum"
+          value: "'bool'"
+    - properties_expression: "properties['storage-central-allocation']|map(attribute='initial')|map('replace',None,0)|map('int')|sum"
       exporter_name: initial_central_memory_mib
-      exporter_desc: Amount of central memory initially allocated to the active partition in MiB, else 0
-    - properties_expression: "properties['storage-central-allocation']|map(attribute='current')|sum"
+      exporter_desc: Amount of central memory initially allocated to the active partition in MiB (segments with unavailable values are counted as 0)
+    - properties_expression: "properties['storage-central-allocation']|map(attribute='current')|map('replace',None,0)|map('int')|sum"
       exporter_name: current_central_memory_mib
-      exporter_desc: Amount of central memory currently allocated to the active partition, in MiB, else 0
-    - properties_expression: "properties['storage-central-allocation']|map(attribute='maximum')|sum"
+      exporter_desc: Amount of central memory currently allocated to the active partition in MiB (segments with unavailable values are counted as 0)
+    - properties_expression: "properties['storage-central-allocation']|map(attribute='maximum')|map('replace',None,0)|map('int')|sum"
       exporter_name: maximum_central_memory_mib
-      exporter_desc: Maximum amount of central memory to which the operating system running in the active partition can increase, in MiB
-    - properties_expression: "properties['storage-expanded-allocation']|map(attribute='initial')|sum"
+      exporter_desc: Maximum amount of central memory to which the operating system running in the active partition can increase in MiB (segments with unavailable values are counted as 0)
+    - properties_expression: "properties['storage-expanded-allocation']|map(attribute='initial')|map('replace',None,0)|map('int')|sum"
       exporter_name: initial_expanded_memory_mib
-      exporter_desc: Amount of expanded memory initially allocated to the active partition in MiB, else 0
-    - properties_expression: "properties['storage-expanded-allocation']|map(attribute='current')|sum"
+      exporter_desc: Amount of expanded memory initially allocated to the active partition in MiB (segments with unavailable values are counted as 0)
+    - properties_expression: "properties['storage-expanded-allocation']|map(attribute='current')|map('replace',None,0)|map('int')|sum"
       exporter_name: current_expanded_memory_mib
-      exporter_desc: Amount of expanded memory currently allocated to the active partition, in MiB, else 0
-    - properties_expression: "properties['storage-expanded-allocation']|map(attribute='maximum')|sum"
+      exporter_desc: Amount of expanded memory currently allocated to the active partition in MiB (segments with unavailable values are counted as 0)
+    - properties_expression: "properties['storage-expanded-allocation']|map(attribute='maximum')|map('replace',None,0)|map('int')|sum"
       exporter_name: maximum_expanded_memory_mib
-      exporter_desc: Maximum amount of expanded memory to which the operating system running in the active partition can increase, in MiB
+      exporter_desc: Maximum amount of expanded memory to which the operating system running in the active partition can increase in MiB (segments with unavailable values are counted as 0)
     - property_name: initial-vfm-storage
       exporter_name: initial_vfm_memory_gib
       exporter_desc: Initial amount of IBM Virtual Flash Memory (VFM) to be allocated at partition activation, in GiB
@@ -631,17 +631,17 @@ metrics:
       exporter_name: current_vfm_memory_gib
       exporter_desc: Current amount of IBM Virtual Flash Memory (VFM) that is allocated to the active partition, in GiB
     - properties_expression: "{'operating': 0, 'not-operating': 1, 'not-activated': 2, 'exceptions': 10}.get(properties.status, 99)"
-      exporter_name: lpar_status_int
+      exporter_name: lpar_status_int  # Must be different from partition status_int due to different values
       exporter_desc: "LPAR status as integer (0=operating, 1=not-operating, 2=not-activated, 10=exceptions, 99=unsupported value)"
       labels:
         - name: value
-          value: status
+          value: "resource_obj.properties['status']"
     - property_name: has-unacceptable-status
       exporter_name: has_unacceptable_status
       exporter_desc: Boolean indicating whether the partition has an unacceptable status (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
 
   # Available for CPCs in DPM mode
 
@@ -938,7 +938,7 @@ metrics:
       exporter_desc: Boolean indicating whether absolute capping is enabled for CP processors (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
     - properties_expression: "properties['cp-absolute-processor-capping-value'] if properties['cp-absolute-processor-capping'] else 0"
       exporter_name: cp_processor_count_cap
       exporter_desc: Maximum number of CP processors that can be used if absolute capping is enabled, else 0
@@ -947,7 +947,7 @@ metrics:
       exporter_desc: Boolean indicating whether the initial CP processing weight is capped (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
     - property_name: ifl-processors
       exporter_name: ifl_processor_count
       exporter_desc: Number of IFL processors allocated to the active partition
@@ -968,7 +968,7 @@ metrics:
       exporter_desc: Boolean indicating whether absolute capping is enabled for IFL processors (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
     - properties_expression: "properties['ifl-absolute-processor-capping-value'] if properties['ifl-absolute-processor-capping'] else 0"
       exporter_name: ifl_processor_count_cap
       exporter_desc: Maximum number of IFL processors that can be used if absolute capping is enabled, else 0
@@ -977,7 +977,7 @@ metrics:
       exporter_desc: Boolean indicating whether the initial IFL processing weight is capped (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
     - property_name: initial-memory
       exporter_name: initial_memory_mib
       exporter_desc: Initial amount of memory allocated to the partition when it becomes active, in MiB
@@ -992,13 +992,13 @@ metrics:
       exporter_desc: "Partition status as integer (0=active, 1=degraded, 10=paused, 11=stopped, 12=starting, 13=stopping, 20=reservation-error, 21=terminated, 22=communications-not-active, 23=status-check, 99=unsupported value)"
       labels:
         - name: value
-          value: status
+          value: "resource_obj.properties['status']"
     - property_name: has-unacceptable-status
       exporter_name: has_unacceptable_status
       exporter_desc: Boolean indicating whether the partition has an unacceptable status (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"
 
   # Available for CPCs in any mode
 
@@ -1219,7 +1219,7 @@ metrics:
       exporter_name: aap_processor_count
       exporter_desc: Number of active zAAP processors
     - property_name: processor-count-cbp
-      # since HMC/SE version 2.14.0
+      if: "se_version>='2.14.0' and se_version<='2.15.0'"
       exporter_name: cbp_processor_count
       exporter_desc: Number of active CBP processors
     - property_name: processor-count-service-assist
@@ -1268,10 +1268,10 @@ metrics:
       exporter_desc: "Status as integer (0=active/=operating, 1=degraded, 2=service-required, 10=service, 11=exceptions, 12=not-communicating, 13=status-check, 14=not-operating, 15=no-power, 99=unsupported value)"
       labels:
         - name: value
-          value: status
+          value: "resource_obj.properties['status']"
     - property_name: has-unacceptable-status
       exporter_name: has_unacceptable_status
       exporter_desc: Boolean indicating whether the CPC has an unacceptable status (0=false, 1=true)
       labels:
         - name: valuetype
-          value: bool
+          value: "'bool'"

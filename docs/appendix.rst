@@ -32,6 +32,24 @@ Glossary
    Z HMC
       Hardware Management Console for IBM Z
 
+   Jinja2 expression
+     A Jinja2 expression (without curly braces).
+     See https://jinja.palletsprojects.com/en/3.1.x/templates/#expressions
+     for a description.
+
+     Note that when putting Jinja2 expressions into YAML files, it is recommended
+     to put the expression into double or single quotes. A Jinja2 expression
+     that is a literal string would be e.g. ``'abc'`` in Jinja2 and would need
+     to be put into double quotes in YAML, e.g. ``value: "'abc'"``.
+
+   Metric service based metrics
+     Metrics that are retrieved from the HMC using the "Get Metric Context"
+     operation. For more details, see :ref:`Available metrics`.
+
+   Resource property based metrics
+     Metrics that are obtained from properties of HMC resources.
+     For more details, see :ref:`Available metrics`.
+
 Bibliography
 ------------
 

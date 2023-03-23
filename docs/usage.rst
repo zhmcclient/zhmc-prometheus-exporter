@@ -304,11 +304,11 @@ Available metrics
 The exporter supports two types of metrics. These metrics are differently
 retrieved from the HMC, but they are exported to Prometheus in the same way:
 
-* HMC metric service based - These metrics are retrieved from the HMC using the
+* **HMC metric service based** - These metrics are retrieved from the HMC using the
   "Get Metric Context" operation each time Prometheus retrieves metrics from the
   exporter.
 
-* HMC resource property based - These metrics are actually the values of
+* **HMC resource property based** - These metrics are actually the values of
   properties of HMC resources, such as the number of processors assigned
   to a partition. The exporter maintains representations of the corresponding
   resources in memory. These representations are automatically and
@@ -370,7 +370,8 @@ for both DPM mode and classic mode. The names of the metrics are equal if and
 only if they have the same meaning in both modes.
 
 The following table shows the Prometheus metrics in the standard metric
-definition. This includes both metric service and resource property based metrics:
+definition. This includes both :term:`metric service based metrics` and
+:term:`resource property based metrics`:
 
 ======================================================  ====  ====  ==================================================================
 Prometheus Metric                                       Mode  Type  Description
@@ -588,6 +589,120 @@ Legend:
 * Mode: The operational mode of the CPC: C=Classic, D=DPM
 * Type: The Prometheus metric type: G=Gauge, C=Counter
 
+Labels on exported metrics
+--------------------------
+
+The metrics exported to Prometheus are tagged with labels defined in the
+HMC credentials file (at the global level) or in the metric definition file
+(at the level of HMC metric groups and HMC metrics).
+
+This section describes what kinds of labels can be defined in these files. For
+the actual use of this capability, see the example metric definition file and
+the example HMC credentials file.
+
+Labels at the global level (defined in the HMC credentials file):
+
+.. code-block:: yaml
+
+    extra_labels:
+      - name: {label-name}
+        value: {label-value}
+
+Where:
+
+* ``{label-name}`` - Name of the label.
+* ``{label-value}`` - A :term:`Jinja2 expression` that is evaluated and used as
+  the value of the label.
+
+  The following variables are available for use in that Jinja2 expression:
+
+  - ``hmc_info`` - Dictionary with the result of the "Query API Version"
+    HMC operation. For details, see the description of that operation in the
+    :term:`HMC API` book. Some notable dictionary items are:
+
+    - ``hmc-name`` - Name of the HMC.
+    - ``hmc-version`` - Version of the HMC as a string (e.g. "2.16").
+
+Example (fragments from an HMC credentials file):
+
+.. code-block:: yaml
+
+    extra_labels:
+      - name: hmc
+        value: "{{ hmc_info['hmc-name'] }}"  # HMC name obtained from HMC
+      - name: dc
+        value: dal13                         # Literal value 'dal13'
+
+Labels at the HMC metric and HMC metric group level (defined in the metric
+definition file):
+
+.. code-block:: yaml
+
+    labels:
+      - name: {label-name}
+        value: {label-value}
+
+Where:
+
+* ``{label-name}`` - Name of the label.
+
+* ``{label-value}`` - A :term:`Jinja2 expression` that is evaluated and used as
+  the value of the label.
+
+  The following variables are available for use in that Jinja2 expression:
+
+  - ``resource_obj`` - The resource to which the metric applies, as a
+    :class:`zhmcclient.BaseResource` object. This can be used for example to
+    get the name of the resource or its parent or grand-parent resources,
+    or to get other properties of the resource.
+
+  - ``metric_values`` - Dictionary of all metric values in the same metric group,
+    for the resource to which the metric applies. Key is the HMC metric name.
+    This variable is only present for :term:`metric service based metrics`, but
+    not for :term:`resource property based metrics`.
+    This can be used for example to get metrics that carry information such as
+    channel name or line cord name.
+
+Example (fragments from a metric definition file):
+
+.. code-block:: yaml
+
+    metric_groups:
+
+      channel-usage:
+        # . . .
+        labels:
+          - name: cpc
+            value: "{{ resource_obj.name }}"                    # CPC name
+          - name: channel_css_chpid
+            value: "{{ metric_values['channel-name'] }}"        # Value of 'channel-name' metric
+
+      logical-partition-usage:
+        # . . .
+        labels:
+          - name: cpc
+            value: "{{ resource_obj.manager.parent.name }}"     # Name of CPC with the partition
+          - name: partition
+            value: "{{ resource_obj.name }}"                    # Partition name
+
+    metrics:
+
+      logical-partition-resource:
+
+        - property_name: workload-manager-enabled
+          exporter_name: workload_manager_is_enabled
+          exporter_desc: Boolean indicating whether WLM is allowed to ...
+          labels:
+            - name: valuetype
+              value: bool                                       # Literal value 'bool'
+
+        - properties_expression: "{'operating': 0, 'not-operating': 1, ..."
+          exporter_name: lpar_status_int
+          exporter_desc: "LPAR status as integer (0=operating, 1=not-operating, ..."
+          labels:
+            - name: value
+              value: "{{ resource_obj.properties['status'] }}"  # Value of 'status' property (as string)
+
 
 HMC credentials file
 --------------------
@@ -663,9 +778,9 @@ The metric definition file is in YAML format and has the following structure:
         fetch: {fetch-bool}
         if: {fetch-condition}  # optional
         labels:
-          # list of labels:
-          - name: {mg-label-name}
-            value: {mg-label-value}
+          # list of labels to be added to all metrics of this group:
+          - name: {label-name}
+            value: {label-value}
 
     metrics:
       # dictionary of metric groups:
@@ -673,27 +788,29 @@ The metric definition file is in YAML format and has the following structure:
 
         # dictionary format for defining metrics:
         {hmc-metric}:
-          exporter_name: {metric}_{unit}
-          exporter_desc: {help}
+          if: {export-condition}  # optional
+          exporter_name: {exporter-name}
+          exporter_desc: {exporter-desc}
           metric_type: {metric-type}
           percent: {percent-bool}
           valuemap: {valuemap}
           labels:
-            # list of labels:
-            - name: {m-label-name}
-              value: {m-label-value}
+            # list of labels to be added to this metric:
+            - name: {label-name}
+              value: {label-value}
 
         # list format for defining metrics:
         - property_name: {hmc-metric}                     # either this
           properties_expression: {properties-expression}  # or this
-          exporter_name: {metric}_{unit}
-          exporter_desc: {help}
+          if: {export-condition}  # optional
+          exporter_name: {exporter-name}
+          exporter_desc: {exporter-desc}
           percent: {percent-bool}
           valuemap: {valuemap}
           labels:
-            # list of labels:
-            - name: {m-label-name}
-              value: {m-label-value}
+            # list of labels to be added to this metric:
+            - name: {label-name}
+              value: {label-value}
 
 Where:
 
@@ -717,64 +834,25 @@ Where:
   the HMC version. The HMC versions are evaluated as tuples of integers,
   padding them to 3 version parts by appending 0 if needed.
 
-* ``{mg-label-name}`` is the label name at the metric group level.
+* ``{properties-expression}`` is a :term:`Jinja2 expression` whose value should
+  be used as the metric value, for :term:`resource property based metrics`. The
+  expression uses the variable ``properties`` which is the resource properties
+  dictionary of the resource. The ``properties_expression`` attribute is
+  mutually exclusive with ``property_name``.
 
-* ``{mg-label-value}`` identifies where the label value is taken from, as follows:
+* ``{export-condition}`` is a string that is evaluated as a Python expression
+  and that controls whether the metric is exported. If it evaluates to false,
+  the export of the metric is disabled, regardless of other such controls.
+  The expression may contain the ``hmc_version`` variable which evaluates to
+  the HMC version. The HMC versions are evaluated as tuples of integers,
+  padding them to 3 version parts by appending 0 if needed.
 
-  - ``resource`` the name of the resource reported by the HMC for the metric.
-    This is the normal case and also the default.
+* ``{exporter-name}`` is the local metric name and unit in the exported metric
+  name ``zhmc_{resource-type}_{exporter-name}``.
+  If it is null, the export of the metric is disabled, regardless of other such
+  controls.
 
-  - ``resource.parent`` the name of the parent resource of the resource
-    reported by the HMC for the metric. This is useful for resources that
-    are inside of the CPC, such as adapters or partitions, to get back to the
-    CPC containing them.
-
-  - ``resource.parent.parent`` the name of the grand parent resource of the
-    resource reported by the HMC for the metric. This is useful for resources
-    that are inside of the CPC at the second level, such as NICs or adapter
-    ports, to get back to the CPC containing them.
-
-  - ``{hmc-metric}`` the name of the HMC metric within the same metric
-    group whose metric value should be used as a label value. This can be used
-    to use accompanying HMC metrics that are actually identifiers for resources,
-    a labels for the actual metric. Example: The HMC returns metrics group
-    ``channel-usage`` with metric ``channel-usage`` that has the actual value
-    and metric ``channel-name`` that identifies the channel to which the metric
-    value belongs. The following fragment utilizes the ``channel-name`` metric
-    as a label for the ``channel-usage`` metric:
-
-* ``{m-label-name}``, ``{m-label-value}`` is the label name and value at the
-  single metric level. The label names have specific meanings, and only the
-  following label names are allowed:
-
-  - ``value``: Indicates an alternative string-typed value to an interpreter of
-    the Prometheus metric. Can only be used on resource-based metrics.
-
-    ``{m-label-value}`` is the name of a property on the  HMC resource, and the
-    label value shown in the Prometheus export is the property value. This is
-    used for example for string-typed resource properties, where the Prometheus
-    metric value shows the string value mapped to a floating point value, but
-    the ``value`` label shows the original string value of the HMC resource
-    property.
-
-  - ``valuetype``: Indicates to an interpreter of the Prometheus metric that the
-    floating point value of the Prometheus metric should be converted to a
-    different datatype.
-
-    ``{m-label-value}``) is the name of the datatype as follows:
-
-    - ``bool``: The Prometheus metric value should be converted to a boolean,
-      where 0.0 becomes False, and anything else becomes True.
-
-    - ``int``: The Prometheus metric value should be converted to an integer
-      that is the rounded metric value (i.e. not just cutting off the fractional
-      part of the floating point number).
-
-* ``{properties-expression}`` is a Jinja2 expression whose value should be used
-  is as the metric value, for resource based metrics. The expression uses
-  the variable ``properties`` which is the resource properties dictionary of the
-  resource. The ``properties_expression`` attribute is mutually exclusive with
-  ``property_name``.
+* ``{exporter-desc}`` is the description text that is exported as ``# HELP``.
 
 * ``{metric-type}`` is an optional enum value that defines the Prometheus metric
   type used for this metric:
@@ -790,78 +868,10 @@ Where:
   in the original HMC value to integers to be exported to Prometheus. This is
   used for example for the processor mode (shared, dedicated).
 
-* ``{metric}_{unit}`` is the Prometheus local metric name and unit in
-  the full metric name ``zhmc_{resource-type}_{metric}_{unit}``.
+* ``{label-name}`` is the label name.
 
-* ``{help}`` is the description text that is exported as ``# HELP``.
-
-Example for label definition at the metric group level using another metric
-
-.. code-block:: yaml
-
-    metric_groups:
-      channel-usage:
-        prefix: channel
-        fetch: True
-        labels:
-          - name: cpc    # becomes e.g.: cpc="CPCA"
-            value: resource
-          - name: channel_css_chpid   # becomes e.g.: channel_css_chpid="CHAN01"
-            value: channel-name
-    metrics:
-      channel-usage:
-        channel-usage:
-          percent: True
-          exporter_name: usage_ratio
-          exporter_desc: Usage ratio of the channel
-          # This metric will have the labels defined in its metric group
-
-Example for label definition at the single metric level specifying a different type:
-
-.. code-block:: yaml
-
-    metric_groups:
-      cpc-resource:
-        type: resource
-        resource: cpc
-        prefix: cpc
-        fetch: true
-        labels:
-          - name: cpc    # becomes e.g.: cpc="CPCA"
-            value: resource
-    metrics:
-      cpc-resource:
-        - property_name: has-unacceptable-status
-          exporter_name: has_unacceptable_status
-          exporter_desc: Boolean indicating whether the CPC has an unacceptable status (0=false, 1=true)
-          labels:
-            - name: valuetype    # becomes: valuetype="bool"
-              value: bool
-
-Example for label definition at the single metric level specifying a string value:
-
-.. code-block:: yaml
-
-    metric_groups:
-      logical-partition-resource:
-        type: resource
-        resource: cpc.logical-partition
-        prefix: partition
-        fetch: true
-        labels:
-          - name: cpc    # becomes e.g.: cpc="CPCA"
-            value: resource.parent
-          - name: partition    # becomes e.g.: partition="LPAR1"
-            value: resource
-    metrics:
-      logical-partition-resource:
-        - properties_expression: "{'operating': 0, 'not-operating': 1, 'not-activated': 2, 'exceptions': 10}.get(properties.status, 99)"
-          exporter_name: lpar_status_int
-          exporter_desc: "LPAR status as integer (0=operating, 1=not-operating, 2=not-activated, 10=exceptions, 99=unsupported value)"
-          labels:
-            - name: value   # becomes e.g. value="operating"
-              value: status
-
+* ``{label-value}`` is a :term:`Jinja2 expression` that is evaluated and used
+  as the label value. For details, see :ref:`Labels on exported metrics`.
 
 Sample metric definition file
 -----------------------------
@@ -1074,7 +1084,7 @@ logging to the Standard Error stream or to a file.
 Performance
 -----------
 
-The support for resource property based metric values that was introduced in
+The support for :term:`resource property based metrics` that was introduced in
 version 1.0 has slowed down the startup of the exporter quite significantly if
 these metrics are enabled.
 
