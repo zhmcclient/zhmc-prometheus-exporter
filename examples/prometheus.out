@@ -1,722 +1,932 @@
 # HELP zhmc_adapter_usage_ratio Usage ratio of the adapter
 # TYPE zhmc_adapter_usage_ratio gauge
-zhmc_adapter_usage_ratio{adapter="OSM1",cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
-zhmc_adapter_usage_ratio{adapter="FCP_120_SAN1_02",cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.27
-zhmc_adapter_usage_ratio{adapter="FCP_104_SAN1_01",cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.01
-zhmc_adapter_usage_ratio{adapter="OSM_12C_PSCN2_08",cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
-zhmc_adapter_usage_ratio{adapter="OSD_134_DATA_NET2_17",cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
-zhmc_adapter_usage_ratio{adapter="EP11_13C",cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
-zhmc_adapter_usage_ratio{adapter="FCP_121_SAN2_02",cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.01
-zhmc_adapter_usage_ratio{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
-zhmc_adapter_usage_ratio{adapter="OSD_130_DATA_NET1_17",cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
-zhmc_adapter_usage_ratio{adapter="FCP1.D1",cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.3
-zhmc_adapter_usage_ratio{adapter="CRYP00",cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
-zhmc_adapter_usage_ratio{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
-zhmc_adapter_usage_ratio{adapter="EP11_138",cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
-zhmc_adapter_usage_ratio{adapter="FCP_124_SAN1_03",cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.27
-zhmc_adapter_usage_ratio{adapter="FCP_101_SAN2_00",cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.27
-zhmc_adapter_usage_ratio{adapter="FCP_105_SAN2_01",cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.27
-zhmc_adapter_usage_ratio{adapter="EP11_11C",cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
-zhmc_adapter_usage_ratio{adapter="FCP_125_SAN2_03",cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.3
-zhmc_adapter_usage_ratio{adapter="OSD_110_DATA_NET1_15",cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
-zhmc_adapter_usage_ratio{adapter="OSD_114_DATA_NET2_15",cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
+zhmc_adapter_usage_ratio{adapter="FCP 0130 Z01B-17",cpc="P0000A28"} 0.0
+zhmc_adapter_usage_ratio{adapter="FICON 0108 Z01B-04",cpc="P0000A28"} 0.0
+zhmc_adapter_usage_ratio{adapter="OSD 0134 Z01B-18",cpc="P0000A28"} 0.0
+zhmc_adapter_usage_ratio{adapter="FICON 0140 Z09B-02",cpc="P0000A28"} 0.0
+zhmc_adapter_usage_ratio{adapter="FCP 0178 Z09B-19",cpc="P0000A28"} 0.01
+zhmc_adapter_usage_ratio{adapter="FICON 0109 Z01B-04",cpc="P0000A28"} 0.0
+zhmc_adapter_usage_ratio{adapter="FCP 0179 Z09B-19",cpc="P0000A28"} 0.01
+zhmc_adapter_usage_ratio{adapter="FICON 0141 Z09B-02",cpc="P0000A28"} 0.0
+zhmc_adapter_usage_ratio{adapter="OSD 0120 Z01B-12",cpc="P0000A28"} 0.0
+zhmc_adapter_usage_ratio{adapter="FCP 0131 Z01B-17",cpc="P0000A28"} 0.0
+zhmc_adapter_usage_ratio{adapter="FCP 0160 Z09B-12",cpc="P0000A28"} 0.01
+zhmc_adapter_usage_ratio{adapter="FCP 0161 Z09B-12",cpc="P0000A28"} 0.01
 # HELP zhmc_processor_usage_ratio Usage ratio of the processor
 # TYPE zhmc_processor_usage_ratio gauge
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL000",type="ifl"} 0.02
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL004",type="ifl"} 0.02
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL008",type="ifl"} 0.01
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL00C",type="ifl"} 0.02
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL010",type="ifl"} 0.02
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL014",type="ifl"} 0.01
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL018",type="ifl"} 0.01
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL01C",type="ifl"} 0.01
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL020",type="ifl"} 0.02
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL024",type="ifl"} 0.55
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL028",type="ifl"} 0.54
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL02C",type="ifl"} 0.56
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL030",type="ifl"} 0.57
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL034",type="ifl"} 0.54
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL038",type="ifl"} 0.62
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL03C",type="ifl"} 0.58
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFP040",type="ifp"} 0.06
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL044",type="ifl"} 0.02
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL048",type="ifl"} 0.02
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL04C",type="ifl"} 0.02
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL050",type="ifl"} 0.02
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL054",type="ifl"} 0.02
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL058",type="ifl"} 0.02
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL05C",type="ifl"} 0.02
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL060",type="ifl"} 0.02
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL064",type="ifl"} 0.02
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL068",type="ifl"} 0.02
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL06C",type="ifl"} 0.02
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL070",type="ifl"} 0.01
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL078",type="ifl"} 0.01
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL07C",type="ifl"} 0.02
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="SAP00",type="sap"} 0.01
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="SAP01",type="sap"} 0.01
-zhmc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="SAP02",type="sap"} 0.01
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="IFP000",type="ifp"} 0.05
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP004",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP008",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP010",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP018",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP01C",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="IFP020",type="ifp"} 0.02
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP028",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP02C",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP034",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP038",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP03C",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP040",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP044",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP048",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP050",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP058",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP05C",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP064",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP06C",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP074",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP078",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP07C",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP084",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP088",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP090",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP098",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP09C",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP0A4",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP0A8",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP0AC",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP0B4",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP0BC",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP0C4",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP0C8",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP0D0",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP0D8",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP0DC",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP0E4",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP0E8",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="CP0EC",type="cp"} 0.0
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="SAP00",type="sap"} 0.01
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="SAP01",type="sap"} 0.01
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="SAP02",type="sap"} 0.01
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="SAP03",type="sap"} 0.01
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="SAP04",type="sap"} 0.01
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="SAP05",type="sap"} 0.01
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="SAP06",type="sap"} 0.01
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="SAP07",type="sap"} 0.01
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="SAP08",type="sap"} 0.01
+zhmc_processor_usage_ratio{cpc="P0000A28",processor="SAP09",type="sap"} 0.01
 # HELP zhmc_processor_smt_mode_percent Percentage of time the processor was in SMT mode - -1 if not supported
 # TYPE zhmc_processor_smt_mode_percent gauge
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL000",type="ifl"} 1.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL004",type="ifl"} 1.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL008",type="ifl"} 1.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL00C",type="ifl"} 1.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL010",type="ifl"} 1.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL014",type="ifl"} 1.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL018",type="ifl"} 1.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL01C",type="ifl"} 1.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL020",type="ifl"} 1.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL024",type="ifl"} 68.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL028",type="ifl"} 67.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL02C",type="ifl"} 69.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL030",type="ifl"} 70.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL034",type="ifl"} 67.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL038",type="ifl"} 76.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL03C",type="ifl"} 71.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFP040",type="ifp"} 0.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL044",type="ifl"} 3.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL048",type="ifl"} 2.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL04C",type="ifl"} 2.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL050",type="ifl"} 1.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL054",type="ifl"} 3.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL058",type="ifl"} 2.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL05C",type="ifl"} 2.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL060",type="ifl"} 1.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL064",type="ifl"} 1.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL068",type="ifl"} 1.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL06C",type="ifl"} 1.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL070",type="ifl"} 1.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL078",type="ifl"} 1.0
-zhmc_processor_smt_mode_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL07C",type="ifl"} 1.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="IFP000",type="ifp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP004",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP008",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP010",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP018",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP01C",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="IFP020",type="ifp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP028",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP02C",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP034",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP038",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP03C",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP040",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP044",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP048",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP050",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP058",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP05C",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP064",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP06C",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP074",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP078",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP07C",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP084",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP088",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP090",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP098",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP09C",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP0A4",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP0A8",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP0AC",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP0B4",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP0BC",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP0C4",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP0C8",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP0D0",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP0D8",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP0DC",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP0E4",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP0E8",type="cp"} 0.0
+zhmc_processor_smt_mode_percent{cpc="P0000A28",processor="CP0EC",type="cp"} 0.0
 # HELP zhmc_processor_smt_thread0_usage_ratio Usage ratio of thread 0 of the processor when in SMT mode - -1 if not supported
 # TYPE zhmc_processor_smt_thread0_usage_ratio gauge
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL000",type="ifl"} 0.01
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL004",type="ifl"} 0.01
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL008",type="ifl"} 0.01
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL00C",type="ifl"} 0.01
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL010",type="ifl"} 0.01
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL014",type="ifl"} 0.01
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL018",type="ifl"} 0.01
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL01C",type="ifl"} 0.01
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL020",type="ifl"} 0.01
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL024",type="ifl"} 0.56
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL028",type="ifl"} 0.55
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL02C",type="ifl"} 0.57
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL030",type="ifl"} 0.58
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL034",type="ifl"} 0.55
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL038",type="ifl"} 0.63
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL03C",type="ifl"} 0.59
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFP040",type="ifp"} 0.06
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL044",type="ifl"} 0.03
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL048",type="ifl"} 0.02
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL04C",type="ifl"} 0.02
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL050",type="ifl"} 0.01
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL054",type="ifl"} 0.01
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL058",type="ifl"} 0.02
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL05C",type="ifl"} 0.02
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL060",type="ifl"} 0.01
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL064",type="ifl"} 0.01
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL068",type="ifl"} 0.01
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL06C",type="ifl"} 0.01
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL070",type="ifl"} 0.01
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL078",type="ifl"} 0.01
-zhmc_processor_smt_thread0_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL07C",type="ifl"} 0.01
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="IFP000",type="ifp"} 0.04
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP004",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP008",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP010",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP018",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP01C",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="IFP020",type="ifp"} 0.01
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP028",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP02C",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP034",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP038",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP03C",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP040",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP044",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP048",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP050",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP058",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP05C",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP064",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP06C",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP074",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP078",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP07C",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP084",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP088",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP090",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP098",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP09C",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP0A4",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP0A8",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP0AC",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP0B4",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP0BC",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP0C4",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP0C8",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP0D0",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP0D8",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP0DC",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP0E4",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP0E8",type="cp"} 0.0
+zhmc_processor_smt_thread0_usage_ratio{cpc="P0000A28",processor="CP0EC",type="cp"} 0.0
 # HELP zhmc_processor_smt_thread1_usage_ratio Usage ratio of thread 1 of the processor when in SMT mode - -1 if not supported
 # TYPE zhmc_processor_smt_thread1_usage_ratio gauge
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL000",type="ifl"} 0.01
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL004",type="ifl"} 0.01
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL008",type="ifl"} 0.01
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL00C",type="ifl"} 0.01
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL010",type="ifl"} 0.01
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL014",type="ifl"} 0.01
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL018",type="ifl"} 0.01
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL01C",type="ifl"} 0.01
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL020",type="ifl"} 0.01
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL024",type="ifl"} 0.54
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL028",type="ifl"} 0.53
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL02C",type="ifl"} 0.56
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL030",type="ifl"} 0.56
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL034",type="ifl"} 0.53
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL038",type="ifl"} 0.61
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL03C",type="ifl"} 0.58
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFP040",type="ifp"} 0.0
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL044",type="ifl"} 0.01
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL048",type="ifl"} 0.01
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL04C",type="ifl"} 0.01
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL050",type="ifl"} 0.01
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL054",type="ifl"} 0.02
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL058",type="ifl"} 0.01
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL05C",type="ifl"} 0.01
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL060",type="ifl"} 0.01
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL064",type="ifl"} 0.01
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL068",type="ifl"} 0.01
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL06C",type="ifl"} 0.01
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL070",type="ifl"} 0.01
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL078",type="ifl"} 0.01
-zhmc_processor_smt_thread1_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05",processor="IFL07C",type="ifl"} 0.01
-# HELP zhmc_partition_processor_usage_ratio Usage ratio across all processors of the partition
-# TYPE zhmc_partition_processor_usage_ratio gauge
-zhmc_partition_processor_usage_ratio{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 0.01
-zhmc_partition_processor_usage_ratio{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_partition_processor_usage_ratio{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 0.0
-# HELP zhmc_partition_network_adapter_usage_ratio Usage ratio of all network adapters of the partition
-# TYPE zhmc_partition_network_adapter_usage_ratio gauge
-zhmc_partition_network_adapter_usage_ratio{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 0.0
-zhmc_partition_network_adapter_usage_ratio{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_partition_network_adapter_usage_ratio{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 0.0
-# HELP zhmc_partition_storage_adapter_usage_ratio Usage ratio of all storage adapters of the partition
-# TYPE zhmc_partition_storage_adapter_usage_ratio gauge
-zhmc_partition_storage_adapter_usage_ratio{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 0.19
-zhmc_partition_storage_adapter_usage_ratio{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 0.18
-zhmc_partition_storage_adapter_usage_ratio{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 0.19
-# HELP zhmc_partition_accelerator_adapter_usage_ratio Usage ratio of all accelerator adapters of the partition
-# TYPE zhmc_partition_accelerator_adapter_usage_ratio gauge
-zhmc_partition_accelerator_adapter_usage_ratio{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 0.0
-zhmc_partition_accelerator_adapter_usage_ratio{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_partition_accelerator_adapter_usage_ratio{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 0.0
-# HELP zhmc_partition_crypto_adapter_usage_ratio Usage ratio of all crypto adapters of the partition
-# TYPE zhmc_partition_crypto_adapter_usage_ratio gauge
-zhmc_partition_crypto_adapter_usage_ratio{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 0.0
-zhmc_partition_crypto_adapter_usage_ratio{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_partition_crypto_adapter_usage_ratio{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="IFP000",type="ifp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP004",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP008",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP010",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP018",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP01C",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="IFP020",type="ifp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP028",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP02C",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP034",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP038",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP03C",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP040",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP044",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP048",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP050",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP058",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP05C",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP064",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP06C",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP074",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP078",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP07C",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP084",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP088",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP090",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP098",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP09C",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP0A4",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP0A8",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP0AC",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP0B4",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP0BC",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP0C4",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP0C8",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP0D0",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP0D8",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP0DC",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP0E4",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP0E8",type="cp"} 0.0
+zhmc_processor_smt_thread1_usage_ratio{cpc="P0000A28",processor="CP0EC",type="cp"} 0.0
 # HELP zhmc_cpc_processor_usage_ratio Usage ratio across all processors of the CPC
 # TYPE zhmc_cpc_processor_usage_ratio gauge
-zhmc_cpc_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.14
+zhmc_cpc_processor_usage_ratio{cpc="P0000A28"} 0.0
 # HELP zhmc_cpc_network_adapter_usage_ratio Usage ratio across all network adapters of the CPC
 # TYPE zhmc_cpc_network_adapter_usage_ratio gauge
-zhmc_cpc_network_adapter_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
+zhmc_cpc_network_adapter_usage_ratio{cpc="P0000A28"} 0.0
 # HELP zhmc_cpc_storage_adapter_usage_ratio Usage ratio across all storage adapters of the CPC
 # TYPE zhmc_cpc_storage_adapter_usage_ratio gauge
-zhmc_cpc_storage_adapter_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.21
+zhmc_cpc_storage_adapter_usage_ratio{cpc="P0000A28"} 0.0
 # HELP zhmc_cpc_accelerator_adapter_usage_ratio Usage ratio across all accelerator adapters of the CPC
 # TYPE zhmc_cpc_accelerator_adapter_usage_ratio gauge
-zhmc_cpc_accelerator_adapter_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
+zhmc_cpc_accelerator_adapter_usage_ratio{cpc="P0000A28"} 0.0
 # HELP zhmc_cpc_crypto_adapter_usage_ratio Usage ratio across all crypto adapters of the CPC
 # TYPE zhmc_cpc_crypto_adapter_usage_ratio gauge
-zhmc_cpc_crypto_adapter_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
+zhmc_cpc_crypto_adapter_usage_ratio{cpc="P0000A28"} 0.0
 # HELP zhmc_cpc_power_watts Power consumption of the CPC
 # TYPE zhmc_cpc_power_watts gauge
-zhmc_cpc_power_watts{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 2279.0
+zhmc_cpc_power_watts{cpc="P0000A28"} 6081.0
 # HELP zhmc_cpc_ambient_temperature_celsius Ambient temperature of the CPC
 # TYPE zhmc_cpc_ambient_temperature_celsius gauge
-zhmc_cpc_ambient_temperature_celsius{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 25.2
-# HELP zhmc_cpc_ifl_shared_processor_usage_ratio Usage ratio across all shared IFL processors of the CPC
-# TYPE zhmc_cpc_ifl_shared_processor_usage_ratio gauge
-zhmc_cpc_ifl_shared_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.14
-# HELP zhmc_cpc_ifl_processor_usage_ratio Usage ratio across all IFL processors of the CPC
-# TYPE zhmc_cpc_ifl_processor_usage_ratio gauge
-zhmc_cpc_ifl_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.14
+zhmc_cpc_ambient_temperature_celsius{cpc="P0000A28"} 17.9
+# HELP zhmc_cpc_cp_shared_processor_usage_ratio Usage ratio across all shared CP processors of the CPC
+# TYPE zhmc_cpc_cp_shared_processor_usage_ratio gauge
+zhmc_cpc_cp_shared_processor_usage_ratio{cpc="P0000A28"} 0.0
+# HELP zhmc_cpc_cp_processor_usage_ratio Usage ratio across all CP processors of the CPC
+# TYPE zhmc_cpc_cp_processor_usage_ratio gauge
+zhmc_cpc_cp_processor_usage_ratio{cpc="P0000A28"} 0.0
 # HELP zhmc_cpc_shared_processor_usage_ratio Usage ratio across all shared processors of the CPC
 # TYPE zhmc_cpc_shared_processor_usage_ratio gauge
-zhmc_cpc_shared_processor_usage_ratio{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.14
+zhmc_cpc_shared_processor_usage_ratio{cpc="P0000A28"} 0.02
 # HELP zhmc_cpc_humidity_percent Relative humidity
 # TYPE zhmc_cpc_humidity_percent gauge
-zhmc_cpc_humidity_percent{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 39.0
+zhmc_cpc_humidity_percent{cpc="P0000A28"} 38.0
 # HELP zhmc_cpc_dew_point_celsius Dew point
 # TYPE zhmc_cpc_dew_point_celsius gauge
-zhmc_cpc_dew_point_celsius{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 10.2
+zhmc_cpc_dew_point_celsius{cpc="P0000A28"} 7.5
 # HELP zhmc_cpc_heat_load_total_btu_per_hour Total heat load of the CPC
 # TYPE zhmc_cpc_heat_load_total_btu_per_hour gauge
-zhmc_cpc_heat_load_total_btu_per_hour{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 7781.0
+zhmc_cpc_heat_load_total_btu_per_hour{cpc="P0000A28"} 20927.0
 # HELP zhmc_cpc_heat_load_forced_air_btu_per_hour Heat load of the CPC covered by forced-air
 # TYPE zhmc_cpc_heat_load_forced_air_btu_per_hour gauge
-zhmc_cpc_heat_load_forced_air_btu_per_hour{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 7781.0
+zhmc_cpc_heat_load_forced_air_btu_per_hour{cpc="P0000A28"} 20927.0
 # HELP zhmc_cpc_heat_load_water_btu_per_hour Heat load of the CPC covered by water
 # TYPE zhmc_cpc_heat_load_water_btu_per_hour gauge
-zhmc_cpc_heat_load_water_btu_per_hour{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
+zhmc_cpc_heat_load_water_btu_per_hour{cpc="P0000A28"} 0.0
 # HELP zhmc_cpc_exhaust_temperature_celsius Exhaust temperature of the CPC
 # TYPE zhmc_cpc_exhaust_temperature_celsius gauge
-zhmc_cpc_exhaust_temperature_celsius{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 32.0
-# HELP zhmc_nic_bytes_sent_count Number of Bytes in unicast packets that were sent
-# TYPE zhmc_nic_bytes_sent_count gauge
-zhmc_nic_bytes_sent_count{cpc="CPCA",mzr="US-East",nic="HMVST40001",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_bytes_sent_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="PENNY",pod="wdc04-05"} 6.0
-zhmc_nic_bytes_sent_count{cpc="CPCA",mzr="US-East",nic="HMVST40003",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_bytes_sent_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="WILLVLAN2",pod="wdc04-05"} 28.0
-zhmc_nic_bytes_sent_count{cpc="CPCA",mzr="US-East",nic="HMGR1",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_bytes_sent_count{cpc="CPCA",mzr="US-East",nic="IMGMT0_ssc_mgmt",partition="MIKETEST",pod="wdc04-05"} 0.0
-zhmc_nic_bytes_sent_count{cpc="CPCA",mzr="US-East",nic="HMVST40002",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_bytes_sent_count{cpc="CPCA",mzr="US-East",nic="HMVST40000",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_bytes_sent_count{cpc="CPCA",mzr="US-East",nic="HMGR0",partition="PENNY",pod="wdc04-05"} 0.0
-# HELP zhmc_nic_bytes_received_count Number of Bytes in unicast packets that were received
-# TYPE zhmc_nic_bytes_received_count gauge
-zhmc_nic_bytes_received_count{cpc="CPCA",mzr="US-East",nic="HMVST40001",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_bytes_received_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="PENNY",pod="wdc04-05"} 2.0
-zhmc_nic_bytes_received_count{cpc="CPCA",mzr="US-East",nic="HMVST40003",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_bytes_received_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="WILLVLAN2",pod="wdc04-05"} 15.0
-zhmc_nic_bytes_received_count{cpc="CPCA",mzr="US-East",nic="HMGR1",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_bytes_received_count{cpc="CPCA",mzr="US-East",nic="IMGMT0_ssc_mgmt",partition="MIKETEST",pod="wdc04-05"} 0.0
-zhmc_nic_bytes_received_count{cpc="CPCA",mzr="US-East",nic="HMVST40002",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_bytes_received_count{cpc="CPCA",mzr="US-East",nic="HMVST40000",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_bytes_received_count{cpc="CPCA",mzr="US-East",nic="HMGR0",partition="PENNY",pod="wdc04-05"} 0.0
-# HELP zhmc_nic_packets_sent_count Number of unicast packets that were sent
-# TYPE zhmc_nic_packets_sent_count gauge
-zhmc_nic_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HMVST40001",partition="WILLVLAN2",pod="wdc04-05"} 4113.0
-zhmc_nic_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="PENNY",pod="wdc04-05"} 49.0
-zhmc_nic_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HMVST40003",partition="WILLVLAN2",pod="wdc04-05"} 2.0
-zhmc_nic_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="WILLVLAN2",pod="wdc04-05"} 218.0
-zhmc_nic_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HMGR1",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_packets_sent_count{cpc="CPCA",mzr="US-East",nic="IMGMT0_ssc_mgmt",partition="MIKETEST",pod="wdc04-05"} 36076.0
-zhmc_nic_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HMVST40002",partition="WILLVLAN2",pod="wdc04-05"} 3.0
-zhmc_nic_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HMVST40000",partition="WILLVLAN2",pod="wdc04-05"} 2.0
-zhmc_nic_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HMGR0",partition="PENNY",pod="wdc04-05"} 4099.0
-# HELP zhmc_nic_packets_received_count Number of unicast packets that were received
-# TYPE zhmc_nic_packets_received_count gauge
-zhmc_nic_packets_received_count{cpc="CPCA",mzr="US-East",nic="HMVST40001",partition="WILLVLAN2",pod="wdc04-05"} 4127.0
-zhmc_nic_packets_received_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="PENNY",pod="wdc04-05"} 67.0
-zhmc_nic_packets_received_count{cpc="CPCA",mzr="US-East",nic="HMVST40003",partition="WILLVLAN2",pod="wdc04-05"} 1121.0
-zhmc_nic_packets_received_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="WILLVLAN2",pod="wdc04-05"} 342.0
-zhmc_nic_packets_received_count{cpc="CPCA",mzr="US-East",nic="HMGR1",partition="PENNY",pod="wdc04-05"} 2.198806e+06
-zhmc_nic_packets_received_count{cpc="CPCA",mzr="US-East",nic="IMGMT0_ssc_mgmt",partition="MIKETEST",pod="wdc04-05"} 453496.0
-zhmc_nic_packets_received_count{cpc="CPCA",mzr="US-East",nic="HMVST40002",partition="WILLVLAN2",pod="wdc04-05"} 1121.0
-zhmc_nic_packets_received_count{cpc="CPCA",mzr="US-East",nic="HMVST40000",partition="WILLVLAN2",pod="wdc04-05"} 1121.0
-zhmc_nic_packets_received_count{cpc="CPCA",mzr="US-East",nic="HMGR0",partition="PENNY",pod="wdc04-05"} 2.20192e+06
-# HELP zhmc_nic_packets_sent_dropped_count Number of sent packets that were dropped (resource shortage)
-# TYPE zhmc_nic_packets_sent_dropped_count gauge
-zhmc_nic_packets_sent_dropped_count{cpc="CPCA",mzr="US-East",nic="HMVST40001",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_packets_sent_dropped_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_packets_sent_dropped_count{cpc="CPCA",mzr="US-East",nic="HMVST40003",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_packets_sent_dropped_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_packets_sent_dropped_count{cpc="CPCA",mzr="US-East",nic="HMGR1",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_packets_sent_dropped_count{cpc="CPCA",mzr="US-East",nic="IMGMT0_ssc_mgmt",partition="MIKETEST",pod="wdc04-05"} 0.0
-zhmc_nic_packets_sent_dropped_count{cpc="CPCA",mzr="US-East",nic="HMVST40002",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_packets_sent_dropped_count{cpc="CPCA",mzr="US-East",nic="HMVST40000",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_packets_sent_dropped_count{cpc="CPCA",mzr="US-East",nic="HMGR0",partition="PENNY",pod="wdc04-05"} 0.0
-# HELP zhmc_nic_packets_received_dropped_count Number of received packets that were dropped (resource shortage)
-# TYPE zhmc_nic_packets_received_dropped_count gauge
-zhmc_nic_packets_received_dropped_count{cpc="CPCA",mzr="US-East",nic="HMVST40001",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_packets_received_dropped_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_packets_received_dropped_count{cpc="CPCA",mzr="US-East",nic="HMVST40003",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_packets_received_dropped_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_packets_received_dropped_count{cpc="CPCA",mzr="US-East",nic="HMGR1",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_packets_received_dropped_count{cpc="CPCA",mzr="US-East",nic="IMGMT0_ssc_mgmt",partition="MIKETEST",pod="wdc04-05"} 0.0
-zhmc_nic_packets_received_dropped_count{cpc="CPCA",mzr="US-East",nic="HMVST40002",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_packets_received_dropped_count{cpc="CPCA",mzr="US-East",nic="HMVST40000",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_packets_received_dropped_count{cpc="CPCA",mzr="US-East",nic="HMGR0",partition="PENNY",pod="wdc04-05"} 0.0
-# HELP zhmc_nic_packets_sent_discarded_count Number of sent packets that were discarded (malformed)
-# TYPE zhmc_nic_packets_sent_discarded_count gauge
-zhmc_nic_packets_sent_discarded_count{cpc="CPCA",mzr="US-East",nic="HMVST40001",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_packets_sent_discarded_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_packets_sent_discarded_count{cpc="CPCA",mzr="US-East",nic="HMVST40003",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_packets_sent_discarded_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_packets_sent_discarded_count{cpc="CPCA",mzr="US-East",nic="HMGR1",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_packets_sent_discarded_count{cpc="CPCA",mzr="US-East",nic="IMGMT0_ssc_mgmt",partition="MIKETEST",pod="wdc04-05"} 8.0
-zhmc_nic_packets_sent_discarded_count{cpc="CPCA",mzr="US-East",nic="HMVST40002",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_packets_sent_discarded_count{cpc="CPCA",mzr="US-East",nic="HMVST40000",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_packets_sent_discarded_count{cpc="CPCA",mzr="US-East",nic="HMGR0",partition="PENNY",pod="wdc04-05"} 0.0
-# HELP zhmc_nic_packets_received_discarded_count Number of received packets that were discarded (malformed)
-# TYPE zhmc_nic_packets_received_discarded_count gauge
-zhmc_nic_packets_received_discarded_count{cpc="CPCA",mzr="US-East",nic="HMVST40001",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_packets_received_discarded_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_packets_received_discarded_count{cpc="CPCA",mzr="US-East",nic="HMVST40003",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_packets_received_discarded_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_packets_received_discarded_count{cpc="CPCA",mzr="US-East",nic="HMGR1",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_packets_received_discarded_count{cpc="CPCA",mzr="US-East",nic="IMGMT0_ssc_mgmt",partition="MIKETEST",pod="wdc04-05"} 10.0
-zhmc_nic_packets_received_discarded_count{cpc="CPCA",mzr="US-East",nic="HMVST40002",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_packets_received_discarded_count{cpc="CPCA",mzr="US-East",nic="HMVST40000",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_packets_received_discarded_count{cpc="CPCA",mzr="US-East",nic="HMGR0",partition="PENNY",pod="wdc04-05"} 0.0
-# HELP zhmc_nic_multicast_packets_sent_count Number of multicast packets sent
-# TYPE zhmc_nic_multicast_packets_sent_count gauge
-zhmc_nic_multicast_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HMVST40001",partition="WILLVLAN2",pod="wdc04-05"} 4.0
-zhmc_nic_multicast_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="PENNY",pod="wdc04-05"} 2.0
-zhmc_nic_multicast_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HMVST40003",partition="WILLVLAN2",pod="wdc04-05"} 1.0
-zhmc_nic_multicast_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="WILLVLAN2",pod="wdc04-05"} 2.0
-zhmc_nic_multicast_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HMGR1",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_multicast_packets_sent_count{cpc="CPCA",mzr="US-East",nic="IMGMT0_ssc_mgmt",partition="MIKETEST",pod="wdc04-05"} 2.0
-zhmc_nic_multicast_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HMVST40002",partition="WILLVLAN2",pod="wdc04-05"} 2.0
-zhmc_nic_multicast_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HMVST40000",partition="WILLVLAN2",pod="wdc04-05"} 1.0
-zhmc_nic_multicast_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HMGR0",partition="PENNY",pod="wdc04-05"} 2.0
-# HELP zhmc_nic_multicast_packets_received_count Number of multicast packets received
-# TYPE zhmc_nic_multicast_packets_received_count gauge
-zhmc_nic_multicast_packets_received_count{cpc="CPCA",mzr="US-East",nic="HMVST40001",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_multicast_packets_received_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_multicast_packets_received_count{cpc="CPCA",mzr="US-East",nic="HMVST40003",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_multicast_packets_received_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_multicast_packets_received_count{cpc="CPCA",mzr="US-East",nic="HMGR1",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_multicast_packets_received_count{cpc="CPCA",mzr="US-East",nic="IMGMT0_ssc_mgmt",partition="MIKETEST",pod="wdc04-05"} 6.0
-zhmc_nic_multicast_packets_received_count{cpc="CPCA",mzr="US-East",nic="HMVST40002",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_multicast_packets_received_count{cpc="CPCA",mzr="US-East",nic="HMVST40000",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_multicast_packets_received_count{cpc="CPCA",mzr="US-East",nic="HMGR0",partition="PENNY",pod="wdc04-05"} 0.0
-# HELP zhmc_nic_broadcast_packets_sent_count Number of broadcast packets sent
-# TYPE zhmc_nic_broadcast_packets_sent_count gauge
-zhmc_nic_broadcast_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HMVST40001",partition="WILLVLAN2",pod="wdc04-05"} 1.0
-zhmc_nic_broadcast_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_broadcast_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HMVST40003",partition="WILLVLAN2",pod="wdc04-05"} 1.0
-zhmc_nic_broadcast_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="WILLVLAN2",pod="wdc04-05"} 1.0
-zhmc_nic_broadcast_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HMGR1",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_broadcast_packets_sent_count{cpc="CPCA",mzr="US-East",nic="IMGMT0_ssc_mgmt",partition="MIKETEST",pod="wdc04-05"} 0.0
-zhmc_nic_broadcast_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HMVST40002",partition="WILLVLAN2",pod="wdc04-05"} 1.0
-zhmc_nic_broadcast_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HMVST40000",partition="WILLVLAN2",pod="wdc04-05"} 1.0
-zhmc_nic_broadcast_packets_sent_count{cpc="CPCA",mzr="US-East",nic="HMGR0",partition="PENNY",pod="wdc04-05"} 0.0
-# HELP zhmc_nic_broadcast_packets_received_count Number of broadcast packets received
-# TYPE zhmc_nic_broadcast_packets_received_count gauge
-zhmc_nic_broadcast_packets_received_count{cpc="CPCA",mzr="US-East",nic="HMVST40001",partition="WILLVLAN2",pod="wdc04-05"} 1117.0
-zhmc_nic_broadcast_packets_received_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="PENNY",pod="wdc04-05"} 31.0
-zhmc_nic_broadcast_packets_received_count{cpc="CPCA",mzr="US-East",nic="HMVST40003",partition="WILLVLAN2",pod="wdc04-05"} 1121.0
-zhmc_nic_broadcast_packets_received_count{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="WILLVLAN2",pod="wdc04-05"} 161.0
-zhmc_nic_broadcast_packets_received_count{cpc="CPCA",mzr="US-East",nic="HMGR1",partition="PENNY",pod="wdc04-05"} 2.198864e+06
-zhmc_nic_broadcast_packets_received_count{cpc="CPCA",mzr="US-East",nic="IMGMT0_ssc_mgmt",partition="MIKETEST",pod="wdc04-05"} 452826.0
-zhmc_nic_broadcast_packets_received_count{cpc="CPCA",mzr="US-East",nic="HMVST40002",partition="WILLVLAN2",pod="wdc04-05"} 1121.0
-zhmc_nic_broadcast_packets_received_count{cpc="CPCA",mzr="US-East",nic="HMVST40000",partition="WILLVLAN2",pod="wdc04-05"} 1121.0
-zhmc_nic_broadcast_packets_received_count{cpc="CPCA",mzr="US-East",nic="HMGR0",partition="PENNY",pod="wdc04-05"} 2.19889e+06
-# HELP zhmc_nic_data_sent_bytes Amount of data sent over the collection interval
-# TYPE zhmc_nic_data_sent_bytes gauge
-zhmc_nic_data_sent_bytes{cpc="CPCA",mzr="US-East",nic="HMVST40001",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_data_sent_bytes{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_data_sent_bytes{cpc="CPCA",mzr="US-East",nic="HMVST40003",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_data_sent_bytes{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_data_sent_bytes{cpc="CPCA",mzr="US-East",nic="HMGR1",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_data_sent_bytes{cpc="CPCA",mzr="US-East",nic="IMGMT0_ssc_mgmt",partition="MIKETEST",pod="wdc04-05"} 0.0
-zhmc_nic_data_sent_bytes{cpc="CPCA",mzr="US-East",nic="HMVST40002",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_data_sent_bytes{cpc="CPCA",mzr="US-East",nic="HMVST40000",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_data_sent_bytes{cpc="CPCA",mzr="US-East",nic="HMGR0",partition="PENNY",pod="wdc04-05"} 0.0
-# HELP zhmc_nic_data_received_bytes Amount of data received over the collection interval
-# TYPE zhmc_nic_data_received_bytes gauge
-zhmc_nic_data_received_bytes{cpc="CPCA",mzr="US-East",nic="HMVST40001",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_data_received_bytes{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_data_received_bytes{cpc="CPCA",mzr="US-East",nic="HMVST40003",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_data_received_bytes{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_data_received_bytes{cpc="CPCA",mzr="US-East",nic="HMGR1",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_data_received_bytes{cpc="CPCA",mzr="US-East",nic="IMGMT0_ssc_mgmt",partition="MIKETEST",pod="wdc04-05"} 0.0
-zhmc_nic_data_received_bytes{cpc="CPCA",mzr="US-East",nic="HMVST40002",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_data_received_bytes{cpc="CPCA",mzr="US-East",nic="HMVST40000",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_data_received_bytes{cpc="CPCA",mzr="US-East",nic="HMGR0",partition="PENNY",pod="wdc04-05"} 0.0
-# HELP zhmc_nic_data_rate_sent_bytes_per_second Data rate sent over the collection interval
-# TYPE zhmc_nic_data_rate_sent_bytes_per_second gauge
-zhmc_nic_data_rate_sent_bytes_per_second{cpc="CPCA",mzr="US-East",nic="HMVST40001",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_data_rate_sent_bytes_per_second{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_data_rate_sent_bytes_per_second{cpc="CPCA",mzr="US-East",nic="HMVST40003",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_data_rate_sent_bytes_per_second{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_data_rate_sent_bytes_per_second{cpc="CPCA",mzr="US-East",nic="HMGR1",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_data_rate_sent_bytes_per_second{cpc="CPCA",mzr="US-East",nic="IMGMT0_ssc_mgmt",partition="MIKETEST",pod="wdc04-05"} 0.0
-zhmc_nic_data_rate_sent_bytes_per_second{cpc="CPCA",mzr="US-East",nic="HMVST40002",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_data_rate_sent_bytes_per_second{cpc="CPCA",mzr="US-East",nic="HMVST40000",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_data_rate_sent_bytes_per_second{cpc="CPCA",mzr="US-East",nic="HMGR0",partition="PENNY",pod="wdc04-05"} 0.0
-# HELP zhmc_nic_data_rate_received_bytes_per_second Data rate received over the collection interval
-# TYPE zhmc_nic_data_rate_received_bytes_per_second gauge
-zhmc_nic_data_rate_received_bytes_per_second{cpc="CPCA",mzr="US-East",nic="HMVST40001",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_data_rate_received_bytes_per_second{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_data_rate_received_bytes_per_second{cpc="CPCA",mzr="US-East",nic="HMVST40003",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_data_rate_received_bytes_per_second{cpc="CPCA",mzr="US-East",nic="HAMGMT0_ssc_mgmt",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_data_rate_received_bytes_per_second{cpc="CPCA",mzr="US-East",nic="HMGR1",partition="PENNY",pod="wdc04-05"} 0.0
-zhmc_nic_data_rate_received_bytes_per_second{cpc="CPCA",mzr="US-East",nic="IMGMT0_ssc_mgmt",partition="MIKETEST",pod="wdc04-05"} 0.0
-zhmc_nic_data_rate_received_bytes_per_second{cpc="CPCA",mzr="US-East",nic="HMVST40002",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_data_rate_received_bytes_per_second{cpc="CPCA",mzr="US-East",nic="HMVST40000",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_nic_data_rate_received_bytes_per_second{cpc="CPCA",mzr="US-East",nic="HMGR0",partition="PENNY",pod="wdc04-05"} 0.0
-# HELP zhmc_port_bytes_sent_count Number of Bytes in unicast packets that were sent
-# TYPE zhmc_port_bytes_sent_count gauge
-zhmc_port_bytes_sent_count{adapter="OSD_134_DATA_NET2_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 1.507262554781e+012
-zhmc_port_bytes_sent_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 2.43835296642e+011
-zhmc_port_bytes_sent_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_bytes_sent_count{adapter="OSD_130_DATA_NET1_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 6.4139822089e+010
-zhmc_port_bytes_sent_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 2.43246035861e+011
-zhmc_port_bytes_sent_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_bytes_sent_count{adapter="OSD_110_DATA_NET1_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 6.07818967299e+011
-zhmc_port_bytes_sent_count{adapter="OSD_114_DATA_NET2_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 1.1881573114e+010
-# HELP zhmc_port_bytes_received_count Number of Bytes in unicast packets that were received
-# TYPE zhmc_port_bytes_received_count gauge
-zhmc_port_bytes_received_count{adapter="OSD_134_DATA_NET2_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 1.0792682943354e+013
-zhmc_port_bytes_received_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 1.767158928309e+012
-zhmc_port_bytes_received_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_bytes_received_count{adapter="OSD_130_DATA_NET1_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 2.53574001932e+011
-zhmc_port_bytes_received_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 2.248649421627e+012
-zhmc_port_bytes_received_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_bytes_received_count{adapter="OSD_110_DATA_NET1_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 4.987490770863e+012
-zhmc_port_bytes_received_count{adapter="OSD_114_DATA_NET2_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 3.39516874475e+011
-# HELP zhmc_port_packets_sent_count Number of unicast packets that were sent
-# TYPE zhmc_port_packets_sent_count gauge
-zhmc_port_packets_sent_count{adapter="OSD_134_DATA_NET2_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 2.55980834e+09
-zhmc_port_packets_sent_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 1.499304654e+09
-zhmc_port_packets_sent_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_packets_sent_count{adapter="OSD_130_DATA_NET1_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 7.8007212e+07
-zhmc_port_packets_sent_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 5.61008891e+08
-zhmc_port_packets_sent_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_packets_sent_count{adapter="OSD_110_DATA_NET1_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 1.21867209e+09
-zhmc_port_packets_sent_count{adapter="OSD_114_DATA_NET2_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 5.275366e+07
-# HELP zhmc_port_packets_received_count Number of unicast packets that were received
-# TYPE zhmc_port_packets_received_count gauge
-zhmc_port_packets_received_count{adapter="OSD_134_DATA_NET2_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 7.703941077e+09
-zhmc_port_packets_received_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 2.576730272e+09
-zhmc_port_packets_received_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_packets_received_count{adapter="OSD_130_DATA_NET1_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 2.75184789e+08
-zhmc_port_packets_received_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 2.017703606e+09
-zhmc_port_packets_received_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_packets_received_count{adapter="OSD_110_DATA_NET1_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 3.681868642e+09
-zhmc_port_packets_received_count{adapter="OSD_114_DATA_NET2_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 2.91129005e+08
-# HELP zhmc_port_packets_sent_dropped_count Number of sent packets that were dropped (resource shortage)
-# TYPE zhmc_port_packets_sent_dropped_count gauge
-zhmc_port_packets_sent_dropped_count{adapter="OSD_134_DATA_NET2_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 0.0
-zhmc_port_packets_sent_dropped_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 0.0
-zhmc_port_packets_sent_dropped_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_packets_sent_dropped_count{adapter="OSD_130_DATA_NET1_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 0.0
-zhmc_port_packets_sent_dropped_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 0.0
-zhmc_port_packets_sent_dropped_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_packets_sent_dropped_count{adapter="OSD_110_DATA_NET1_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 0.0
-zhmc_port_packets_sent_dropped_count{adapter="OSD_114_DATA_NET2_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 0.0
-# HELP zhmc_port_packets_received_dropped_count Number of received packets that were dropped (resource shortage)
-# TYPE zhmc_port_packets_received_dropped_count gauge
-zhmc_port_packets_received_dropped_count{adapter="OSD_134_DATA_NET2_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 0.0
-zhmc_port_packets_received_dropped_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 14.0
-zhmc_port_packets_received_dropped_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_packets_received_dropped_count{adapter="OSD_130_DATA_NET1_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 1.0
-zhmc_port_packets_received_dropped_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 52.0
-zhmc_port_packets_received_dropped_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_packets_received_dropped_count{adapter="OSD_110_DATA_NET1_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 10.0
-zhmc_port_packets_received_dropped_count{adapter="OSD_114_DATA_NET2_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 8.0
-# HELP zhmc_port_packets_sent_discarded_count Number of sent packets that were discarded (malformed)
-# TYPE zhmc_port_packets_sent_discarded_count gauge
-zhmc_port_packets_sent_discarded_count{adapter="OSD_134_DATA_NET2_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 0.0
-zhmc_port_packets_sent_discarded_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 0.0
-zhmc_port_packets_sent_discarded_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_packets_sent_discarded_count{adapter="OSD_130_DATA_NET1_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 0.0
-zhmc_port_packets_sent_discarded_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 0.0
-zhmc_port_packets_sent_discarded_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_packets_sent_discarded_count{adapter="OSD_110_DATA_NET1_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 0.0
-zhmc_port_packets_sent_discarded_count{adapter="OSD_114_DATA_NET2_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 0.0
-# HELP zhmc_port_packets_received_discarded_count Number of received packets that were discarded (malformed)
-# TYPE zhmc_port_packets_received_discarded_count gauge
-zhmc_port_packets_received_discarded_count{adapter="OSD_134_DATA_NET2_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 33.0
-zhmc_port_packets_received_discarded_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 0.0
-zhmc_port_packets_received_discarded_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_packets_received_discarded_count{adapter="OSD_130_DATA_NET1_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 264.0
-zhmc_port_packets_received_discarded_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 0.0
-zhmc_port_packets_received_discarded_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_packets_received_discarded_count{adapter="OSD_110_DATA_NET1_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 52.0
-zhmc_port_packets_received_discarded_count{adapter="OSD_114_DATA_NET2_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 60.0
-# HELP zhmc_port_multicast_packets_sent_count Number of multicast packets sent
-# TYPE zhmc_port_multicast_packets_sent_count gauge
-zhmc_port_multicast_packets_sent_count{adapter="OSD_134_DATA_NET2_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 2.22367e+06
-zhmc_port_multicast_packets_sent_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 1.948191e+06
-zhmc_port_multicast_packets_sent_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_multicast_packets_sent_count{adapter="OSD_130_DATA_NET1_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 1.945628e+06
-zhmc_port_multicast_packets_sent_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 1.91852e+06
-zhmc_port_multicast_packets_sent_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_multicast_packets_sent_count{adapter="OSD_110_DATA_NET1_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 1.961788e+06
-zhmc_port_multicast_packets_sent_count{adapter="OSD_114_DATA_NET2_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 1.960602e+06
-# HELP zhmc_port_multicast_packets_received_count Number of multicast packets received
-# TYPE zhmc_port_multicast_packets_received_count gauge
-zhmc_port_multicast_packets_received_count{adapter="OSD_134_DATA_NET2_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 2.085537e+06
-zhmc_port_multicast_packets_received_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 1.3716533e+07
-zhmc_port_multicast_packets_received_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_multicast_packets_received_count{adapter="OSD_130_DATA_NET1_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 2.622439e+06
-zhmc_port_multicast_packets_received_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 1.3878248e+07
-zhmc_port_multicast_packets_received_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_multicast_packets_received_count{adapter="OSD_110_DATA_NET1_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 2.621445e+06
-zhmc_port_multicast_packets_received_count{adapter="OSD_114_DATA_NET2_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 2.085871e+06
-# HELP zhmc_port_broadcast_packets_sent_count Number of broadcast packets sent
-# TYPE zhmc_port_broadcast_packets_sent_count gauge
-zhmc_port_broadcast_packets_sent_count{adapter="OSD_134_DATA_NET2_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 4.280821e+07
-zhmc_port_broadcast_packets_sent_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 201366.0
-zhmc_port_broadcast_packets_sent_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_broadcast_packets_sent_count{adapter="OSD_130_DATA_NET1_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 300179.0
-zhmc_port_broadcast_packets_sent_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 38731.0
-zhmc_port_broadcast_packets_sent_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_broadcast_packets_sent_count{adapter="OSD_110_DATA_NET1_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 246243.0
-zhmc_port_broadcast_packets_sent_count{adapter="OSD_114_DATA_NET2_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 28786.0
-# HELP zhmc_port_broadcast_packets_received_count Number of broadcast packets received
-# TYPE zhmc_port_broadcast_packets_received_count gauge
-zhmc_port_broadcast_packets_received_count{adapter="OSD_134_DATA_NET2_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 1.3470031e+07
-zhmc_port_broadcast_packets_received_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 1.15572536e+08
-zhmc_port_broadcast_packets_received_count{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_broadcast_packets_received_count{adapter="OSD_130_DATA_NET1_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 5.7123565e+07
-zhmc_port_broadcast_packets_received_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 1.13229372e+08
-zhmc_port_broadcast_packets_received_count{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_broadcast_packets_received_count{adapter="OSD_110_DATA_NET1_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 5.6900344e+07
-zhmc_port_broadcast_packets_received_count{adapter="OSD_114_DATA_NET2_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 5.5882729e+07
+zhmc_cpc_exhaust_temperature_celsius{cpc="P0000A28"} 23.0
+# HELP zhmc_cpc_power_cord1_phase_a_watts Power in Phase A of line cord 1 - 0 if not available
+# TYPE zhmc_cpc_power_cord1_phase_a_watts gauge
+zhmc_cpc_power_cord1_phase_a_watts{cord="A35B-BPE1-J01",cpc="P0000A28"} 0.0
+# HELP zhmc_cpc_power_cord1_phase_b_watts Power in Phase B of line cord 1 - 0 if not available
+# TYPE zhmc_cpc_power_cord1_phase_b_watts gauge
+zhmc_cpc_power_cord1_phase_b_watts{cord="A35B-BPE1-J01",cpc="P0000A28"} 1505.0
+# HELP zhmc_cpc_power_cord1_phase_c_watts Power in Phase C of line cord 1 - 0 if not available
+# TYPE zhmc_cpc_power_cord1_phase_c_watts gauge
+zhmc_cpc_power_cord1_phase_c_watts{cord="A35B-BPE1-J01",cpc="P0000A28"} 1520.0
+# HELP zhmc_cpc_power_cord2_phase_a_watts Power in Phase A of line cord 2 - 0 if not available
+# TYPE zhmc_cpc_power_cord2_phase_a_watts gauge
+zhmc_cpc_power_cord2_phase_a_watts{cord="A27B-BPE1-J01",cpc="P0000A28"} 0.0
+# HELP zhmc_cpc_power_cord2_phase_b_watts Power in Phase B of line cord 2 - 0 if not available
+# TYPE zhmc_cpc_power_cord2_phase_b_watts gauge
+zhmc_cpc_power_cord2_phase_b_watts{cord="A27B-BPE1-J01",cpc="P0000A28"} 1541.0
+# HELP zhmc_cpc_power_cord2_phase_c_watts Power in Phase C of line cord 2 - 0 if not available
+# TYPE zhmc_cpc_power_cord2_phase_c_watts gauge
+zhmc_cpc_power_cord2_phase_c_watts{cord="A27B-BPE1-J01",cpc="P0000A28"} 1545.0
+# HELP zhmc_cpc_power_cord3_phase_a_watts Power in Phase A of line cord 3 - 0 if not available
+# TYPE zhmc_cpc_power_cord3_phase_a_watts gauge
+zhmc_cpc_power_cord3_phase_a_watts{cord="not-connected",cpc="P0000A28"} 0.0
+# HELP zhmc_cpc_power_cord3_phase_b_watts Power in Phase B of line cord 3 - 0 if not available
+# TYPE zhmc_cpc_power_cord3_phase_b_watts gauge
+zhmc_cpc_power_cord3_phase_b_watts{cord="not-connected",cpc="P0000A28"} 0.0
+# HELP zhmc_cpc_power_cord3_phase_c_watts Power in Phase C of line cord 3 - 0 if not available
+# TYPE zhmc_cpc_power_cord3_phase_c_watts gauge
+zhmc_cpc_power_cord3_phase_c_watts{cord="not-connected",cpc="P0000A28"} 0.0
+# HELP zhmc_cpc_power_cord4_phase_a_watts Power in Phase A of line cord 4 - 0 if not available
+# TYPE zhmc_cpc_power_cord4_phase_a_watts gauge
+zhmc_cpc_power_cord4_phase_a_watts{cord="not-connected",cpc="P0000A28"} 0.0
+# HELP zhmc_cpc_power_cord4_phase_b_watts Power in Phase B of line cord 4 - 0 if not available
+# TYPE zhmc_cpc_power_cord4_phase_b_watts gauge
+zhmc_cpc_power_cord4_phase_b_watts{cord="not-connected",cpc="P0000A28"} 0.0
+# HELP zhmc_cpc_power_cord4_phase_c_watts Power in Phase C of line cord 4 - 0 if not available
+# TYPE zhmc_cpc_power_cord4_phase_c_watts gauge
+zhmc_cpc_power_cord4_phase_c_watts{cord="not-connected",cpc="P0000A28"} 0.0
+# HELP zhmc_cpc_power_cord5_phase_a_watts Power in Phase A of line cord 5 - 0 if not available
+# TYPE zhmc_cpc_power_cord5_phase_a_watts gauge
+zhmc_cpc_power_cord5_phase_a_watts{cord="not-connected",cpc="P0000A28"} 0.0
+# HELP zhmc_cpc_power_cord5_phase_b_watts Power in Phase B of line cord 5 - 0 if not available
+# TYPE zhmc_cpc_power_cord5_phase_b_watts gauge
+zhmc_cpc_power_cord5_phase_b_watts{cord="not-connected",cpc="P0000A28"} 0.0
+# HELP zhmc_cpc_power_cord5_phase_c_watts Power in Phase C of line cord 5 - 0 if not available
+# TYPE zhmc_cpc_power_cord5_phase_c_watts gauge
+zhmc_cpc_power_cord5_phase_c_watts{cord="not-connected",cpc="P0000A28"} 0.0
+# HELP zhmc_cpc_power_cord6_phase_a_watts Power in Phase A of line cord 6 - 0 if not available
+# TYPE zhmc_cpc_power_cord6_phase_a_watts gauge
+zhmc_cpc_power_cord6_phase_a_watts{cord="not-connected",cpc="P0000A28"} 0.0
+# HELP zhmc_cpc_power_cord6_phase_b_watts Power in Phase B of line cord 6 - 0 if not available
+# TYPE zhmc_cpc_power_cord6_phase_b_watts gauge
+zhmc_cpc_power_cord6_phase_b_watts{cord="not-connected",cpc="P0000A28"} 0.0
+# HELP zhmc_cpc_power_cord6_phase_c_watts Power in Phase C of line cord 6 - 0 if not available
+# TYPE zhmc_cpc_power_cord6_phase_c_watts gauge
+zhmc_cpc_power_cord6_phase_c_watts{cord="not-connected",cpc="P0000A28"} 0.0
+# HELP zhmc_cpc_power_cord7_phase_a_watts Power in Phase A of line cord 7 - 0 if not available
+# TYPE zhmc_cpc_power_cord7_phase_a_watts gauge
+zhmc_cpc_power_cord7_phase_a_watts{cord="not-connected",cpc="P0000A28"} 0.0
+# HELP zhmc_cpc_power_cord7_phase_b_watts Power in Phase B of line cord 7 - 0 if not available
+# TYPE zhmc_cpc_power_cord7_phase_b_watts gauge
+zhmc_cpc_power_cord7_phase_b_watts{cord="not-connected",cpc="P0000A28"} 0.0
+# HELP zhmc_cpc_power_cord7_phase_c_watts Power in Phase C of line cord 7 - 0 if not available
+# TYPE zhmc_cpc_power_cord7_phase_c_watts gauge
+zhmc_cpc_power_cord7_phase_c_watts{cord="not-connected",cpc="P0000A28"} 0.0
+# HELP zhmc_cpc_power_cord8_phase_a_watts Power in Phase A of line cord 8 - 0 if not available
+# TYPE zhmc_cpc_power_cord8_phase_a_watts gauge
+zhmc_cpc_power_cord8_phase_a_watts{cord="not-connected",cpc="P0000A28"} 0.0
+# HELP zhmc_cpc_power_cord8_phase_b_watts Power in Phase B of line cord 8 - 0 if not available
+# TYPE zhmc_cpc_power_cord8_phase_b_watts gauge
+zhmc_cpc_power_cord8_phase_b_watts{cord="not-connected",cpc="P0000A28"} 0.0
+# HELP zhmc_cpc_power_cord8_phase_c_watts Power in Phase C of line cord 8 - 0 if not available
+# TYPE zhmc_cpc_power_cord8_phase_c_watts gauge
+zhmc_cpc_power_cord8_phase_c_watts{cord="not-connected",cpc="P0000A28"} 0.0
+# HELP zhmc_port_bytes_sent_count_total Number of Bytes in unicast packets that were sent
+# TYPE zhmc_port_bytes_sent_count_total counter
+zhmc_port_bytes_sent_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="0"} 1.058386e+06
+zhmc_port_bytes_sent_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="1"} 0.0
+zhmc_port_bytes_sent_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="0"} 1.058386e+06
+zhmc_port_bytes_sent_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="1"} 0.0
+# HELP zhmc_port_bytes_received_count_total Number of Bytes in unicast packets that were received
+# TYPE zhmc_port_bytes_received_count_total counter
+zhmc_port_bytes_received_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="0"} 8.0673178e+07
+zhmc_port_bytes_received_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="1"} 0.0
+zhmc_port_bytes_received_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="0"} 8.067226e+07
+zhmc_port_bytes_received_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="1"} 0.0
+# HELP zhmc_port_packets_sent_count_total Number of unicast packets that were sent
+# TYPE zhmc_port_packets_sent_count_total counter
+zhmc_port_packets_sent_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="0"} 6054.0
+zhmc_port_packets_sent_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="1"} 0.0
+zhmc_port_packets_sent_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="0"} 6054.0
+zhmc_port_packets_sent_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="1"} 0.0
+# HELP zhmc_port_packets_received_count_total Number of unicast packets that were received
+# TYPE zhmc_port_packets_received_count_total counter
+zhmc_port_packets_received_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="0"} 1.084752e+06
+zhmc_port_packets_received_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="1"} 0.0
+zhmc_port_packets_received_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="0"} 1.084738e+06
+zhmc_port_packets_received_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="1"} 0.0
+# HELP zhmc_port_packets_sent_dropped_count_total Number of sent packets that were dropped (resource shortage)
+# TYPE zhmc_port_packets_sent_dropped_count_total counter
+zhmc_port_packets_sent_dropped_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="0"} 0.0
+zhmc_port_packets_sent_dropped_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="1"} 0.0
+zhmc_port_packets_sent_dropped_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="0"} 0.0
+zhmc_port_packets_sent_dropped_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="1"} 0.0
+# HELP zhmc_port_packets_received_dropped_count_total Number of received packets that were dropped (resource shortage)
+# TYPE zhmc_port_packets_received_dropped_count_total counter
+zhmc_port_packets_received_dropped_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="0"} 0.0
+zhmc_port_packets_received_dropped_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="1"} 0.0
+zhmc_port_packets_received_dropped_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="0"} 0.0
+zhmc_port_packets_received_dropped_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="1"} 0.0
+# HELP zhmc_port_packets_sent_discarded_count_total Number of sent packets that were discarded (malformed)
+# TYPE zhmc_port_packets_sent_discarded_count_total counter
+zhmc_port_packets_sent_discarded_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="0"} 0.0
+zhmc_port_packets_sent_discarded_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="1"} 0.0
+zhmc_port_packets_sent_discarded_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="0"} 0.0
+zhmc_port_packets_sent_discarded_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="1"} 0.0
+# HELP zhmc_port_packets_received_discarded_count_total Number of received packets that were discarded (malformed)
+# TYPE zhmc_port_packets_received_discarded_count_total counter
+zhmc_port_packets_received_discarded_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="0"} 0.0
+zhmc_port_packets_received_discarded_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="1"} 0.0
+zhmc_port_packets_received_discarded_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="0"} 0.0
+zhmc_port_packets_received_discarded_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="1"} 0.0
+# HELP zhmc_port_multicast_packets_sent_count_total Number of multicast packets sent
+# TYPE zhmc_port_multicast_packets_sent_count_total counter
+zhmc_port_multicast_packets_sent_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="0"} 6046.0
+zhmc_port_multicast_packets_sent_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="1"} 0.0
+zhmc_port_multicast_packets_sent_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="0"} 6046.0
+zhmc_port_multicast_packets_sent_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="1"} 0.0
+# HELP zhmc_port_multicast_packets_received_count_total Number of multicast packets received
+# TYPE zhmc_port_multicast_packets_received_count_total counter
+zhmc_port_multicast_packets_received_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="0"} 0.0
+zhmc_port_multicast_packets_received_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="1"} 0.0
+zhmc_port_multicast_packets_received_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="0"} 0.0
+zhmc_port_multicast_packets_received_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="1"} 0.0
+# HELP zhmc_port_broadcast_packets_sent_count_total Number of broadcast packets sent
+# TYPE zhmc_port_broadcast_packets_sent_count_total counter
+zhmc_port_broadcast_packets_sent_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="0"} 0.0
+zhmc_port_broadcast_packets_sent_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="1"} 0.0
+zhmc_port_broadcast_packets_sent_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="0"} 0.0
+zhmc_port_broadcast_packets_sent_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="1"} 0.0
+# HELP zhmc_port_broadcast_packets_received_count_total Number of broadcast packets received
+# TYPE zhmc_port_broadcast_packets_received_count_total counter
+zhmc_port_broadcast_packets_received_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="0"} 1.084752e+06
+zhmc_port_broadcast_packets_received_count_total{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="1"} 0.0
+zhmc_port_broadcast_packets_received_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="0"} 1.084738e+06
+zhmc_port_broadcast_packets_received_count_total{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="1"} 0.0
 # HELP zhmc_port_data_sent_bytes Amount of data sent over the collection interval
 # TYPE zhmc_port_data_sent_bytes gauge
-zhmc_port_data_sent_bytes{adapter="OSD_134_DATA_NET2_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 1480.0
-zhmc_port_data_sent_bytes{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 190.0
-zhmc_port_data_sent_bytes{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_data_sent_bytes{adapter="OSD_130_DATA_NET1_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 380.0
-zhmc_port_data_sent_bytes{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 14278.0
-zhmc_port_data_sent_bytes{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_data_sent_bytes{adapter="OSD_110_DATA_NET1_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 710598.0
-zhmc_port_data_sent_bytes{adapter="OSD_114_DATA_NET2_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 190.0
+zhmc_port_data_sent_bytes{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="0"} 175.0
+zhmc_port_data_sent_bytes{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="1"} 0.0
+zhmc_port_data_sent_bytes{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="0"} 175.0
+zhmc_port_data_sent_bytes{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="1"} 0.0
 # HELP zhmc_port_data_received_bytes Amount of data received over the collection interval
 # TYPE zhmc_port_data_received_bytes gauge
-zhmc_port_data_received_bytes{adapter="OSD_134_DATA_NET2_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 2078.0
-zhmc_port_data_received_bytes{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 4471.0
-zhmc_port_data_received_bytes{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_data_received_bytes{adapter="OSD_130_DATA_NET1_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 447.0
-zhmc_port_data_received_bytes{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 30165.0
-zhmc_port_data_received_bytes{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_data_received_bytes{adapter="OSD_110_DATA_NET1_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 3.085951e+06
-zhmc_port_data_received_bytes{adapter="OSD_114_DATA_NET2_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 830.0
+zhmc_port_data_received_bytes{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="0"} 10150.0
+zhmc_port_data_received_bytes{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="1"} 0.0
+zhmc_port_data_received_bytes{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="0"} 10086.0
+zhmc_port_data_received_bytes{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="1"} 0.0
 # HELP zhmc_port_data_rate_sent_bytes_per_second Data rate sent over the collection interval
 # TYPE zhmc_port_data_rate_sent_bytes_per_second gauge
-zhmc_port_data_rate_sent_bytes_per_second{adapter="OSD_134_DATA_NET2_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 49.0
-zhmc_port_data_rate_sent_bytes_per_second{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 6.0
-zhmc_port_data_rate_sent_bytes_per_second{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_data_rate_sent_bytes_per_second{adapter="OSD_130_DATA_NET1_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 12.0
-zhmc_port_data_rate_sent_bytes_per_second{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 475.0
-zhmc_port_data_rate_sent_bytes_per_second{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_data_rate_sent_bytes_per_second{adapter="OSD_110_DATA_NET1_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 23686.0
-zhmc_port_data_rate_sent_bytes_per_second{adapter="OSD_114_DATA_NET2_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 6.0
+zhmc_port_data_rate_sent_bytes_per_second{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="0"} 5.0
+zhmc_port_data_rate_sent_bytes_per_second{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="1"} 0.0
+zhmc_port_data_rate_sent_bytes_per_second{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="0"} 5.0
+zhmc_port_data_rate_sent_bytes_per_second{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="1"} 0.0
 # HELP zhmc_port_data_rate_received_bytes_per_second Data rate received over the collection interval
 # TYPE zhmc_port_data_rate_received_bytes_per_second gauge
-zhmc_port_data_rate_received_bytes_per_second{adapter="OSD_134_DATA_NET2_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 69.0
-zhmc_port_data_rate_received_bytes_per_second{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 149.0
-zhmc_port_data_rate_received_bytes_per_second{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_data_rate_received_bytes_per_second{adapter="OSD_130_DATA_NET1_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 14.0
-zhmc_port_data_rate_received_bytes_per_second{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 1005.0
-zhmc_port_data_rate_received_bytes_per_second{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_data_rate_received_bytes_per_second{adapter="OSD_110_DATA_NET1_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 102865.0
-zhmc_port_data_rate_received_bytes_per_second{adapter="OSD_114_DATA_NET2_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 27.0
+zhmc_port_data_rate_received_bytes_per_second{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="0"} 338.0
+zhmc_port_data_rate_received_bytes_per_second{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="1"} 0.0
+zhmc_port_data_rate_received_bytes_per_second{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="0"} 336.0
+zhmc_port_data_rate_received_bytes_per_second{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="1"} 0.0
 # HELP zhmc_port_bandwidth_usage_ratio Bandwidth usage ratio of the port
 # TYPE zhmc_port_bandwidth_usage_ratio gauge
-zhmc_port_bandwidth_usage_ratio{adapter="OSD_134_DATA_NET2_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 0.0
-zhmc_port_bandwidth_usage_ratio{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 0.0
-zhmc_port_bandwidth_usage_ratio{adapter="OSD_108_MGMT_NET1_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_bandwidth_usage_ratio{adapter="OSD_130_DATA_NET1_17",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 0.0
-zhmc_port_bandwidth_usage_ratio{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 0.0
-zhmc_port_bandwidth_usage_ratio{adapter="OSD_128_MGMT_NET2_30",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="1"} 0.0
-zhmc_port_bandwidth_usage_ratio{adapter="OSD_110_DATA_NET1_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 0.0
-zhmc_port_bandwidth_usage_ratio{adapter="OSD_114_DATA_NET2_15",cpc="CPCA",mzr="US-East",pod="wdc04-05",port="0"} 0.0
+zhmc_port_bandwidth_usage_ratio{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="0"} 0.0
+zhmc_port_bandwidth_usage_ratio{adapter="OSD 0134 Z01B-18",cpc="P0000A28",port="1"} 0.0
+zhmc_port_bandwidth_usage_ratio{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="0"} 0.0
+zhmc_port_bandwidth_usage_ratio{adapter="OSD 0120 Z01B-12",cpc="P0000A28",port="1"} 0.0
 # HELP zhmc_partition_processor_mode_int Allocation mode for processors to the active partition as an integer (0=shared, 1=dedicated)
 # TYPE zhmc_partition_processor_mode_int gauge
-zhmc_partition_processor_mode_int{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 0.0
-zhmc_partition_processor_mode_int{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_partition_processor_mode_int{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 0.0
+zhmc_partition_processor_mode_int{cpc="P0000A28",partition="Storage Test"} 0.0
+zhmc_partition_processor_mode_int{cpc="P0000A28",partition="Crypto-1"} 0.0
+zhmc_partition_processor_mode_int{cpc="P0000A28",partition="tobiTest"} 0.0
+zhmc_partition_processor_mode_int{cpc="P0000A28",partition="JayNVMe"} 0.0
+zhmc_partition_processor_mode_int{cpc="P0000A28",partition="Crypto-2"} 0.0
+zhmc_partition_processor_mode_int{cpc="P0000A28",partition="Boot-from-None"} 0.0
+zhmc_partition_processor_mode_int{cpc="P0000A28",partition="Nan Boot test"} 0.0
+zhmc_partition_processor_mode_int{cpc="P0000A28",partition="JayLpar2"} 0.0
+zhmc_partition_processor_mode_int{cpc="P0000A28",partition="Sample-Test"} 0.0
+zhmc_partition_processor_mode_int{cpc="P0000A28",partition="boot-test-FICON"} 0.0
+zhmc_partition_processor_mode_int{cpc="P0000A28",partition="Boot-from-FICON"} 0.0
+zhmc_partition_processor_mode_int{cpc="P0000A28",partition="JayLpar5"} 0.0
+zhmc_partition_processor_mode_int{cpc="P0000A28",partition="SFTP"} 0.0
+zhmc_partition_processor_mode_int{cpc="P0000A28",partition="Test_01"} 0.0
+zhmc_partition_processor_mode_int{cpc="P0000A28",partition="KathirTest"} 0.0
+zhmc_partition_processor_mode_int{cpc="P0000A28",partition="Test_02"} 0.0
+zhmc_partition_processor_mode_int{cpc="P0000A28",partition="JayLpar4"} 0.0
+zhmc_partition_processor_mode_int{cpc="P0000A28",partition="JayLpar"} 0.0
 # HELP zhmc_partition_threads_per_processor_ratio Number of threads per allocated processor the operating system running in the partition is configured to use
 # TYPE zhmc_partition_threads_per_processor_ratio gauge
-zhmc_partition_threads_per_processor_ratio{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 1.0
-zhmc_partition_threads_per_processor_ratio{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 2.0
-zhmc_partition_threads_per_processor_ratio{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 2.0
+zhmc_partition_threads_per_processor_ratio{cpc="P0000A28",partition="Storage Test"} 1.0
+zhmc_partition_threads_per_processor_ratio{cpc="P0000A28",partition="Crypto-1"} 1.0
+zhmc_partition_threads_per_processor_ratio{cpc="P0000A28",partition="tobiTest"} 1.0
+zhmc_partition_threads_per_processor_ratio{cpc="P0000A28",partition="JayNVMe"} 1.0
+zhmc_partition_threads_per_processor_ratio{cpc="P0000A28",partition="Crypto-2"} 1.0
+zhmc_partition_threads_per_processor_ratio{cpc="P0000A28",partition="Boot-from-None"} 1.0
+zhmc_partition_threads_per_processor_ratio{cpc="P0000A28",partition="Nan Boot test"} 1.0
+zhmc_partition_threads_per_processor_ratio{cpc="P0000A28",partition="JayLpar2"} 1.0
+zhmc_partition_threads_per_processor_ratio{cpc="P0000A28",partition="Sample-Test"} 1.0
+zhmc_partition_threads_per_processor_ratio{cpc="P0000A28",partition="boot-test-FICON"} 1.0
+zhmc_partition_threads_per_processor_ratio{cpc="P0000A28",partition="Boot-from-FICON"} 1.0
+zhmc_partition_threads_per_processor_ratio{cpc="P0000A28",partition="JayLpar5"} 1.0
+zhmc_partition_threads_per_processor_ratio{cpc="P0000A28",partition="SFTP"} 1.0
+zhmc_partition_threads_per_processor_ratio{cpc="P0000A28",partition="Test_01"} 1.0
+zhmc_partition_threads_per_processor_ratio{cpc="P0000A28",partition="KathirTest"} 1.0
+zhmc_partition_threads_per_processor_ratio{cpc="P0000A28",partition="Test_02"} 1.0
+zhmc_partition_threads_per_processor_ratio{cpc="P0000A28",partition="JayLpar4"} 1.0
+zhmc_partition_threads_per_processor_ratio{cpc="P0000A28",partition="JayLpar"} 1.0
 # HELP zhmc_partition_cp_processor_count Number of CP processors allocated to the active partition
 # TYPE zhmc_partition_cp_processor_count gauge
-zhmc_partition_cp_processor_count{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 0.0
-zhmc_partition_cp_processor_count{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_partition_cp_processor_count{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 0.0
+zhmc_partition_cp_processor_count{cpc="P0000A28",partition="Storage Test"} 1.0
+zhmc_partition_cp_processor_count{cpc="P0000A28",partition="Crypto-1"} 1.0
+zhmc_partition_cp_processor_count{cpc="P0000A28",partition="tobiTest"} 1.0
+zhmc_partition_cp_processor_count{cpc="P0000A28",partition="JayNVMe"} 1.0
+zhmc_partition_cp_processor_count{cpc="P0000A28",partition="Crypto-2"} 1.0
+zhmc_partition_cp_processor_count{cpc="P0000A28",partition="Boot-from-None"} 1.0
+zhmc_partition_cp_processor_count{cpc="P0000A28",partition="Nan Boot test"} 1.0
+zhmc_partition_cp_processor_count{cpc="P0000A28",partition="JayLpar2"} 1.0
+zhmc_partition_cp_processor_count{cpc="P0000A28",partition="Sample-Test"} 1.0
+zhmc_partition_cp_processor_count{cpc="P0000A28",partition="boot-test-FICON"} 1.0
+zhmc_partition_cp_processor_count{cpc="P0000A28",partition="Boot-from-FICON"} 1.0
+zhmc_partition_cp_processor_count{cpc="P0000A28",partition="JayLpar5"} 1.0
+zhmc_partition_cp_processor_count{cpc="P0000A28",partition="SFTP"} 1.0
+zhmc_partition_cp_processor_count{cpc="P0000A28",partition="Test_01"} 1.0
+zhmc_partition_cp_processor_count{cpc="P0000A28",partition="KathirTest"} 1.0
+zhmc_partition_cp_processor_count{cpc="P0000A28",partition="Test_02"} 1.0
+zhmc_partition_cp_processor_count{cpc="P0000A28",partition="JayLpar4"} 1.0
+zhmc_partition_cp_processor_count{cpc="P0000A28",partition="JayLpar"} 1.0
 # HELP zhmc_partition_cp_initial_processing_weight Initial CP processing weight for the active partition in shared mode (1..999)
 # TYPE zhmc_partition_cp_initial_processing_weight gauge
-zhmc_partition_cp_initial_processing_weight{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 100.0
-zhmc_partition_cp_initial_processing_weight{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 100.0
-zhmc_partition_cp_initial_processing_weight{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 100.0
+zhmc_partition_cp_initial_processing_weight{cpc="P0000A28",partition="Storage Test"} 100.0
+zhmc_partition_cp_initial_processing_weight{cpc="P0000A28",partition="Crypto-1"} 100.0
+zhmc_partition_cp_initial_processing_weight{cpc="P0000A28",partition="tobiTest"} 100.0
+zhmc_partition_cp_initial_processing_weight{cpc="P0000A28",partition="JayNVMe"} 100.0
+zhmc_partition_cp_initial_processing_weight{cpc="P0000A28",partition="Crypto-2"} 100.0
+zhmc_partition_cp_initial_processing_weight{cpc="P0000A28",partition="Boot-from-None"} 100.0
+zhmc_partition_cp_initial_processing_weight{cpc="P0000A28",partition="Nan Boot test"} 100.0
+zhmc_partition_cp_initial_processing_weight{cpc="P0000A28",partition="JayLpar2"} 100.0
+zhmc_partition_cp_initial_processing_weight{cpc="P0000A28",partition="Sample-Test"} 100.0
+zhmc_partition_cp_initial_processing_weight{cpc="P0000A28",partition="boot-test-FICON"} 100.0
+zhmc_partition_cp_initial_processing_weight{cpc="P0000A28",partition="Boot-from-FICON"} 100.0
+zhmc_partition_cp_initial_processing_weight{cpc="P0000A28",partition="JayLpar5"} 100.0
+zhmc_partition_cp_initial_processing_weight{cpc="P0000A28",partition="SFTP"} 100.0
+zhmc_partition_cp_initial_processing_weight{cpc="P0000A28",partition="Test_01"} 100.0
+zhmc_partition_cp_initial_processing_weight{cpc="P0000A28",partition="KathirTest"} 100.0
+zhmc_partition_cp_initial_processing_weight{cpc="P0000A28",partition="Test_02"} 100.0
+zhmc_partition_cp_initial_processing_weight{cpc="P0000A28",partition="JayLpar4"} 100.0
+zhmc_partition_cp_initial_processing_weight{cpc="P0000A28",partition="JayLpar"} 100.0
 # HELP zhmc_partition_cp_minimum_processing_weight Minimum CP processing weight for the active partition in shared mode (1..999)
 # TYPE zhmc_partition_cp_minimum_processing_weight gauge
-zhmc_partition_cp_minimum_processing_weight{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 1.0
-zhmc_partition_cp_minimum_processing_weight{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 1.0
-zhmc_partition_cp_minimum_processing_weight{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 1.0
+zhmc_partition_cp_minimum_processing_weight{cpc="P0000A28",partition="Storage Test"} 1.0
+zhmc_partition_cp_minimum_processing_weight{cpc="P0000A28",partition="Crypto-1"} 1.0
+zhmc_partition_cp_minimum_processing_weight{cpc="P0000A28",partition="tobiTest"} 1.0
+zhmc_partition_cp_minimum_processing_weight{cpc="P0000A28",partition="JayNVMe"} 1.0
+zhmc_partition_cp_minimum_processing_weight{cpc="P0000A28",partition="Crypto-2"} 1.0
+zhmc_partition_cp_minimum_processing_weight{cpc="P0000A28",partition="Boot-from-None"} 1.0
+zhmc_partition_cp_minimum_processing_weight{cpc="P0000A28",partition="Nan Boot test"} 1.0
+zhmc_partition_cp_minimum_processing_weight{cpc="P0000A28",partition="JayLpar2"} 1.0
+zhmc_partition_cp_minimum_processing_weight{cpc="P0000A28",partition="Sample-Test"} 1.0
+zhmc_partition_cp_minimum_processing_weight{cpc="P0000A28",partition="boot-test-FICON"} 1.0
+zhmc_partition_cp_minimum_processing_weight{cpc="P0000A28",partition="Boot-from-FICON"} 1.0
+zhmc_partition_cp_minimum_processing_weight{cpc="P0000A28",partition="JayLpar5"} 1.0
+zhmc_partition_cp_minimum_processing_weight{cpc="P0000A28",partition="SFTP"} 1.0
+zhmc_partition_cp_minimum_processing_weight{cpc="P0000A28",partition="Test_01"} 1.0
+zhmc_partition_cp_minimum_processing_weight{cpc="P0000A28",partition="KathirTest"} 1.0
+zhmc_partition_cp_minimum_processing_weight{cpc="P0000A28",partition="Test_02"} 1.0
+zhmc_partition_cp_minimum_processing_weight{cpc="P0000A28",partition="JayLpar4"} 1.0
+zhmc_partition_cp_minimum_processing_weight{cpc="P0000A28",partition="JayLpar"} 1.0
 # HELP zhmc_partition_cp_maximum_processing_weight Maximum CP processing weight for the active partition in shared mode (1..999)
 # TYPE zhmc_partition_cp_maximum_processing_weight gauge
-zhmc_partition_cp_maximum_processing_weight{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 999.0
-zhmc_partition_cp_maximum_processing_weight{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 999.0
-zhmc_partition_cp_maximum_processing_weight{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 999.0
+zhmc_partition_cp_maximum_processing_weight{cpc="P0000A28",partition="Storage Test"} 999.0
+zhmc_partition_cp_maximum_processing_weight{cpc="P0000A28",partition="Crypto-1"} 999.0
+zhmc_partition_cp_maximum_processing_weight{cpc="P0000A28",partition="tobiTest"} 999.0
+zhmc_partition_cp_maximum_processing_weight{cpc="P0000A28",partition="JayNVMe"} 999.0
+zhmc_partition_cp_maximum_processing_weight{cpc="P0000A28",partition="Crypto-2"} 999.0
+zhmc_partition_cp_maximum_processing_weight{cpc="P0000A28",partition="Boot-from-None"} 999.0
+zhmc_partition_cp_maximum_processing_weight{cpc="P0000A28",partition="Nan Boot test"} 999.0
+zhmc_partition_cp_maximum_processing_weight{cpc="P0000A28",partition="JayLpar2"} 999.0
+zhmc_partition_cp_maximum_processing_weight{cpc="P0000A28",partition="Sample-Test"} 999.0
+zhmc_partition_cp_maximum_processing_weight{cpc="P0000A28",partition="boot-test-FICON"} 999.0
+zhmc_partition_cp_maximum_processing_weight{cpc="P0000A28",partition="Boot-from-FICON"} 999.0
+zhmc_partition_cp_maximum_processing_weight{cpc="P0000A28",partition="JayLpar5"} 999.0
+zhmc_partition_cp_maximum_processing_weight{cpc="P0000A28",partition="SFTP"} 999.0
+zhmc_partition_cp_maximum_processing_weight{cpc="P0000A28",partition="Test_01"} 999.0
+zhmc_partition_cp_maximum_processing_weight{cpc="P0000A28",partition="KathirTest"} 999.0
+zhmc_partition_cp_maximum_processing_weight{cpc="P0000A28",partition="Test_02"} 999.0
+zhmc_partition_cp_maximum_processing_weight{cpc="P0000A28",partition="JayLpar4"} 999.0
+zhmc_partition_cp_maximum_processing_weight{cpc="P0000A28",partition="JayLpar"} 999.0
 # HELP zhmc_partition_cp_current_processing_weight Current CP processing weight for the active partition in shared mode (1..999)
 # TYPE zhmc_partition_cp_current_processing_weight gauge
-zhmc_partition_cp_current_processing_weight{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 1.0
-zhmc_partition_cp_current_processing_weight{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 1.0
-zhmc_partition_cp_current_processing_weight{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 1.0
-# HELP zhmc_partition_cp_processor_count_cap Maximum number of CP processors to be used when absolute CP processor capping is enabled
+zhmc_partition_cp_current_processing_weight{cpc="P0000A28",partition="Storage Test"} 1.0
+zhmc_partition_cp_current_processing_weight{cpc="P0000A28",partition="Crypto-1"} 1.0
+zhmc_partition_cp_current_processing_weight{cpc="P0000A28",partition="tobiTest"} 1.0
+zhmc_partition_cp_current_processing_weight{cpc="P0000A28",partition="JayNVMe"} 1.0
+zhmc_partition_cp_current_processing_weight{cpc="P0000A28",partition="Crypto-2"} 1.0
+zhmc_partition_cp_current_processing_weight{cpc="P0000A28",partition="Boot-from-None"} 1.0
+zhmc_partition_cp_current_processing_weight{cpc="P0000A28",partition="Nan Boot test"} 1.0
+zhmc_partition_cp_current_processing_weight{cpc="P0000A28",partition="JayLpar2"} 1.0
+zhmc_partition_cp_current_processing_weight{cpc="P0000A28",partition="Sample-Test"} 1.0
+zhmc_partition_cp_current_processing_weight{cpc="P0000A28",partition="boot-test-FICON"} 1.0
+zhmc_partition_cp_current_processing_weight{cpc="P0000A28",partition="Boot-from-FICON"} 1.0
+zhmc_partition_cp_current_processing_weight{cpc="P0000A28",partition="JayLpar5"} 1.0
+zhmc_partition_cp_current_processing_weight{cpc="P0000A28",partition="SFTP"} 1.0
+zhmc_partition_cp_current_processing_weight{cpc="P0000A28",partition="Test_01"} 1.0
+zhmc_partition_cp_current_processing_weight{cpc="P0000A28",partition="KathirTest"} 1.0
+zhmc_partition_cp_current_processing_weight{cpc="P0000A28",partition="Test_02"} 1.0
+zhmc_partition_cp_current_processing_weight{cpc="P0000A28",partition="JayLpar4"} 1.0
+zhmc_partition_cp_current_processing_weight{cpc="P0000A28",partition="JayLpar"} 1.0
+# HELP zhmc_partition_cp_processor_count_is_capped Boolean indicating whether absolute capping is enabled for CP processors (0=false, 1=true)
+# TYPE zhmc_partition_cp_processor_count_is_capped gauge
+zhmc_partition_cp_processor_count_is_capped{cpc="P0000A28",partition="Storage Test",valuetype="bool"} 0.0
+zhmc_partition_cp_processor_count_is_capped{cpc="P0000A28",partition="Crypto-1",valuetype="bool"} 0.0
+zhmc_partition_cp_processor_count_is_capped{cpc="P0000A28",partition="tobiTest",valuetype="bool"} 0.0
+zhmc_partition_cp_processor_count_is_capped{cpc="P0000A28",partition="JayNVMe",valuetype="bool"} 0.0
+zhmc_partition_cp_processor_count_is_capped{cpc="P0000A28",partition="Crypto-2",valuetype="bool"} 0.0
+zhmc_partition_cp_processor_count_is_capped{cpc="P0000A28",partition="Boot-from-None",valuetype="bool"} 0.0
+zhmc_partition_cp_processor_count_is_capped{cpc="P0000A28",partition="Nan Boot test",valuetype="bool"} 0.0
+zhmc_partition_cp_processor_count_is_capped{cpc="P0000A28",partition="JayLpar2",valuetype="bool"} 0.0
+zhmc_partition_cp_processor_count_is_capped{cpc="P0000A28",partition="Sample-Test",valuetype="bool"} 0.0
+zhmc_partition_cp_processor_count_is_capped{cpc="P0000A28",partition="boot-test-FICON",valuetype="bool"} 0.0
+zhmc_partition_cp_processor_count_is_capped{cpc="P0000A28",partition="Boot-from-FICON",valuetype="bool"} 0.0
+zhmc_partition_cp_processor_count_is_capped{cpc="P0000A28",partition="JayLpar5",valuetype="bool"} 0.0
+zhmc_partition_cp_processor_count_is_capped{cpc="P0000A28",partition="SFTP",valuetype="bool"} 0.0
+zhmc_partition_cp_processor_count_is_capped{cpc="P0000A28",partition="Test_01",valuetype="bool"} 0.0
+zhmc_partition_cp_processor_count_is_capped{cpc="P0000A28",partition="KathirTest",valuetype="bool"} 0.0
+zhmc_partition_cp_processor_count_is_capped{cpc="P0000A28",partition="Test_02",valuetype="bool"} 0.0
+zhmc_partition_cp_processor_count_is_capped{cpc="P0000A28",partition="JayLpar4",valuetype="bool"} 0.0
+zhmc_partition_cp_processor_count_is_capped{cpc="P0000A28",partition="JayLpar",valuetype="bool"} 0.0
+# HELP zhmc_partition_cp_processor_count_cap Maximum number of CP processors that can be used if absolute capping is enabled, else 0
 # TYPE zhmc_partition_cp_processor_count_cap gauge
-zhmc_partition_cp_processor_count_cap{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 1.0
-zhmc_partition_cp_processor_count_cap{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 1.0
-zhmc_partition_cp_processor_count_cap{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 1.0
-# HELP zhmc_partition_cp_initial_processing_weight_is_capped Boolean indicating whether the initial CP processing weight is capped (i.e. a limit) or not (i.e. a target).
+zhmc_partition_cp_processor_count_cap{cpc="P0000A28",partition="Storage Test"} 0.0
+zhmc_partition_cp_processor_count_cap{cpc="P0000A28",partition="Crypto-1"} 0.0
+zhmc_partition_cp_processor_count_cap{cpc="P0000A28",partition="tobiTest"} 0.0
+zhmc_partition_cp_processor_count_cap{cpc="P0000A28",partition="JayNVMe"} 0.0
+zhmc_partition_cp_processor_count_cap{cpc="P0000A28",partition="Crypto-2"} 0.0
+zhmc_partition_cp_processor_count_cap{cpc="P0000A28",partition="Boot-from-None"} 0.0
+zhmc_partition_cp_processor_count_cap{cpc="P0000A28",partition="Nan Boot test"} 0.0
+zhmc_partition_cp_processor_count_cap{cpc="P0000A28",partition="JayLpar2"} 0.0
+zhmc_partition_cp_processor_count_cap{cpc="P0000A28",partition="Sample-Test"} 0.0
+zhmc_partition_cp_processor_count_cap{cpc="P0000A28",partition="boot-test-FICON"} 0.0
+zhmc_partition_cp_processor_count_cap{cpc="P0000A28",partition="Boot-from-FICON"} 0.0
+zhmc_partition_cp_processor_count_cap{cpc="P0000A28",partition="JayLpar5"} 0.0
+zhmc_partition_cp_processor_count_cap{cpc="P0000A28",partition="SFTP"} 0.0
+zhmc_partition_cp_processor_count_cap{cpc="P0000A28",partition="Test_01"} 0.0
+zhmc_partition_cp_processor_count_cap{cpc="P0000A28",partition="KathirTest"} 0.0
+zhmc_partition_cp_processor_count_cap{cpc="P0000A28",partition="Test_02"} 0.0
+zhmc_partition_cp_processor_count_cap{cpc="P0000A28",partition="JayLpar4"} 0.0
+zhmc_partition_cp_processor_count_cap{cpc="P0000A28",partition="JayLpar"} 0.0
+# HELP zhmc_partition_cp_initial_processing_weight_is_capped Boolean indicating whether the initial CP processing weight is capped (0=false, 1=true)
 # TYPE zhmc_partition_cp_initial_processing_weight_is_capped gauge
-zhmc_partition_cp_initial_processing_weight_is_capped{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05",valuetype="bool"} 0.0
-zhmc_partition_cp_initial_processing_weight_is_capped{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05",valuetype="bool"} 0.0
-zhmc_partition_cp_initial_processing_weight_is_capped{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05",valuetype="bool"} 0.0
+zhmc_partition_cp_initial_processing_weight_is_capped{cpc="P0000A28",partition="Storage Test",valuetype="bool"} 0.0
+zhmc_partition_cp_initial_processing_weight_is_capped{cpc="P0000A28",partition="Crypto-1",valuetype="bool"} 0.0
+zhmc_partition_cp_initial_processing_weight_is_capped{cpc="P0000A28",partition="tobiTest",valuetype="bool"} 0.0
+zhmc_partition_cp_initial_processing_weight_is_capped{cpc="P0000A28",partition="JayNVMe",valuetype="bool"} 0.0
+zhmc_partition_cp_initial_processing_weight_is_capped{cpc="P0000A28",partition="Crypto-2",valuetype="bool"} 0.0
+zhmc_partition_cp_initial_processing_weight_is_capped{cpc="P0000A28",partition="Boot-from-None",valuetype="bool"} 0.0
+zhmc_partition_cp_initial_processing_weight_is_capped{cpc="P0000A28",partition="Nan Boot test",valuetype="bool"} 0.0
+zhmc_partition_cp_initial_processing_weight_is_capped{cpc="P0000A28",partition="JayLpar2",valuetype="bool"} 0.0
+zhmc_partition_cp_initial_processing_weight_is_capped{cpc="P0000A28",partition="Sample-Test",valuetype="bool"} 0.0
+zhmc_partition_cp_initial_processing_weight_is_capped{cpc="P0000A28",partition="boot-test-FICON",valuetype="bool"} 0.0
+zhmc_partition_cp_initial_processing_weight_is_capped{cpc="P0000A28",partition="Boot-from-FICON",valuetype="bool"} 0.0
+zhmc_partition_cp_initial_processing_weight_is_capped{cpc="P0000A28",partition="JayLpar5",valuetype="bool"} 0.0
+zhmc_partition_cp_initial_processing_weight_is_capped{cpc="P0000A28",partition="SFTP",valuetype="bool"} 0.0
+zhmc_partition_cp_initial_processing_weight_is_capped{cpc="P0000A28",partition="Test_01",valuetype="bool"} 0.0
+zhmc_partition_cp_initial_processing_weight_is_capped{cpc="P0000A28",partition="KathirTest",valuetype="bool"} 0.0
+zhmc_partition_cp_initial_processing_weight_is_capped{cpc="P0000A28",partition="Test_02",valuetype="bool"} 0.0
+zhmc_partition_cp_initial_processing_weight_is_capped{cpc="P0000A28",partition="JayLpar4",valuetype="bool"} 0.0
+zhmc_partition_cp_initial_processing_weight_is_capped{cpc="P0000A28",partition="JayLpar",valuetype="bool"} 0.0
 # HELP zhmc_partition_ifl_processor_count Number of IFL processors allocated to the active partition
 # TYPE zhmc_partition_ifl_processor_count gauge
-zhmc_partition_ifl_processor_count{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 2.0
-zhmc_partition_ifl_processor_count{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 2.0
-zhmc_partition_ifl_processor_count{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 4.0
+zhmc_partition_ifl_processor_count{cpc="P0000A28",partition="Storage Test"} 0.0
+zhmc_partition_ifl_processor_count{cpc="P0000A28",partition="Crypto-1"} 0.0
+zhmc_partition_ifl_processor_count{cpc="P0000A28",partition="tobiTest"} 0.0
+zhmc_partition_ifl_processor_count{cpc="P0000A28",partition="JayNVMe"} 0.0
+zhmc_partition_ifl_processor_count{cpc="P0000A28",partition="Crypto-2"} 0.0
+zhmc_partition_ifl_processor_count{cpc="P0000A28",partition="Boot-from-None"} 0.0
+zhmc_partition_ifl_processor_count{cpc="P0000A28",partition="Nan Boot test"} 0.0
+zhmc_partition_ifl_processor_count{cpc="P0000A28",partition="JayLpar2"} 0.0
+zhmc_partition_ifl_processor_count{cpc="P0000A28",partition="Sample-Test"} 0.0
+zhmc_partition_ifl_processor_count{cpc="P0000A28",partition="boot-test-FICON"} 0.0
+zhmc_partition_ifl_processor_count{cpc="P0000A28",partition="Boot-from-FICON"} 0.0
+zhmc_partition_ifl_processor_count{cpc="P0000A28",partition="JayLpar5"} 0.0
+zhmc_partition_ifl_processor_count{cpc="P0000A28",partition="SFTP"} 0.0
+zhmc_partition_ifl_processor_count{cpc="P0000A28",partition="Test_01"} 0.0
+zhmc_partition_ifl_processor_count{cpc="P0000A28",partition="KathirTest"} 0.0
+zhmc_partition_ifl_processor_count{cpc="P0000A28",partition="Test_02"} 0.0
+zhmc_partition_ifl_processor_count{cpc="P0000A28",partition="JayLpar4"} 0.0
+zhmc_partition_ifl_processor_count{cpc="P0000A28",partition="JayLpar"} 0.0
 # HELP zhmc_partition_ifl_initial_processing_weight Initial IFL processing weight for the active partition in shared mode (1..999)
 # TYPE zhmc_partition_ifl_initial_processing_weight gauge
-zhmc_partition_ifl_initial_processing_weight{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 20.0
-zhmc_partition_ifl_initial_processing_weight{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 20.0
-zhmc_partition_ifl_initial_processing_weight{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 80.0
+zhmc_partition_ifl_initial_processing_weight{cpc="P0000A28",partition="Storage Test"} 100.0
+zhmc_partition_ifl_initial_processing_weight{cpc="P0000A28",partition="Crypto-1"} 100.0
+zhmc_partition_ifl_initial_processing_weight{cpc="P0000A28",partition="tobiTest"} 100.0
+zhmc_partition_ifl_initial_processing_weight{cpc="P0000A28",partition="JayNVMe"} 100.0
+zhmc_partition_ifl_initial_processing_weight{cpc="P0000A28",partition="Crypto-2"} 100.0
+zhmc_partition_ifl_initial_processing_weight{cpc="P0000A28",partition="Boot-from-None"} 100.0
+zhmc_partition_ifl_initial_processing_weight{cpc="P0000A28",partition="Nan Boot test"} 100.0
+zhmc_partition_ifl_initial_processing_weight{cpc="P0000A28",partition="JayLpar2"} 100.0
+zhmc_partition_ifl_initial_processing_weight{cpc="P0000A28",partition="Sample-Test"} 100.0
+zhmc_partition_ifl_initial_processing_weight{cpc="P0000A28",partition="boot-test-FICON"} 100.0
+zhmc_partition_ifl_initial_processing_weight{cpc="P0000A28",partition="Boot-from-FICON"} 100.0
+zhmc_partition_ifl_initial_processing_weight{cpc="P0000A28",partition="JayLpar5"} 100.0
+zhmc_partition_ifl_initial_processing_weight{cpc="P0000A28",partition="SFTP"} 100.0
+zhmc_partition_ifl_initial_processing_weight{cpc="P0000A28",partition="Test_01"} 100.0
+zhmc_partition_ifl_initial_processing_weight{cpc="P0000A28",partition="KathirTest"} 100.0
+zhmc_partition_ifl_initial_processing_weight{cpc="P0000A28",partition="Test_02"} 100.0
+zhmc_partition_ifl_initial_processing_weight{cpc="P0000A28",partition="JayLpar4"} 100.0
+zhmc_partition_ifl_initial_processing_weight{cpc="P0000A28",partition="JayLpar"} 100.0
 # HELP zhmc_partition_ifl_minimum_processing_weight Minimum IFL processing weight for the active partition in shared mode (1..999)
 # TYPE zhmc_partition_ifl_minimum_processing_weight gauge
-zhmc_partition_ifl_minimum_processing_weight{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 1.0
-zhmc_partition_ifl_minimum_processing_weight{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 1.0
-zhmc_partition_ifl_minimum_processing_weight{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 1.0
+zhmc_partition_ifl_minimum_processing_weight{cpc="P0000A28",partition="Storage Test"} 1.0
+zhmc_partition_ifl_minimum_processing_weight{cpc="P0000A28",partition="Crypto-1"} 1.0
+zhmc_partition_ifl_minimum_processing_weight{cpc="P0000A28",partition="tobiTest"} 1.0
+zhmc_partition_ifl_minimum_processing_weight{cpc="P0000A28",partition="JayNVMe"} 1.0
+zhmc_partition_ifl_minimum_processing_weight{cpc="P0000A28",partition="Crypto-2"} 1.0
+zhmc_partition_ifl_minimum_processing_weight{cpc="P0000A28",partition="Boot-from-None"} 1.0
+zhmc_partition_ifl_minimum_processing_weight{cpc="P0000A28",partition="Nan Boot test"} 1.0
+zhmc_partition_ifl_minimum_processing_weight{cpc="P0000A28",partition="JayLpar2"} 1.0
+zhmc_partition_ifl_minimum_processing_weight{cpc="P0000A28",partition="Sample-Test"} 1.0
+zhmc_partition_ifl_minimum_processing_weight{cpc="P0000A28",partition="boot-test-FICON"} 1.0
+zhmc_partition_ifl_minimum_processing_weight{cpc="P0000A28",partition="Boot-from-FICON"} 1.0
+zhmc_partition_ifl_minimum_processing_weight{cpc="P0000A28",partition="JayLpar5"} 1.0
+zhmc_partition_ifl_minimum_processing_weight{cpc="P0000A28",partition="SFTP"} 1.0
+zhmc_partition_ifl_minimum_processing_weight{cpc="P0000A28",partition="Test_01"} 1.0
+zhmc_partition_ifl_minimum_processing_weight{cpc="P0000A28",partition="KathirTest"} 1.0
+zhmc_partition_ifl_minimum_processing_weight{cpc="P0000A28",partition="Test_02"} 1.0
+zhmc_partition_ifl_minimum_processing_weight{cpc="P0000A28",partition="JayLpar4"} 1.0
+zhmc_partition_ifl_minimum_processing_weight{cpc="P0000A28",partition="JayLpar"} 1.0
 # HELP zhmc_partition_ifl_maximum_processing_weight Maximum IFL processing weight for the active partition in shared mode (1..999)
 # TYPE zhmc_partition_ifl_maximum_processing_weight gauge
-zhmc_partition_ifl_maximum_processing_weight{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 999.0
-zhmc_partition_ifl_maximum_processing_weight{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 999.0
-zhmc_partition_ifl_maximum_processing_weight{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 999.0
+zhmc_partition_ifl_maximum_processing_weight{cpc="P0000A28",partition="Storage Test"} 999.0
+zhmc_partition_ifl_maximum_processing_weight{cpc="P0000A28",partition="Crypto-1"} 999.0
+zhmc_partition_ifl_maximum_processing_weight{cpc="P0000A28",partition="tobiTest"} 999.0
+zhmc_partition_ifl_maximum_processing_weight{cpc="P0000A28",partition="JayNVMe"} 999.0
+zhmc_partition_ifl_maximum_processing_weight{cpc="P0000A28",partition="Crypto-2"} 999.0
+zhmc_partition_ifl_maximum_processing_weight{cpc="P0000A28",partition="Boot-from-None"} 999.0
+zhmc_partition_ifl_maximum_processing_weight{cpc="P0000A28",partition="Nan Boot test"} 999.0
+zhmc_partition_ifl_maximum_processing_weight{cpc="P0000A28",partition="JayLpar2"} 999.0
+zhmc_partition_ifl_maximum_processing_weight{cpc="P0000A28",partition="Sample-Test"} 999.0
+zhmc_partition_ifl_maximum_processing_weight{cpc="P0000A28",partition="boot-test-FICON"} 999.0
+zhmc_partition_ifl_maximum_processing_weight{cpc="P0000A28",partition="Boot-from-FICON"} 999.0
+zhmc_partition_ifl_maximum_processing_weight{cpc="P0000A28",partition="JayLpar5"} 999.0
+zhmc_partition_ifl_maximum_processing_weight{cpc="P0000A28",partition="SFTP"} 999.0
+zhmc_partition_ifl_maximum_processing_weight{cpc="P0000A28",partition="Test_01"} 999.0
+zhmc_partition_ifl_maximum_processing_weight{cpc="P0000A28",partition="KathirTest"} 999.0
+zhmc_partition_ifl_maximum_processing_weight{cpc="P0000A28",partition="Test_02"} 999.0
+zhmc_partition_ifl_maximum_processing_weight{cpc="P0000A28",partition="JayLpar4"} 999.0
+zhmc_partition_ifl_maximum_processing_weight{cpc="P0000A28",partition="JayLpar"} 999.0
 # HELP zhmc_partition_ifl_current_processing_weight Current IFL processing weight for the active partition in shared mode (1..999)
 # TYPE zhmc_partition_ifl_current_processing_weight gauge
-zhmc_partition_ifl_current_processing_weight{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 1.0
-zhmc_partition_ifl_current_processing_weight{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 1.0
-zhmc_partition_ifl_current_processing_weight{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 1.0
-# HELP zhmc_partition_ifl_processor_count_cap Maximum number of IFL processors to be used when absolute IFL processor capping is enabled
+zhmc_partition_ifl_current_processing_weight{cpc="P0000A28",partition="Storage Test"} 1.0
+zhmc_partition_ifl_current_processing_weight{cpc="P0000A28",partition="Crypto-1"} 1.0
+zhmc_partition_ifl_current_processing_weight{cpc="P0000A28",partition="tobiTest"} 1.0
+zhmc_partition_ifl_current_processing_weight{cpc="P0000A28",partition="JayNVMe"} 1.0
+zhmc_partition_ifl_current_processing_weight{cpc="P0000A28",partition="Crypto-2"} 1.0
+zhmc_partition_ifl_current_processing_weight{cpc="P0000A28",partition="Boot-from-None"} 1.0
+zhmc_partition_ifl_current_processing_weight{cpc="P0000A28",partition="Nan Boot test"} 1.0
+zhmc_partition_ifl_current_processing_weight{cpc="P0000A28",partition="JayLpar2"} 1.0
+zhmc_partition_ifl_current_processing_weight{cpc="P0000A28",partition="Sample-Test"} 1.0
+zhmc_partition_ifl_current_processing_weight{cpc="P0000A28",partition="boot-test-FICON"} 1.0
+zhmc_partition_ifl_current_processing_weight{cpc="P0000A28",partition="Boot-from-FICON"} 1.0
+zhmc_partition_ifl_current_processing_weight{cpc="P0000A28",partition="JayLpar5"} 1.0
+zhmc_partition_ifl_current_processing_weight{cpc="P0000A28",partition="SFTP"} 1.0
+zhmc_partition_ifl_current_processing_weight{cpc="P0000A28",partition="Test_01"} 1.0
+zhmc_partition_ifl_current_processing_weight{cpc="P0000A28",partition="KathirTest"} 1.0
+zhmc_partition_ifl_current_processing_weight{cpc="P0000A28",partition="Test_02"} 1.0
+zhmc_partition_ifl_current_processing_weight{cpc="P0000A28",partition="JayLpar4"} 1.0
+zhmc_partition_ifl_current_processing_weight{cpc="P0000A28",partition="JayLpar"} 1.0
+# HELP zhmc_partition_ifl_processor_count_is_capped Boolean indicating whether absolute capping is enabled for IFL processors (0=false, 1=true)
+# TYPE zhmc_partition_ifl_processor_count_is_capped gauge
+zhmc_partition_ifl_processor_count_is_capped{cpc="P0000A28",partition="Storage Test",valuetype="bool"} 0.0
+zhmc_partition_ifl_processor_count_is_capped{cpc="P0000A28",partition="Crypto-1",valuetype="bool"} 0.0
+zhmc_partition_ifl_processor_count_is_capped{cpc="P0000A28",partition="tobiTest",valuetype="bool"} 0.0
+zhmc_partition_ifl_processor_count_is_capped{cpc="P0000A28",partition="JayNVMe",valuetype="bool"} 0.0
+zhmc_partition_ifl_processor_count_is_capped{cpc="P0000A28",partition="Crypto-2",valuetype="bool"} 0.0
+zhmc_partition_ifl_processor_count_is_capped{cpc="P0000A28",partition="Boot-from-None",valuetype="bool"} 0.0
+zhmc_partition_ifl_processor_count_is_capped{cpc="P0000A28",partition="Nan Boot test",valuetype="bool"} 0.0
+zhmc_partition_ifl_processor_count_is_capped{cpc="P0000A28",partition="JayLpar2",valuetype="bool"} 0.0
+zhmc_partition_ifl_processor_count_is_capped{cpc="P0000A28",partition="Sample-Test",valuetype="bool"} 0.0
+zhmc_partition_ifl_processor_count_is_capped{cpc="P0000A28",partition="boot-test-FICON",valuetype="bool"} 0.0
+zhmc_partition_ifl_processor_count_is_capped{cpc="P0000A28",partition="Boot-from-FICON",valuetype="bool"} 0.0
+zhmc_partition_ifl_processor_count_is_capped{cpc="P0000A28",partition="JayLpar5",valuetype="bool"} 0.0
+zhmc_partition_ifl_processor_count_is_capped{cpc="P0000A28",partition="SFTP",valuetype="bool"} 0.0
+zhmc_partition_ifl_processor_count_is_capped{cpc="P0000A28",partition="Test_01",valuetype="bool"} 0.0
+zhmc_partition_ifl_processor_count_is_capped{cpc="P0000A28",partition="KathirTest",valuetype="bool"} 0.0
+zhmc_partition_ifl_processor_count_is_capped{cpc="P0000A28",partition="Test_02",valuetype="bool"} 0.0
+zhmc_partition_ifl_processor_count_is_capped{cpc="P0000A28",partition="JayLpar4",valuetype="bool"} 0.0
+zhmc_partition_ifl_processor_count_is_capped{cpc="P0000A28",partition="JayLpar",valuetype="bool"} 0.0
+# HELP zhmc_partition_ifl_processor_count_cap Maximum number of IFL processors that can be used if absolute capping is enabled, else 0
 # TYPE zhmc_partition_ifl_processor_count_cap gauge
-zhmc_partition_ifl_processor_count_cap{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 1.0
-zhmc_partition_ifl_processor_count_cap{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 1.0
-zhmc_partition_ifl_processor_count_cap{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 1.0
-# HELP zhmc_partition_ifl_initial_processing_weight_is_capped Boolean indicating whether the initial IFL processing weight is capped (i.e. a limit) or not (i.e. a target).
+zhmc_partition_ifl_processor_count_cap{cpc="P0000A28",partition="Storage Test"} 0.0
+zhmc_partition_ifl_processor_count_cap{cpc="P0000A28",partition="Crypto-1"} 0.0
+zhmc_partition_ifl_processor_count_cap{cpc="P0000A28",partition="tobiTest"} 0.0
+zhmc_partition_ifl_processor_count_cap{cpc="P0000A28",partition="JayNVMe"} 0.0
+zhmc_partition_ifl_processor_count_cap{cpc="P0000A28",partition="Crypto-2"} 0.0
+zhmc_partition_ifl_processor_count_cap{cpc="P0000A28",partition="Boot-from-None"} 0.0
+zhmc_partition_ifl_processor_count_cap{cpc="P0000A28",partition="Nan Boot test"} 0.0
+zhmc_partition_ifl_processor_count_cap{cpc="P0000A28",partition="JayLpar2"} 0.0
+zhmc_partition_ifl_processor_count_cap{cpc="P0000A28",partition="Sample-Test"} 0.0
+zhmc_partition_ifl_processor_count_cap{cpc="P0000A28",partition="boot-test-FICON"} 0.0
+zhmc_partition_ifl_processor_count_cap{cpc="P0000A28",partition="Boot-from-FICON"} 0.0
+zhmc_partition_ifl_processor_count_cap{cpc="P0000A28",partition="JayLpar5"} 0.0
+zhmc_partition_ifl_processor_count_cap{cpc="P0000A28",partition="SFTP"} 0.0
+zhmc_partition_ifl_processor_count_cap{cpc="P0000A28",partition="Test_01"} 0.0
+zhmc_partition_ifl_processor_count_cap{cpc="P0000A28",partition="KathirTest"} 0.0
+zhmc_partition_ifl_processor_count_cap{cpc="P0000A28",partition="Test_02"} 0.0
+zhmc_partition_ifl_processor_count_cap{cpc="P0000A28",partition="JayLpar4"} 0.0
+zhmc_partition_ifl_processor_count_cap{cpc="P0000A28",partition="JayLpar"} 0.0
+# HELP zhmc_partition_ifl_initial_processing_weight_is_capped Boolean indicating whether the initial IFL processing weight is capped (0=false, 1=true)
 # TYPE zhmc_partition_ifl_initial_processing_weight_is_capped gauge
-zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05",valuetype="bool"} 0.0
-zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05",valuetype="bool"} 0.0
-zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05",valuetype="bool"} 0.0
+zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="P0000A28",partition="Storage Test",valuetype="bool"} 0.0
+zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="P0000A28",partition="Crypto-1",valuetype="bool"} 0.0
+zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="P0000A28",partition="tobiTest",valuetype="bool"} 0.0
+zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="P0000A28",partition="JayNVMe",valuetype="bool"} 0.0
+zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="P0000A28",partition="Crypto-2",valuetype="bool"} 0.0
+zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="P0000A28",partition="Boot-from-None",valuetype="bool"} 0.0
+zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="P0000A28",partition="Nan Boot test",valuetype="bool"} 0.0
+zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="P0000A28",partition="JayLpar2",valuetype="bool"} 0.0
+zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="P0000A28",partition="Sample-Test",valuetype="bool"} 0.0
+zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="P0000A28",partition="boot-test-FICON",valuetype="bool"} 0.0
+zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="P0000A28",partition="Boot-from-FICON",valuetype="bool"} 0.0
+zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="P0000A28",partition="JayLpar5",valuetype="bool"} 0.0
+zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="P0000A28",partition="SFTP",valuetype="bool"} 0.0
+zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="P0000A28",partition="Test_01",valuetype="bool"} 0.0
+zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="P0000A28",partition="KathirTest",valuetype="bool"} 0.0
+zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="P0000A28",partition="Test_02",valuetype="bool"} 0.0
+zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="P0000A28",partition="JayLpar4",valuetype="bool"} 0.0
+zhmc_partition_ifl_initial_processing_weight_is_capped{cpc="P0000A28",partition="JayLpar",valuetype="bool"} 0.0
 # HELP zhmc_partition_initial_memory_mib Initial amount of memory allocated to the partition when it becomes active, in MiB
 # TYPE zhmc_partition_initial_memory_mib gauge
-zhmc_partition_initial_memory_mib{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 68608.0
-zhmc_partition_initial_memory_mib{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 122880.0
-zhmc_partition_initial_memory_mib{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 614400.0
+zhmc_partition_initial_memory_mib{cpc="P0000A28",partition="Storage Test"} 4096.0
+zhmc_partition_initial_memory_mib{cpc="P0000A28",partition="Crypto-1"} 4096.0
+zhmc_partition_initial_memory_mib{cpc="P0000A28",partition="tobiTest"} 4096.0
+zhmc_partition_initial_memory_mib{cpc="P0000A28",partition="JayNVMe"} 4096.0
+zhmc_partition_initial_memory_mib{cpc="P0000A28",partition="Crypto-2"} 4096.0
+zhmc_partition_initial_memory_mib{cpc="P0000A28",partition="Boot-from-None"} 4096.0
+zhmc_partition_initial_memory_mib{cpc="P0000A28",partition="Nan Boot test"} 4096.0
+zhmc_partition_initial_memory_mib{cpc="P0000A28",partition="JayLpar2"} 4096.0
+zhmc_partition_initial_memory_mib{cpc="P0000A28",partition="Sample-Test"} 4096.0
+zhmc_partition_initial_memory_mib{cpc="P0000A28",partition="boot-test-FICON"} 4096.0
+zhmc_partition_initial_memory_mib{cpc="P0000A28",partition="Boot-from-FICON"} 4096.0
+zhmc_partition_initial_memory_mib{cpc="P0000A28",partition="JayLpar5"} 4096.0
+zhmc_partition_initial_memory_mib{cpc="P0000A28",partition="SFTP"} 4096.0
+zhmc_partition_initial_memory_mib{cpc="P0000A28",partition="Test_01"} 4096.0
+zhmc_partition_initial_memory_mib{cpc="P0000A28",partition="KathirTest"} 4096.0
+zhmc_partition_initial_memory_mib{cpc="P0000A28",partition="Test_02"} 4096.0
+zhmc_partition_initial_memory_mib{cpc="P0000A28",partition="JayLpar4"} 4096.0
+zhmc_partition_initial_memory_mib{cpc="P0000A28",partition="JayLpar"} 4096.0
 # HELP zhmc_partition_reserved_memory_mib Amount of reserved memory (maximum memory minus initial memory), in MiB
 # TYPE zhmc_partition_reserved_memory_mib gauge
-zhmc_partition_reserved_memory_mib{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 0.0
-zhmc_partition_reserved_memory_mib{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 0.0
-zhmc_partition_reserved_memory_mib{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 0.0
+zhmc_partition_reserved_memory_mib{cpc="P0000A28",partition="Storage Test"} 0.0
+zhmc_partition_reserved_memory_mib{cpc="P0000A28",partition="Crypto-1"} 0.0
+zhmc_partition_reserved_memory_mib{cpc="P0000A28",partition="tobiTest"} 0.0
+zhmc_partition_reserved_memory_mib{cpc="P0000A28",partition="JayNVMe"} 0.0
+zhmc_partition_reserved_memory_mib{cpc="P0000A28",partition="Crypto-2"} 0.0
+zhmc_partition_reserved_memory_mib{cpc="P0000A28",partition="Boot-from-None"} 0.0
+zhmc_partition_reserved_memory_mib{cpc="P0000A28",partition="Nan Boot test"} 0.0
+zhmc_partition_reserved_memory_mib{cpc="P0000A28",partition="JayLpar2"} 0.0
+zhmc_partition_reserved_memory_mib{cpc="P0000A28",partition="Sample-Test"} 0.0
+zhmc_partition_reserved_memory_mib{cpc="P0000A28",partition="boot-test-FICON"} 0.0
+zhmc_partition_reserved_memory_mib{cpc="P0000A28",partition="Boot-from-FICON"} 0.0
+zhmc_partition_reserved_memory_mib{cpc="P0000A28",partition="JayLpar5"} 0.0
+zhmc_partition_reserved_memory_mib{cpc="P0000A28",partition="SFTP"} 0.0
+zhmc_partition_reserved_memory_mib{cpc="P0000A28",partition="Test_01"} 0.0
+zhmc_partition_reserved_memory_mib{cpc="P0000A28",partition="KathirTest"} 0.0
+zhmc_partition_reserved_memory_mib{cpc="P0000A28",partition="Test_02"} 0.0
+zhmc_partition_reserved_memory_mib{cpc="P0000A28",partition="JayLpar4"} 0.0
+zhmc_partition_reserved_memory_mib{cpc="P0000A28",partition="JayLpar"} 0.0
 # HELP zhmc_partition_maximum_memory_mib Maximum amount of memory to which the operating system running in the partition can increase the memory allocation, in MiB
 # TYPE zhmc_partition_maximum_memory_mib gauge
-zhmc_partition_maximum_memory_mib{cpc="CPCA",mzr="US-East",partition="MIKETEST",pod="wdc04-05"} 68608.0
-zhmc_partition_maximum_memory_mib{cpc="CPCA",mzr="US-East",partition="WILLVLAN2",pod="wdc04-05"} 122880.0
-zhmc_partition_maximum_memory_mib{cpc="CPCA",mzr="US-East",partition="PENNY",pod="wdc04-05"} 614400.0
+zhmc_partition_maximum_memory_mib{cpc="P0000A28",partition="Storage Test"} 4096.0
+zhmc_partition_maximum_memory_mib{cpc="P0000A28",partition="Crypto-1"} 4096.0
+zhmc_partition_maximum_memory_mib{cpc="P0000A28",partition="tobiTest"} 4096.0
+zhmc_partition_maximum_memory_mib{cpc="P0000A28",partition="JayNVMe"} 4096.0
+zhmc_partition_maximum_memory_mib{cpc="P0000A28",partition="Crypto-2"} 4096.0
+zhmc_partition_maximum_memory_mib{cpc="P0000A28",partition="Boot-from-None"} 4096.0
+zhmc_partition_maximum_memory_mib{cpc="P0000A28",partition="Nan Boot test"} 4096.0
+zhmc_partition_maximum_memory_mib{cpc="P0000A28",partition="JayLpar2"} 4096.0
+zhmc_partition_maximum_memory_mib{cpc="P0000A28",partition="Sample-Test"} 4096.0
+zhmc_partition_maximum_memory_mib{cpc="P0000A28",partition="boot-test-FICON"} 4096.0
+zhmc_partition_maximum_memory_mib{cpc="P0000A28",partition="Boot-from-FICON"} 4096.0
+zhmc_partition_maximum_memory_mib{cpc="P0000A28",partition="JayLpar5"} 4096.0
+zhmc_partition_maximum_memory_mib{cpc="P0000A28",partition="SFTP"} 4096.0
+zhmc_partition_maximum_memory_mib{cpc="P0000A28",partition="Test_01"} 4096.0
+zhmc_partition_maximum_memory_mib{cpc="P0000A28",partition="KathirTest"} 4096.0
+zhmc_partition_maximum_memory_mib{cpc="P0000A28",partition="Test_02"} 4096.0
+zhmc_partition_maximum_memory_mib{cpc="P0000A28",partition="JayLpar4"} 4096.0
+zhmc_partition_maximum_memory_mib{cpc="P0000A28",partition="JayLpar"} 4096.0
+# HELP zhmc_partition_status_int Partition status as integer (0=active, 1=degraded, 10=paused, 11=stopped, 12=starting, 13=stopping, 20=reservation-error, 21=terminated, 22=communications-not-active, 23=status-check, 99=unsupported value)
+# TYPE zhmc_partition_status_int gauge
+zhmc_partition_status_int{cpc="P0000A28",partition="Storage Test",value="stopped"} 11.0
+zhmc_partition_status_int{cpc="P0000A28",partition="Crypto-1",value="stopped"} 11.0
+zhmc_partition_status_int{cpc="P0000A28",partition="tobiTest",value="stopped"} 11.0
+zhmc_partition_status_int{cpc="P0000A28",partition="JayNVMe",value="stopped"} 11.0
+zhmc_partition_status_int{cpc="P0000A28",partition="Crypto-2",value="stopped"} 11.0
+zhmc_partition_status_int{cpc="P0000A28",partition="Boot-from-None",value="stopped"} 11.0
+zhmc_partition_status_int{cpc="P0000A28",partition="Nan Boot test",value="stopped"} 11.0
+zhmc_partition_status_int{cpc="P0000A28",partition="JayLpar2",value="stopped"} 11.0
+zhmc_partition_status_int{cpc="P0000A28",partition="Sample-Test",value="stopped"} 11.0
+zhmc_partition_status_int{cpc="P0000A28",partition="boot-test-FICON",value="stopped"} 11.0
+zhmc_partition_status_int{cpc="P0000A28",partition="Boot-from-FICON",value="stopped"} 11.0
+zhmc_partition_status_int{cpc="P0000A28",partition="JayLpar5",value="stopped"} 11.0
+zhmc_partition_status_int{cpc="P0000A28",partition="SFTP",value="stopped"} 11.0
+zhmc_partition_status_int{cpc="P0000A28",partition="Test_01",value="stopped"} 11.0
+zhmc_partition_status_int{cpc="P0000A28",partition="KathirTest",value="stopped"} 11.0
+zhmc_partition_status_int{cpc="P0000A28",partition="Test_02",value="stopped"} 11.0
+zhmc_partition_status_int{cpc="P0000A28",partition="JayLpar4",value="stopped"} 11.0
+zhmc_partition_status_int{cpc="P0000A28",partition="JayLpar",value="stopped"} 11.0
+# HELP zhmc_partition_has_unacceptable_status Boolean indicating whether the partition has an unacceptable status (0=false, 1=true)
+# TYPE zhmc_partition_has_unacceptable_status gauge
+zhmc_partition_has_unacceptable_status{cpc="P0000A28",partition="Storage Test",valuetype="bool"} 1.0
+zhmc_partition_has_unacceptable_status{cpc="P0000A28",partition="Crypto-1",valuetype="bool"} 1.0
+zhmc_partition_has_unacceptable_status{cpc="P0000A28",partition="tobiTest",valuetype="bool"} 1.0
+zhmc_partition_has_unacceptable_status{cpc="P0000A28",partition="JayNVMe",valuetype="bool"} 1.0
+zhmc_partition_has_unacceptable_status{cpc="P0000A28",partition="Crypto-2",valuetype="bool"} 1.0
+zhmc_partition_has_unacceptable_status{cpc="P0000A28",partition="Boot-from-None",valuetype="bool"} 1.0
+zhmc_partition_has_unacceptable_status{cpc="P0000A28",partition="Nan Boot test",valuetype="bool"} 1.0
+zhmc_partition_has_unacceptable_status{cpc="P0000A28",partition="JayLpar2",valuetype="bool"} 1.0
+zhmc_partition_has_unacceptable_status{cpc="P0000A28",partition="Sample-Test",valuetype="bool"} 1.0
+zhmc_partition_has_unacceptable_status{cpc="P0000A28",partition="boot-test-FICON",valuetype="bool"} 1.0
+zhmc_partition_has_unacceptable_status{cpc="P0000A28",partition="Boot-from-FICON",valuetype="bool"} 1.0
+zhmc_partition_has_unacceptable_status{cpc="P0000A28",partition="JayLpar5",valuetype="bool"} 1.0
+zhmc_partition_has_unacceptable_status{cpc="P0000A28",partition="SFTP",valuetype="bool"} 1.0
+zhmc_partition_has_unacceptable_status{cpc="P0000A28",partition="Test_01",valuetype="bool"} 1.0
+zhmc_partition_has_unacceptable_status{cpc="P0000A28",partition="KathirTest",valuetype="bool"} 1.0
+zhmc_partition_has_unacceptable_status{cpc="P0000A28",partition="Test_02",valuetype="bool"} 1.0
+zhmc_partition_has_unacceptable_status{cpc="P0000A28",partition="JayLpar4",valuetype="bool"} 1.0
+zhmc_partition_has_unacceptable_status{cpc="P0000A28",partition="JayLpar",valuetype="bool"} 1.0
 # HELP zhmc_cpc_cp_processor_count Number of active CP processors
 # TYPE zhmc_cpc_cp_processor_count gauge
-zhmc_cpc_cp_processor_count{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
+zhmc_cpc_cp_processor_count{cpc="P0000A28"} 39.0
 # HELP zhmc_cpc_ifl_processor_count Number of active IFL processors
 # TYPE zhmc_cpc_ifl_processor_count gauge
-zhmc_cpc_ifl_processor_count{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 30.0
+zhmc_cpc_ifl_processor_count{cpc="P0000A28"} 0.0
 # HELP zhmc_cpc_icf_processor_count Number of active ICF processors
 # TYPE zhmc_cpc_icf_processor_count gauge
-zhmc_cpc_icf_processor_count{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
+zhmc_cpc_icf_processor_count{cpc="P0000A28"} 0.0
 # HELP zhmc_cpc_iip_processor_count Number of active zIIP processors
 # TYPE zhmc_cpc_iip_processor_count gauge
-zhmc_cpc_iip_processor_count{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
+zhmc_cpc_iip_processor_count{cpc="P0000A28"} 0.0
 # HELP zhmc_cpc_aap_processor_count Number of active zAAP processors
 # TYPE zhmc_cpc_aap_processor_count gauge
-zhmc_cpc_aap_processor_count{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
-# HELP zhmc_cpc_cbp_processor_count Number of active CBP processors
-# TYPE zhmc_cpc_cbp_processor_count gauge
-zhmc_cpc_cbp_processor_count{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
+zhmc_cpc_aap_processor_count{cpc="P0000A28"} 0.0
 # HELP zhmc_cpc_sap_processor_count Number of active SAP processors
 # TYPE zhmc_cpc_sap_processor_count gauge
-zhmc_cpc_sap_processor_count{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 2.0
+zhmc_cpc_sap_processor_count{cpc="P0000A28"} 5.0
 # HELP zhmc_cpc_defective_processor_count Number of defective processors of all processor types
 # TYPE zhmc_cpc_defective_processor_count gauge
-zhmc_cpc_defective_processor_count{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
+zhmc_cpc_defective_processor_count{cpc="P0000A28"} 0.0
 # HELP zhmc_cpc_spare_processor_count Number of spare processors of all processor types
 # TYPE zhmc_cpc_spare_processor_count gauge
-zhmc_cpc_spare_processor_count{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
+zhmc_cpc_spare_processor_count{cpc="P0000A28"} 0.0
 # HELP zhmc_cpc_total_memory_mib Total amount of installed memory, in MiB
 # TYPE zhmc_cpc_total_memory_mib gauge
-zhmc_cpc_total_memory_mib{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 4.194304e+06
+zhmc_cpc_total_memory_mib{cpc="P0000A28"} 3.145728e+06
 # HELP zhmc_cpc_hsa_memory_mib Amount of memory reserved for the base hardware system area (HSA), in MiB
 # TYPE zhmc_cpc_hsa_memory_mib gauge
-zhmc_cpc_hsa_memory_mib{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 65536.0
+zhmc_cpc_hsa_memory_mib{cpc="P0000A28"} 262144.0
 # HELP zhmc_cpc_partition_memory_mib Amount of memory for use by partitions, in MiB
 # TYPE zhmc_cpc_partition_memory_mib gauge
-zhmc_cpc_partition_memory_mib{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 4.128768e+06
+zhmc_cpc_partition_memory_mib{cpc="P0000A28"} 2.883584e+06
 # HELP zhmc_cpc_partition_central_memory_mib Amount of memory allocated as central storage across the active partitions, in MiB
 # TYPE zhmc_cpc_partition_central_memory_mib gauge
-zhmc_cpc_partition_central_memory_mib{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 2.280448e+06
+zhmc_cpc_partition_central_memory_mib{cpc="P0000A28"} 0.0
 # HELP zhmc_cpc_partition_expanded_memory_mib Amount of memory allocated as expanded storage across the active partitions, in MiB
 # TYPE zhmc_cpc_partition_expanded_memory_mib gauge
-zhmc_cpc_partition_expanded_memory_mib{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
+zhmc_cpc_partition_expanded_memory_mib{cpc="P0000A28"} 0.0
 # HELP zhmc_cpc_available_memory_mib Amount of memory not allocated to active partitions, in MiB
 # TYPE zhmc_cpc_available_memory_mib gauge
-zhmc_cpc_available_memory_mib{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 1.84832e+06
+zhmc_cpc_available_memory_mib{cpc="P0000A28"} 2.865152e+06
 # HELP zhmc_cpc_vfm_increment_gib Increment size of IBM Virtual Flash Memory (VFM), in GiB
 # TYPE zhmc_cpc_vfm_increment_gib gauge
-zhmc_cpc_vfm_increment_gib{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 16.0
+zhmc_cpc_vfm_increment_gib{cpc="P0000A28"} 16.0
 # HELP zhmc_cpc_total_vfm_gib Total amount of installed IBM Virtual Flash Memory (VFM), in GiB
 # TYPE zhmc_cpc_total_vfm_gib gauge
-zhmc_cpc_total_vfm_gib{cpc="CPCA",mzr="US-East",pod="wdc04-05"} 0.0
+zhmc_cpc_total_vfm_gib{cpc="P0000A28"} 0.0
+# HELP zhmc_cpc_status_int Status as integer (0=active/=operating, 1=degraded, 2=service-required, 10=service, 11=exceptions, 12=not-communicating, 13=status-check, 14=not-operating, 15=no-power, 99=unsupported value)
+# TYPE zhmc_cpc_status_int gauge
+zhmc_cpc_status_int{cpc="P0000A28",value="service-required"} 2.0
+# HELP zhmc_cpc_has_unacceptable_status Boolean indicating whether the CPC has an unacceptable status (0=false, 1=true)
+# TYPE zhmc_cpc_has_unacceptable_status gauge
+zhmc_cpc_has_unacceptable_status{cpc="P0000A28",valuetype="bool"} 1.0
