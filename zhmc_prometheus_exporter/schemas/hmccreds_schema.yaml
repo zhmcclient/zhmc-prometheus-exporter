@@ -44,5 +44,5 @@ properties:
           description: "Label name"
           type: string
         value:
-          description: "Label value. Always handled as literal strings - no keywords with speacial handling"
+          description: "Label value, as a Jinja2 expression using certain variables"
           type: string

@@ -26,6 +26,37 @@ Released: not yet
 
 **Incompatible changes:**
 
+* The label value definitions in the metric definition file are now interpreted
+  as Jinja2 expressions and no longer with the special syntax used before.
+
+  This is an incompatible change and requires updating the metric definition
+  file accordingly. The example metric definition file provided with the package
+  has been updated accordingly. If you have used the example file unchanged,
+  you only need to use the new version of the file. If you have used your own
+  version of the metric definition file, you need to update it. For
+  understanding the changes and what to update, compare the old and new version
+  of the example metric definition file.
+
+* The extra label value definitions in the HMC credentials file are now
+  interpreted as Jinja2 expressions and no longer as literals.
+
+  This is an incompatible change and requires updating your HMC credentials file
+  in case you used the 'extra_labels' property in there.
+  The change to make is to put the literal label values into nested double and
+  single quotes.
+
+  Example old definition in the file::
+
+      extra_labels:
+        - name: hmc
+          value: MYHMC1
+
+  Corresponding new definition in the file::
+
+      extra_labels:
+        - name: hmc
+          value: "'MYHMC1'"
+
 **Deprecations:**
 
 **Bug fixes:**
@@ -49,6 +80,14 @@ Released: not yet
 
 * Added missing packages (pip_check_reqs, pipdeptree) to be checked for their
   dependencies in minimum-constraints.txt.
+
+* Fixed CBP related metrics in classic mode CPCs in HMC 2.16. These metrics
+  were removed in z16 but the metric definition file tried to export them,
+  leading to a failure with z16 CPCs in classic mode. This was fixed by
+  exporting these metrics only if the CPC has the SE version that supports them.
+
+* Fixed the '\*_central_memory_mib' and '\*_expanded_memory_mib' metrics of
+  LPARs of classic mode CPCs that caused the exporter to fail.
 
 **Enhancements:**
 
@@ -82,6 +121,32 @@ Released: not yet
   instead of 'setup.py' commands, following the recommendation of the Python
   packaging community
   (see https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html).
+
+* The label value definitions in the metric definition file are now interpreted
+  as Jinja2 expressions and no longer with the special keyword syntax used
+  before. This is an incompatible change for the metric definition file, see the
+  corresponding item in the incompatible changes section of this change log.
+  The example metric definition file provided with the package has been updated
+  accordingly.
+
+* The extra label value definitions in the HMC credentials file are now
+  interpreted as Jinja2 expressions and no longer as just literals. This is an
+  incompatible change for the HMC credentials file, see the corresponding
+  item in the incompatible changes section of this change log.
+  The example HMC credentials file provided with the package has been updated
+  accordingly.
+
+* Added support for conditional exporting of single metrics based on the
+  HMC and SE/CPC version, by adding an 'if' property to the metric definition in
+  the metric definition file that can specify a Python expression using
+  the 'hmc_version' and 'se_version' variables. Used that capability on CBP
+  related metrics that were added in z14 and removed in z16 to specify the
+  supported SE version range.
+
+* Made handling of runtime errors more tolerant for properties that are
+  not present in certain cases.
+
+* Docs: Added a link to the description of Jinja2 expressions.
 
 **Cleanup:**
 

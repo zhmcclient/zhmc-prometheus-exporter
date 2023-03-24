@@ -7,5 +7,7 @@ metrics:
   verify_cert: true
 
 extra_labels:
+  - name: hmc
+    value: "hmc_info['hmc-name']"
   - name: pod
-    value: mypod
+    value: "'mypod'"

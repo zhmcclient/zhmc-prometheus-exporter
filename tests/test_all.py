@@ -135,39 +135,54 @@ def test_split_version(version_str, pad_to, exp_result):
 
 
 TESTCASES_EVAL_CONDITION = [
-    # (condition, hmc_version, exp_result)
-    ('True', '', True),
-    ('False', '', False),
-    ('"a" == "a"', '', True),
-    ('1 == 1', '', True),
-    ('1 >= 1', '', True),
-    ('1 > 1', '', False),
-    ('hmc_version == "2.14"', '2.14', True),
-    ("hmc_version == '2.14'", '2.14', True),
-    ("hmc_version >= '2.14'", '2.4', False),
-    ("hmc_version >= '2.14'", '2.14.0', True),
-    ("hmc_version >= '2.14'", '2.14.1', True),
-    ("hmc_version <= '2.14'", '2.14.0', True),
-    ("hmc_version <= '2.14'", '2.14.1', False),
-    ("hmc_version >= '2.14.0'", '2.14', True),
-    ("hmc_version >= '2.14.1'", '2.14', False),
-    ("hmc_version <= '2.14.0'", '2.14', True),
-    ("hmc_version <= '2.14.1'", '2.14', True),
-    ("hmc_version >= '2.14' and hmc_version <= '2.15'", '2.14', True),
-    ("hmc_version >= '2.14' and hmc_version <= '2.15'", '2.16', False),
+    # (condition, hmc_version, se_version, exp_result)
+    ('True', '', '', True),
+    ('False', '', '', False),
+    ('"a" == "a"', '', '', True),
+    ('1 == 1', '', '', True),
+    ('1 >= 1', '', '', True),
+    ('1 > 1', '', '', False),
+    ('hmc_version == "2.14"', '2.14', '2.13', True),
+    ("hmc_version == '2.14'", '2.14', '2.13', True),
+    ("hmc_version >= '2.14'", '2.4', '2.13', False),
+    ("hmc_version >= '2.14'", '2.14.0', '2.13', True),
+    ("hmc_version >= '2.14'", '2.14.1', '2.13', True),
+    ("hmc_version <= '2.14'", '2.14.0', '2.13', True),
+    ("hmc_version <= '2.14'", '2.14.1', '2.13', False),
+    ("hmc_version >= '2.14.0'", '2.14', '2.13', True),
+    ("hmc_version >= '2.14.1'", '2.14', '2.13', False),
+    ("hmc_version <= '2.14.0'", '2.14', '2.13', True),
+    ("hmc_version <= '2.14.1'", '2.14', '2.13', True),
+    ("hmc_version >= '2.14' and hmc_version <= '2.15'", '2.14', '2.13', True),
+    ("hmc_version >= '2.14' and hmc_version <= '2.15'", '2.16', '2.13', False),
+    ('se_version == "2.13"', '2.14', '2.13', True),
+    ("se_version == '2.13'", '2.14', '2.13', True),
+    ("se_version >= '2.13'", '2.14', '2.3', False),
+    ("se_version >= '2.13'", '2.14', '2.13.0', True),
+    ("se_version >= '2.13'", '2.14', '2.13.1', True),
+    ("se_version <= '2.13'", '2.14', '2.13.0', True),
+    ("se_version <= '2.13'", '2.14', '2.13.1', False),
+    ("se_version >= '2.13.0'", '2.14', '2.13', True),
+    ("se_version >= '2.13.1'", '2.14', '2.13', False),
+    ("se_version <= '2.13.0'", '2.14', '2.13', True),
+    ("se_version <= '2.13.1'", '2.14', '2.13', True),
+    ("se_version >= '2.13' and se_version <= '2.14'", '2.14', '2.13', True),
+    ("se_version >= '2.13' and se_version <= '2.14'", '2.14', '2.15', False),
 ]
 
 
 @pytest.mark.parametrize(
-    "condition, hmc_version, exp_result", TESTCASES_EVAL_CONDITION
+    "condition, hmc_version, se_version, exp_result",
+    TESTCASES_EVAL_CONDITION
 )
-def test_eval_condition(condition, hmc_version, exp_result):
+def test_eval_condition(condition, hmc_version, se_version, exp_result):
     """
     Tests eval_condition().
     """
 
     # The code to be tested
-    result = zhmc_prometheus_exporter.eval_condition(condition, hmc_version)
+    result = zhmc_prometheus_exporter.eval_condition(
+        condition, hmc_version, se_version)
 
     assert result == exp_result
 
@@ -336,13 +351,15 @@ class TestMetrics(unittest.TestCase):
             }
         }
         extra_labels = {"label1": "value1"}
+        hmc_version = '2.15.0'
+        se_versions = {'cpc_1': '2.15.0'}
 
         context, resources = setup_metrics_context()
         metrics_object = zhmc_prometheus_exporter.retrieve_metrics(context)
 
         families = zhmc_prometheus_exporter.build_family_objects(
             metrics_object, yaml_metric_groups, yaml_metrics, 'file',
-            extra_labels)
+            extra_labels, hmc_version, se_versions)
 
         assert len(families) == 1
         assert "zhmc_pre_processor_usage" in families
@@ -363,7 +380,7 @@ class TestMetrics(unittest.TestCase):
 
         families = zhmc_prometheus_exporter.build_family_objects_res(
             resources, yaml_metric_groups, yaml_metrics, 'file',
-            extra_labels)
+            extra_labels, hmc_version, se_versions)
 
         assert len(families) == 1
         assert "zhmc_foo_name" in families
@@ -407,9 +424,13 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
             }
         }
         extra_labels = {}
+        hmc_version = '2.15.0'
+        se_versions = {'cpc_1': '2.15.0'}
+
         my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
             cred_dict, session, context, resources, yaml_metric_groups,
-            yaml_metrics, extra_labels, "filename", "filename", None, '2.14')
+            yaml_metrics, extra_labels, "filename", "filename", None,
+            hmc_version, se_versions)
         self.assertEqual(my_zhmc_usage_collector.yaml_creds, cred_dict)
         self.assertEqual(my_zhmc_usage_collector.session, session)
         self.assertEqual(my_zhmc_usage_collector.context, context)
@@ -442,9 +463,13 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
             }
         }
         extra_labels = {}
+        hmc_version = '2.15.0'
+        se_versions = {'cpc_1': '2.15.0'}
+
         my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
             cred_dict, session, context, resources, yaml_metric_groups,
-            yaml_metrics, extra_labels, "filename", "filename", None, '2.14')
+            yaml_metrics, extra_labels, "filename", "filename", None,
+            hmc_version, se_versions)
         collected = list(my_zhmc_usage_collector.collect())
         self.assertEqual(len(collected), 1)
         self.assertEqual(type(collected[0]),
