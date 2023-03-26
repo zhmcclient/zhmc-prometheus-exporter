@@ -151,6 +151,8 @@ Released: not yet
 * Added a 'cord' label with the line cord name to all 'zhmc_cpc_power_cord\*'
   metrics.
 
+* Added support for Python 3.11.
+
 **Cleanup:**
 
 * Addressed issues in test workflow reported by Github Actions. (issue #264)

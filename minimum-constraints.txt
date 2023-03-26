@@ -160,28 +160,33 @@ entrypoints==0.3.0
 
 # PyLint (no imports, invoked via pylint script):
 pylint==2.5.2; python_version == '3.5'
-pylint==2.13.0; python_version >= '3.6'
+pylint==2.13.0; python_version >= '3.6' and python_version <= '3.10'
+pylint==2.15.0; python_version >= '3.11'
 astroid==2.4.0; python_version == '3.5'
-astroid==2.11.0; python_version >= '3.6'
+astroid==2.11.0; python_version >= '3.6' and python_version <= '3.10'
+astroid==2.12.4; python_version >= '3.11'
 typed-ast==1.4.0; python_version >= '3.6' and python_version < '3.8' and implementation_name=='cpython'
 lazy-object-proxy==1.4.3; python_version >= '3.5'
-wrapt==1.11.2; python_version >= '3.5'
+wrapt==1.12; python_version >= '3.5' and python_version <= '3.10'
+wrapt==1.14; python_version >= '3.11'
 platformdirs==2.2.0; python_version >= '3.6'
+isort==4.3.8
+tomlkit==0.10.1; python_version >= '3.7'
+dill==0.2; python_version >= '3.6' and python_version <= '3.10'
+dill==0.3.6; python_version >= '3.11'
 
 # Sphinx (no imports, invoked via sphinx-build script):
 Sphinx==3.5.4; python_version <= '3.9'
 Sphinx==4.2.0; python_version >= '3.10'
-docutils==0.13.1; python_version <= '3.9'
-docutils==0.14; python_version >= '3.10'
+docutils==0.13.1; python_version >= '3.5' and python_version <= '3.9'
+docutils==0.14; python_version == '3.10'
+docutils==0.16; python_version >= '3.11'
 sphinx-git==10.1.1
 GitPython==2.1.1; python_version <= '3.6'
 GitPython==3.1.30; python_version >= '3.7'
-sphinxcontrib-fulltoc==1.2.0
 sphinxcontrib-websupport==1.1.2
 Pygments==2.7.4
-sphinx-rtd-theme==0.5.0
-autodocsumm==0.1.13; python_version <= '3.9'
-autodocsumm==0.2.5; python_version >= '3.10'
+sphinx-rtd-theme==1.0.0
 Babel==2.9.1
 
 # Twine (no imports, invoked via twine script):
@@ -206,7 +211,7 @@ atomicwrites==1.4.0  # used with minimum package levels
 appdirs==1.4.3
 bleach==3.3.0
 chardet==3.0.4  # used with minimum package levels
-colorama==0.4.0
+colorama==0.4.5; sys_platform == "win32"
 contextlib2==0.6.0
 gitdb2==2.0.0; python_version <= '3.6'
 gitdb==4.0.1; python_version == '3.5'
@@ -214,11 +219,10 @@ gitdb==4.0.8; python_version >= '3.6'
 html5lib==1.0.1  # used with minimum package levels
 imagesize==0.7.1
 iniconfig==1.1.1; python_version >= "3.6"  # used by pytest since its 6.0.0 which requires py36
-isort==4.3.5
 keyring==18.0.0
 more-itertools==8.0.0  # used with minimum package levels
 pkginfo==1.4.2
-py==1.10.0
+py==1.11.0
 pyparsing==2.4.5
 # build is using pyproject-hooks
 pyproject-hooks==1.0.0; python_version >= '3.7'
@@ -234,14 +238,10 @@ sphinxcontrib-serializinghtml==1.1.5
 sphinxcontrib-qthelp==1.0.3
 snowballstemmer==1.2.1
 toml==0.10.0  # used by pylint and pytest since some version
+tomli==1.1.0; python_version >= '3.7' and python_version <= '3.10'
 tqdm==4.28.1
 typing==3.6.1
 webencodings==0.5.1
-
-# used by pylint 2.14 which requires python_version >= '3.7' (or maybe earlier)
-dill==0.2; python_version >= '3.7'
-tomlkit==0.10.1; python_version >= '3.7'
-tomli==1.1.0; python_version >= '3.7' and python_version <= '3.10'
 
 # used by twine 4.0 which requires python_version >= '3.7'
 rich==12.0.0; python_version >= '3.7'
