@@ -89,6 +89,10 @@ Released: not yet
 * Fixed the '\*_central_memory_mib' and '\*_expanded_memory_mib' metrics of
   LPARs of classic mode CPCs that caused the exporter to fail.
 
+* Updated the minimum version of zhmcclient to 1.7.0 to pick up a fix for
+  cases where a CPC resource is not found (may happen on older HMCs such as
+  2.14). Changed error handling to tolerate that case.
+
 **Enhancements:**
 
 * Added support for labels on single metric definitions, for defining how the
