@@ -148,8 +148,11 @@ Released: not yet
 
 * Docs: Added a link to the description of Jinja2 expressions.
 
-* Added a 'cord' label with the line cord name to all 'zhmc_cpc_power_cord\*'
-  metrics.
+* Added labels to all 'zhmc_cpc_power_cord\*' metrics:
+
+  - 'cord' - line cord name (as reported in metric 'linecord-eight-name')
+  - 'cordid' - line cord ID (1, 2, ..., 8)
+  - 'phase' - line cord phase (A, B, C)
 
 * Added support for Python 3.11.
 
