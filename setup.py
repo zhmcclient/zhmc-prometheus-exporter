@@ -17,7 +17,6 @@ Setup script for the zhmc-prometheus-exporter project.
 """
 
 import os
-import re
 import setuptools
 
 
@@ -64,10 +63,7 @@ def read_file(a_file):
 
 # pylint: disable=invalid-name
 requirements = get_requirements('requirements.txt')
-install_requires = [req for req in requirements
-                    if req and not re.match(r'[^:]+://', req)]
-dependency_links = [req for req in requirements
-                    if req and re.match(r'[^:]+://', req)]
+install_requires = requirements
 package_version = get_version(
     os.path.join('zhmc_prometheus_exporter', '_version.py'))
 
@@ -99,7 +95,7 @@ setuptools.setup(
     },
     # include_package_data=True,  # Includes MANIFEST.in files into sdist (only)
     install_requires=install_requires,
-    dependency_links=dependency_links,
+    # dependency_links is deprecated, and pip since 18.1 supports PEP-508 URLs.
 
     description='IBM Z HMC Prometheus Exporter',
     long_description=read_file('README.rst'),
