@@ -153,6 +153,9 @@ Released: not yet
 
 * Added support for Python 3.11.
 
+* Added a check for consistency of items in metrics and metric_groups in
+  the metric definition file.
+
 **Cleanup:**
 
 * Addressed issues in test workflow reported by Github Actions. (issue #264)
