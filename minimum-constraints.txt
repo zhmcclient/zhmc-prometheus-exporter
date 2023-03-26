@@ -57,6 +57,7 @@
 # for a particular Python version:
 # pip 10.0.0 introduced the --exclude-editable option.
 # pip 18.0 is needed on pypy3 (py36) to support constraints like cffi!=1.11.3,>=1.8.
+# pip 18.1 supports PEP-508 URLs, so the deprecated dependency_links no longer needs to be used.
 # Pip 20.2 introduced a new resolver whose backtracking had issues that were resolved only in 21.2.2.
 # Pip 21.0 removed support for Python<=3.5
 # pip>=21.0 is needed for the cryptography package on Windows on GitHub Actions.
