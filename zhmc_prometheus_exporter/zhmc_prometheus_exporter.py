@@ -1599,6 +1599,24 @@ def main():
         yaml_metric_groups = yaml_metric_content['metric_groups']
         yaml_metrics = yaml_metric_content['metrics']
 
+        # Check that the metric_groups and metrics items are consistent
+        for mg in yaml_metrics:
+            if mg not in yaml_metric_groups:
+                new_exc = ImproperExit(
+                    "Metric group '{}' in metric definition file {} is "
+                    "defined in 'metrics' but not in 'metric_groups'".
+                    format(mg, args.m))
+                new_exc.__cause__ = None  # pylint: disable=invalid-name
+                raise new_exc
+        for mg in yaml_metric_groups:
+            if mg not in yaml_metrics:
+                new_exc = ImproperExit(
+                    "Metric group '{}' in metric definition file {} is "
+                    "defined in 'metric_groups' but not in 'metrics'".
+                    format(mg, args.m))
+                new_exc.__cause__ = None  # pylint: disable=invalid-name
+                raise new_exc
+
         # Check that the correct format is used in the metrics section
         for mg, yaml_m in yaml_metrics.items():
             yaml_mg = yaml_metric_groups[mg]
