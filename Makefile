@@ -163,7 +163,6 @@ help:
 	@echo "  test       - Perform unit tests including coverage checker"
 	@echo "  build      - Build the distribution files in $(dist_dir)"
 	@echo "  builddoc   - Build the documentation in $(doc_build_dir)"
-	@echo "  check_reqs - Perform missing dependency checks"
 	@echo "  all        - Do all of the above"
 	@echo "  upload     - Upload the package to Pypi"
 	@echo "  clean      - Remove any temporary files"
