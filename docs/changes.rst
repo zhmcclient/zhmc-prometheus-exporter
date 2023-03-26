@@ -153,6 +153,11 @@ Released: not yet
 
 * Added support for Python 3.11.
 
+* Improved and shortened the error message for validation errors in the
+  metric definition file and HMC credentials file. As part of that, increased
+  the minimum version of the jsonschema package to 3.2.0 and of the pyrsistent
+  package to 0.17.3 on Python<=3.6 and 0.18.1 on Python>=3.7.
+
 **Cleanup:**
 
 * Addressed issues in test workflow reported by Github Actions. (issue #264)
