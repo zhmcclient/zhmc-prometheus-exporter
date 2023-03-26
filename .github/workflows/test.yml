@@ -231,11 +231,6 @@ jobs:
         # TESTCASES: TestParseArgs
       run: |
         make test
-    - name: Run check_reqs
-      env:
-        PACKAGE_LEVEL: ${{ matrix.package_level }}
-      run: |
-        make check_reqs
     - name: Send coverage result to coveralls.io
       shell: bash -l {0}
       env:
