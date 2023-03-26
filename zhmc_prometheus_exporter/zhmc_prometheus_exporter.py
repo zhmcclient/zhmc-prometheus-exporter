@@ -510,6 +510,11 @@ def create_session(cred_dict, hmccreds_filename):
     # These warnings do not concern us
     urllib3.disable_warnings()
 
+    logprint(logging.INFO, PRINT_V,
+             "HMC host: {}".format(cred_dict["hmc"]))
+    logprint(logging.INFO, PRINT_V,
+             "HMC userid: {}".format(cred_dict["userid"]))
+
     verify_cert = cred_dict.get("verify_cert", True)
     if isinstance(verify_cert, six.string_types):
         if not os.path.isabs(verify_cert):
