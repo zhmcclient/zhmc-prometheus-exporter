@@ -57,6 +57,12 @@ Released: not yet
         - name: hmc
           value: "'MYHMC1'"
 
+* Changed the names of exported metrics with unit Watt from '\*_watts' to
+  '\*_watt':
+
+  - zhmc_cpc_power_watts -> zhmc_cpc_power_watt
+  - zhmc_cpc_power_cord{C}_phase_{P}_watts -> zhmc_cpc_power_cord{C}_phase_{P}_watt
+
 **Deprecations:**
 
 **Bug fixes:**
@@ -171,6 +177,12 @@ Released: not yet
 * Addressed issues in test workflow reported by Github Actions. (issue #264)
 
 * Increased minimum versions of pip, setuptools, wheel to more recent versions.
+
+* Changed the names of exported metrics with unit Watt from '\*_watts' to
+  '\*_watt', for consistency:
+
+  - zhmc_cpc_power_watts -> zhmc_cpc_power_watt
+  - zhmc_cpc_power_cord{C}_phase_{P}_watts -> zhmc_cpc_power_cord{C}_phase_{P}_watt
 
 **Known issues:**
 

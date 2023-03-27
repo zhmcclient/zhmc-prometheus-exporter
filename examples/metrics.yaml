@@ -269,7 +269,7 @@ metrics:
       exporter_desc: Usage ratio across all channels of the CPC
     power-consumption-watts:
       percent: false
-      exporter_name: power_watts
+      exporter_name: power_watt
       exporter_desc: Power consumption of the CPC
     temperature-celsius:
       percent: false
@@ -688,7 +688,7 @@ metrics:
       exporter_desc: Usage ratio across all crypto adapters of the CPC
     power-consumption-watts:
       percent: false
-      exporter_name: power_watts
+      exporter_name: power_watt
       exporter_desc: Power consumption of the CPC
     temperature-celsius:
       percent: false
@@ -1017,7 +1017,7 @@ metrics:
       exporter_desc: Dew point
     power-consumption-watts:
       percent: false
-      exporter_name: null  # Ignored (duplicate of power_watts)
+      exporter_name: null  # Ignored (duplicate of power_watt)
       exporter_desc: null
     heat-load:
       percent: false
@@ -1039,7 +1039,7 @@ metrics:
   environmental-power-status:
     linecord-one-power-phase-A:
       percent: false
-      exporter_name: power_cord1_phase_a_watts
+      exporter_name: power_cord1_phase_a_watt
       exporter_desc: Power in Phase A of line cord 1 - 0 if not available
       labels:
         - name: cord
@@ -1050,7 +1050,7 @@ metrics:
           value: "A"
     linecord-one-power-phase-B:
       percent: false
-      exporter_name: power_cord1_phase_b_watts
+      exporter_name: power_cord1_phase_b_watt
       exporter_desc: Power in Phase B of line cord 1 - 0 if not available
       labels:
         - name: cord
@@ -1061,7 +1061,7 @@ metrics:
           value: "B"
     linecord-one-power-phase-C:
       percent: false
-      exporter_name: power_cord1_phase_c_watts
+      exporter_name: power_cord1_phase_c_watt
       exporter_desc: Power in Phase C of line cord 1 - 0 if not available
       labels:
         - name: cord
@@ -1075,7 +1075,7 @@ metrics:
       exporter_desc: null
     linecord-two-power-phase-A:
       percent: false
-      exporter_name: power_cord2_phase_a_watts
+      exporter_name: power_cord2_phase_a_watt
       exporter_desc: Power in Phase A of line cord 2 - 0 if not available
       labels:
         - name: cord
@@ -1086,7 +1086,7 @@ metrics:
           value: "A"
     linecord-two-power-phase-B:
       percent: false
-      exporter_name: power_cord2_phase_b_watts
+      exporter_name: power_cord2_phase_b_watt
       exporter_desc: Power in Phase B of line cord 2 - 0 if not available
       labels:
         - name: cord
@@ -1097,7 +1097,7 @@ metrics:
           value: "B"
     linecord-two-power-phase-C:
       percent: false
-      exporter_name: power_cord2_phase_c_watts
+      exporter_name: power_cord2_phase_c_watt
       exporter_desc: Power in Phase C of line cord 2 - 0 if not available
       labels:
         - name: cord
@@ -1111,7 +1111,7 @@ metrics:
       exporter_desc: null
     linecord-three-power-phase-A:
       percent: false
-      exporter_name: power_cord3_phase_a_watts
+      exporter_name: power_cord3_phase_a_watt
       exporter_desc: Power in Phase A of line cord 3 - 0 if not available
       labels:
         - name: cord
@@ -1122,7 +1122,7 @@ metrics:
           value: "A"
     linecord-three-power-phase-B:
       percent: false
-      exporter_name: power_cord3_phase_b_watts
+      exporter_name: power_cord3_phase_b_watt
       exporter_desc: Power in Phase B of line cord 3 - 0 if not available
       labels:
         - name: cord
@@ -1133,7 +1133,7 @@ metrics:
           value: "B"
     linecord-three-power-phase-C:
       percent: false
-      exporter_name: power_cord3_phase_c_watts
+      exporter_name: power_cord3_phase_c_watt
       exporter_desc: Power in Phase C of line cord 3 - 0 if not available
       labels:
         - name: cord
@@ -1147,7 +1147,7 @@ metrics:
       exporter_desc: null
     linecord-four-power-phase-A:
       percent: false
-      exporter_name: power_cord4_phase_a_watts
+      exporter_name: power_cord4_phase_a_watt
       exporter_desc: Power in Phase A of line cord 4 - 0 if not available
       labels:
         - name: cord
@@ -1158,7 +1158,7 @@ metrics:
           value: "A"
     linecord-four-power-phase-B:
       percent: false
-      exporter_name: power_cord4_phase_b_watts
+      exporter_name: power_cord4_phase_b_watt
       exporter_desc: Power in Phase B of line cord 4 - 0 if not available
       labels:
         - name: cord
@@ -1169,7 +1169,7 @@ metrics:
           value: "B"
     linecord-four-power-phase-C:
       percent: false
-      exporter_name: power_cord4_phase_c_watts
+      exporter_name: power_cord4_phase_c_watt
       exporter_desc: Power in Phase C of line cord 4 - 0 if not available
       labels:
         - name: cord
@@ -1183,7 +1183,7 @@ metrics:
       exporter_desc: null
     linecord-five-power-phase-A:
       percent: false
-      exporter_name: power_cord5_phase_a_watts
+      exporter_name: power_cord5_phase_a_watt
       exporter_desc: Power in Phase A of line cord 5 - 0 if not available
       labels:
         - name: cord
@@ -1194,7 +1194,7 @@ metrics:
           value: "A"
     linecord-five-power-phase-B:
       percent: false
-      exporter_name: power_cord5_phase_b_watts
+      exporter_name: power_cord5_phase_b_watt
       exporter_desc: Power in Phase B of line cord 5 - 0 if not available
       labels:
         - name: cord
@@ -1205,7 +1205,7 @@ metrics:
           value: "B"
     linecord-five-power-phase-C:
       percent: false
-      exporter_name: power_cord5_phase_c_watts
+      exporter_name: power_cord5_phase_c_watt
       exporter_desc: Power in Phase C of line cord 5 - 0 if not available
       labels:
         - name: cord
@@ -1219,7 +1219,7 @@ metrics:
       exporter_desc: null
     linecord-six-power-phase-A:
       percent: false
-      exporter_name: power_cord6_phase_a_watts
+      exporter_name: power_cord6_phase_a_watt
       exporter_desc: Power in Phase A of line cord 6 - 0 if not available
       labels:
         - name: cord
@@ -1230,7 +1230,7 @@ metrics:
           value: "A"
     linecord-six-power-phase-B:
       percent: false
-      exporter_name: power_cord6_phase_b_watts
+      exporter_name: power_cord6_phase_b_watt
       exporter_desc: Power in Phase B of line cord 6 - 0 if not available
       labels:
         - name: cord
@@ -1241,7 +1241,7 @@ metrics:
           value: "B"
     linecord-six-power-phase-C:
       percent: false
-      exporter_name: power_cord6_phase_c_watts
+      exporter_name: power_cord6_phase_c_watt
       exporter_desc: Power in Phase C of line cord 6 - 0 if not available
       labels:
         - name: cord
@@ -1255,7 +1255,7 @@ metrics:
       exporter_desc: null
     linecord-seven-power-phase-A:
       percent: false
-      exporter_name: power_cord7_phase_a_watts
+      exporter_name: power_cord7_phase_a_watt
       exporter_desc: Power in Phase A of line cord 7 - 0 if not available
       labels:
         - name: cord
@@ -1266,7 +1266,7 @@ metrics:
           value: "A"
     linecord-seven-power-phase-B:
       percent: false
-      exporter_name: power_cord7_phase_b_watts
+      exporter_name: power_cord7_phase_b_watt
       exporter_desc: Power in Phase B of line cord 7 - 0 if not available
       labels:
         - name: cord
@@ -1277,7 +1277,7 @@ metrics:
           value: "B"
     linecord-seven-power-phase-C:
       percent: false
-      exporter_name: power_cord7_phase_c_watts
+      exporter_name: power_cord7_phase_c_watt
       exporter_desc: Power in Phase C of line cord 7 - 0 if not available
       labels:
         - name: cord
@@ -1291,7 +1291,7 @@ metrics:
       exporter_desc: null
     linecord-eight-power-phase-A:
       percent: false
-      exporter_name: power_cord8_phase_a_watts
+      exporter_name: power_cord8_phase_a_watt
       exporter_desc: Power in Phase A of line cord 8 - 0 if not available
       labels:
         - name: cord
@@ -1302,7 +1302,7 @@ metrics:
           value: "A"
     linecord-eight-power-phase-B:
       percent: false
-      exporter_name: power_cord8_phase_b_watts
+      exporter_name: power_cord8_phase_b_watt
       exporter_desc: Power in Phase B of line cord 8 - 0 if not available
       labels:
         - name: cord
@@ -1313,7 +1313,7 @@ metrics:
           value: "B"
     linecord-eight-power-phase-C:
       percent: false
-      exporter_name: power_cord8_phase_c_watts
+      exporter_name: power_cord8_phase_c_watt
       exporter_desc: Power in Phase C of line cord 8 - 0 if not available
       labels:
         - name: cord
