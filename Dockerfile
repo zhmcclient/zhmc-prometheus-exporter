@@ -1,15 +1,30 @@
-FROM python:3
-MAINTAINER Jakob Naucke <jakob.naucke@ibm.com>
+# Dockerfile for zhmc-prometheus-exporter project
+#
+# This image runs the zhmc_prometheus_exporter command.
+# The standard metric definition file is provided in its default location, so
+# the -m option does not need to be specified.
+#
+# The HMC credentials file still needs to be made available to the container
+# using some mount option and specified with -c.
+#
+# Example docker command to run the exporter using a locally built version of this image:
+#
+#   docker run -it --rm -v $(pwd)/myconfig:/root/myconfig -p 9291:9291 zhmcexporter -c /root/myconfig/hmccreds.yaml -v
 
-# Attention: You need to provide an HMC credentials file for your target environment:
-COPY myconfig/hmccreds.yaml /etc/zhmc-prometheus-exporter/hmccreds.yaml
+FROM python:3.9-slim
 
-# Attention: You need to provide a metric definition file (e.g. the one from the examples directory):
-COPY myconfig/metrics.yaml /etc/zhmc-prometheus-exporter/metrics.yaml
+# Make the standard metric definition file available in its default location
+COPY examples/metrics.yaml /etc/zhmc-prometheus-exporter/metrics.yaml
 
-COPY zhmc_prometheus_exporter/ /usr/local/
-COPY requirements.txt /tmp/requirements.txt
-RUN pip install -r /tmp/requirements.txt
+# Install this package
+ENV TMP_DIR=/tmp/zhmc-prometheus-exporter
+WORKDIR $TMP_DIR
+COPY . $TMP_DIR
+RUN pip install . && rm -rf $TMP_DIR
+
+# Set the current directory when running this image
+WORKDIR /root
 
 EXPOSE 9291
-ENTRYPOINT ["python", "/usr/local/zhmc_prometheus_exporter.py"]
+ENTRYPOINT ["zhmc_prometheus_exporter"]
+CMD ["--help"]

@@ -231,6 +231,13 @@ jobs:
         # TESTCASES: TestParseArgs
       run: |
         make test
+    - name: Run docker build
+      # The docker command is not preinstalled on macos or Windows
+      if: runner.os == 'Linux'
+      env:
+        PACKAGE_LEVEL: ${{ matrix.package_level }}
+      run: |
+        make docker
     - name: Send coverage result to coveralls.io
       shell: bash -l {0}
       env:

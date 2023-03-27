@@ -34,6 +34,9 @@ Running in a Docker container
 If you want to run the exporter in a Docker container you can create the
 container as follows, using the ``Dockerfile`` provided in the Git repository.
 
+Note that the provided ``Dockerfile`` can also be used as a starting point if
+you want to embed the exporter in your own Docker/OCI image.
+
 * Clone the Git repository of the exporter and switch to the clone's root
   directory:
 
@@ -42,25 +45,33 @@ container as follows, using the ``Dockerfile`` provided in the Git repository.
       $ git clone https://github.com/zhmcclient/zhmc-prometheus-exporter
       $ cd zhmc-prometheus-exporter
 
-* Provide an HMC credentials file named ``hmccreds.yaml`` in the clone's root
-  directory, as described in :ref:`Quickstart`. You can copy it from the
-  ``examples`` directory.
-
-* Provide a metric definition file named ``metrics.yaml`` in the clone's root
-  directory, as described in :ref:`Quickstart`. You can copy it from the
-  ``examples`` directory.
-
-* Build the container as follows:
+* Build a local Docker image as follows:
 
   .. code-block:: bash
 
-      $ docker build . -t zhmcexporter
+      $ make docker
 
-* Run the container as follows:
+  This builds a container image named 'zhmcexporter:latest' in your local Docker
+  environment.
+
+  The image contains the standard metric definition file in its default
+  location, so the ``-m`` option of the exporter does not need to be specified
+  when running the image.
+
+  The HMC credentials file is not included in the image, and needs to be
+  provided when running the image.
+
+* Run the local Docker image as follows:
 
   .. code-block:: bash
 
-      $ docker run -p 9291:9291 zhmcexporter
+      $ docker run -it --rm -v $(pwd)/myconfig:/root/myconfig -p 9291:9291 zhmcexporter -c /root/myconfig/hmccreds.yaml -v
+
+  In this command, the HMC credentials file is provided on the local system
+  as ``./myconfig/hmccreds.yaml``. The ``-v`` option of 'docker run' mounts the
+  ``./myconfig`` directory to ``/root/myconfig`` in the container's file system.
+  The ``-c`` option of the exporter references the HMC credentials file as it
+  appears in the container's file system.
 
 zhmc_prometheus_exporter command
 --------------------------------
