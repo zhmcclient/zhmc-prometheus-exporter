@@ -396,14 +396,33 @@ def parse_yaml_file(yamlfile, name, schemafilename=None):
             new_exc.__cause__ = None
             raise new_exc
         except jsonschema.exceptions.ValidationError as exc:
+            element_str = json_path_str(exc.absolute_path)
             new_exc = ImproperExit(
-                "Schema validation of {} {} failed on element '{}': {}".
-                format(name, yamlfile,
-                       '.'.join(str(e) for e in exc.absolute_path), exc))
+                "Validation of {} {} failed on {}: {}".
+                format(name, yamlfile, element_str, exc.message))
             new_exc.__cause__ = None
             raise new_exc
 
     return yaml_obj
+
+
+def json_path_str(path_list):
+    """
+    Return a string with the path list in JSON path notation, except that
+    the root element is not '$' but verbally expressed.
+    """
+    if not path_list:
+        return "root elements"
+
+    path_str = ""
+    for p in path_list:
+        if isinstance(p, int):
+            path_str += "[{}]".format(p)
+        else:
+            path_str += ".{}".format(p)
+    if path_str.startswith('.'):
+        path_str = path_str[1:]
+    return "element '{}'".format(path_str)
 
 
 def split_version(version_str, pad_to):
