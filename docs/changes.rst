@@ -17,12 +17,12 @@ Change log
 ----------
 
 
-Version 1.4.0.dev1
-^^^^^^^^^^^^^^^^^^
+Version 1.4.0
+^^^^^^^^^^^^^
 
-This version contains all fixes up to version 1.3.x.
+This version contains all fixes up to version 1.3.2.
 
-Released: not yet
+Released: 2023-03-27
 
 **Incompatible changes:**
 
@@ -62,8 +62,6 @@ Released: not yet
 
   - zhmc_cpc_power_watts -> zhmc_cpc_power_watt
   - zhmc_cpc_power_cord{C}_phase_{P}_watts -> zhmc_cpc_power_cord{C}_phase_{P}_watt
-
-**Deprecations:**
 
 **Bug fixes:**
 
@@ -166,7 +164,6 @@ Released: not yet
 
 * Added support for Python 3.11.
 
-
 * Improved and shortened the error message for validation errors in the
   metric definition file and HMC credentials file. As part of that, increased
   the minimum version of the jsonschema package to 3.2.0 and of the pyrsistent
@@ -174,7 +171,6 @@ Released: not yet
 
 * Added a check for consistency of items in metrics and metric_groups in
   the metric definition file.
-
 
 **Cleanup:**
 
@@ -187,12 +183,6 @@ Released: not yet
 
   - zhmc_cpc_power_watts -> zhmc_cpc_power_watt
   - zhmc_cpc_power_cord{C}_phase_{P}_watts -> zhmc_cpc_power_cord{C}_phase_{P}_watt
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 1.3.0
