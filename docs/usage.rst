@@ -954,7 +954,7 @@ Perform these steps for setting it up:
 .. _Grafana download page: https://grafana.com/grafana/download
 .. _Prometheus guide on Grafana: https://prometheus.io/docs/visualization/grafana/
 
-* Direct your web browser at https://localhost:3000 and log on using admin/admin.
+* Direct your web browser at http://localhost:3000 and log on using admin/admin.
 
   Create a data source in Grafana with:
 
