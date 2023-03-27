@@ -30,6 +30,8 @@ Released: not yet
 
 **Bug fixes:**
 
+* Improved and fixed Dockerfile. (issue #297)
+
 **Enhancements:**
 
 **Cleanup:**

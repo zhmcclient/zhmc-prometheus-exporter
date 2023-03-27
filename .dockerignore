@@ -1,0 +1,30 @@
+# User specific configuration files
+/myconfig/
+
+# Make targets
+/*.done
+
+# Git stuff not needed in Dockerfile
+/.git
+/.gitignore
+
+# Make build
+/build/
+/dist/
+/*.egg-info/
+/AUTHORS
+/ChangeLog
+/MANIFEST
+
+# Make test
+__pycache__/
+/.pytest_cache/
+/htmlcov/
+/.coverage
+
+# Make builddoc
+/build_docs/
+
+# Other
+*.swp
+.DS_Store

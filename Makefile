@@ -91,6 +91,7 @@ endif
 
 package_name := zhmc_prometheus_exporter
 package_version := $(shell $(PYTHON_CMD) setup.py --version)
+docker_registry := zhmcexporter
 
 python_version := $(shell $(PYTHON_CMD) -c "import sys; sys.stdout.write('{}.{}'.format(sys.version_info[0], sys.version_info[1]))")
 pymn := $(shell $(PYTHON_CMD) -c "import sys; sys.stdout.write('py{}{}'.format(sys.version_info[0], sys.version_info[1]))")
@@ -164,6 +165,7 @@ help:
 	@echo "  build      - Build the distribution files in $(dist_dir)"
 	@echo "  builddoc   - Build the documentation in $(doc_build_dir)"
 	@echo "  all        - Do all of the above"
+	@echo "  docker     - Build local Docker image in registry $(docker_registry)"
 	@echo "  upload     - Upload the package to Pypi"
 	@echo "  clean      - Remove any temporary files"
 	@echo "  clobber    - Remove any build products"
@@ -285,6 +287,10 @@ builddoc: _check_version $(doc_build_file)
 all: install develop check_reqs check pylint test build builddoc check_reqs
 	@echo "Makefile: $@ done."
 
+.PHONY: all
+docker: _check_version docker_$(pymn).done
+	@echo "Makefile: $@ done."
+
 .PHONY: upload
 upload: _check_version $(bdist_file) $(sdist_file)
 ifeq (,$(findstring .dev,$(package_version)))
@@ -365,3 +371,10 @@ $(bdist_file) $(sdist_file): _check_version develop_$(pymn).done Makefile MANIFE
 	-$(call RMDIR_FUNC,build $(package_name).egg-info .eggs)
 	$(PYTHON_CMD) -m build --outdir $(dist_dir)
 	@echo 'Done: Created distribution archives: $@'
+
+docker_$(pymn).done: develop_$(pymn).done Dockerfile .dockerignore Makefile MANIFEST.in $(dist_included_files)
+	@echo "Makefile: Building Docker image $(docker_registry):latest"
+	-$(call RM_FUNC,$@)
+	docker build -t $(docker_registry):latest .
+	@echo "Makefile: Done building Docker image"
+	echo "done" >$@
