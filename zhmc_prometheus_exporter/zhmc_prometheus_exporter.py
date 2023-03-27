@@ -773,18 +773,8 @@ class ResourceCache(object):
                          "Warning: Did not find resource {} specified in "
                          "metric object value for metric group '{}'".
                          format(uri, mgd.name))
-                logprint(logging.WARNING, PRINT_ALWAYS,
-                         "Warning details: Current resource cache:")
-                logprint(logging.WARNING, PRINT_ALWAYS,
-                         repr(self._resources))
                 for mgr in exc.managers:
-                    try:
-                        res_class = mgr.class_name
-                    except AttributeError:
-                        logprint(logging.ERROR, PRINT_ALWAYS,
-                                 "Error: Manager object has no class_name "
-                                 "attribute: {!r}".format(mgr))
-                        continue
+                    res_class = mgr.class_name
                     logprint(logging.WARNING, PRINT_ALWAYS,
                              "Warning details: List of {} resources found:".
                              format(res_class))
@@ -794,6 +784,10 @@ class ResourceCache(object):
                         res_dict[res.uri] = res
                     logprint(logging.WARNING, PRINT_ALWAYS,
                              repr(res_dict))
+                logprint(logging.WARNING, PRINT_ALWAYS,
+                         "Warning details: Current resource cache:")
+                logprint(logging.WARNING, PRINT_ALWAYS,
+                         repr(self._resources))
                 raise
             self._resources[uri] = _resource
         return _resource
@@ -931,8 +925,17 @@ def build_family_objects(
 
         for object_value in metric_group_value.object_values:
             if resource_cache:
-                resource = resource_cache.resource(
-                    object_value.resource_uri, object_value)
+                try:
+                    resource = resource_cache.resource(
+                        object_value.resource_uri, object_value)
+                except zhmcclient.MetricsResourceNotFound:
+                    # Some details have already been logged & printed
+                    warnings.warn("Skipping resource with URI '{}' of metric "
+                                  "group '{}' returned by the HMC that is not "
+                                  "found on the HMC".
+                                  format(object_value.resource_uri,
+                                         metric_group))
+                    continue  # Skip this metric
             else:
                 resource = object_value.resource
             metric_values = object_value.metrics
