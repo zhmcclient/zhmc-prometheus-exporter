@@ -249,17 +249,17 @@ metrics:
       exporter_desc: Usage ratio across all dedicated zAAP processors of the CPC
     # aap-all-processor-usage does not seem to exist
     cbp-all-processor-usage:
-      if: "se_version>='2.14.0' and se_version<='2.15.0'"
+      # only returned on z14,z15 (no conditional export needed)
       percent: true
       exporter_name: cbp_processor_usage_ratio
       exporter_desc: Usage ratio across all CBP processors of the CPC
     cbp-shared-processor-usage:
-      if: "se_version>='2.14.0' and se_version<='2.15.0'"
+      # only returned on z14,z15 (no conditional export needed)
       percent: true
       exporter_name: cbp_shared_processor_usage_ratio
       exporter_desc: Usage ratio across all shared CBP processors of the CPC
     cbp-dedicated-processor-usage:
-      if: "se_version>='2.14.0' and se_version<='2.15.0'"
+      # only returned on z14,z15 (no conditional export needed)
       percent: true
       exporter_name: cbp_dedicated_processor_usage_ratio
       exporter_desc: Usage ratio across all dedicated CBP processors of the CPC
@@ -298,7 +298,7 @@ metrics:
       exporter_name: iip_processor_usage_ratio
       exporter_desc: Usage ratio across all IIP processors of the partition
     cbp-processor-usage:
-      if: "se_version>='2.14.0' and se_version<='2.15.0'"
+      # only returned on z14,z15 (no conditional export needed)
       percent: true
       exporter_name: cbp_processor_usage_ratio
       exporter_desc: Usage ratio across all CBP processors of the partition
