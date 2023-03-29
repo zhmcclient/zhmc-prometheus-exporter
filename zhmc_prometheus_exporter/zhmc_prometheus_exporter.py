@@ -240,11 +240,24 @@ def parse_args(args):
                                def_slf=DEFAULT_SYSLOG_FACILITY))
     parser.add_argument("--verbose", "-v", action='count', default=0,
                         help="increase the verbosity level (max: 2)")
+    parser.add_argument("--version", action='store_true',
+                        help="show versions of exporter and zhmcclient library "
+                        "and exit")
     parser.add_argument("--help-creds", action='store_true',
                         help="show help for HMC credentials file and exit")
     parser.add_argument("--help-metrics", action='store_true',
                         help="show help for metric definition file and exit")
     return parser.parse_args(args)
+
+
+def print_version():
+    """
+    Print the version of this program and the zhmcclient library.
+    """
+    # pylint: disable=no-member
+    print("zhmc_prometheus_exporter version: {}\n"
+          "zhmcclient version: {}".
+          format(__version__, zhmcclient.__version__))
 
 
 def help_creds():
@@ -1560,6 +1573,9 @@ def main():
     resources = None
     try:
         args = parse_args(sys.argv[1:])
+        if args.version:
+            print_version()
+            sys.exit(0)
         if args.help_creds:
             help_creds()
             sys.exit(0)

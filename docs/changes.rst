@@ -34,6 +34,9 @@ Released: not yet
 
 **Enhancements:**
 
+* Added a '--version' option for showing the versions of the exporter and
+  the zhmcclient library. (issue #298)
+
 **Cleanup:**
 
 **Known issues:**
