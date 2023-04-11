@@ -32,6 +32,8 @@ Released: not yet
 
 * Improved and fixed Dockerfile. (issue #297)
 
+* Docs: Fixed incorrect label value syntax in the documentation. (issue #310)
+
 **Enhancements:**
 
 * Added a '--version' option for showing the versions of the exporter and
