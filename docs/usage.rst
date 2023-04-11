@@ -629,9 +629,9 @@ Example (fragments from an HMC credentials file):
 
     extra_labels:
       - name: hmc
-        value: "{{ hmc_info['hmc-name'] }}"  # HMC name obtained from HMC
+        value: "hmc_info['hmc-name']"        # HMC name obtained from HMC
       - name: dc
-        value: dal13                         # Literal value 'dal13'
+        value: "'dal13'"                     # Literal value 'dal13'
 
 Labels at the HMC metric and HMC metric group level (defined in the metric
 definition file):
@@ -673,17 +673,17 @@ Example (fragments from a metric definition file):
         # . . .
         labels:
           - name: cpc
-            value: "{{ resource_obj.name }}"                    # CPC name
+            value: "resource_obj.name"                          # CPC name
           - name: channel_css_chpid
-            value: "{{ metric_values['channel-name'] }}"        # Value of 'channel-name' metric
+            value: "metric_values['channel-name']"              # Value of 'channel-name' metric
 
       logical-partition-usage:
         # . . .
         labels:
           - name: cpc
-            value: "{{ resource_obj.manager.parent.name }}"     # Name of CPC with the partition
+            value: "resource_obj.manager.parent.name"           # Name of CPC with the partition
           - name: partition
-            value: "{{ resource_obj.name }}"                    # Partition name
+            value: "resource_obj.name"                          # Partition name
 
     metrics:
 
@@ -694,14 +694,14 @@ Example (fragments from a metric definition file):
           exporter_desc: Boolean indicating whether WLM is allowed to ...
           labels:
             - name: valuetype
-              value: bool                                       # Literal value 'bool'
+              value: "'bool'"                                   # Literal value 'bool'
 
         - properties_expression: "{'operating': 0, 'not-operating': 1, ..."
           exporter_name: lpar_status_int
           exporter_desc: "LPAR status as integer (0=operating, 1=not-operating, ..."
           labels:
             - name: value
-              value: "{{ resource_obj.properties['status'] }}"  # Value of 'status' property (as string)
+              value: "resource_obj.properties['status']"        # Value of 'status' property (as string)
 
 
 HMC credentials file
