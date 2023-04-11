@@ -33,14 +33,17 @@ Glossary
       Hardware Management Console for IBM Z
 
    Jinja2 expression
-     A Jinja2 expression (without curly braces).
+     A Jinja2 expression *without* surrounding double curly braces.
+
      See https://jinja.palletsprojects.com/en/3.1.x/templates/#expressions
      for a description.
 
-     Note that when putting Jinja2 expressions into YAML files, it is recommended
-     to put the expression into double or single quotes. A Jinja2 expression
-     that is a literal string would be e.g. ``'abc'`` in Jinja2 and would need
-     to be put into double quotes in YAML, e.g. ``value: "'abc'"``.
+     When putting Jinja2 expressions into YAML files, it is recommended to put
+     the expression into double or single quotes to protect it from being
+     interpreted as YAML. An example where that makes a difference is a
+     Jinja2 expression that is a literal string: The Jinja2 expression ``'abc'``
+     must be put into double quotes in YAML to protect the single quotes and
+     becomes ``value: "'abc'"``.
 
    Metric service based metrics
      Metrics that are retrieved from the HMC using the "Get Metric Context"

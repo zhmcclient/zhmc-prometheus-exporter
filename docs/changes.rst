@@ -28,6 +28,8 @@ Released: not yet
 
 **Bug fixes:**
 
+* Docs: Fixed incorrect label value syntax in the documentation. (issue #310)
+
 **Enhancements:**
 
 **Cleanup:**
