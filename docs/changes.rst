@@ -37,6 +37,9 @@ Released: not yet
   reasons, but with the auto-update support for resources, there is no
   visible performance impact anymore when Prometheus fetches the metrics.
 
+* Test: Added a test script 'validate_adapter_metrics.py' for validating
+  the adapter/NIC resources for which metrics are returned by the HMC.
+
 **Cleanup:**
 
 **Known issues:**
