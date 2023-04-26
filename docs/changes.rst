@@ -32,6 +32,11 @@ Released: not yet
 
 **Enhancements:**
 
+* Enabled the 'partition-attached-network-interface' metric group in the
+  standard/example metric definition file. It had been disabled for performance
+  reasons, but with the auto-update support for resources, there is no
+  visible performance impact anymore when Prometheus fetches the metrics.
+
 **Cleanup:**
 
 **Known issues:**
