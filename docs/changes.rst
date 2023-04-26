@@ -34,11 +34,14 @@ Released: not yet
 
 * Docs: Fixed incorrect label value syntax in the documentation. (issue #310)
 
+* Fixed incorrect label 'phase' on the line cord metrics ('zhmc_cpc_power_cord\*').
+  It was incorrectly shown as "None", and now has the correct values "A", "B",
+  or "C".
+
 **Enhancements:**
 
 * Added a '--version' option for showing the versions of the exporter and
   the zhmcclient library. (issue #298)
-
 
 * Enabled the 'partition-attached-network-interface' metric group in the
   standard/example metric definition file. It had been disabled for performance
