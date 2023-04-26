@@ -116,7 +116,7 @@ metric_groups:
 
   partition-attached-network-interface:
     prefix: nic
-    fetch: false  # Takes about 1 minute for the initial processing
+    fetch: true
     if: "hmc_version>='2.13.1'"
     labels:
       - name: cpc
