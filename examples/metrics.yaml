@@ -1047,7 +1047,7 @@ metrics:
         - name: cordid
           value: "1"
         - name: phase
-          value: "A"
+          value: "'A'"
     linecord-one-power-phase-B:
       percent: false
       exporter_name: power_cord1_phase_b_watt
@@ -1058,7 +1058,7 @@ metrics:
         - name: cordid
           value: "1"
         - name: phase
-          value: "B"
+          value: "'B'"
     linecord-one-power-phase-C:
       percent: false
       exporter_name: power_cord1_phase_c_watt
@@ -1069,7 +1069,7 @@ metrics:
         - name: cordid
           value: "1"
         - name: phase
-          value: "C"
+          value: "'C'"
     linecord-one-name:
       exporter_name: null  # Ignored (used as a label)
       exporter_desc: null
@@ -1083,7 +1083,7 @@ metrics:
         - name: cordid
           value: "2"
         - name: phase
-          value: "A"
+          value: "'A'"
     linecord-two-power-phase-B:
       percent: false
       exporter_name: power_cord2_phase_b_watt
@@ -1094,7 +1094,7 @@ metrics:
         - name: cordid
           value: "2"
         - name: phase
-          value: "B"
+          value: "'B'"
     linecord-two-power-phase-C:
       percent: false
       exporter_name: power_cord2_phase_c_watt
@@ -1105,7 +1105,7 @@ metrics:
         - name: cordid
           value: "2"
         - name: phase
-          value: "C"
+          value: "'C'"
     linecord-two-name:
       exporter_name: null  # Ignored (used as a label)
       exporter_desc: null
@@ -1119,7 +1119,7 @@ metrics:
         - name: cordid
           value: "3"
         - name: phase
-          value: "A"
+          value: "'A'"
     linecord-three-power-phase-B:
       percent: false
       exporter_name: power_cord3_phase_b_watt
@@ -1130,7 +1130,7 @@ metrics:
         - name: cordid
           value: "3"
         - name: phase
-          value: "B"
+          value: "'B'"
     linecord-three-power-phase-C:
       percent: false
       exporter_name: power_cord3_phase_c_watt
@@ -1141,7 +1141,7 @@ metrics:
         - name: cordid
           value: "3"
         - name: phase
-          value: "C"
+          value: "'C'"
     linecord-three-name:
       exporter_name: null  # Ignored (used as a label)
       exporter_desc: null
@@ -1155,7 +1155,7 @@ metrics:
         - name: cordid
           value: "4"
         - name: phase
-          value: "A"
+          value: "'A'"
     linecord-four-power-phase-B:
       percent: false
       exporter_name: power_cord4_phase_b_watt
@@ -1166,7 +1166,7 @@ metrics:
         - name: cordid
           value: "4"
         - name: phase
-          value: "B"
+          value: "'B'"
     linecord-four-power-phase-C:
       percent: false
       exporter_name: power_cord4_phase_c_watt
@@ -1177,7 +1177,7 @@ metrics:
         - name: cordid
           value: "4"
         - name: phase
-          value: "C"
+          value: "'C'"
     linecord-four-name:
       exporter_name: null  # Ignored (used as a label)
       exporter_desc: null
@@ -1191,7 +1191,7 @@ metrics:
         - name: cordid
           value: "5"
         - name: phase
-          value: "A"
+          value: "'A'"
     linecord-five-power-phase-B:
       percent: false
       exporter_name: power_cord5_phase_b_watt
@@ -1202,7 +1202,7 @@ metrics:
         - name: cordid
           value: "5"
         - name: phase
-          value: "B"
+          value: "'B'"
     linecord-five-power-phase-C:
       percent: false
       exporter_name: power_cord5_phase_c_watt
@@ -1213,7 +1213,7 @@ metrics:
         - name: cordid
           value: "5"
         - name: phase
-          value: "C"
+          value: "'C'"
     linecord-five-name:
       exporter_name: null  # Ignored (used as a label)
       exporter_desc: null
@@ -1227,7 +1227,7 @@ metrics:
         - name: cordid
           value: "6"
         - name: phase
-          value: "A"
+          value: "'A'"
     linecord-six-power-phase-B:
       percent: false
       exporter_name: power_cord6_phase_b_watt
@@ -1238,7 +1238,7 @@ metrics:
         - name: cordid
           value: "6"
         - name: phase
-          value: "B"
+          value: "'B'"
     linecord-six-power-phase-C:
       percent: false
       exporter_name: power_cord6_phase_c_watt
@@ -1249,7 +1249,7 @@ metrics:
         - name: cordid
           value: "6"
         - name: phase
-          value: "C"
+          value: "'C'"
     linecord-six-name:
       exporter_name: null  # Ignored (used as a label)
       exporter_desc: null
@@ -1263,7 +1263,7 @@ metrics:
         - name: cordid
           value: "7"
         - name: phase
-          value: "A"
+          value: "'A'"
     linecord-seven-power-phase-B:
       percent: false
       exporter_name: power_cord7_phase_b_watt
@@ -1274,7 +1274,7 @@ metrics:
         - name: cordid
           value: "7"
         - name: phase
-          value: "B"
+          value: "'B'"
     linecord-seven-power-phase-C:
       percent: false
       exporter_name: power_cord7_phase_c_watt
@@ -1285,7 +1285,7 @@ metrics:
         - name: cordid
           value: "7"
         - name: phase
-          value: "C"
+          value: "'C'"
     linecord-seven-name:
       exporter_name: null  # Ignored (used as a label)
       exporter_desc: null
@@ -1299,7 +1299,7 @@ metrics:
         - name: cordid
           value: "8"
         - name: phase
-          value: "A"
+          value: "'A'"
     linecord-eight-power-phase-B:
       percent: false
       exporter_name: power_cord8_phase_b_watt
@@ -1310,7 +1310,7 @@ metrics:
         - name: cordid
           value: "8"
         - name: phase
-          value: "B"
+          value: "'B'"
     linecord-eight-power-phase-C:
       percent: false
       exporter_name: power_cord8_phase_c_watt
@@ -1321,7 +1321,7 @@ metrics:
         - name: cordid
           value: "8"
         - name: phase
-          value: "C"
+          value: "'C'"
     linecord-eight-name:
       exporter_name: null  # Ignored (used as a label)
       exporter_desc: null
