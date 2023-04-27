@@ -17,14 +17,13 @@ Change log
 ----------
 
 
-Version 1.4.1.dev1
-^^^^^^^^^^^^^^^^^^
+Version 1.4.1
+^^^^^^^^^^^^^
 
-Released: not yet
+Released: 2023-04-27
 
-**Incompatible changes:**
-
-**Deprecations:**
+**Note:** Since the metric definition file (``examples/metrics.yaml``) changed
+in this version, please update it in your installation.
 
 **Bug fixes:**
 
@@ -43,14 +42,6 @@ Released: not yet
 
 * Test: Added a test script 'validate_adapter_metrics.py' for validating
   the adapter/NIC resources for which metrics are returned by the HMC.
-
-**Cleanup:**
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 1.4.0
