@@ -244,6 +244,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         COVERALLS_PARALLEL: true
         COVERALLS_FLAG_NAME: "${{ matrix.os }},${{ matrix.python-version }},${{ matrix.package_level }}"
+        COVERALLS_SERVICE_NAME: github
+        COVERALLS_SERVICE_JOB_ID: "${{ github.run_id }}"
+        COVERALLS_SERVICE_NUMBER: "${{ github.workflow }}-${{ github.run_number }}"
       run: |
         if ! [[ ${{ matrix.python-version }} =~ (3.4) ]]; then coveralls; fi
 
@@ -258,5 +261,6 @@ jobs:
     - name: Send coverage finish to coveralls.io
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        COVERALLS_SERVICE_NUMBER: "${{ github.workflow }}-${{ github.run_number }}"
       run: |
         coveralls --finish

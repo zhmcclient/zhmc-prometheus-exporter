@@ -31,7 +31,7 @@ packaging>=21.0; python_version >= '3.6'
 # Coverage reporting (no imports, invoked via coveralls script):
 coverage>=5.0
 pytest-cov>=2.7.0
-coveralls>=2.1.2,<3.0.0
+coveralls>=3.3.0
 
 # Flake8 and dependents (no imports, invoked via flake8 script):
 # flake8 3.9.0 has removed support for py34 and pip 19.1.1 on py34 does not deal
