@@ -55,6 +55,9 @@ in this version, please update it in your installation.
   It was incorrectly shown as "None", and now has the correct values "A", "B",
   or "C".
 
+* Fixed RTD docs build ssue with OpenSSL version by providing a .readthedocs.yaml
+  file that specifies Ubuntu 22.04 as the build OS.
+
 **Enhancements:**
 
 * Enabled the 'partition-attached-network-interface' metric group in the
