@@ -15,6 +15,18 @@
 Appendix
 ========
 
+
+.. _`Troubleshooting`:
+
+Troubleshooting
+---------------
+
+The `zhmcclient Troubleshooting <https://python-zhmcclient.readthedocs.io/en/latest/appendix.html#troubleshooting>`_
+section also applies to the exporter project.
+
+There are no additional exporter-specific troubleshooting hints at the moment.
+
+
 Glossary
 --------
 

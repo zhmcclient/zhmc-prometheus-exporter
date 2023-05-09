@@ -54,6 +54,7 @@ Released: not yet
 * Test: Added a test script 'validate_adapter_metrics.py' for validating
   the adapter/NIC resources for which metrics are returned by the HMC.
 
+* Added a troubleshooting section to the docs.
 
 **Cleanup:**
 
