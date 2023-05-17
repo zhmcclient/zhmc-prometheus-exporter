@@ -28,6 +28,11 @@ importlib-metadata>=1.1.0; python_version >= '3.8'
 packaging>=20.5; python_version <= '3.5'
 packaging>=21.0; python_version >= '3.6'
 
+# Virtualenv
+# build requires virtualenv.cli_run which was added in 20.1
+# virtualenv 20.0 requires six<2,>=1.12.0
+virtualenv>=20.1.0
+
 # Coverage reporting (no imports, invoked via coveralls script):
 coverage>=5.0
 pytest-cov>=2.7.0
