@@ -78,11 +78,10 @@ wheel==0.38.1; python_version >= '3.7'
 
 # Direct dependencies for runtime (must be consistent with requirements.txt)
 
-zhmcclient==1.7.0
+zhmcclient==1.8.1
 
 prometheus-client==0.9.0
-urllib3==1.25.9; python_version <= '3.9'
-urllib3==1.26.5; python_version >= '3.10'
+urllib3==1.26.5
 jsonschema==3.2.0
 six==1.14.0; python_version <= '3.9'
 six==1.16.0; python_version >= '3.10'
@@ -111,8 +110,7 @@ immutable-views==0.6.0
 MarkupSafe==1.1.0
 pytz==2016.10; python_version <= '3.9'
 pytz==2019.1; python_version >= '3.10'
-requests==2.22.0; python_version <= '3.9'
-requests==2.25.0; python_version >= '3.10'
+requests==2.25.0
 stomp.py==4.1.23
 typing-extensions==3.10.0  # Used in some combinations of Python version and package level
 zipp==0.5.2  # Used in some combinations of Python version and package level
