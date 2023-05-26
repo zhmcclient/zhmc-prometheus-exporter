@@ -17,14 +17,10 @@ Change log
 ----------
 
 
-Version 1.4.2.dev1
-^^^^^^^^^^^^^^^^^^
+Version 1.4.2
+^^^^^^^^^^^^^
 
-Released: not yet
-
-**Incompatible changes:**
-
-**Deprecations:**
+Released: 2023-05-26
 
 **Bug fixes:**
 
@@ -34,16 +30,6 @@ Released: not yet
 
 * Occurrences of most HTTP 403.x failures are now handled by logging on again
   and retrying, instead of abandoning. (related to issue #336)
-
-**Enhancements:**
-
-**Cleanup:**
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 1.4.1
