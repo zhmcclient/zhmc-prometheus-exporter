@@ -48,6 +48,13 @@ Released: not yet
 * Occurrences of most HTTP 403.x failures are now handled by logging on again
   and retrying, instead of abandoning. (related to issue #336)
 
+* Increased minimum zhmcclient version to 1.8.1 to pick up fixes and
+  improvements for HMC session handling, including the handling of HTTP
+  403.4. (related to issue #336)
+
+* Occurrences of most HTTP 403.x failures are now handled by logging on again
+  and retrying, instead of abandoning. (related to issue #336)
+
 **Enhancements:**
 
 * Added a '--version' option for showing the versions of the exporter and
