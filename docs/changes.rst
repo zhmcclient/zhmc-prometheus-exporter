@@ -58,6 +58,13 @@ in this version, please update it in your installation.
 * Fixed RTD docs build ssue with OpenSSL version by providing a .readthedocs.yaml
   file that specifies Ubuntu 22.04 as the build OS.
 
+* Increased minimum zhmcclient version to 1.8.1 to pick up fixes and improvements
+  for HMC session handling, including the handling of HTTP 403.4. (related to
+  issue #336)
+
+* Occurrences of most HTTP 403.x failures are now handled by logging on again
+  and retrying, instead of abandoning. (related to issue #336)
+
 **Enhancements:**
 
 * Enabled the 'partition-attached-network-interface' metric group in the

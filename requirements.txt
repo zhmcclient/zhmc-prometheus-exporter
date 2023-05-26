@@ -6,8 +6,8 @@
 
 # Direct dependencies for runtime (must be consistent with minimum-constraints.txt)
 
-# zhmcclient @ git+https://github.com/zhmcclient/python-zhmcclient.git@master
-zhmcclient>=1.7.0
+# zhmcclient @ git+https://github.com/zhmcclient/python-zhmcclient.git@stable_1.8
+zhmcclient>=1.8.1
 
 prometheus-client>=0.9.0
 urllib3>=1.25.9; python_version <= '3.9'
