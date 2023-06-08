@@ -48,6 +48,10 @@ Released: not yet
 * Occurrences of most HTTP 403.x failures are now handled by logging on again
   and retrying, instead of abandoning. (related to issue #336)
 
+* Improved robustness of evaluating Jinja2 label expressions by ignoring
+  labels with expressions that fail, instead of stopping the exporter. A
+  warning message is shown and a log record is written when that happens.
+
 **Enhancements:**
 
 * Added a '--version' option for showing the versions of the exporter and
