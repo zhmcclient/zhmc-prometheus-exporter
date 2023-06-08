@@ -63,6 +63,10 @@ Released: not yet
 
 * Added a troubleshooting section to the docs.
 
+* Added zhmc_partition_description metric with partition / LPAR description in
+  the 'value' label, for cases where the partition description contains further
+  information that can be parsed. (issue #345)
+
 **Cleanup:**
 
 **Known issues:**

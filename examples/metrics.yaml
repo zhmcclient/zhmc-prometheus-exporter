@@ -356,6 +356,12 @@ metrics:
       exporter_desc: Usage ratio of the RoCE adapter
 
   logical-partition-resource:  # can be in dictionary or list format
+    - properties_expression: "0"
+      exporter_name: description
+      exporter_desc: "Description of the partition (in 'value' label)"
+      labels:
+        - name: value
+          value: "resource_obj.properties['description']"
     - property_name: defined-capacity
       exporter_name: defined_capacity_msu_per_hour
       exporter_desc: Defined capacity expressed in terms of Millions of Service Units (MSU)s per hour
@@ -909,6 +915,12 @@ metrics:
       exporter_desc: null
 
   partition-resource:  # can be in dictionary or list format
+    - properties_expression: "0"
+      exporter_name: description
+      exporter_desc: "Description of the partition (in 'value' label)"
+      labels:
+        - name: value
+          value: "resource_obj.properties['description']"
     - property_name: processor-mode
       exporter_name: processor_mode_int
       exporter_desc: Allocation mode for processors to the active partition as an integer (0=shared, 1=dedicated)
