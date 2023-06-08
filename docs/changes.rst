@@ -71,6 +71,10 @@ Released: not yet
   the 'value' label, for cases where the partition description contains further
   information that can be parsed. (issue #345)
 
+* Added resource-based metrics for storage groups and storage volumes. Added
+  a new metric zhmc_partition_storage_groups that lists the storage groups
+  attached to a partition. (issue #346)
+
 **Cleanup:**
 
 **Known issues:**

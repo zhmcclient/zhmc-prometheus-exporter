@@ -137,6 +137,30 @@ metric_groups:
       - name: partition
         value: "resource_obj.name"
 
+  storagegroup-resource:
+    type: resource
+    resource: console.storagegroup
+    prefix: storagegroup
+    fetch: true
+    labels:
+      - name: cpc
+        value: "uri2resource(resource_obj.properties['cpc-uri']).name"
+      - name: storagegroup
+        value: "resource_obj.name"
+
+  storagevolume-resource:
+    type: resource
+    resource: console.storagevolume
+    prefix: storagevolume
+    fetch: true
+    labels:
+      - name: cpc
+        value: "uri2resource(resource_obj.manager.parent.properties['cpc-uri']).name"
+      - name: storagegroup
+        value: "resource_obj.manager.parent.name"
+      - name: storagevolume
+        value: "resource_obj.name"
+
   # Available for CPCs in any mode
 
   zcpc-environmentals-and-power:
@@ -1011,6 +1035,61 @@ metrics:
       labels:
         - name: valuetype
           value: "'bool'"
+    - properties_expression: "0"
+      exporter_name: storage_group_uris
+      exporter_desc: "URIs of storage groups attached to the partition, as a comma-separated list"
+      labels:
+        - name: value
+          value: "resource_obj.properties['storage-group-uris'] | join(',')"
+    - properties_expression: "0"
+      exporter_name: storage_groups
+      exporter_desc: "Storage groups attached to the partition, as a comma-separated list"
+      labels:
+        - name: value
+          value: "uris2resources(resource_obj.properties['storage-group-uris']) | map(attribute='name') | join(',')"
+
+  storagegroup-resource:  # can be in dictionary or list format
+    - properties_expression: "{'fcp': 0, 'fc': 1, 'nvme': 2}.get(properties.type, 99)"
+      exporter_name: type_int
+      exporter_desc: "Storage group type as integer (0=fcp, 1=fc, 2=nvme, 99=unsupported value)"
+      labels:
+        - name: value
+          value: "resource_obj.properties['type']"
+    - properties_expression: "{'complete': 0, 'pending': 1, 'pending-with-mismatches': 2, 'checking-migration': 3, 'incomplete': 4}.get(properties['fulfillment-state'], 99)"
+      exporter_name: fulfillment_state_int
+      exporter_desc: "Storage group fulfillment state as integer (0=complete, 1=pending, 2=pending-with-mismatches, 3=checking-migration, 4=incomplete, 99=unsupported value)"
+      labels:
+        - name: value
+          value: "resource_obj.properties['fulfillment-state']"
+    - property_name: shared
+      exporter_name: shared
+      exporter_desc: Boolean indicating whether the storage group is shared (0=false, 1=true)
+      labels:
+        - name: valuetype
+          value: "'bool'"
+    - property_name: max-partitions
+      exporter_name: max_partitions
+      exporter_desc: Maximum number of partitions a storage group can be attached to
+
+  storagevolume-resource:  # can be in dictionary or list format
+    - properties_expression: "{'complete': 0, 'configuration-error': 1, 'deleting': 2, 'incomplete': 3, 'overprovisioned': 4, 'pending': 5, 'pending-with-mismatches': 6}.get(properties['fulfillment-state'], 99)"
+      exporter_name: fulfillment_state_int
+      exporter_desc: "Storage volume fulfillment state as integer (0=complete, 1=configuration-error, 2=deleting, 3=incomplete, 4=overprovisioned, 5=pending, 6=pending-with-mismatches, 99=unsupported value)"
+      labels:
+        - name: value
+          value: "resource_obj.properties['fulfillment-state']"
+    - properties_expression: "{'boot': 0, 'data': 1, 'not-applicable': 2}.get(properties.usage, 99)"
+      exporter_name: usage_int
+      exporter_desc: "Usage of volume as integer (0=boot, 1=data, 2=not-applicable, 99=unsupported value)"
+      labels:
+        - name: value
+          value: "resource_obj.properties.usage"
+    - property_name: size
+      exporter_name: size_gib
+      exporter_desc: "Size of volume in GiB (0 for ECKD alias volumes)"
+    - property_name: cylinders
+      exporter_name: cylinders
+      exporter_desc: "Size of ECKD volume in cylinders (0 for ECKD alias volumes, not present for non-ECKD volumes)"
 
   # Available for CPCs in any mode
 
