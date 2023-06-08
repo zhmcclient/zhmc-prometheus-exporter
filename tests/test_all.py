@@ -196,7 +196,7 @@ class TestCreateContext(unittest.TestCase):
         """Tests normal input with a generic metric group."""
         session = zhmcclient_mock.FakedSession("fake-host", "fake-hmc",
                                                "2.13.1", "1.8")
-        context, _ = zhmc_prometheus_exporter.create_metrics_context(
+        context, _, _ = zhmc_prometheus_exporter.create_metrics_context(
             session,
             {"dpm-system-usage-overview": {"prefix": "pre", "fetch": True}},
             '2.14')
@@ -412,8 +412,9 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
         session = setup_faked_session()
         yaml_metric_groups = {"dpm-system-usage-overview": {"prefix": "pre",
                                                             "fetch": True}}
-        context, resources = zhmc_prometheus_exporter.create_metrics_context(
-            session, yaml_metric_groups, '2.14')
+        context, resources, _ = \
+            zhmc_prometheus_exporter.create_metrics_context(
+                session, yaml_metric_groups, '2.14')
         yaml_metrics = {
             "dpm-system-usage-overview": {
                 "processor-usage": {
@@ -429,7 +430,7 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
 
         my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
             cred_dict, session, context, resources, yaml_metric_groups,
-            yaml_metrics, extra_labels, "filename", "filename", None,
+            yaml_metrics, extra_labels, "filename", "filename", None, None,
             hmc_version, se_versions)
         self.assertEqual(my_zhmc_usage_collector.yaml_creds, cred_dict)
         self.assertEqual(my_zhmc_usage_collector.session, session)
@@ -451,8 +452,9 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
                 "fetch": True
             }
         }
-        context, resources = zhmc_prometheus_exporter.create_metrics_context(
-            session, yaml_metric_groups, '2.14')
+        context, resources, _ = \
+            zhmc_prometheus_exporter.create_metrics_context(
+                session, yaml_metric_groups, '2.14')
         yaml_metrics = {
             "dpm-system-usage-overview": {
                 "processor-usage": {
@@ -468,7 +470,7 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
 
         my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
             cred_dict, session, context, resources, yaml_metric_groups,
-            yaml_metrics, extra_labels, "filename", "filename", None,
+            yaml_metrics, extra_labels, "filename", "filename", None, None,
             hmc_version, se_versions)
         collected = list(my_zhmc_usage_collector.collect())
         self.assertEqual(len(collected), 1)

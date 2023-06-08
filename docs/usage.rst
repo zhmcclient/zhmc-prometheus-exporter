@@ -349,9 +349,9 @@ For more details on the resource properties of CPC and Partition (DPM mode)
 and Logical Partition (classic mode), see the corresponding data models
 in the :term:`HMC API` book.
 
-====================================  ====  ====  ===========================  ======================
+====================================  ====  ====  ===========================  ================================
 Exporter Metric Group                 Type  Mode  Prometheus Metrics           Prometheus Labels
-====================================  ====  ====  ===========================  ======================
+====================================  ====  ====  ===========================  ================================
 cpc-usage-overview                    M     C     zhmc_cpc_*                   cpc
 logical-partition-usage               M     C     zhmc_partition_*             cpc, partition
 channel-usage                         M     C     zhmc_channel_*               cpc, channel_css_chpid
@@ -369,7 +369,9 @@ zcpc-processor-usage                  M     C+D   zhmc_processor_*             c
 cpc-resource                          R     C+D   zhmc_cpc_*                   cpc
 partition-resource                    R     D     zhmc_partition_*             cpc, partition
 logical-partition-resource            R     C     zhmc_partition_*             cpc, partition
-====================================  ====  ====  ===========================  ======================
+storagegroup-resource                 R     D     zhmc_storagegroup_*          cpc, storagegroup
+storagevolume-resource                R     D     zhmc_storagevolume_*         cpc, storagegroup, storagevolume
+====================================  ====  ====  ===========================  ================================
 
 Legend:
 
@@ -556,6 +558,15 @@ zhmc_partition_current_vfm_memory_gib                   C     G     Current amou
 zhmc_partition_status_int                               D     G     Partition status as integer (0=active, 1=degraded, 10=paused, 11=stopped, 12=starting, 13=stopping, 20=reservation-error, 21=terminated, 22=communications-not-active, 23=status-check, 99=unsupported value)
 zhmc_partition_lpar_status_int                          C     G     LPAR status as integer (0=operating, 1=not-operating, 2=not-activated, 10=exceptions, 99=unsupported value)
 zhmc_partition_has_unacceptable_status                  C+D   G     Boolean indicating whether the partition has an unacceptable status
+zhmc_partition_storage_groups                           D     G     Storage groups attached to the partition, as a comma-separated list
+zhmc_storagegroup_type_int                              D     G     Storage group type as integer (0=fcp, 1=fc, 2=nvme, 99=unsupported value)
+zhmc_storagegroup_fulfillment_state_int                 D     G     Storage group fulfillment state as integer (0=complete, 1=pending, 2=pending-with-mismatches, 3=checking-migration, 4=incomplete, 99=unsupported value)
+zhmc_storagegroup_shared                                D     G     Boolean indicating whether the storage group is shared (0=false, 1=true)
+zhmc_storagegroup_max_partitions                        D     G     Maximum number of partitions a storage group can be attached to
+zhmc_storagevolume_fulfillment_state_int                D     G     Storage volume fulfillment state as integer (0=complete, 1=configuration-error, 2=deleting, 3=incomplete, 4=overprovisioned, 5=pending, 6=pending-with-mismatches, 99=unsupported value)
+zhmc_storagevolume_usage_int                            D     G     Usage of volume as integer (0=boot, 1=data, 2=not-applicable, 99=unsupported value)
+zhmc_storagevolume_size_gib                             D     G     Size of volume in GiB (0 for ECKD alias volumes)
+zhmc_storagevolume_cylinders                            D     G     Size of ECKD volume in cylinders (0 for ECKD alias volumes, not present for non-ECKD volumes)
 zhmc_crypto_adapter_usage_ratio                         C     G     Usage ratio of the crypto adapter
 zhmc_flash_memory_adapter_usage_ratio                   C     G     Usage ratio of the flash memory adapter
 zhmc_adapter_usage_ratio                                D     G     Usage ratio of the adapter

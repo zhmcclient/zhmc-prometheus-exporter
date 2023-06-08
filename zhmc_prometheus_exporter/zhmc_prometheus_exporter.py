@@ -583,9 +583,12 @@ def create_metrics_context(session, yaml_metric_groups, hmc_version):
     for fetch/do not fetch information, and the name of the YAML file for error
     output.
 
-    Returns a tuple(context, resources), where context is the metric context
-      and resources is a dict(key: metric group name, value: list of
-      auto-enabled resource objects for the metric group).
+    Returns a tuple(context, resources, uri2resource), where:
+      * context is the metric context
+      * resources is a dict(key: metric group name, value: list of
+        auto-enabled resource objects for the metric group).
+      * uri2resource is a dict(key: resource URI, value: auto-enabled resource
+        object for the URI).
 
     Raises: zhmccclient exceptions
     """
@@ -616,6 +619,7 @@ def create_metrics_context(session, yaml_metric_groups, hmc_version):
          "metric-groups": fetched_hmc_metric_groups})
 
     resources = {}
+    uri2resource = {}
     for metric_group in fetched_res_metric_groups:
         logprint(logging.INFO, PRINT_V,
                  "Retrieving resources from the HMC for resource metric "
@@ -645,6 +649,7 @@ def create_metrics_context(session, yaml_metric_groups, hmc_version):
                              format(cpc.name, exc.__class__.__name__, exc))
                     continue  # skip this CPC
                 resources[metric_group].append(cpc)
+                uri2resource[cpc.uri] = cpc
         elif resource_path == 'cpc.partition':
             resources[metric_group] = []
             cpcs = client.cpcs.list()
@@ -665,6 +670,7 @@ def create_metrics_context(session, yaml_metric_groups, hmc_version):
                                         exc.__class__.__name__, exc))
                         continue  # skip this partition
                     resources[metric_group].append(partition)
+                    uri2resource[partition.uri] = partition
         elif resource_path == 'cpc.logical-partition':
             resources[metric_group] = []
             cpcs = client.cpcs.list()
@@ -685,6 +691,48 @@ def create_metrics_context(session, yaml_metric_groups, hmc_version):
                                         exc.__class__.__name__, exc))
                         continue  # skip this LPAR
                     resources[metric_group].append(lpar)
+                    uri2resource[lpar.uri] = lpar
+        elif resource_path == 'console.storagegroup':
+            resources[metric_group] = []
+            console = client.consoles.console
+            storage_groups = console.storage_groups.list()
+            for sg in storage_groups:
+                logprint(logging.INFO, PRINT_V,
+                         "Enabling auto-update for storage group {}".
+                         format(sg.name))
+                try:
+                    sg.enable_auto_update()
+                except zhmcclient.Error as exc:
+                    logprint(logging.ERROR, PRINT_ALWAYS,
+                             "Ignoring resource-based metrics for "
+                             "storage group {}, because enabling "
+                             "auto-update for it failed with {}: {}".
+                             format(sg.name, exc.__class__.__name__, exc))
+                    continue  # skip this storage group
+                resources[metric_group].append(sg)
+                uri2resource[sg.uri] = sg
+        elif resource_path == 'console.storagevolume':
+            resources[metric_group] = []
+            console = client.consoles.console
+            storage_groups = console.storage_groups.list()
+            for sg in storage_groups:
+                storage_volumes = sg.storage_volumes.list()
+                for sv in storage_volumes:
+                    logprint(logging.INFO, PRINT_V,
+                             "Enabling auto-update for storage volume {}.{}".
+                             format(sg.name, sv.name))
+                    try:
+                        sv.enable_auto_update()
+                    except zhmcclient.Error as exc:
+                        logprint(logging.ERROR, PRINT_ALWAYS,
+                                 "Ignoring resource-based metrics for "
+                                 "storage volume {}.{}, because enabling "
+                                 "auto-update for it failed with {}: {}".
+                                 format(sg.name, sv.name,
+                                        exc.__class__.__name__, exc))
+                        continue  # skip this storage group
+                    resources[metric_group].append(sv)
+                    uri2resource[sv.uri] = sv
         else:
             new_exc = ImproperExit(
                 "Invalid 'resource' item in resource metric group {} in "
@@ -693,7 +741,7 @@ def create_metrics_context(session, yaml_metric_groups, hmc_version):
             new_exc.__cause__ = None  # pylint: disable=invalid-name
             raise new_exc
 
-    return context, resources
+    return context, resources, uri2resource
 
 
 def cleanup(session, context, resources):
@@ -843,10 +891,17 @@ def expand_global_label_value(
 
 def expand_group_label_value(
         env, label_name, group_name, item_value, resource_obj,
-        metric_values=None):
+        uri2resource, metric_values=None):
     """
     Expand a Jinja2 expression on a label value, for a metric group label.
     """
+
+    def uri2resource_func(uri):
+        return uri2resource[uri]
+
+    def uris2resources_func(uris):
+        return [uri2resource[uri] for uri in uris]
+
     try:
         func = env.compile_expression(item_value)
     except jinja2.TemplateSyntaxError as exc:
@@ -858,7 +913,9 @@ def expand_group_label_value(
     try:
         value = func(
             resource_obj=resource_obj,
-            metric_values=metric_values)
+            metric_values=metric_values,
+            uri2resource=uri2resource_func,
+            uris2resources=uris2resources_func)
     # pylint: disable=broad-exception-caught,broad-except
     except Exception as exc:
         logprint(logging.WARNING, PRINT_V,
@@ -871,10 +928,17 @@ def expand_group_label_value(
 
 def expand_metric_label_value(
         env, label_name, metric_exporter_name, item_value, resource_obj,
-        metric_values=None):
+        uri2resource, metric_values=None):
     """
     Expand a Jinja2 expression on a label value, for a metric label.
     """
+
+    def uri2resource_func(uri):
+        return uri2resource[uri]
+
+    def uris2resources_func(uris):
+        return [uri2resource[uri] for uri in uris]
+
     try:
         func = env.compile_expression(item_value)
     except jinja2.TemplateSyntaxError as exc:
@@ -886,7 +950,9 @@ def expand_metric_label_value(
     try:
         value = func(
             resource_obj=resource_obj,
-            metric_values=metric_values)
+            metric_values=metric_values,
+            uri2resource=uri2resource_func,
+            uris2resources=uris2resources_func)
     # pylint: disable=broad-exception-caught,broad-except
     except Exception as exc:
         logprint(logging.WARNING, PRINT_V,
@@ -915,11 +981,13 @@ def cpc_from_resource(resource):
 
 def build_family_objects(
         metrics_object, yaml_metric_groups, yaml_metrics, metrics_filename,
-        extra_labels, hmc_version, se_versions, resource_cache=None):
+        extra_labels, hmc_version, se_versions, resource_cache=None,
+        uri2resource=None):
     """
     Go through all retrieved metrics and build the Prometheus Family objects.
 
-    Note: resource_cache will be omitted in tests, and is therefore optional.
+    Note: resource_cache and uri2resource will be omitted in tests, and is
+    therefore optional.
 
     Returns a dictionary of Prometheus Family objects with the following
     structure:
@@ -977,7 +1045,7 @@ def build_family_objects(
                 item_value = item['value']
                 label_value = expand_group_label_value(
                     env, label_name, metric_group, item_value, resource,
-                    metric_values)
+                    uri2resource, metric_values)
                 if label_value is not None:
                     mg_labels[label_name] = label_value
 
@@ -1028,7 +1096,7 @@ def build_family_objects(
                     item_value = item['value']
                     label_value = expand_metric_label_value(
                         env, label_name, yaml_metric["exporter_name"],
-                        item_value, resource, metric_values)
+                        item_value, resource, uri2resource, metric_values)
                     if label_value is not None:
                         labels[label_name] = label_value
 
@@ -1063,12 +1131,14 @@ def build_family_objects(
 
 def build_family_objects_res(
         resources, yaml_metric_groups, yaml_metrics, metrics_filename,
-        extra_labels, hmc_version, se_versions, resource_cache=None):
+        extra_labels, hmc_version, se_versions, resource_cache=None,
+        uri2resource=None):
     """
     Go through all auto-updated resources and build the Prometheus Family
     objects for them.
 
-    Note: resource_cache will be omitted in tests, and is therefore optional.
+    Note: resource_cache and uri2resource will be omitted in tests, and is
+    therefore optional.
 
     Returns a dictionary of Prometheus Family objects with the following
     structure:
@@ -1125,7 +1195,8 @@ def build_family_objects_res(
                 label_name = item['name']
                 item_value = item['value']
                 label_value = expand_group_label_value(
-                    env, label_name, metric_group, item_value, resource)
+                    env, label_name, metric_group, item_value, resource,
+                    uri2resource)
                 if label_value is not None:
                     mg_labels[label_name] = label_value
 
@@ -1251,7 +1322,8 @@ def build_family_objects_res(
                     label_name = item['name']
                     item_value = item['value']
                     label_value = expand_metric_label_value(
-                        env, label_name, exporter_name, item_value, resource)
+                        env, label_name, exporter_name, item_value, resource,
+                        uri2resource)
                     if label_value is not None:
                         labels[label_name] = label_value
 
@@ -1291,7 +1363,7 @@ class ZHMCUsageCollector():
     def __init__(self, yaml_creds, session, context, resources,
                  yaml_metric_groups,
                  yaml_metrics, extra_labels, filename_metrics, filename_creds,
-                 resource_cache, hmc_version, se_versions):
+                 resource_cache, uri2resource, hmc_version, se_versions):
         self.yaml_creds = yaml_creds
         self.session = session
         self.context = context
@@ -1302,6 +1374,7 @@ class ZHMCUsageCollector():
         self.filename_metrics = filename_metrics
         self.filename_creds = filename_creds
         self.resource_cache = resource_cache
+        self.uri2resource = uri2resource
         self.hmc_version = hmc_version
         self.se_versions = se_versions
 
@@ -1333,7 +1406,7 @@ class ZHMCUsageCollector():
                                  "Recreating the metrics context after HTTP "
                                  "status {}.{}".
                                  format(exc.http_status, exc.reason))
-                        self.context, _ = create_metrics_context(
+                        self.context, _, _ = create_metrics_context(
                             self.session, self.yaml_metric_groups,
                             self.hmc_version)
                         continue
@@ -1374,7 +1447,7 @@ class ZHMCUsageCollector():
             metrics_object, self.yaml_metric_groups,
             self.yaml_metrics, self.filename_metrics,
             self.extra_labels, self.hmc_version, self.se_versions,
-            self.resource_cache)
+            self.resource_cache, self.uri2resource)
 
         logprint(logging.DEBUG, None,
                  "Building family objects for resource metrics")
@@ -1382,7 +1455,7 @@ class ZHMCUsageCollector():
             self.resources, self.yaml_metric_groups,
             self.yaml_metrics, self.filename_metrics,
             self.extra_labels, self.hmc_version, self.se_versions,
-            self.resource_cache))
+            self.resource_cache, self.uri2resource))
 
         logprint(logging.DEBUG, None,
                  "Returning family objects")
@@ -1696,7 +1769,7 @@ def main():
                 logprint(logging.INFO, PRINT_V,
                          "Managed CPCs and their SE versions: {}".
                          format(se_versions_str))
-                context, resources = create_metrics_context(
+                context, resources, uri2resource = create_metrics_context(
                     session, yaml_metric_groups, hmc_version)
         except (ConnectionError, AuthError, OtherError) as exc:
             raise ImproperExit(exc)
@@ -1723,7 +1796,7 @@ def main():
         coll = ZHMCUsageCollector(
             yaml_creds, session, context, resources, yaml_metric_groups,
             yaml_metrics, extra_labels, args.m, hmccreds_filename,
-            resource_cache, hmc_version, se_versions)
+            resource_cache, uri2resource, hmc_version, se_versions)
 
         logprint(logging.INFO, PRINT_V,
                  "Registering the collector and performing first collection")
