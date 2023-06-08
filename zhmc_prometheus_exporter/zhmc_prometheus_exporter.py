@@ -831,11 +831,12 @@ def expand_global_label_value(
         return None
     try:
         value = func(hmc_info=hmc_info)
-    except jinja2.TemplateError as exc:
+    # pylint: disable=broad-exception-caught,broad-except
+    except Exception as exc:
         logprint(logging.WARNING, PRINT_V,
-                 "Ignoring global label '{}' due to "
-                 "error in rendering the Jinja2 expression in its value: {}".
-                 format(label_name, exc))
+                 "Ignoring global label '{}' due to error in rendering "
+                 "the Jinja2 expression in its value: {}: {}".
+                 format(label_name, exc.__class__.__name__, exc))
         return None
     return str(value)
 
@@ -858,11 +859,12 @@ def expand_group_label_value(
         value = func(
             resource_obj=resource_obj,
             metric_values=metric_values)
-    except jinja2.TemplateError as exc:
+    # pylint: disable=broad-exception-caught,broad-except
+    except Exception as exc:
         logprint(logging.WARNING, PRINT_V,
                  "Ignoring label '{}' on metric group '{}' due to "
-                 "error in rendering label value Jinja2 expression: {}".
-                 format(label_name, group_name, exc))
+                 "error in rendering label value Jinja2 expression: {}: {}".
+                 format(label_name, group_name, exc.__class__.__name__, exc))
         return None
     return str(value)
 
@@ -885,11 +887,14 @@ def expand_metric_label_value(
         value = func(
             resource_obj=resource_obj,
             metric_values=metric_values)
-    except jinja2.TemplateError as exc:
+    # pylint: disable=broad-exception-caught,broad-except
+    except Exception as exc:
         logprint(logging.WARNING, PRINT_V,
                  "Ignoring label '{}' on metric with exporter name '{}' due to "
-                 "error in rendering the Jinja2 expression in its value: {}".
-                 format(label_name, metric_exporter_name, exc))
+                 "error in rendering the Jinja2 expression in its value: "
+                 "{}: {}".
+                 format(label_name, metric_exporter_name,
+                        exc.__class__.__name__, exc))
         return None
     return str(value)
 
