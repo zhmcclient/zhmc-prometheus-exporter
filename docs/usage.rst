@@ -467,6 +467,7 @@ zhmc_processor_usage_ratio                              C+D   G     Usage ratio 
 zhmc_processor_smt_mode_percent                         C+D   G     Percentage of time the processor was in in SMT mode
 zhmc_processor_smt_thread0_usage_ratio                  C+D   G     Usage ratio of thread 0 of the processor when in SMT mode
 zhmc_processor_smt_thread1_usage_ratio                  C+D   G     Usage ratio of thread 1 of the processor when in SMT mode
+zhmc_partition_description                              C+D   G     Description of the partition (in 'value' label)
 zhmc_partition_processor_usage_ratio                    C+D   G     Usage ratio across all processors of the partition
 zhmc_partition_cp_processor_usage_ratio                 C     G     Usage ratio across all CP processors of the partition
 zhmc_partition_ifl_processor_usage_ratio                C     G     Usage ratio across all IFL processors of the partition
