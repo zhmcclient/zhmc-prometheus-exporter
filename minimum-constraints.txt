@@ -110,7 +110,8 @@ immutable-views==0.6.0
 MarkupSafe==1.1.0
 pytz==2016.10; python_version <= '3.9'
 pytz==2019.1; python_version >= '3.10'
-requests==2.25.0
+requests==2.25.0; python_version <= '3.6'
+requests==2.31.0; python_version >= '3.7'
 stomp.py==4.1.23
 typing-extensions==3.10.0  # Used in some combinations of Python version and package level
 zipp==0.5.2  # Used in some combinations of Python version and package level
