@@ -28,8 +28,8 @@ Released: not yet
 
 **Bug fixes:**
 
-* Addressed safety issues from 6/2023, by increasing 'requests' to 2.31.0
-  on Python >=3.7.
+* Addressed safety issues from 6+7/2023, by increasing 'requests' to 2.31.0
+  on Python >=3.7, and by increasing other packages only needed for development.
 
 **Enhancements:**
 
