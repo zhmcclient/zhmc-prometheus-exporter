@@ -188,7 +188,8 @@ sphinx-git==10.1.1
 GitPython==2.1.1; python_version <= '3.6'
 GitPython==3.1.30; python_version >= '3.7'
 sphinxcontrib-websupport==1.1.2
-Pygments==2.7.4
+Pygments==2.7.4; python_version <= '3.6'
+Pygments==2.15.0; python_version >= '3.7'
 sphinx-rtd-theme==1.0.0
 Babel==2.9.1
 
