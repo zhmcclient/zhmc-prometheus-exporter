@@ -29,6 +29,23 @@ properties:
       verify_cert:
         description: "Controls whether and how the HMC certificate is verified. For details, see doc section 'HMC certificate'"
         type: [boolean, string]
+  prometheus:
+    description: Communication with Prometheus
+    type: object
+    additionalProperties: false
+    properties:
+      port:
+        description: "Port for exporting."
+        type: integer
+      server_cert_file:
+        description: "Path name of server certificate file. Enables the use of HTTPS."
+        type: string
+      server_key_file:
+        description: "Path name of private key file."
+        type: string
+      ca_cert_file:
+        description: "Path name of CA certificates file for validating the client certificate. Enables mutual TLS by requiring a client certificate to be presented."
+        type: string
   extra_labels:
     description: "Additional Prometheus labels to be added to all metrics"
     type: array

@@ -33,36 +33,13 @@ jobs:
       # This technique documented in:
       #    https://stackoverflow.com/questions/65384420/how-to-make-a-github-action-matrix-element-conditional
       # TODO: Find a way to define this with less escapes.
+      # TODO-PYPI: Revert changes in this file once a new version of prometheus-client (after 2023-11-09) has been released on Pypi
       run: |
         if [[ "${{ github.event_name }}" == "schedule" || "${{ github.head_ref }}" =~ ^release_ ]]; then \
           echo "matrix={ \
             \"os\": [ \"ubuntu-latest\", \"macos-latest\", \"windows-latest\" ], \
-            \"python-version\": [ \"3.6\", \"3.7\", \"3.8\", \"3.9\", \"3.10\", \"3.11\", \"3.12\" ], \
-            \"package_level\": [ \"minimum\", \"latest\" ], \
-            \"exclude\": [ \
-              { \
-                \"os\": \"ubuntu-latest\", \
-                \"python-version\": \"3.6\", \
-                \"package_level\": \"minimum\" \
-              }, \
-              { \
-                \"os\": \"ubuntu-latest\", \
-                \"python-version\": \"3.6\", \
-                \"package_level\": \"latest\" \
-              } \
-            ], \
-            \"include\": [ \
-              { \
-                \"os\": \"ubuntu-20.04\", \
-                \"python-version\": \"3.6\", \
-                \"package_level\": \"minimum\" \
-              }, \
-              { \
-                \"os\": \"ubuntu-20.04\", \
-                \"python-version\": \"3.6\", \
-                \"package_level\": \"latest\" \
-              } \
-            ] \
+            \"python-version\": [ \"3.8\", \"3.9\", \"3.10\", \"3.11\", \"3.12\" ], \
+            \"package_level\": [ \"minimum\", \"latest\" ] \
           }" >> $GITHUB_OUTPUT; \
         else \
           echo "matrix={ \
@@ -71,23 +48,18 @@ jobs:
             \"package_level\": [ \"minimum\", \"latest\" ], \
             \"include\": [ \
               { \
-                \"os\": \"ubuntu-20.04\", \
-                \"python-version\": \"3.6\", \
+                \"os\": \"ubuntu-latest\", \
+                \"python-version\": \"3.8\", \
                 \"package_level\": \"minimum\" \
-              }, \
-              { \
-                \"os\": \"ubuntu-20.04\", \
-                \"python-version\": \"3.6\", \
-                \"package_level\": \"latest\" \
               }, \
               { \
                 \"os\": \"ubuntu-latest\", \
-                \"python-version\": \"3.7\", \
-                \"package_level\": \"minimum\" \
+                \"python-version\": \"3.8\", \
+                \"package_level\": \"latest\" \
               }, \
               { \
                 \"os\": \"macos-latest\", \
-                \"python-version\": \"3.6\", \
+                \"python-version\": \"3.8\", \
                 \"package_level\": \"latest\" \
               }, \
               { \
@@ -102,7 +74,7 @@ jobs:
               }, \
               { \
                 \"os\": \"windows-latest\", \
-                \"python-version\": \"3.6\", \
+                \"python-version\": \"3.8\", \
                 \"package_level\": \"latest\" \
               }, \
               { \

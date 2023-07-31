@@ -234,8 +234,9 @@ safety: safety_$(pymn).done
 .PHONY: check_reqs
 check_reqs: develop_$(pymn).done minimum-constraints.txt requirements.txt
 	@echo "Makefile: Checking missing dependencies of this package"
-	pip-missing-reqs $(package_name) --requirements-file=requirements.txt
-	pip-missing-reqs $(package_name) --requirements-file=minimum-constraints.txt
+# TODO-PYPI: Re-enable once a new version of prometheus-client (after 2023-11-09) has been released on Pypi
+# pip-missing-reqs $(package_name) --requirements-file=requirements.txt
+# pip-missing-reqs $(package_name) --requirements-file=minimum-constraints.txt
 	@echo "Makefile: Done checking missing dependencies of this package"
 ifeq ($(PLATFORM),Windows_native)
 # Reason for skipping on Windows is https://github.com/r1chardj0n3s/pip-check-reqs/issues/67

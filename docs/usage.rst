@@ -97,7 +97,7 @@ The ``zhmc_prometheus_exporter`` command supports the following arguments:
       -m METRICS_FILE       path name of metric definition file. Use --help-metrics for details.
                             Default: /etc/zhmc-prometheus-exporter/metrics.yaml
 
-      -p PORT               port for exporting. Default: 9291
+      -p PORT               port for exporting. Default: prometheus.port in HMC credentials file.
 
       --log DEST            enable logging and set a log destination (stderr, syslog, FILE). Default:
                             no logging
@@ -251,6 +251,43 @@ variables influences other programs that use these variables, too.
 For more information, see the
 `Security <https://python-zhmcclient.readthedocs.io/en/latest/security.html>`_
 section in the documentation of the 'zhmcclient' package.
+
+
+Communication with Prometheus
+-----------------------------
+
+The exporter is an HTTP or HTTPS server that is regularly contacted by Prometheus
+for collecting metrics using HTTP GET.
+
+The parameters for the communication with Prometheus are defined in the
+HMC credentials file in the ``prometheus`` section, as in the following example:
+
+.. code-block:: yaml
+
+    prometheus:  # optional
+      port: 9291
+      server_cert_file: server_cert.pem
+      server_key_file: server_key.pem
+      ca_cert_file: ca_certs.pem
+
+If the ``prometheus`` section is not specified, the exporter starts its
+server with HTTP.
+
+If the ``prometheus`` section is specified, the presence of the
+``server_cert_file`` parameter will determine whether the server will use HTTP
+or HTTPS: If that parameter is specified, HTTPS will be used. If not specified,
+HTTP will be used.
+
+If HTTPS is used, the ``server_key_file`` parameter is required.
+
+If HTTPS is used, the presence of the ``ca_cert_file`` parameter determines
+whether mutual TLS (mTLS) is enabled: If specified, mTLS is enabled and the
+exporter will require Prometheus to present a client certificate, which is
+validated using the specified CA certificate chain. If not specified, mTLS is
+disabled and the exporter will not require Prometheus to present a client
+certificate and will ignore it if presented.
+
+The meaning of the parameters is described in :ref:`HMC credentials file`.
 
 
 Exported metric concepts
@@ -734,6 +771,8 @@ The *HMC credentials file* tells the exporter which HMC to talk to for
 obtaining metrics, and which userid and password to use for logging on to
 the HMC.
 
+It also specifies how Prometheus should communicate with the exporter.
+
 In addition, it allows specifying additional labels to be used in all
 metrics exported to Prometheus. This can be used for defining labels that
 identify the environment managed by the HMC, in cases where metrics from
@@ -747,7 +786,13 @@ The HMC credentials file is in YAML format and has the following structure:
       hmc: {hmc-ip-address}
       userid: {hmc-userid}
       password: {hmc-password}
-      verify_cert: {verify-cert}
+      verify_cert: {hmc-verify-cert}
+
+    prometheus:  # optional
+      port: {prom-port}
+      server_cert_file: {prom-server-cert-file}
+      server_key_file: {prom-server-key-file}
+      ca_cert_file: {prom-ca-cert-file}
 
     extra_labels:  # optional
       # list of labels:
@@ -762,8 +807,33 @@ Where:
 
 * ``{hmc-password}`` is the password of that userid.
 
-* ``{verify-cert}`` controls whether and how the HMC server certificate is
+* ``{hmc-verify-cert}`` controls whether and how the HMC server certificate is
   verified. For details, see :ref:`HMC certificate`.
+
+* ``{prom-port}`` is the port for exporting. Default: 9291.
+
+* ``{prom-server-cert-file}`` is the path name of a certificate file in PEM
+  format containing an X.509 server certificate that will be presented to
+  Prometheus during TLS handshake. Relative path names are relative to the
+  directory of the HMC credentials file. If the ``server_cert_file`` parameter
+  is specified, the exporter will start its server with HTTPS, and otherwise
+  with HTTP.
+
+* ``{prom-server-key-file}`` is the path name of a key file in PEM format
+  containing an X.509 private key that belongs to the public key in the server
+  certificate. Relative path names are relative to the directory of the HMC
+  credentials file. The ``server_key_file`` parameter is required when
+  the ``server_cert_file`` parameter is specified.
+
+* ``{prom-ca-cert-file}`` is the path name of a CA file in PEM format
+  containing X.509 CA certificates that will be used for validating a client
+  certificate presented by Prometheus during TLS handshake. Relative path names
+  are relative to the directory of the HMC credentials file. If the
+  ``ca_cert_file`` parameter is specified, the exporter will require from
+  Prometheus to present a client certificate during TLS handshake and will
+  validate it using the specified CA certificate chain (mutual TLS, mTLS).
+  If not specified, the exporter will not require from Prometheus to present a
+  client certificate, and will ignore it if presented.
 
 * ``{extra-label-name}`` is the label name.
 

@@ -6,6 +6,16 @@ metrics:
   password: password
   verify_cert: true
 
+prometheus:
+  port: 9291
+
+  # Note: Activating the following two parameters enables the use of HTTPS
+  # server_cert_file: server_cert.pem
+  # server_key_file: server_key.pem
+
+  # Note: Activating the following parameter enables the use of mutual TLS
+  # ca_cert_file: ca_certs.pem
+
 extra_labels:
   - name: hmc
     value: "hmc_info['hmc-name']"

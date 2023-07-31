@@ -39,7 +39,10 @@ wheel==0.38.1; python_version >= '3.7'
 
 zhmcclient==1.9.1
 
-prometheus-client==0.9.0
+prometheus-client>=0.17.0; python_version <= '3.7'
+# TODO-PYPI: Re-enable once a new version of prometheus-client (after 2023-11-09) has been released on Pypi
+# prometheus-client>=0.18.x; python_version >= '3.8'
+
 urllib3==1.26.17
 jsonschema==3.2.0
 six==1.14.0; python_version <= '3.9'
