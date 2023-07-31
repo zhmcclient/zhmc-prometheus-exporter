@@ -83,6 +83,9 @@ Released: not yet
   a new metric zhmc_partition_storage_groups that lists the storage groups
   attached to a partition. (issue #346)
 
+* Added support for HTTPS and mutual TLS (mTLS) by adding a new section
+  'prometheus' to the HMC credentials file. (issue #347)
+
 **Cleanup:**
 
 **Known issues:**

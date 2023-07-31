@@ -27,6 +27,9 @@ automatic session renewals with the HMC if the logon session expires, and it
 survives HMC reboots and automatically picks up metrics collection again once
 the HMC come back up.
 
+The exporter supports HTTP and HTTPS (with and without mutual TLS) for
+Prometheus.
+
 .. _IBM Z: https://www.ibm.com/it-infrastructure/z
 .. _Prometheus exporter: https://prometheus.io/docs/instrumenting/exporters/
 .. _Prometheus: https://prometheus.io
@@ -52,6 +55,9 @@ Quickstart
   The HMC credentials file tells the exporter which HMC to talk to for
   obtaining metrics, and which userid and password to use for logging on to
   the HMC.
+
+  It also defines whether HTTP or HTTPS is used for Prometheus, and HTTPS
+  related certificates and keys.
 
   Download the :ref:`sample HMC credentials file` as ``hmccreds.yaml`` and edit
   that copy accordingly.
@@ -86,8 +92,9 @@ Quickstart
   up and running. You can see what it does in the mean time by using the ``-v``
   option. Subsequent requests to the exporter will be sub-second.
 
-* Direct your web browser at http://localhost:9291 to see the exported
-  Prometheus metrics. Refreshing the browser will update the metrics.
+* Direct your web browser at http://localhost:9291 (or https://localhost:9291
+  when using HTTPS) to see the exported Prometheus metrics. Refreshing the
+  browser will update the metrics.
 
 Reporting issues
 ----------------

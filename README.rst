@@ -68,6 +68,9 @@ Quickstart
   obtaining metrics, and which userid and password to use for logging on to
   the HMC.
 
+  It also defines whether HTTP or HTTPS is used for Prometheus, and HTTPS
+  related certificates and keys.
+
   Download the `sample HMC credentials file`_ as ``hmccreds.yaml`` and edit
   that copy accordingly.
 
@@ -107,8 +110,9 @@ Quickstart
   up and running. You can see what it does in the mean time by using the ``-v``
   option. Subsequent requests to the exporter will be sub-second.
 
-* Direct your web browser at http://localhost:9291 to see the exported
-  Prometheus metrics. Refreshing the browser will update the metrics.
+* Direct your web browser at http://localhost:9291 (or https://localhost:9291
+  when using HTTPS) to see the exported Prometheus metrics. Refreshing the
+  browser will update the metrics.
 
 Reporting issues
 ----------------
