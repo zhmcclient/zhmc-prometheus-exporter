@@ -41,9 +41,9 @@ Released: not yet
 * Fixed RTD docs build ssue with OpenSSL version by providing a .readthedocs.yaml
   file that specifies Ubuntu 22.04 as the build OS.
 
-* Increased minimum zhmcclient version to 1.8.1 to pick up fixes and improvements
+* Increased minimum zhmcclient version to 1.9.1 to pick up fixes and improvements
   for HMC session handling, including the handling of HTTP 403.4. (related to
-  issue #336)
+  issue #336) and the version change for PyYAML in zhmcclient.
 
 * Occurrences of most HTTP 403.x failures are now handled by logging on again
   and retrying, instead of abandoning. (related to issue #336)
@@ -54,6 +54,9 @@ Released: not yet
 
 * Addressed safety issues from 6+7/2023, by increasing 'requests' to 2.31.0
   on Python >=3.7, and by increasing other packages only needed for development.
+
+* Fixed issue with PyYAML 5.4 installation on Python>=3.10 that fails since
+  the recent release of Cython 3.
 
 **Enhancements:**
 
