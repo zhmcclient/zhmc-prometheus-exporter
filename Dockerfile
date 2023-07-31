@@ -20,6 +20,11 @@ COPY examples/metrics.yaml /etc/zhmc-prometheus-exporter/metrics.yaml
 ENV TMP_DIR=/tmp/zhmc-prometheus-exporter
 WORKDIR $TMP_DIR
 COPY . $TMP_DIR
+
+# TODO: Remove git install again once PR https://github.com/prometheus/client_python/pull/946 is released on Pypi
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends git
+
 RUN pip install . && rm -rf $TMP_DIR
 
 # Set the current directory when running this image

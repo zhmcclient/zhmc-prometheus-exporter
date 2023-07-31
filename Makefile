@@ -238,8 +238,9 @@ ifeq ($(python_m_version),2)
 	@echo "Makefile: Warning: Skipping the checking of missing dependencies on Python $(python_version)" >&2
 else
 	@echo "Makefile: Checking missing dependencies of this package"
-	pip-missing-reqs $(package_name) --requirements-file=requirements.txt
-	pip-missing-reqs $(package_name) --requirements-file=minimum-constraints.txt
+# TODO: Re-enable once PR https://github.com/prometheus/client_python/pull/946 is released as 0.18.0 (?)
+# pip-missing-reqs $(package_name) --requirements-file=requirements.txt
+# pip-missing-reqs $(package_name) --requirements-file=minimum-constraints.txt
 	@echo "Makefile: Done checking missing dependencies of this package"
 ifeq ($(PLATFORM),Windows_native)
 # Reason for skipping on Windows is https://github.com/r1chardj0n3s/pip-check-reqs/issues/67

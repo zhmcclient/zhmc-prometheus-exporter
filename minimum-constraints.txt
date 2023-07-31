@@ -80,7 +80,10 @@ wheel==0.38.1; python_version >= '3.7'
 
 zhmcclient==1.9.1
 
-prometheus-client==0.9.0
+# TODO: Re-enable once PR https://github.com/prometheus/client_python/pull/946 is released on Pypi
+# prometheus-client==0.9.0; python_version <= '3.7'
+# prometheus-client==0.18.0; python_version >= '3.8'
+
 urllib3==1.26.5
 jsonschema==3.2.0
 six==1.14.0; python_version <= '3.9'
