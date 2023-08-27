@@ -58,6 +58,8 @@ Released: not yet
 * Fixed issue with PyYAML 5.4 installation on Python>=3.10 that fails since
   the recent release of Cython 3.
 
+* Fixed safety issues from 2023-08-27.
+
 **Enhancements:**
 
 * Added a '--version' option for showing the versions of the exporter and
