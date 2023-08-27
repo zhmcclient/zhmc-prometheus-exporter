@@ -86,6 +86,8 @@ in this version, please update it in your installation.
 * Fixed issue with PyYAML 5.4 installation on Python>=3.10 that fails since
   the recent release of Cython 3.
 
+* Fixed safety issues from 2023-08-27.
+
 **Enhancements:**
 
 * Enabled the 'partition-attached-network-interface' metric group in the
