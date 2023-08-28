@@ -29,10 +29,10 @@ jobs:
           return result
     - name: Check validity of pushed tag
       run: |
-        if [[ ${{ steps.set-tag.outputs.result }} =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        if [[ ${{ steps.set-tag.outputs.result }} =~ ^[0-9]+\.[0-9]+\.[0-9]+((a|b|rc)[[0-9]+])?$ ]]; then
           echo "Pushed tag '${{ steps.set-tag.outputs.result }}' is valid";
         else
-          echo "Pushed tag '${{ steps.set-tag.outputs.result }}' is invalid (must be 'M.N.U')";
+          echo "Pushed tag '${{ steps.set-tag.outputs.result }}' is invalid (must be 'M.N.U' or a pre-release 'M.N.Ub/c/rcP'";
           false;
         fi
     - name: Determine whether releasing the master branch
