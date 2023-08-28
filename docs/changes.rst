@@ -17,16 +17,15 @@ Change log
 ----------
 
 
-Version 1.5.0.dev1
-^^^^^^^^^^^^^^^^^^
+Version 1.5.0.beta1
+^^^^^^^^^^^^^^^^^^^
 
-This version contains all fixes up to version 1.4.x.
+This version contains all fixes up to version 1.4.2.
 
-Released: not yet
+Released: 2023-08-28
 
-**Incompatible changes:**
-
-**Deprecations:**
+Note: This is a beta release that installs the 'prometheus-client' package
+from https://github.com/andy-maier/client_python/tree/andy/review-add-tls
 
 **Bug fixes:**
 
@@ -85,14 +84,6 @@ Released: not yet
 
 * Added support for HTTPS and mutual TLS (mTLS) by adding a new section
   'prometheus' to the HMC credentials file. (issue #347)
-
-**Cleanup:**
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 1.4.0
