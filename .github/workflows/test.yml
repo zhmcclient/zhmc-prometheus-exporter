@@ -12,10 +12,12 @@ on:
     branches:
     - master
     - stable_*
+    - beta_*
   push:  # When merging a PR targeting these branches (direct push is disabled)
     branches:
     - master
     - stable_*
+    - beta_*
 
 jobs:
 
