@@ -83,10 +83,42 @@ jobs:
           return result
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Check released commit to be master branch or stable branch for pushed tag
+    - name: Determine name of beta branch for pushed tag
+      id: set-beta-branch
+      uses: actions/github-script@v6
+      with:
+        result-encoding: string
+        script: |
+          const result = "beta_"+"${{ steps.set-tag.outputs.result }}".match("([0-9]+\.[0-9]+)\.")[1]
+          console.log(result)
+          return result
+    - name: Determine whether releasing beta branch for pushed tag
+      id: set-is-beta-branch
+      uses: actions/github-script@v6
+      with:
+        result-encoding: string
+        script: |
+          var resp
+          try {
+            resp = await github.rest.git.getRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "heads/${{ steps.set-beta-branch.outputs.result }}",
+            })
+          }
+          catch(err) {
+            console.log("false (beta branch does not exist: "+err+")")
+            return false
+          }
+          const result = (resp.data.object.sha == "${{ github.sha }}")
+          console.log(result)
+          return result
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Check released commit to be master or stable or beta branch for pushed tag
       run: |
-        if [[ ${{ steps.set-is-master-branch.outputs.result }} == 'false' && ${{ steps.set-is-stable-branch.outputs.result }} == 'false' ]]; then
-          echo "Released commit is not 'master' or '${{ steps.set-stable-branch.outputs.result }}' branch";
+        if [[ ${{ steps.set-is-master-branch.outputs.result }} == 'false' && ${{ steps.set-is-stable-branch.outputs.result }} == 'false' && ${{ steps.set-is-beta-branch.outputs.result }} == 'false' ]]; then
+          echo "Released commit is not 'master' or '${{ steps.set-stable-branch.outputs.result }}' or '${{ steps.set-beta-branch.outputs.result }}' branch";
           false;
         fi
     - name: Set update version
