@@ -163,7 +163,7 @@ local clone of the zhmc-prometheus-exporter Git repo.
 2.  Set shell variables for the version that is being released and the branch
     it is based on:
 
-    * ``MNU`` - Full version M.N.U that is being released
+    * ``MNU`` - Full version M.N.U that is being released (or pre-release ``M.N.Ub/c/rcP``)
     * ``MN`` - Major and minor version M.N of that full version
     * ``BRANCH`` - Name of the branch the version that is being released is
       based on
@@ -194,6 +194,15 @@ local clone of the zhmc-prometheus-exporter Git repo.
         MNU=0.8.1
         MN=0.8
         BRANCH=stable_${MN}
+
+    When releasing a alpha, beta or release candidate pre-version (e.g. ``1.0.0b1``) based on the master
+    branch:
+
+    .. code-block:: sh
+
+        MNU=1.0.0b1
+        MN=1.0
+        BRANCH=master
 
 3.  Create a topic branch for the version that is being released:
 
