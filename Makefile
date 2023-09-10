@@ -137,7 +137,8 @@ check_reqs_packages := pip_check_reqs pipdeptree build pytest coverage coveralls
 # Safety policy file
 safety_policy_file := .safety-policy.yml
 
-pytest_cov_opts := --cov $(package_name) --cov-config .coveragerc --cov-report=html:htmlcov
+pytest_cov_opts := --cov $(package_name) --cov-config .coveragerc --cov-append --cov-report=html:htmlcov
+pytest_cov_files := .coveragerc
 
 ifeq ($(PACKAGE_LEVEL),minimum)
   pip_level_opts := -c minimum-constraints.txt
@@ -161,7 +162,7 @@ help:
 	@echo "  check      - Perform flake8 checks"
 	@echo "  pylint     - Perform pylint checks"
 	@echo "  safety     - Run safety on sources"
-	@echo "  test       - Perform unit tests including coverage checker"
+	@echo "  test       - Perform unit tests (adds to coverage results)"
 	@echo "  build      - Build the distribution files in $(dist_dir)"
 	@echo "  builddoc   - Build the documentation in $(doc_build_dir)"
 	@echo "  all        - Do all of the above"
@@ -268,7 +269,7 @@ endif
 endif
 
 .PHONY: test
-test: develop_$(pymn).done
+test: develop_$(pymn).done $(pytest_cov_files)
 	@echo "Makefile: Performing unit tests and coverage with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
 	@echo "Makefile: Note that the warning about an unknown metric is part of the tests"
 	pytest $(pytest_cov_opts) -s $(test_dir)
