@@ -88,6 +88,8 @@ in this version, please update it in your installation.
 
 * Fixed safety issues from 2023-08-27.
 
+* Test: Circumvented a pip-check-reqs issue by excluding its version 2.5.0.
+
 **Enhancements:**
 
 * Enabled the 'partition-attached-network-interface' metric group in the
