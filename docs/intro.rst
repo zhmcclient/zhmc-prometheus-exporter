@@ -47,6 +47,11 @@ Quickstart
 
       $ pip install zhmc-prometheus-exporter
 
+  Note that an installation of Python packages using `setup.py install` is no
+  longer recommended by the Python packaging community. For details, see
+  https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html.
+  Installation with `setup.py install` is no longer supported by this package.
+
 * Provide an *HMC credentials file* for use by the exporter.
 
   The HMC credentials file tells the exporter which HMC to talk to for
