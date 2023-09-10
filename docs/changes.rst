@@ -26,6 +26,9 @@ Released: not yet
 
 **Incompatible changes:**
 
+* Installation of this package using "setup.py" is no longer supported.
+  Use "pip" instead.
+
 **Deprecations:**
 
 **Bug fixes:**
