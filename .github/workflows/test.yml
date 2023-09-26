@@ -195,11 +195,6 @@ jobs:
       run: |
         echo "Package dependency tree of installed Python packages:"
         pipdeptree --all
-    - name: Run safety
-      env:
-        PACKAGE_LEVEL: ${{ matrix.package_level }}
-      run: |
-        make safety
     - name: Run check_reqs
       env:
         PACKAGE_LEVEL: ${{ matrix.package_level }}
@@ -242,6 +237,11 @@ jobs:
         COVERALLS_SERVICE_NUMBER: "${{ github.workflow }}-${{ github.run_number }}"
       run: |
         if ! [[ ${{ matrix.python-version }} =~ (3.4) ]]; then coveralls; fi
+    - name: Run safety
+      env:
+        PACKAGE_LEVEL: ${{ matrix.package_level }}
+      run: |
+        make safety
 
   test_finish:
     needs: test
