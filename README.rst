@@ -19,8 +19,8 @@ IBM Z HMC Prometheus Exporter
     :target: https://pypi.python.org/pypi/zhmc-prometheus-exporter/
     :alt: Version on Pypi
 
-.. image:: https://github.com/zhmcclient/zhmc-prometheus-exporter/workflows/test/badge.svg?branch=master
-    :target: https://github.com/zhmcclient/zhmc-prometheus-exporter/actions?query=branch%3Amaster
+.. image:: https://github.com/zhmcclient/zhmc-prometheus-exporter/actions/workflows/test.yml/badge.svg?branch=master
+    :target: https://github.com/zhmcclient/zhmc-prometheus-exporter/actions/workflows/test.yml?query=branch%3Amaster
     :alt: Test status (master)
 
 .. image:: https://readthedocs.org/projects/zhmc-prometheus-exporter/badge/?version=latest
