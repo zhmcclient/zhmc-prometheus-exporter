@@ -20,30 +20,16 @@ security:
     #     reason: {text}    # optional: Reason for ignoring it. Will be reported in the Safety reports
     #     expires: {date}   # optional: Date when this ignore will expire
     ignore-vulnerabilities:
-        37504:
-            reason: Fixed Twine version requires Python>=3.6 and is used there
         39611:
-            reason: PyYAML full_load method or FullLoader is not used
-        39621:
-            reason: Fixed Pylint version requires Python>=3.6 and is used there
-        40291:
-            reason: Fixed Pip version requires Python>=3.6 and is used there
-        42559:
-            reason: Fixed Pip version requires Python>=3.6 and is used there; Pip is not shipped with this package
+            reason: Fixed PyYAML versions 5.4 to 6.0.0 do not work with Cython 3, and the full_load method or FullLoader is not used
         43975:
             reason: Fixed Urllib3 versions are excluded by requests
-        45185:
-            reason: Fixed Pylint version requires Python>=3.6.2 and is used there
-        47833:
-            reason: Fixed Click version requires Python>=3.6 and is used there
         51457:
             reason: Py package is no longer being fixed (latest version 1.11.0)
         51499:
             reason: Fixed Wheel version requires Python>=3.7 and is used there; Risk is on Pypi side
         52322:
             reason: Fixed GitPython version requires Python>=3.7 and is used there
-        52365:
-            reason: Fixed Certifi version requires Python>=3.6 and is used there
         52495:
             reason: Fixed Setuptools version requires Python>=3.7 and is used there; Risk is on Pypi side
         52518:
@@ -52,8 +38,6 @@ security:
             reason: Fixed requests version 2.31.0 requires Python>=3.7 and is used there
         58910:
             reason: Fixed pygments version 2.15.0 requires Python>=3.7 and is used there
-        59956:
-            reason: Fixed certifi version 2023.07.22 requires Python>=3.6 and is used there
         60350:
             reason: Fixed GitPython version 3.1.32 requires Python>=3.7 and is used there
         60789:

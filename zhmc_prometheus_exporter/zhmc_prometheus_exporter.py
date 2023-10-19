@@ -31,7 +31,6 @@ import logging.handlers
 from contextlib import contextmanager
 
 import jinja2
-import six
 import urllib3
 import yaml
 import jsonschema
@@ -548,7 +547,7 @@ def create_session(cred_dict, hmccreds_filename):
              "HMC userid: {}".format(cred_dict["userid"]))
 
     verify_cert = cred_dict.get("verify_cert", True)
-    if isinstance(verify_cert, six.string_types):
+    if isinstance(verify_cert, str):
         if not os.path.isabs(verify_cert):
             verify_cert = os.path.join(
                 os.path.dirname(hmccreds_filename), verify_cert)
