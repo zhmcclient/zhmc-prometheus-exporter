@@ -17,25 +17,21 @@ six>=1.14.0; python_version <= '3.9'
 six>=1.16.0; python_version >= '3.10'
 Jinja2>=2.11.3
 
-# PyYAML pulled in by zhmcclient examples
-# PyYAML 5.3.1 addressed issue 38100 reported by safety
-# PyYAML is also used by dparse and python-coveralls
-# PyYAML 5.4 has removed support for py35
-# PyYAML 5.3 has wheel archives for Python 2.7, 3.5 - 3.9
-# PyYAML 5.4 has wheel archives for Python 2.7, 3.6 - 3.9
-# PyYAML 6.0 has wheel archives for Python 3.6 - 3.11
-# PyYAML 5.4 and 6.0.0 fails install since Cython 3 was released, see issue
-#   https://github.com/yaml/pyyaml/issues/724.
-PyYAML>=5.3.1; python_version == '3.5'
+# PyYAML 5.3.x has wheel archives for Python 2.7, 3.5 - 3.9
+# PyYAML 5.4.x has wheel archives for Python 2.7, 3.6 - 3.9
+# PyYAML 6.0.0 has wheel archives for Python 3.6 - 3.11
+# PyYAML 6.0.1 has wheel archives for Python 3.6 - 3.12
+# PyYAML versions without wheel archives fail install since Cython 3 was
+#   released, see https://github.com/yaml/pyyaml/issues/724.
 PyYAML>=5.3.1,!=5.4.0,!=5.4.1; python_version >= '3.6' and python_version <= '3.11'
 PyYAML>=5.3.1,!=5.4.0,!=5.4.1,!=6.0.0; python_version >= '3.12'
 
 # Indirect dependencies for runtime (must be consistent with minimum-constraints.txt)
 
-# pyrsistent is pulled in by jsonschema.
+# pyrsistent is used by jsonschema 3.x (no longer by jsonschema 4.x)
 # Before its version 0.17.0, pyrsistent did not or not correctly declare its
-# required Python versions in the package metadata.
+#   required Python versions in the package metadata.
 # pyrsistent 0.15.0 fixes import errors on Python>=3.10, but only 0.18.1 has
-# Python 3.10 support (accordong to the change log).
-pyrsistent>=0.17.3; python_version <= '3.6'
+#   Python 3.10 support (accordong to the change log).
+pyrsistent>=0.17.3; python_version == '3.6'
 pyrsistent>=0.18.1; python_version >= '3.7'

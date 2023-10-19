@@ -10,13 +10,12 @@ build>=0.5.0
 pep517>=0.9.1
 
 # Safety CI by pyup.io
-# Safety is run only on Python >=3.6
-safety>=2.2.0; python_version >= '3.6'
-dparse>=0.6.2; python_version >= '3.6'
+safety>=2.2.0
+dparse>=0.6.2
 
 # Unit test (imports into testcases):
 # pytest 4.3.1 solves an issue on Python 3 with minimum package levels
-pytest>=4.3.1; python_version <= '3.6'
+pytest>=4.3.1; python_version == '3.6'
 pytest>=4.4.0; python_version >= '3.7' and python_version <= '3.9'
 pytest>=6.2.5; python_version >= '3.10'
 importlib-metadata>=0.12,<5.0.0; python_version <= '3.7'
@@ -24,9 +23,7 @@ importlib-metadata>=1.1.0; python_version >= '3.8'
 
 # packaging is used by pytest, pip-check-reqs, sphinx
 # packaging>=20.5 is needed by pip-check-reqs 2.4.3 but it requires only packaging>=16.0
-# packaging 21.0 removed support for Python <3.6
-packaging>=20.5; python_version <= '3.5'
-packaging>=21.0; python_version >= '3.6'
+packaging>=21.0
 
 # Virtualenv
 # build requires virtualenv.cli_run which was added in 20.1
@@ -52,77 +49,59 @@ pyflakes>=2.4.0; python_version >= '3.10'
 entrypoints>=0.3.0
 
 # PyLint (no imports, invoked via pylint script)
-# Pylint is not run on py27 anymore
 # Pylint requires astroid
-# Pylint 1.x / astroid 1.x supports py27 and py34/35/36
-# Pylint 2.0 / astroid 2.0 removed py27, added py37
-# Pylint 2.4 / astroid 2.3 removed py34
-# Issue #2673: Pinning Pylint to <2.7.0 is a circumvention for Pylint issue
-#   https://github.com/PyCQA/pylint/issues/4120 that appears in Pylint 2.7.0.
-#   Pylint 2.10 has fixed the issue.
-# Pylint 2.7.0 fixes safety issue 39621
-# Pylint 2.13.0 fixes safety issue 45185
-pylint>=2.5.2,<2.7.0; python_version == '3.5'
 pylint>=2.13.0,<2.14.0; python_version == '3.6'
 pylint>=2.13.0; python_version >= '3.7' and python_version <= '3.10'
 pylint>=2.15.0; python_version >= '3.11'
-astroid>=2.4.0,<2.6.0; python_version == '3.5'
-astroid>=2.11.0; python_version >= '3.6' and python_version <= '3.10'
+astroid>=2.11.0; python_version <= '3.10'
 astroid>=2.12.4; python_version >= '3.11'
-typed-ast>=1.4.0,<1.5.0; python_version >= '3.6' and python_version < '3.8' and implementation_name=='cpython'
+typed-ast>=1.4.0,<1.5.0; python_version <= '3.7' and implementation_name=='cpython'
 # lazy-object-proxy is used by astroid
-lazy-object-proxy>=1.4.3; python_version >= '3.5'
-wrapt>=1.11.2; python_version >= '3.5' and python_version <= '3.10'
+lazy-object-proxy>=1.4.3
+wrapt>=1.11.2; python_version <= '3.10'
 wrapt>=1.14; python_version >= '3.11'
 # platformdirs is used by pylint starting with its 2.10
-platformdirs>=2.2.0; python_version >= '3.6'
-# isort 5.0.0 removed support for py27,py35
+platformdirs>=2.2.0
 # isort 4.2.8 fixes a pylint issue with false positive on import order of ssl on Windows
 # isort 4.3.8 fixes an issue with py310 and works on py310 (Note that isort 5.10.0 has official support for py310)
 isort>=4.3.8
 # Pylint 2.14 uses tomlkit>=0.10.1 and requires py>=3.7
 tomlkit>=0.10.1; python_version >= '3.7'
 # dill is used by pylint >=2.13
-dill>=0.2; python_version >= '3.6' and python_version <= '3.10'
+dill>=0.2; python_version <= '3.10'
 dill>=0.3.6; python_version >= '3.11'
 
 # Sphinx (no imports, invoked via sphinx-build script):
 # Keep in sync with rtd-requirements.txt
 # Sphinx 4.0.0 breaks autodocsumm and needs to be excluded
 # Sphinx <4.3.0 requires docutils <0.18 due to an incompatibility
-# Sphinx 3.0.4 fixes safety issues 45775,38330
 Sphinx>=3.5.4,!=4.0.0,<4.3.0; python_version <= '3.9'
 Sphinx>=4.2.0; python_version >= '3.10'
-docutils>=0.13.1,<0.17; python_version >= '3.5' and python_version <= '3.9'
+docutils>=0.13.1,<0.17; python_version <= '3.9'
 docutils>=0.14,<0.17; python_version == '3.10'
 docutils>=0.16,<0.17; python_version >= '3.11'
 sphinx-git>=10.1.1
-# GitPython 3.1.30 fixes safety issues 52322,52518
-GitPython>=2.1.1; python_version <= '3.6'
+GitPython>=2.1.1; python_version == '3.6'
 GitPython>=3.1.37; python_version >= '3.7'
 sphinxcontrib-fulltoc>=1.2.0
 sphinxcontrib-websupport>=1.1.2
-# Pygments 2.7.4 fixes safety issues 50885,50886
-Pygments>=2.7.4; python_version <= '3.6'
+Pygments>=2.7.4; python_version == '3.6'
 Pygments>=2.15.0; python_version >= '3.7'
 sphinx-rtd-theme>=1.0.0
 # Babel 2.7.0 fixes an ImportError for MutableMapping which starts failing on Python 3.10
-# Babel 2.9.1 fixes safety issue 42203
 Babel>=2.9.1
 
 # Twine (no imports, invoked via twine script):
-twine>=1.15.0; python_version == '3.5'
-twine>=3.0.0; python_version >= '3.6'
+twine>=3.0.0
 # readme-renderer (used by twine, uses Pygments)
 # readme-renderer 25.0 or higher is needed to address issue on Windows with py39
 readme-renderer>=25.0
 
 # Package dependency management tools (not used by any make rules)
 pipdeptree>=2.2.0
-# pip-check-reqs is not used on Python 2.7
 # pip-check-reqs 2.3.2 is needed to have proper support for pip<21.3.
 # pip-check-reqs 2.4.0 requires Python>=3.8.
 # pip-check-reqs 2.4.3 fixes a speed issue on Python 3.11 and requires pip>=21.2.4
 # pip-check-reqs 2.5.0 has issue https://github.com/r1chardj0n3s/pip-check-reqs/issues/143
-pip-check-reqs>=2.3.2; python_version >= '3.5' and python_version <= '3.7'
+pip-check-reqs>=2.3.2; python_version <= '3.7'
 pip-check-reqs>=2.4.3,!=2.5.0; python_version >= '3.8'
