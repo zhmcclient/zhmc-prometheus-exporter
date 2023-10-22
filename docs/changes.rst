@@ -67,6 +67,11 @@ Released: not yet
 
 **Enhancements:**
 
+* Added support for Python 3.12. Had to increase the minimum versions of
+  setuptools to 66.1.0 and pip to 23.1.2 in order to address removal of the
+  long deprecated pkgutils.ImpImporter in Python 3.12, as well as several
+  packages used only for development. (issue #388)
+
 * Added a '--version' option for showing the versions of the exporter and
   the zhmcclient library. (issue #298)
 
