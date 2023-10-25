@@ -1672,7 +1672,7 @@ def main():
 
         setup_logging(args.log_dest, args.log_complevels, args.syslog_facility)
 
-        logprint(logging.WARNING, None,
+        logprint(logging.INFO, None,
                  "---------------- "
                  "zhmc_prometheus_exporter started "
                  "----------------")
