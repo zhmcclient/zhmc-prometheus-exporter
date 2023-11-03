@@ -16,6 +16,8 @@ pep517>=0.9.1
 # Safety CI by pyup.io
 safety>=2.2.0
 dparse>=0.6.2
+ruamel.yaml>=0.17.21,<0.17.22; python_version == '3.6'
+ruamel.yaml>=0.17.21; python_version >= '3.7'
 
 # Unit test (imports into testcases):
 # pytest 4.3.1 solves an issue on Python 3 with minimum package levels
