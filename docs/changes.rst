@@ -33,6 +33,8 @@ Released: not yet
 
 **Bug fixes:**
 
+* Addressed safety issues up to 2023-11-05.
+
 * Improved and fixed Dockerfile. (issue #297)
 
 * Docs: Fixed incorrect label value syntax in the documentation. (issue #310)
@@ -60,8 +62,6 @@ Released: not yet
 
 * Fixed issue with PyYAML 5.4 installation on Python>=3.10 that fails since
   the recent release of Cython 3.
-
-* Fixed safety issues from 2023-08-27.
 
 * Test: Circumvented a pip-check-reqs issue by excluding its version 2.5.0.
 
