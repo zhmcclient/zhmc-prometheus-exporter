@@ -28,8 +28,7 @@ Released: not yet
 
 **Bug fixes:**
 
-* Addressed safety issues from 6+7/2023, by increasing 'requests' to 2.31.0
-  on Python >=3.7, and by increasing other packages only needed for development.
+* Addressed safety issues up to 2023-11-05.
 
 **Enhancements:**
 
@@ -85,8 +84,6 @@ in this version, please update it in your installation.
 
 * Fixed issue with PyYAML 5.4 installation on Python>=3.10 that fails since
   the recent release of Cython 3.
-
-* Fixed safety issues from 2023-08-27.
 
 * Test: Circumvented a pip-check-reqs issue by excluding its version 2.5.0.
 
