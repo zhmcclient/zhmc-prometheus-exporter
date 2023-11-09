@@ -32,6 +32,10 @@ Released: not yet
 
 **Enhancements:**
 
+* Tolerated when unknown 'resource' types are specified in the metrics.yaml
+  file, because one possible reason for that is that a newer metrics.yaml file
+  is being used. (issue #379)
+
 **Cleanup:**
 
 **Known issues:**
