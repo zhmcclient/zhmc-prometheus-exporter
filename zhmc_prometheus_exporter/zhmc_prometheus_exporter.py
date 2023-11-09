@@ -746,12 +746,11 @@ def create_metrics_context(session, yaml_metric_groups, hmc_version):
                     resources[metric_group].append(sv)
                     uri2resource[sv.uri] = sv
         else:
-            new_exc = ImproperExit(
-                "Invalid 'resource' item in resource metric group {} in "
-                "metrics file: {}".
-                format(metric_group, resource_path))
-            new_exc.__cause__ = None  # pylint: disable=invalid-name
-            raise new_exc
+            logprint(logging.ERROR, PRINT_ALWAYS,
+                     "Ignoring invalid 'resource' item {rp!r} in resource "
+                     "metric group {mg!r} in metrics file (Is the metrics file "
+                     "newer than the exporter program?)".
+                     format(rp=resource_path, mg=metric_group))
 
     return context, resources, uri2resource
 
