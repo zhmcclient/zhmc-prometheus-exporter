@@ -17,7 +17,7 @@ Change log
 ----------
 
 
-Version 1.5.0.b1
+Version 1.5.0.b2
 ^^^^^^^^^^^^^^^^
 
 This is a beta version that supports only Python 3.8 and higher, because
