@@ -65,6 +65,9 @@ Released: not yet
 
 * Test: Circumvented a pip-check-reqs issue by excluding its version 2.5.0.
 
+* Added handling of exceptions raised by the built-in HTTP server during
+  its startup, for the HTTP case. (related to issue #397)
+
 **Enhancements:**
 
 * Added support for Python 3.12. Had to increase the minimum versions of
