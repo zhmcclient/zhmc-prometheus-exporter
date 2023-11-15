@@ -752,6 +752,26 @@ def create_metrics_context(session, yaml_metric_groups, hmc_version):
                      "newer than the exporter program?)".
                      format(rp=resource_path, mg=metric_group))
 
+    # Fetch backing adapters of NICs, if needed
+    if 'partition-attached-network-interface' in fetched_hmc_metric_groups:
+        cpcs = client.cpcs.list()
+        for cpc in cpcs:
+            partitions = cpc.partitions.list()
+            for partition in partitions:
+                nics = partition.nics.list()
+                for nic in nics:
+
+                    logprint(logging.INFO, PRINT_V,
+                             "Getting backing adapter port for NIC {}.{}.{}".
+                             format(cpc.name, partition.name, nic.name))
+                    adapter_name, port_index = get_backing_adapter_info(nic)
+
+                    # Store the adapter port data as dynamic attributes on the
+                    # Nic object in the uri2resource dict.
+                    nic.adapter_name = adapter_name
+                    nic.port_index = port_index
+                    uri2resource[nic.uri] = nic
+
     return context, resources, uri2resource
 
 
@@ -900,6 +920,35 @@ def expand_global_label_value(
     return str(value)
 
 
+def get_backing_adapter_info(nic):
+    """
+    Return backing adapter and port of the specified NIC.
+
+    Returns:
+      tuple(adapter_name, port_index)
+    """
+
+    session = nic.manager.session
+
+    # Handle vswitch-based NIC (OSA, HS)
+    try:
+        vswitch_uri = nic.get_property('virtual-switch-uri')
+    except KeyError:
+        pass
+    else:
+        vswitch_props = session.get(vswitch_uri)
+        adapter_uri = vswitch_props['backing-adapter-uri']
+        adapter_props = session.get(adapter_uri)
+        return adapter_props['name'], vswitch_props['port']
+
+    # Handle adapter-based NIC (RoCE, CNA)
+    port_uri = nic.get_property('network-adapter-port-uri')
+    port_props = session.get(port_uri)
+    adapter_uri = port_props['parent']
+    adapter_props = session.get(adapter_uri)
+    return adapter_props['name'], port_props['index']
+
+
 def expand_group_label_value(
         env, label_name, group_name, item_value, resource_obj,
         uri2resource, metric_values=None):
@@ -912,6 +961,16 @@ def expand_group_label_value(
 
     def uris2resources_func(uris):
         return [uri2resource[uri] for uri in uris]
+
+    def adapter_name_func(nic):
+        # Get the Nic object that has the dynamic attributes with adapter info
+        nic_org = uri2resource[nic.uri]
+        return nic_org.adapter_name
+
+    def adapter_port_func(nic):
+        # Get the Nic object that has the dynamic attributes with adapter info
+        nic_org = uri2resource[nic.uri]
+        return str(nic_org.port_index)
 
     try:
         func = env.compile_expression(item_value)
@@ -926,7 +985,9 @@ def expand_group_label_value(
             resource_obj=resource_obj,
             metric_values=metric_values,
             uri2resource=uri2resource_func,
-            uris2resources=uris2resources_func)
+            uris2resources=uris2resources_func,
+            adapter_name=adapter_name_func,
+            adapter_port=adapter_port_func)
     # pylint: disable=broad-exception-caught,broad-except
     except Exception as exc:
         logprint(logging.WARNING, PRINT_V,
@@ -950,6 +1011,16 @@ def expand_metric_label_value(
     def uris2resources_func(uris):
         return [uri2resource[uri] for uri in uris]
 
+    def adapter_name_func(nic):
+        # Get the Nic object that has the dynamic attributes with adapter info
+        nic_org = uri2resource[nic.uri]
+        return nic_org.adapter_name
+
+    def adapter_port_func(nic):
+        # Get the Nic object that has the dynamic attributes with adapter info
+        nic_org = uri2resource[nic.uri]
+        return str(nic_org.port_index)
+
     try:
         func = env.compile_expression(item_value)
     except jinja2.TemplateSyntaxError as exc:
@@ -963,7 +1034,9 @@ def expand_metric_label_value(
             resource_obj=resource_obj,
             metric_values=metric_values,
             uri2resource=uri2resource_func,
-            uris2resources=uris2resources_func)
+            uris2resources=uris2resources_func,
+            adapter_name=adapter_name_func,
+            adapter_port=adapter_port_func)
     # pylint: disable=broad-exception-caught,broad-except
     except Exception as exc:
         logprint(logging.WARNING, PRINT_V,
