@@ -17,19 +17,17 @@ Change log
 ----------
 
 
-Version 1.5.0.dev3
-^^^^^^^^^^^^^^^^^^
+Version 1.5.0b3
+^^^^^^^^^^^^^^^
 
-This version contains all fixes up to version 1.4.x.
+This version contains all fixes up to version 1.4.2.
 
-Released: not yet
+Released: 2023-11-15
 
 **Incompatible changes:**
 
 * Installation of this package using "setup.py" is no longer supported.
   Use "pip" instead.
-
-**Deprecations:**
 
 **Bug fixes:**
 
@@ -102,14 +100,6 @@ Released: not yet
 * Tolerated when unknown 'resource' types are specified in the metrics.yaml
   file, because one possible reason for that is that a newer metrics.yaml file
   is being used. (issue #379)
-
-**Cleanup:**
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 1.4.0
