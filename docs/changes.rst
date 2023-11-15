@@ -103,6 +103,9 @@ Released: not yet
   file, because one possible reason for that is that a newer metrics.yaml file
   is being used. (issue #379)
 
+* Added adapter name and port index as two new labels 'adapter' and 'port' to
+  metric group 'partition-attached-network-interface'. (issue #347)
+
 **Cleanup:**
 
 **Known issues:**

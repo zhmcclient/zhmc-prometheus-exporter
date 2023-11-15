@@ -125,6 +125,10 @@ metric_groups:
         value: "resource_obj.manager.parent.name"
       - name: nic
         value: "resource_obj.name"
+      - name: adapter
+        value: "adapter_name(resource_obj)"
+      - name: port
+        value: "adapter_port(resource_obj)"
 
   partition-resource:
     type: resource
