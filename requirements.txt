@@ -15,7 +15,7 @@ zhmcclient>=1.9.1
 # prometheus-client>=0.18.x; python_version >= '3.8'
 prometheus-client@git+https://github.com/prometheus/client_python.git@master
 
-urllib3>=1.25.17
+urllib3>=1.25.18
 jsonschema>=3.2.0
 Jinja2>=2.11.3
 
