@@ -308,7 +308,7 @@ clean:
 .PHONY: clobber
 clobber: clean
 	-$(call RMDIR_FUNC,$(doc_build_dir) htmlcov)
-	-$(call RM_FUNC,*.done)
+	-$(call RM_R_FUNC,*.done)
 	@echo "Makefile: $@ done."
 
 $(done_dir)/install_base_$(pymn)_$(PACKAGE_LEVEL).done:
