@@ -206,33 +206,33 @@ ifeq (,$(package_version))
 endif
 
 .PHONY: install
-install: install_$(pymn).done
+install: install_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: $@ done."
 
 .PHONY: develop
-develop: develop_$(pymn).done
+develop: develop_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: $@ done."
 
 .PHONY: check
-check: develop_$(pymn).done
+check: develop_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: Performing flake8 checks with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
 	flake8 --config .flake8 $(package_py_files) $(test_py_files) setup.py $(doc_dir)/conf.py
 	@echo "Makefile: Done performing flake8 checks"
 	@echo "Makefile: $@ done."
 
 .PHONY: pylint
-pylint: develop_$(pymn).done
+pylint: develop_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: Performing pylint checks with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
 	pylint --rcfile=.pylintrc --disable=fixme $(package_py_files) $(test_py_files) setup.py $(doc_dir)/conf.py
 	@echo "Makefile: Done performing pylint checks"
 	@echo "Makefile: $@ done."
 
 .PHONY: safety
-safety: safety_$(pymn).done
+safety: safety_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: $@ done."
 
 .PHONY: check_reqs
-check_reqs: develop_$(pymn).done minimum-constraints.txt requirements.txt
+check_reqs: develop_$(pymn)_$(PACKAGE_LEVEL).done minimum-constraints.txt requirements.txt
 	@echo "Makefile: Checking missing dependencies of this package"
 # TODO-PYPI: Re-enable once a new version of prometheus-client (after 2023-11-09) has been released on Pypi
 # pip-missing-reqs $(package_name) --requirements-file=requirements.txt
@@ -248,7 +248,7 @@ else
 endif
 	@echo "Makefile: $@ done."
 
-safety_$(pymn).done: develop_$(pymn).done Makefile $(safety_policy_file) minimum-constraints.txt
+safety_$(pymn)_$(PACKAGE_LEVEL).done: develop_$(pymn)_$(PACKAGE_LEVEL).done Makefile $(safety_policy_file) minimum-constraints.txt
 	@echo "Makefile: Running Safety"
 	-$(call RM_FUNC,$@)
 	safety check --policy-file $(safety_policy_file) -r minimum-constraints.txt --full-report
@@ -256,7 +256,7 @@ safety_$(pymn).done: develop_$(pymn).done Makefile $(safety_policy_file) minimum
 	@echo "Makefile: Done running Safety"
 
 .PHONY: test
-test: develop_$(pymn).done $(pytest_cov_files)
+test: develop_$(pymn)_$(PACKAGE_LEVEL).done $(pytest_cov_files)
 	@echo "Makefile: Performing unit tests and coverage with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
 	@echo "Makefile: Note that the warning about an unknown metric is part of the tests"
 	pytest $(pytest_cov_opts) -s $(test_dir)
@@ -276,7 +276,7 @@ all: install develop check_reqs check pylint test build builddoc check_reqs
 	@echo "Makefile: $@ done."
 
 .PHONY: all
-docker: _check_version docker_$(pymn).done
+docker: _check_version docker_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: $@ done."
 
 .PHONY: upload
@@ -308,7 +308,7 @@ clobber: clean
 	-$(call RM_FUNC,*.done)
 	@echo "Makefile: $@ done."
 
-install_base_$(pymn).done:
+install_base_$(pymn)_$(PACKAGE_LEVEL).done:
 	@echo "Makefile: Installing base packages with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
 	-$(call RM_FUNC,$@)
 	bash -c 'pv=$$($(PYTHON_CMD) -m pip --version); if [[ $$pv =~ (^pip [1-8]\..*) ]]; then $(PYTHON_CMD) -m pip install pip==9.0.1; fi'
@@ -316,21 +316,21 @@ install_base_$(pymn).done:
 	@echo "Makefile: Done installing base packages"
 	echo "done" >$@
 
-install_$(pymn).done: install_base_$(pymn).done requirements.txt setup.py
+install_$(pymn)_$(PACKAGE_LEVEL).done: install_base_$(pymn)_$(PACKAGE_LEVEL).done requirements.txt setup.py
 	@echo "Makefile: Installing package and its prerequisites with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
 	-$(call RM_FUNC,$@)
 	$(PYTHON_CMD) -m pip install $(pip_level_opts) -e .
 	@echo "Makefile: Done installing package and its prerequisites"
 	echo "done" >$@
 
-develop_$(pymn).done: install_$(pymn).done dev-requirements.txt
+develop_$(pymn)_$(PACKAGE_LEVEL).done: install_$(pymn)_$(PACKAGE_LEVEL).done dev-requirements.txt
 	@echo "Makefile: Installing prerequisites for development with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
 	-$(call RM_FUNC,$@)
 	$(PYTHON_CMD) -m pip install $(pip_level_opts) -r dev-requirements.txt
 	@echo "Makefile: Done installing prerequisites for development"
 	echo "done" >$@
 
-$(doc_build_file): develop_$(pymn).done $(doc_dependent_files)
+$(doc_build_file): develop_$(pymn)_$(PACKAGE_LEVEL).done $(doc_dependent_files)
 	@echo "Makefile: Generating HTML documentation with main file: $@"
 	sphinx-build -b html -v $(doc_dir) $(doc_build_dir)
 	@echo "Makefile: Done generating HTML documentation"
@@ -354,13 +354,13 @@ endif
 # regenerate MANIFEST. Otherwise, changes in MANIFEST.in will not be used.
 # Note: Deleting build is a safeguard against picking up partial build products
 # which can lead to incorrect hashbangs in scripts in wheel archives.
-$(bdist_file) $(sdist_file): _check_version develop_$(pymn).done Makefile MANIFEST.in $(dist_included_files)
+$(bdist_file) $(sdist_file): _check_version develop_$(pymn)_$(PACKAGE_LEVEL).done Makefile MANIFEST.in $(dist_included_files)
 	-$(call RM_FUNC,MANIFEST)
 	-$(call RMDIR_FUNC,build $(package_name).egg-info .eggs)
 	$(PYTHON_CMD) -m build --outdir $(dist_dir)
 	@echo 'Done: Created distribution archives: $@'
 
-docker_$(pymn).done: develop_$(pymn).done Dockerfile .dockerignore Makefile MANIFEST.in $(dist_included_files)
+docker_$(pymn)_$(PACKAGE_LEVEL).done: develop_$(pymn)_$(PACKAGE_LEVEL).done Dockerfile .dockerignore Makefile MANIFEST.in $(dist_included_files)
 	@echo "Makefile: Building Docker image $(docker_registry):latest"
 	-$(call RM_FUNC,$@)
 	docker build -t $(docker_registry):latest .
