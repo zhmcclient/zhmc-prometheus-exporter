@@ -33,7 +33,7 @@ Released: not yet
 
 **Bug fixes:**
 
-* Addressed safety issues up to 2023-11-05.
+* Addressed safety issues up to 2023-11-26.
 
 * Improved and fixed Dockerfile. (issue #297)
 
