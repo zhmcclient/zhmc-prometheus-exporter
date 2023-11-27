@@ -25,7 +25,9 @@
 # pip 18.1 supports PEP-508 URLs, so the deprecated dependency_links no longer needs to be used.
 # Pip 20.2 introduced a new resolver whose backtracking had issues that were resolved only in 21.2.2.
 # pip>=21.0 is needed for the cryptography package on Windows on GitHub Actions.
-pip==23.3
+# pip 22.0 removed support for py36
+pip==21.3.1; python_version == '3.6'
+pip==23.3; python_version >= '3.7'
 
 # setuptools 59.7.0 removed support for py36
 setuptools==59.6.0; python_version == '3.6'
@@ -39,9 +41,8 @@ wheel==0.38.1; python_version >= '3.7'
 
 zhmcclient==1.9.1
 
-prometheus-client>=0.17.0; python_version <= '3.7'
-# TODO-PYPI: Re-enable once a new version of prometheus-client (after 2023-11-09) has been released on Pypi
-# prometheus-client>=0.18.x; python_version >= '3.8'
+prometheus-client==0.17.1; python_version <= '3.7'
+prometheus-client==0.19.0; python_version >= '3.8'
 
 urllib3==1.26.18
 jsonschema==3.2.0

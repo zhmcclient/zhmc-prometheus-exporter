@@ -44,6 +44,8 @@ security:
             reason: Fixed GitPython version 3.1.33 requires Python>=3.7 and is used there
         60841:
             reason: Fixed GitPython version 3.1.35 requires Python>=3.7 and is used there
+        62044:
+            reason: Fixed pip version 23.3 requires Python>=3.7 and is used there
 
     # Continue with exit code 0 when vulnerabilities are found.
     continue-on-vulnerability-error: False

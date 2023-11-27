@@ -1935,13 +1935,14 @@ def main():
 
         if server_cert_file:
             try:
+                # pylint: disable=unexpected-keyword-arg
                 start_http_server(
                     port=port,
                     certfile=server_cert_file,
                     keyfile=server_key_file,
                     client_cafile=ca_cert_file,
                     client_auth_required=(ca_cert_file is not None))
-            # pylint_ disable=broad-exception
+            # pylint: disable=broad-exception
             except Exception as exc:
                 # We catch Exception for now in order to investigate the
                 # issue that with ssl.SSLEOFError being raised occasionally.

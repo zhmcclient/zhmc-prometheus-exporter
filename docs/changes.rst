@@ -97,7 +97,8 @@ Released: not yet
   attached to a partition. (issue #346)
 
 * Added support for HTTPS and mutual TLS (mTLS) by adding a new optional section
-  'prometheus' to the HMC credentials file. (issue #347)
+  'prometheus' to the HMC credentials file and using prometheus-client 0.19.0.
+  (issue #347)
 
 * Tolerated when unknown 'resource' types are specified in the metrics.yaml
   file, because one possible reason for that is that a newer metrics.yaml file

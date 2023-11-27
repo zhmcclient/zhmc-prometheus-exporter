@@ -122,9 +122,7 @@ setuptools.setup(
 
     # Keep these Python versions in sync with:
     # - Section "Supported environments" in docs/intro.rst
-    # TODO-PYPI: Revert changes in this file once a new version of
-    #            prometheus-client (after 2023-11-09) has been released on Pypi
-    python_requires='>=3.8',
+    python_requires='>=3.6',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
@@ -132,6 +130,8 @@ setuptools.setup(
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
