@@ -9,11 +9,10 @@
 # zhmcclient @ git+https://github.com/zhmcclient/python-zhmcclient.git@master
 zhmcclient>=1.9.1
 
-# prometheus-client 0.18 has removed support for py36,37
-# TODO-PYPI: Re-enable once a new version of prometheus-client (after 2023-11-09) has been released on Pypi
-# prometheus-client>=0.17.0; python_version <= '3.7'
-# prometheus-client>=0.18.x; python_version >= '3.8'
-prometheus-client@git+https://github.com/prometheus/client_python.git@master
+# prometheus-client 0.18.0 has removed support for py36,37
+# prometheus-client 0.19.0 added support for HTTPS/mTLS, but requires py38
+prometheus-client>=0.17.1; python_version <= '3.7'
+prometheus-client>=0.19.0; python_version >= '3.8'
 
 urllib3>=1.25.18
 jsonschema>=3.2.0
