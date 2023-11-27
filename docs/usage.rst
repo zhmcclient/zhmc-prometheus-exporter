@@ -161,6 +161,12 @@ the ``zhmc_prometheus_exporter`` command.
 To return all metrics supported by the command, the HMC userid must have the
 following permissions:
 
+* The HMC userid must have the following flag enabled:
+
+  - "Allow access to Web Services management interfaces" flag of the user in
+    the HMC GUI, or "allow-management-interfaces" property of the user at the
+    WS-API.
+
 * Object access permission to the objects for which metrics should be returned.
 
   If the userid does not have object access permission to a particular object,

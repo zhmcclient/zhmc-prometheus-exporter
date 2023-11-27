@@ -68,6 +68,9 @@ Released: not yet
 * Added handling of exceptions raised by the built-in HTTP server during
   its startup, for the HTTP case. (related to issue #397)
 
+* Docs: Added the missing requirement for having the HMC userid enabled for
+  web services access. (issue #419)
+
 **Enhancements:**
 
 * Added support for Python 3.12. Had to increase the minimum versions of
