@@ -71,6 +71,9 @@ Released: not yet
 * Docs: Added the missing requirement for having the HMC userid enabled for
   web services access. (issue #419)
 
+* Fixed LPAR resource metrics '..._processor_count_is_capped' and
+  '..._processor_cap' for absolute cappping.
+
 **Enhancements:**
 
 * Added support for Python 3.12. Had to increase the minimum versions of
