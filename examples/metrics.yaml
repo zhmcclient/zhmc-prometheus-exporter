@@ -423,13 +423,13 @@ metrics:
     - property_name: current-processing-weight
       exporter_name: cp_current_processing_weight
       exporter_desc: Current CP processing weight for the active partition in shared mode (1..999)
-    - properties_expression: "properties['absolute-processing-capping'].type == 'processor'"
+    - properties_expression: "properties['absolute-processing-capping'].type == 'processors'"
       exporter_name: cp_processor_count_is_capped
       exporter_desc: Boolean indicating whether absolute capping is enabled for CP processors (0=false, 1=true)
       labels:
         - name: valuetype
           value: "'bool'"
-    - properties_expression: "properties['absolute-processing-capping'].value if properties['absolute-processing-capping'].type == 'processor' else 0"
+    - properties_expression: "properties['absolute-processing-capping'].value if properties['absolute-processing-capping'].type == 'processors' else 0"
       exporter_name: cp_processor_count_cap
       exporter_desc: Maximum number of CP processors that can be used if absolute capping is enabled, else 0
     - property_name: initial-processing-weight-capped
@@ -462,13 +462,13 @@ metrics:
     - property_name: current-ifl-processing-weight
       exporter_name: ifl_current_processing_weight
       exporter_desc: Current IFL processing weight for the active partition in shared mode (1..999)
-    - properties_expression: "properties['absolute-ifl-capping'].type == 'processor'"
+    - properties_expression: "properties['absolute-ifl-capping'].type == 'processors'"
       exporter_name: ifl_processor_count_is_capped
       exporter_desc: Boolean indicating whether absolute capping is enabled for IFL processors (0=false, 1=true)
       labels:
         - name: valuetype
           value: "'bool'"
-    - properties_expression: "properties['absolute-ifl-capping'].value if properties['absolute-ifl-capping'].type == 'processor' else 0"
+    - properties_expression: "properties['absolute-ifl-capping'].value if properties['absolute-ifl-capping'].type == 'processors' else 0"
       exporter_name: ifl_processor_count_cap
       exporter_desc: Maximum number of IFL processors that can be used if absolute capping is enabled, else 0
     - property_name: initial-ifl-processing-weight-capped
@@ -501,13 +501,13 @@ metrics:
     - property_name: current-cf-processing-weight
       exporter_name: icf_current_processing_weight
       exporter_desc: Current ICF processing weight for the active partition in shared mode (1..999)
-    - properties_expression: "properties['absolute-cf-capping'].type == 'processor'"
+    - properties_expression: "properties['absolute-cf-capping'].type == 'processors'"
       exporter_name: icf_processor_count_is_capped
       exporter_desc: Boolean indicating whether absolute capping is enabled for ICF processors (0=false, 1=true)
       labels:
         - name: valuetype
           value: "'bool'"
-    - properties_expression: "properties['absolute-cf-capping'].value if properties['absolute-cf-capping'].type == 'processor' else 0"
+    - properties_expression: "properties['absolute-cf-capping'].value if properties['absolute-cf-capping'].type == 'processors' else 0"
       exporter_name: icf_processor_count_cap
       exporter_desc: Maximum number of ICF processors that can be used if absolute capping is enabled, else 0
     - property_name: initial-cf-processing-weight-capped
@@ -540,13 +540,13 @@ metrics:
     - property_name: current-ziip-processing-weight
       exporter_name: iip_current_processing_weight
       exporter_desc: Current zIIP processing weight for the active partition in shared mode (1..999)
-    - properties_expression: "properties['absolute-ziip-capping'].type == 'processor'"
+    - properties_expression: "properties['absolute-ziip-capping'].type == 'processors'"
       exporter_name: iip_processor_count_is_capped
       exporter_desc: Boolean indicating whether absolute capping is enabled for zIIP processors (0=false, 1=true)
       labels:
         - name: valuetype
           value: "'bool'"
-    - properties_expression: "properties['absolute-ziip-capping'].value if properties['absolute-ziip-capping'].type == 'processor' else 0"
+    - properties_expression: "properties['absolute-ziip-capping'].value if properties['absolute-ziip-capping'].type == 'processors' else 0"
       exporter_name: iip_processor_count_cap
       exporter_desc: Maximum number of zIIP processors that can be used if absolute capping is enabled, else 0
     - property_name: initial-ziip-processing-weight-capped
@@ -574,13 +574,13 @@ metrics:
     - property_name: current-aap-processing-weight
       exporter_name: aap_current_processing_weight
       exporter_desc: Current zAAP processing weight for the active partition in shared mode (1..999)
-    - properties_expression: "properties['absolute-aap-capping'].type == 'processor'"
+    - properties_expression: "properties['absolute-aap-capping'].type == 'processors'"
       exporter_name: aap_processor_count_is_capped
       exporter_desc: Boolean indicating whether absolute capping is enabled for zAAP processors (0=false, 1=true)
       labels:
         - name: valuetype
           value: "'bool'"
-    - properties_expression: "properties['absolute-aap-capping'].value if properties['absolute-aap-capping'].type == 'processor' else 0"
+    - properties_expression: "properties['absolute-aap-capping'].value if properties['absolute-aap-capping'].type == 'processors' else 0"
       exporter_name: aap_processor_count_cap
       exporter_desc: Maximum number of zAAP processors that can be used if absolute capping is enabled, else 0
     - property_name: initial-aap-processing-weight-capped
@@ -612,14 +612,14 @@ metrics:
       if: "se_version>='2.14.0' and se_version<='2.15.0'"
       exporter_name: cbp_current_processing_weight
       exporter_desc: Current CBP processing weight for the active partition in shared mode (1..999)
-    - properties_expression: "properties['absolute-cbp-capping'].type == 'processor'"
+    - properties_expression: "properties['absolute-cbp-capping'].type == 'processors'"
       if: "se_version>='2.14.0' and se_version<='2.15.0'"
       exporter_name: cbp_processor_count_is_capped
       exporter_desc: Boolean indicating whether absolute capping is enabled for CBP processors (0=false, 1=true)
       labels:
         - name: valuetype
           value: "'bool'"
-    - properties_expression: "properties['absolute-cbp-capping'].value if properties['absolute-cbp-capping'].type == 'processor' else 0"
+    - properties_expression: "properties['absolute-cbp-capping'].value if properties['absolute-cbp-capping'].type == 'processors' else 0"
       if: "se_version>='2.14.0' and se_version<='2.15.0'"
       exporter_name: cbp_processor_count_cap
       exporter_desc: Maximum number of CBP processors that can be used if absolute capping is enabled, else 0
