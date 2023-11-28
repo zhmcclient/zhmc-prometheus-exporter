@@ -648,6 +648,12 @@ def create_session(cred_dict, hmccreds_filename):
     logprint(logging.INFO, PRINT_V,
              "HMC certificate validation: {}".format(verify_cert))
 
+    logprint(logging.INFO, PRINT_V,
+             "HMC timeout/retry configuration: "
+             "connect: {r.connect_timeout} sec / {r.connect_retries} "
+             "retries, read: {r.read_timeout} sec / {r.read_retries} "
+             "retries.".format(r=RETRY_TIMEOUT_CONFIG))
+
     session = zhmcclient.Session(cred_dict["hmc"],
                                  cred_dict["userid"],
                                  cred_dict["password"],
@@ -2136,6 +2142,56 @@ def main():
         yaml_fetch_properties = yaml_metric_content.get(
             'fetch_properties', None)
 
+        # Get the Prometheus communication parameters
+        prom_item = yaml_creds_content.get("prometheus", {})
+        config_port = prom_item.get("port", None)
+        server_cert_file = prom_item.get("server_cert_file", None)
+        if server_cert_file:
+            prometheus_client_supports_https = sys.version_info[0:2] >= (3, 8)
+            if not prometheus_client_supports_https:
+                raise ImproperExit(
+                    "Use of https requires Python 3.8 or higher.")
+            server_key_file = prom_item.get("server_key_file", None)
+            if not server_key_file:
+                raise ImproperExit(
+                    "server_key_file not specified in HMC credentials file "
+                    "when using https.")
+            hmccreds_dir = os.path.dirname(hmccreds_filename)
+            if not os.path.isabs(server_cert_file):
+                server_cert_file = os.path.join(hmccreds_dir, server_cert_file)
+            if not os.path.isabs(server_key_file):
+                server_key_file = os.path.join(hmccreds_dir, server_key_file)
+            ca_cert_file = prom_item.get("ca_cert_file", None)
+            if ca_cert_file and not os.path.isabs(ca_cert_file):
+                ca_cert_file = os.path.join(hmccreds_dir, ca_cert_file)
+        else:  # http
+            server_cert_file = None
+            server_key_file = None
+            ca_cert_file = None
+        port = int(args.p or config_port or DEFAULT_PORT)
+
+        # Print the Prometheus communication parameters
+        if server_cert_file:
+            logprint(logging.INFO, PRINT_V,
+                     "Exporter will be serving HTTPS on port {}".format(port))
+            logprint(logging.INFO, PRINT_V,
+                     "Exporter server certificate file: {}".
+                     format(server_cert_file))
+            logprint(logging.INFO, PRINT_V,
+                     "Exporter server private key file: {}".
+                     format(server_key_file))
+            if ca_cert_file:
+                logprint(logging.INFO, PRINT_V,
+                         "Exporter mutual TLS: Enabled with CA certificates "
+                         "file: {}".
+                         format(ca_cert_file))
+            else:
+                logprint(logging.INFO, PRINT_V,
+                         "Exporter mutual TLS: Disabled")
+        else:
+            logprint(logging.INFO, PRINT_V,
+                     "Exporter will be serving HTTP on port {}".format(port))
+
         # Check that the metric_groups and metrics items are consistent
         for mg in yaml_metrics:
             if mg not in yaml_metric_groups:
@@ -2175,12 +2231,6 @@ def main():
         logprint(logging.INFO, PRINT_V,
                  "Initial sleep time for fetching properties in background: "
                  "{} sec".format(INITIAL_FETCH_SLEEP_TIME))
-
-        logprint(logging.INFO, PRINT_V,
-                 "Timeout/retry configuration: "
-                 "connect: {r.connect_timeout} sec / {r.connect_retries} "
-                 "retries, read: {r.read_timeout} sec / {r.read_retries} "
-                 "retries.".format(r=RETRY_TIMEOUT_CONFIG))
 
         env = jinja2.Environment()
 
@@ -2265,54 +2315,9 @@ def main():
                  "Registering the collector and performing first collection")
         REGISTRY.register(coll)  # Performs a first collection
 
-        # Get the Prometheus communication parameters
-        prom_item = yaml_creds_content.get("prometheus", {})
-        config_port = prom_item.get("port", None)
-        server_cert_file = prom_item.get("server_cert_file", None)
-        if server_cert_file:
-            prometheus_client_supports_https = sys.version_info[0:2] >= (3, 8)
-            if not prometheus_client_supports_https:
-                raise ImproperExit(
-                    "Use of https requires Python 3.8 or higher.")
-            server_key_file = prom_item.get("server_key_file", None)
-            if not server_key_file:
-                raise ImproperExit(
-                    "server_key_file not specified in HMC credentials file "
-                    "when using https.")
-            hmccreds_dir = os.path.dirname(hmccreds_filename)
-            if not os.path.isabs(server_cert_file):
-                server_cert_file = os.path.join(hmccreds_dir, server_cert_file)
-            if not os.path.isabs(server_key_file):
-                server_key_file = os.path.join(hmccreds_dir, server_key_file)
-            ca_cert_file = prom_item.get("ca_cert_file", None)
-            if ca_cert_file and not os.path.isabs(ca_cert_file):
-                ca_cert_file = os.path.join(hmccreds_dir, ca_cert_file)
-        else:  # http
-            server_cert_file = None
-            server_key_file = None
-            ca_cert_file = None
-
-        port = int(args.p or config_port or DEFAULT_PORT)
-
         if server_cert_file:
             logprint(logging.INFO, PRINT_V,
                      "Starting the server with HTTPS on port {}".format(port))
-            logprint(logging.INFO, PRINT_V,
-                     "Server certificate file: {}".format(server_cert_file))
-            logprint(logging.INFO, PRINT_V,
-                     "Server private key file: {}".format(server_key_file))
-            if ca_cert_file:
-                logprint(logging.INFO, PRINT_V,
-                         "Mutual TLS: Enabled with CA certificates file: {}".
-                         format(ca_cert_file))
-            else:
-                logprint(logging.INFO, PRINT_V,
-                         "Mutual TLS: Disabled")
-        else:
-            logprint(logging.INFO, PRINT_V,
-                     "Starting the server with HTTP on port {}".format(port))
-
-        if server_cert_file:
             try:
                 # pylint: disable=unexpected-keyword-arg
                 start_http_server(
@@ -2329,6 +2334,8 @@ def main():
                     "Cannot start HTTPS server: {}: {}".
                     format(exc.__class__.__name__, exc))
         else:
+            logprint(logging.INFO, PRINT_V,
+                     "Starting the server with HTTP on port {}".format(port))
             try:
                 start_http_server(port=port)
             except IOError as exc:
@@ -2343,11 +2350,13 @@ def main():
 
         logprint(logging.INFO, PRINT_ALWAYS,
                  "Exporter is up and running on port {}".format(port))
+
         while True:
             try:
                 time.sleep(1)
             except KeyboardInterrupt:
                 raise ProperExit
+
     except KeyboardInterrupt:
         logprint(logging.WARNING, PRINT_ALWAYS,
                  "Exporter interrupted before server start.")
