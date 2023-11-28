@@ -17,19 +17,17 @@ Change log
 ----------
 
 
-Version 1.5.0.dev4
-^^^^^^^^^^^^^^^^^^
+Version 1.5.0
+^^^^^^^^^^^^^
 
-This version contains all fixes up to version 1.4.x.
+This version contains all fixes up to version 1.4.3.
 
-Released: not yet
+Released: 2023-11-28
 
 **Incompatible changes:**
 
 * Installation of this package using "setup.py" is no longer supported.
   Use "pip" instead.
-
-**Deprecations:**
 
 **Bug fixes:**
 
@@ -73,6 +71,10 @@ Released: not yet
 
 * Fixed LPAR resource metrics '..._processor_count_is_capped' and
   '..._processor_cap' for absolute cappping.
+
+* Fixed ruamel.yaml issue on Python 3.6 by pinning to <0.17.22
+
+* Dev: Resolved dependency conflict with importlib-metadata on Python 3.7
 
 **Enhancements:**
 
@@ -123,12 +125,6 @@ Released: not yet
   older SE versions) now cause a Python warning to be printed. Added the
   respective 'if' conditionals to the default metric definition file for such
   HMC or SE version dependent resource metrics.
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 1.4.0
