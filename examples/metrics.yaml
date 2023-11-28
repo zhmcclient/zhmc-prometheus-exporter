@@ -135,6 +135,7 @@ metric_groups:
     resource: cpc.partition
     prefix: partition
     fetch: true
+    if: "hmc_version>='2.13.1'"
     labels:
       - name: cpc
         value: "resource_obj.manager.parent.name"
@@ -146,6 +147,7 @@ metric_groups:
     resource: console.storagegroup
     prefix: storagegroup
     fetch: true
+    if: "hmc_version>='2.14.1'"
     labels:
       - name: cpc
         value: "uri2resource(resource_obj.properties['cpc-uri']).name"
@@ -157,6 +159,7 @@ metric_groups:
     resource: console.storagevolume
     prefix: storagevolume
     fetch: true
+    if: "hmc_version>='2.14.1'"
     labels:
       - name: cpc
         value: "uri2resource(resource_obj.manager.parent.properties['cpc-uri']).name"
@@ -1479,35 +1482,35 @@ metrics:
       exporter_name: spare_processor_count
       exporter_desc: Number of spare processors of all processor types
     - property_name: storage-total-installed
-      # since HMC/SE version 2.13.1
+      if: "se_version>='2.13.1'"
       exporter_name: total_memory_mib
       exporter_desc: Total amount of installed memory, in MiB
     - property_name: storage-hardware-system-area
-      # since HMC/SE version 2.13.1
+      if: "se_version>='2.13.1'"
       exporter_name: hsa_memory_mib
       exporter_desc: Amount of memory reserved for the base hardware system area (HSA), in MiB
     - property_name: storage-customer
-      # since HMC/SE version 2.13.1
+      if: "se_version>='2.13.1'"
       exporter_name: partition_memory_mib
       exporter_desc: Amount of memory for use by partitions, in MiB
     - property_name: storage-customer-central
-      # since HMC/SE version 2.13.1
+      if: "se_version>='2.13.1'"
       exporter_name: partition_central_memory_mib
       exporter_desc: Amount of memory allocated as central storage across the active partitions, in MiB
     - property_name: storage-customer-expanded
-      # since HMC/SE version 2.13.1
+      if: "se_version>='2.13.1'"
       exporter_name: partition_expanded_memory_mib
       exporter_desc: Amount of memory allocated as expanded storage across the active partitions, in MiB
     - property_name: storage-customer-available
-      # since HMC/SE version 2.13.1
+      if: "se_version>='2.13.1'"
       exporter_name: available_memory_mib
       exporter_desc: Amount of memory not allocated to active partitions, in MiB
     - property_name: storage-vfm-increment-size
-      # since HMC/SE version 2.14.0
+      if: "se_version>='2.14.0'"
       exporter_name: vfm_increment_gib
       exporter_desc: Increment size of IBM Virtual Flash Memory (VFM), in GiB
     - property_name: storage-vfm-total
-      # since HMC/SE version 2.14.0
+      if: "se_version>='2.14.0'"
       exporter_name: total_vfm_gib
       exporter_desc: Total amount of installed IBM Virtual Flash Memory (VFM), in GiB
     - properties_expression: "{'active': 0, 'operating': 0, 'degraded': 1, 'service-required': 2, 'service': 10, 'exceptions': 11, 'not-communicating': 12, 'status-check': 13, 'not-operating': 14, 'no-powerstatus': 15}.get(properties.status, 99)"
