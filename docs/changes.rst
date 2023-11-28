@@ -110,6 +110,9 @@ Released: not yet
 * Added adapter name and port index as two new labels 'adapter' and 'port' to
   metric group 'partition-attached-network-interface'. (issue #347)
 
+* Added handling of evaluation errors for 'if' conditions in metric definition
+  files.
+
 **Cleanup:**
 
 **Known issues:**
