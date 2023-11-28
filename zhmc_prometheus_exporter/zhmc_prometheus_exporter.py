@@ -516,11 +516,13 @@ def eval_condition(condition, hmc_version, se_version):
       hmc_version (string): Expression variable: HMC version as a string.
 
       se_version (string): Expression variable: SE/CPC version as a string.
+        May be None.
 
     Returns:
 
       bool: Evaluated condition
     """
+    org_condition = condition
     hmc_version = split_version(hmc_version, 3)
     if se_version:
         se_version = split_version(se_version, 3)
@@ -530,10 +532,15 @@ def eval_condition(condition, hmc_version, se_version):
             break
         condition = "{}{}{}".format(
             m.group(1), split_version(m.group(2), 3), m.group(3))
-    # pylint: disable=eval-used
-    condition = eval(condition, None,
-                     dict(hmc_version=hmc_version, se_version=se_version))
-    return condition
+    try:
+        # pylint: disable=eval-used
+        return eval(condition, None,
+                    dict(hmc_version=hmc_version, se_version=se_version))
+    except Exception as exc:  # pylint: disable=broad-exception-caught
+        warnings.warn("Ignoring item because its condition {!r} does not "
+                      "properly evaluate: {}: {}".
+                      format(org_condition, exc.__class__.__name__, exc))
+        return False
 
 
 # Metrics context creation & deletion and retrieval derived from
