@@ -118,6 +118,12 @@ Released: not yet
 
 **Cleanup:**
 
+* Resource-based metrics defined in the metric definition file but not
+  returned by the HMC as a resource property (e.g. because the HMC manages
+  older SE versions) now cause a Python warning to be printed. Added the
+  respective 'if' conditionals to the default metric definition file for such
+  HMC or SE version dependent resource metrics.
+
 **Known issues:**
 
 * See `list of open issues`_.

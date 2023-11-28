@@ -1320,8 +1320,17 @@ def build_family_objects_res(
                     try:
                         metric_value = resource.properties[prop_name]
                     except KeyError:
-                        # Skip resource properties that do not exist on older
-                        # CPC/HMC versions.
+                        if cpc:
+                            res_str = " for CPC '{}'".format(cpc.name)
+                        else:
+                            res_str = ""
+                        warnings.warn(
+                            "Skipping metric with exporter name '{}' in "
+                            "resource metric group '{}' in metric definition "
+                            "file {}, because its resource property '{}' is "
+                            "not returned by the HMC{}".
+                            format(exporter_name, metric_group,
+                                   metrics_filename, prop_name, res_str))
                         continue
                 else:
                     prop_expr = yaml_metric.get('properties_expression', None)
