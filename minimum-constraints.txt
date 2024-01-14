@@ -48,7 +48,7 @@ urllib3==1.26.18
 jsonschema==3.2.0
 six==1.14.0; python_version <= '3.9'
 six==1.16.0; python_version >= '3.10'
-Jinja2==2.11.3
+Jinja2==3.0.0
 # PyYAML is also used by dparse
 PyYAML==5.3.1
 
@@ -67,7 +67,7 @@ decorator==4.0.11
 docopt==0.6.2
 idna==2.5
 immutable-views==0.6.0
-MarkupSafe==1.1.0
+MarkupSafe==2.0.0
 pytz==2016.10; python_version <= '3.9'
 pytz==2019.1; python_version >= '3.10'
 requests==2.25.0; python_version == '3.6'
@@ -142,19 +142,24 @@ dill==0.2; python_version <= '3.10'
 dill==0.3.7; python_version >= '3.11'
 
 # Sphinx (no imports, invoked via sphinx-build script):
-Sphinx==3.5.4; python_version <= '3.9'
-Sphinx==4.2.0; python_version >= '3.10'
-docutils==0.13.1; python_version <= '3.9'
-docutils==0.14; python_version == '3.10'
-docutils==0.16; python_version >= '3.11'
-sphinx-git==10.1.1
-GitPython==2.1.1; python_version == '3.6'
-GitPython==3.1.37; python_version >= '3.7'
-sphinxcontrib-websupport==1.1.2
-Pygments==2.7.4; python_version == '3.6'
-Pygments==2.15.0; python_version >= '3.7'
-sphinx-rtd-theme==1.0.0
-Babel==2.9.1
+Sphinx==7.1.0; python_version == '3.8'
+Sphinx==7.2.0; python_version >= '3.9'
+docutils==0.18.1; python_version >= '3.8'
+sphinx-git==10.1.1; python_version >= '3.8'
+GitPython==3.1.37; python_version >= '3.8'
+Pygments==2.15.0; python_version >= '3.8'
+sphinx-rtd-theme==2.0.0; python_version >= '3.8'
+sphinxcontrib-applehelp==1.0.4; python_version >= '3.8'
+sphinxcontrib-devhelp==1.0.2; python_version >= '3.8'
+sphinxcontrib-htmlhelp==2.0.1; python_version >= '3.8'
+sphinxcontrib-jquery==4.1; python_version >= '3.8'
+sphinxcontrib-jsmath==1.0.1; python_version >= '3.8'
+sphinxcontrib-qthelp==1.0.3; python_version >= '3.8'
+sphinxcontrib-serializinghtml==1.1.5; python_version == '3.8'
+sphinxcontrib-serializinghtml==1.1.9; python_version >= '3.9'
+sphinxcontrib-websupport==1.2.4; python_version >= '3.8'
+autodocsumm==0.2.12; python_version >= '3.8'
+Babel==2.9.1; python_version >= '3.8'
 
 # Twine (no imports, invoked via twine script):
 # readme-renderer (used by twine, uses Pygments)
@@ -183,7 +188,7 @@ contextlib2==0.6.0
 gitdb2==2.0.0; python_version == '3.6'
 gitdb==4.0.8
 html5lib==1.0.1  # used with minimum package levels
-imagesize==0.7.1
+imagesize==1.3.0
 iniconfig==1.1.1; python_version >= "3.6"  # used by pytest since its 6.0.0 which requires py36
 keyring==18.0.0
 more-itertools==8.0.0  # used with minimum package levels
@@ -195,14 +200,7 @@ pyproject-hooks==1.0.0; python_version >= '3.7'
 requests-toolbelt==0.8.0
 rfc3986==1.4.0; python_version >= "3.6"  # used by twine since its 3.2.0 which requires py36
 smmap==3.0.1
-sphinxcontrib-applehelp==1.0.2
-sphinxcontrib-devhelp==1.0.2
-sphinxcontrib-htmlhelp==1.0.3; python_version <= '3.9'
-sphinxcontrib-htmlhelp==2.0.0; python_version >= '3.10'
-sphinxcontrib-jsmath==1.0.1
-sphinxcontrib-serializinghtml==1.1.5
-sphinxcontrib-qthelp==1.0.3
-snowballstemmer==1.2.1
+snowballstemmer==2.0.0
 toml==0.10.0  # used by pylint and pytest since some version
 tomli==1.1.0; python_version >= '3.7' and python_version <= '3.10'
 tqdm==4.28.1
