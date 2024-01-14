@@ -16,7 +16,7 @@ prometheus-client>=0.19.0; python_version >= '3.8'
 
 urllib3>=1.25.18
 jsonschema>=3.2.0
-Jinja2>=2.11.3
+Jinja2>=3.0.0
 
 # PyYAML 5.3.x has wheel archives for Python 2.7, 3.5 - 3.9
 # PyYAML 5.4.x has wheel archives for Python 2.7, 3.6 - 3.9
