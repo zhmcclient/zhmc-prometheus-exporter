@@ -93,24 +93,28 @@ dill>=0.2; python_version <= '3.10'
 dill>=0.3.7; python_version >= '3.11'
 
 # Sphinx (no imports, invoked via sphinx-build script):
-# Keep in sync with rtd-requirements.txt
-# Sphinx 4.0.0 breaks autodocsumm and needs to be excluded
-# Sphinx <4.3.0 requires docutils <0.18 due to an incompatibility
-Sphinx>=3.5.4,!=4.0.0,<4.3.0; python_version <= '3.9'
-Sphinx>=4.2.0; python_version >= '3.10'
-docutils>=0.13.1,<0.17; python_version <= '3.9'
-docutils>=0.14,<0.17; python_version == '3.10'
-docutils>=0.16,<0.17; python_version >= '3.11'
-sphinx-git>=10.1.1
-GitPython>=2.1.1; python_version == '3.6'
-GitPython>=3.1.37; python_version >= '3.7'
-sphinxcontrib-fulltoc>=1.2.0
-sphinxcontrib-websupport>=1.1.2
-Pygments>=2.7.4; python_version == '3.6'
-Pygments>=2.15.0; python_version >= '3.7'
-sphinx-rtd-theme>=1.0.0
-# Babel 2.7.0 fixes an ImportError for MutableMapping which starts failing on Python 3.10
-Babel>=2.9.1
+# Sphinx 6.0.0 started requiring Python>=3.8
+# Sphinx 7.2.0 started requiring Python>=3.9
+# Sphinx is used only on Python>=3.8
+Sphinx>=7.1.0; python_version == '3.8'
+Sphinx>=7.2.0; python_version >= '3.9'
+# Sphinx 7.1.0 pins docutils to <0.21
+docutils>=0.18.1,<0.21; python_version == '3.8'
+sphinx-git>=10.1.1; python_version >= '3.8'
+GitPython>=3.1.37; python_version >= '3.8'
+Pygments>=2.15.0; python_version >= '3.8'
+sphinx-rtd-theme>=2.0.0; python_version >= '3.8'
+sphinxcontrib-applehelp>=1.0.4; python_version >= '3.8'
+sphinxcontrib-devhelp>=1.0.2; python_version >= '3.8'
+sphinxcontrib-htmlhelp>=2.0.1; python_version >= '3.8'
+sphinxcontrib-jquery>=4.1; python_version >= '3.8'
+sphinxcontrib-jsmath>=1.0.1; python_version >= '3.8'
+sphinxcontrib-qthelp>=1.0.3; python_version >= '3.8'
+sphinxcontrib-serializinghtml>=1.1.5; python_version == '3.8'
+sphinxcontrib-serializinghtml>=1.1.9; python_version >= '3.9'
+sphinxcontrib-websupport>=1.2.4; python_version >= '3.8'
+autodocsumm>=0.2.12; python_version >= '3.8'
+Babel>=2.9.1; python_version >= '3.8'
 
 # Twine (no imports, invoked via twine script):
 twine>=3.0.0
