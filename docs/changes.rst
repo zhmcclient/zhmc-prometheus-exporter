@@ -28,7 +28,7 @@ Released: not yet
 
 **Bug fixes:**
 
-* Addressed safety issues up to 2024-02-11.
+* Addressed safety issues up to 2024-02-18.
 
 * Docs: Increased minimum Sphinx versions to 7.1.0 on Python 3.8 and to 7.2.0 on
   Python >=3.9 and adjusted dependent package versions in order to fix a version
