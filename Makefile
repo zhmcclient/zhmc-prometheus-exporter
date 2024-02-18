@@ -137,14 +137,15 @@ ifeq ($(python_version),3.6)
   check_reqs_packages := pip_check_reqs pipdeptree build pytest coverage coveralls flake8 pylint twine
 else
 ifeq ($(python_version),3.7)
-  check_reqs_packages := pip_check_reqs pipdeptree build pytest coverage coveralls flake8 pylint twine
+  check_reqs_packages := pip_check_reqs pipdeptree build pytest coverage coveralls flake8 pylint twine safety
 else
-  check_reqs_packages := pip_check_reqs pipdeptree build pytest coverage coveralls flake8 pylint twine sphinx
+  check_reqs_packages := pip_check_reqs pipdeptree build pytest coverage coveralls flake8 pylint twine safety sphinx
 endif
 endif
 
 # Safety policy file
-safety_policy_file := .safety-policy.yml
+safety_install_policy_file := .safety-policy-install.yml
+safety_all_policy_file := .safety-policy-all.yml
 
 pytest_cov_opts := --cov $(package_name) --cov-config .coveragerc --cov-append --cov-report=html:htmlcov
 pytest_cov_files := .coveragerc
@@ -239,7 +240,7 @@ pylint: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: $@ done."
 
 .PHONY: safety
-safety: $(done_dir)/safety_$(pymn)_$(PACKAGE_LEVEL).done
+safety: $(done_dir)/safety_all_$(pymn)_$(PACKAGE_LEVEL).done $(done_dir)/safety_install_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: $@ done."
 
 .PHONY: check_reqs
@@ -258,12 +259,27 @@ else
 endif
 	@echo "Makefile: $@ done."
 
-$(done_dir)/safety_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done Makefile $(safety_policy_file) minimum-constraints.txt
-	@echo "Makefile: Running Safety"
+$(done_dir)/safety_all_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done Makefile $(safety_all_policy_file) minimum-constraints.txt
+ifeq ($(python_version),3.6)
+	@echo "Makefile: Warning: Skipping Safety for all packages on Python $(python_version)" >&2
+else
+	@echo "Makefile: Running Safety for all packages"
 	-$(call RM_FUNC,$@)
-	safety check --policy-file $(safety_policy_file) -r minimum-constraints.txt --full-report
+	-safety check --policy-file $(safety_all_policy_file) -r minimum-constraints.txt --full-report
 	echo "done" >$@
-	@echo "Makefile: Done running Safety"
+	@echo "Makefile: Done running Safety for all packages"
+endif
+
+$(done_dir)/safety_install_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done Makefile $(safety_install_policy_file) requirements.txt
+ifeq ($(python_version),3.6)
+	@echo "Makefile: Warning: Skipping Safety for all packages on Python $(python_version)" >&2
+else
+	@echo "Makefile: Running Safety for install packages"
+	-$(call RM_FUNC,$@)
+	safety check --policy-file $(safety_install_policy_file) -r requirements.txt --full-report
+	echo "done" >$@
+	@echo "Makefile: Done running Safety for install packages"
+endif
 
 .PHONY: test
 test: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done $(pytest_cov_files)

@@ -40,6 +40,9 @@ Released: not yet
 
 **Enhancements:**
 
+* Split safety runs into one against all requirements that may fail and one
+  against the install requirements that must succeed. (issue #441)
+
 **Cleanup:**
 
 * Increased versions of GitHub Actions plugins to increase node.js runtime

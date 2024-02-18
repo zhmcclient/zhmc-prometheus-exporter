@@ -74,7 +74,8 @@ pytz==2019.1; python_version >= '3.10'
 requests==2.25.0; python_version == '3.6'
 requests==2.31.0; python_version >= '3.7'
 stomp.py==4.1.23
-typing-extensions==3.10.0  # Used in some combinations of Python version and package level
+typing-extensions==3.10.0; python_version == '3.6'
+typing-extensions==4.7.1; python_version >= '3.7'
 zipp==0.5.2  # Used in some combinations of Python version and package level
 
 # Direct dependencies for development (must be consistent with dev-requirements.txt)
@@ -85,10 +86,18 @@ build==0.5.0
 pep517==0.9.1
 
 # Safety CI by pyup.io
-# Safety is run only on Python >=3.6
-safety==2.2.0
-dparse==0.6.2
-ruamel.yaml==0.17.21
+# Safety is run only on Python >=3.7
+safety==3.0.1; python_version >= '3.7'
+
+safety-schemas==0.0.1; python_version >= '3.7'
+# TODO: Change to dparse 0.6.4 once released
+dparse==0.6.4b0; python_version >= '3.7'
+ruamel.yaml==0.17.21; python_version >= '3.7'
+click==8.0.2; python_version >= '3.7'
+Authlib==1.2.0; python_version >= '3.7'
+marshmallow==3.15.0; python_version >= '3.7'
+pydantic==1.10.12; python_version >= '3.7'
+typer==0.9.0; python_version >= '3.7'
 
 # Unit test (imports into testcases):
 # pytest 4.3.1 solves an issue on Python 3 with minimum package levels
