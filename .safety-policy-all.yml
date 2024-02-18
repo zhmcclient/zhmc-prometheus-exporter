@@ -1,0 +1,57 @@
+# Safety policy file
+# For documentation, see https://docs.pyup.io/docs/safety-20-policy-file
+
+# Configuration for the 'safety check' command
+security:
+
+    # Ignore certain severities.
+    # A number between 0 and 10, with the following significant values:
+    # - 9: ignore all vulnerabilities except CRITICAL severity
+    # - 7: ignore all vulnerabilities except CRITICAL & HIGH severity
+    # - 4: ignore all vulnerabilities except CRITICAL, HIGH & MEDIUM severity
+    ignore-cvss-severity-below: 0
+
+    # Ignore unknown severities.
+    # Should be set to False.
+    ignore-cvss-unknown-severity: False
+
+    # Ignore unpinned requirements.
+    # Should be set to False.
+    ignore-unpinned-requirements: False
+
+    # List of specific vulnerabilities to ignore.
+    # {id}:                 # vulnerability ID
+    #     reason: {text}    # optional: Reason for ignoring it. Will be reported in the Safety reports
+    #     expires: {date}   # optional: Date when this ignore will expire
+    ignore-vulnerabilities:
+        39611:
+            reason: Fixed PyYAML versions 5.4 to 6.0.0 do not work with Cython 3, and the full_load method or FullLoader is not used
+        43975:
+            reason: Fixed Urllib3 versions are excluded by requests
+        51457:
+            reason: Py package is no longer being fixed (latest version 1.11.0)
+        51499:
+            reason: Fixed Wheel version requires Python>=3.7 and is used there; Risk is on Pypi side
+        52322:
+            reason: Fixed GitPython version requires Python>=3.7 and is used there
+        52495:
+            reason: Fixed Setuptools version requires Python>=3.7 and is used there; Risk is on Pypi side
+        52518:
+            reason: Fixed GitPython version requires Python>=3.7 and is used there
+        58755:
+            reason: Fixed requests version 2.31.0 requires Python>=3.7 and is used there
+        58910:
+            reason: Fixed pygments version 2.15.0 requires Python>=3.7 and is used there
+        60350:
+            reason: Fixed GitPython version 3.1.32 requires Python>=3.7 and is used there
+        60789:
+            reason: Fixed GitPython version 3.1.33 requires Python>=3.7 and is used there
+        60841:
+            reason: Fixed GitPython version 3.1.35 requires Python>=3.7 and is used there
+        62044:
+            reason: Fixed pip version 23.3 requires Python>=3.7 and is used there
+        64227:
+            reason: Fixed Jinja2 version 3.1.3 requires Python>=3.7 and is used there
+
+    # Continue with exit code 0 when vulnerabilities are found.
+    continue-on-vulnerability-error: False
