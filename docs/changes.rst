@@ -36,6 +36,10 @@ Released: not yet
   Disabled Sphinx runs on Python <=3.7 in order to no longer having to deal
   with older Sphinx versions. (issue #444)
 
+* Fixed warning about ignoring label 'adapter/port' on metric group
+  'partition-attached-network-interface' due to error in rendering the Jinja2
+  expression for a label value. (issue #450)
+
 **Enhancements:**
 
 **Cleanup:**
