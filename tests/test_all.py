@@ -277,7 +277,7 @@ def setup_metrics_context():
          "metric-groups": ["dpm-system-usage-overview"]})
     resources = {}
     resources["cpc-resource"] = [client.cpcs.find(name='cpc_1')]
-    return context, resources
+    return session, context, resources
 
 
 def teardown_metrics_context(context):
@@ -292,7 +292,7 @@ class TestMetrics(unittest.TestCase):
         # pylint: disable=no-self-use
         """Tests retrieve_metrics()"""
 
-        context, _ = setup_metrics_context()
+        _, context, _ = setup_metrics_context()
 
         metrics_object = zhmc_prometheus_exporter.retrieve_metrics(context)
 
@@ -354,12 +354,12 @@ class TestMetrics(unittest.TestCase):
         hmc_version = '2.15.0'
         se_versions = {'cpc_1': '2.15.0'}
 
-        context, resources = setup_metrics_context()
+        session, context, resources = setup_metrics_context()
         metrics_object = zhmc_prometheus_exporter.retrieve_metrics(context)
 
         families = zhmc_prometheus_exporter.build_family_objects(
             metrics_object, yaml_metric_groups, yaml_metrics, 'file',
-            extra_labels, hmc_version, se_versions)
+            extra_labels, hmc_version, se_versions, session)
 
         assert len(families) == 1
         assert "zhmc_pre_processor_usage" in families
@@ -380,7 +380,7 @@ class TestMetrics(unittest.TestCase):
 
         families = zhmc_prometheus_exporter.build_family_objects_res(
             resources, yaml_metric_groups, yaml_metrics, 'file',
-            extra_labels, hmc_version, se_versions)
+            extra_labels, hmc_version, se_versions, session)
 
         assert len(families) == 1
         assert "zhmc_foo_name" in families
