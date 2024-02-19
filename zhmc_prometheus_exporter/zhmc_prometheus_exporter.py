@@ -1022,27 +1022,96 @@ def get_backing_adapter_info(nic):
     return adapter_props['name'], port_props['index']
 
 
+def uri_to_resource(client, uri2resource, uri):
+    """
+    Look up a zhmcclient resource object from a URI, using the uri2resoure
+    dict. If the URI is not in the dict, determine the resource object from
+    the URI and add it to the dict. This supports the addition of resources
+    after the start of the exporter.
+
+    The following URIs are supported (these are all that are
+    currently used by uri2resource and related functions in the default
+    metric definition file):
+
+      * nic - used in nic metric group (to get back to original NIC object that
+        has adapter_name/port as additonal attributes)
+      * storage groups - used in partition metric group
+      * cpc - used in storage-group and storage-volume metric groups
+    """
+
+    try:
+        resource = uri2resource[uri]
+    except KeyError:
+        # The uri2resource dict was created at startup time of the
+        # exporter and was filled with all resources (of types the exporter
+        # supports) that existed at that time. The KeyError means that
+        # a new resource came into existence since then.
+
+        m = re.match(r'(/api/partitions/[a-f0-9\-]+)/nics/[a-f0-9\-]+$', uri)
+        if m is not None:
+            # Resource URI is for a NIC
+            partition_uri = m.group(1)
+            partition_props = client.get(partition_uri)
+            cpc_uri = partition_props.properties['parent']
+            cpc = client.cpcs.resource_object(cpc_uri)
+            partition = cpc.partitions.resource_object(partition_uri)
+            nic = partition.nics.resource_object(uri)
+            logprint(logging.INFO, PRINT_V,
+                     "Adding NIC {}.{}.{} after exporter start for fast "
+                     "lookup".format(cpc.name, partition.name, nic.name))
+            uri2resource[uri] = nic
+            return nic
+
+        m = re.match(r'(/api/storage-groups/[a-f0-9\-]+)$', uri)
+        if m is not None:
+            # Resource URI is for a storage group
+            stogrp = client.storage_groups.resource_object(uri)
+            logprint(logging.INFO, PRINT_V,
+                     "Adding storage group {}.{} after exporter start for "
+                     "fast lookup".format(cpc.name, stogrp.name))
+            uri2resource[uri] = stogrp
+            return stogrp
+
+        m = re.match(r'(/api/cpcs/[a-f0-9\-]+)$', uri)
+        if m is not None:
+            # Resource URI is for a CPC
+            cpc = client.cpcs.resource_object(uri)
+            logprint(logging.INFO, PRINT_V,
+                     "Adding CPC {} after exporter start for fast lookup".
+                     format(cpc.name))
+            uri2resource[uri] = cpc
+            return cpc
+
+        raise OtherError(
+            "Resource type for URI {u} is not supported for dynamic addition "
+            "of resources after start of exporter".format(u=uri))
+
+    return resource
+
+
 def expand_group_label_value(
-        env, label_name, group_name, item_value, resource_obj,
+        env, label_name, group_name, item_value, client, resource_obj,
         uri2resource, metric_values=None):
     """
     Expand a Jinja2 expression on a label value, for a metric group label.
     """
 
     def uri2resource_func(uri):
-        return uri2resource[uri]
+        return uri_to_resource(client, uri2resource, uri)
 
     def uris2resources_func(uris):
-        return [uri2resource[uri] for uri in uris]
+        return [uri_to_resource(client, uri2resource, uri) for uri in uris]
 
     def adapter_name_func(nic):
-        # Get the Nic object that has the dynamic attributes with adapter info
-        nic_org = uri2resource[nic.uri]
+        # Get the original Nic object that has the dynamic attributes with the
+        # adapter info
+        nic_org = uri_to_resource(client, uri2resource, nic.uri)
         return nic_org.adapter_name
 
     def adapter_port_func(nic):
-        # Get the Nic object that has the dynamic attributes with adapter info
-        nic_org = uri2resource[nic.uri]
+        # Get the original Nic object that has the dynamic attributes with the
+        # adapter info
+        nic_org = uri_to_resource(client, uri2resource, nic.uri)
         return str(nic_org.port_index)
 
     try:
@@ -1072,26 +1141,28 @@ def expand_group_label_value(
 
 
 def expand_metric_label_value(
-        env, label_name, metric_exporter_name, item_value, resource_obj,
-        uri2resource, metric_values=None):
+        env, label_name, metric_exporter_name, item_value, client,
+        resource_obj, uri2resource, metric_values=None):
     """
     Expand a Jinja2 expression on a label value, for a metric label.
     """
 
     def uri2resource_func(uri):
-        return uri2resource[uri]
+        return uri_to_resource(client, uri2resource, uri)
 
     def uris2resources_func(uris):
-        return [uri2resource[uri] for uri in uris]
+        return [uri_to_resource(client, uri2resource, uri) for uri in uris]
 
     def adapter_name_func(nic):
-        # Get the Nic object that has the dynamic attributes with adapter info
-        nic_org = uri2resource[nic.uri]
+        # Get the original Nic object that has the dynamic attributes with the
+        # adapter info
+        nic_org = uri_to_resource(client, uri2resource, nic.uri)
         return nic_org.adapter_name
 
     def adapter_port_func(nic):
-        # Get the Nic object that has the dynamic attributes with adapter info
-        nic_org = uri2resource[nic.uri]
+        # Get the original Nic object that has the dynamic attributes with the
+        # adapter info
+        nic_org = uri_to_resource(client, uri2resource, nic.uri)
         return str(nic_org.port_index)
 
     try:
@@ -1139,7 +1210,7 @@ def cpc_from_resource(resource):
 def build_family_objects(
         metrics_object, yaml_metric_groups, yaml_metrics, metrics_filename,
         extra_labels, hmc_version, hmc_api_version, hmc_features,
-        se_versions_by_cpc, se_features_by_cpc, resource_cache=None,
+        se_versions_by_cpc, se_features_by_cpc, session, resource_cache=None,
         uri2resource=None):
     """
     Go through all retrieved metrics and build the Prometheus Family objects.
@@ -1154,6 +1225,7 @@ def build_family_objects(
         GaugeMetricFamily object
     """
     env = jinja2.Environment()
+    client = zhmcclient.Client(session)
 
     family_objects = {}
     for metric_group_value in metrics_object.metric_group_values:
@@ -1204,8 +1276,8 @@ def build_family_objects(
                 label_name = item['name']
                 item_value = item['value']
                 label_value = expand_group_label_value(
-                    env, label_name, metric_group, item_value, resource,
-                    uri2resource, metric_values)
+                    env, label_name, metric_group, item_value, client,
+                    resource, uri2resource, metric_values)
                 if label_value is not None:
                     mg_labels[label_name] = label_value
 
@@ -1257,7 +1329,8 @@ def build_family_objects(
                     item_value = item['value']
                     label_value = expand_metric_label_value(
                         env, label_name, yaml_metric["exporter_name"],
-                        item_value, resource, uri2resource, metric_values)
+                        item_value, client, resource, uri2resource,
+                        metric_values)
                     if label_value is not None:
                         labels[label_name] = label_value
 
@@ -1293,7 +1366,7 @@ def build_family_objects(
 def build_family_objects_res(
         resources, yaml_metric_groups, yaml_metrics, metrics_filename,
         extra_labels, hmc_version, hmc_api_version, hmc_features,
-        se_versions_by_cpc, se_features_by_cpc, resource_cache=None,
+        se_versions_by_cpc, se_features_by_cpc, session, resource_cache=None,
         uri2resource=None):
     """
     Go through all auto-updated resources and build the Prometheus Family
@@ -1309,6 +1382,7 @@ def build_family_objects_res(
         GaugeMetricFamily object
     """
     env = jinja2.Environment()
+    client = zhmcclient.Client(session)
 
     family_objects = {}
     for metric_group, res_list in resources.items():
@@ -1359,8 +1433,8 @@ def build_family_objects_res(
                 label_name = item['name']
                 item_value = item['value']
                 label_value = expand_group_label_value(
-                    env, label_name, metric_group, item_value, resource,
-                    uri2resource)
+                    env, label_name, metric_group, item_value, client,
+                    resource, uri2resource)
                 if label_value is not None:
                     mg_labels[label_name] = label_value
 
@@ -1497,8 +1571,8 @@ def build_family_objects_res(
                     label_name = item['name']
                     item_value = item['value']
                     label_value = expand_metric_label_value(
-                        env, label_name, exporter_name, item_value, resource,
-                        uri2resource)
+                        env, label_name, exporter_name, item_value, client,
+                        resource, uri2resource)
                     if label_value is not None:
                         labels[label_name] = label_value
 
@@ -1628,7 +1702,7 @@ class ZHMCUsageCollector():
             self.yaml_metrics, self.filename_metrics,
             self.extra_labels, self.hmc_version, self.hmc_api_version,
             self.hmc_features, self.se_versions_by_cpc, self.se_features_by_cpc,
-            self.resource_cache, self.uri2resource)
+            self.session, self.resource_cache, self.uri2resource)
 
         logprint(logging.DEBUG, None,
                  "Building family objects for resource metrics")
@@ -1637,7 +1711,7 @@ class ZHMCUsageCollector():
             self.yaml_metrics, self.filename_metrics,
             self.extra_labels, self.hmc_version, self.hmc_api_version,
             self.hmc_features, self.se_versions_by_cpc, self.se_features_by_cpc,
-            self.resource_cache, self.uri2resource))
+            self.session, self.resource_cache, self.uri2resource))
 
         logprint(logging.DEBUG, None,
                  "Returning family objects")

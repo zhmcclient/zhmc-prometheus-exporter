@@ -45,6 +45,10 @@ will also work with the prior version of the file (but not vice versa).
 * Docs: Added missing 'se_version' variable to description of 'export-condition'
   and 'fetch-condition' in the Usage section. (part of issue #459)
 
+* Fixed warning about ignoring label 'adapter/port' on metric group
+  'partition-attached-network-interface' due to error in rendering the Jinja2
+  expression for a label value. (issue #450)
+
 **Enhancements:**
 
 * Split safety runs into one against all requirements that may fail and one
