@@ -90,6 +90,22 @@ will also work with the prior version of the file (but not vice versa).
 * Added support for environment variables 'TESTCASES' for specifying testcases
   for the unit test, and 'TESTOPTS' for specifying pytest options. (issue #461)
 
+* Added support for the new partition power consumption metrics in z16
+  (issue #448):
+
+  In metric group 'zcpc-environmentals-and-power':
+
+  - 'zhmc_cpc_total_partition_power_watt' - Total power consumption of all
+    partitions of the CPC
+  - 'zhmc_cpc_total_infrastructure_power_watt' - Total power consumption of all
+    infrastructure components of the CPC
+  - 'zhmc_cpc_total_unassigned_power_watt' - Total power consumption of all
+    unassigned components of the CPC
+
+  In metric group 'logical-partition-usage':
+
+  - 'zhmc_partition_power_watt' - Power consumption of the partition
+
 **Cleanup:**
 
 * Increased versions of GitHub Actions plugins to increase node.js runtime

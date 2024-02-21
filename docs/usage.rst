@@ -482,6 +482,9 @@ zhmc_cpc_heat_load_total_btu_per_hour                   C+D   G     Total heat l
 zhmc_cpc_heat_load_forced_air_btu_per_hour              C+D   G     Heat load of the CPC covered by forced-air
 zhmc_cpc_heat_load_water_btu_per_hour                   C+D   G     Heat load of the CPC covered by water
 zhmc_cpc_exhaust_temperature_celsius                    C+D   G     Exhaust temperature of the CPC
+zhmc_cpc_total_partition_power_watt                     C     G     Total power consumption of all partitions; only with SE feature environmental-metrics
+zhmc_cpc_total_infrastructure_power_watt                C+D   G     Total power consumption of all infrastructure comp.; only with SE feature environmental-metrics
+zhmc_cpc_total_unassigned_power_watt                    C+D   G     Total power consumption of all unassigned comp.; only with SE feature environmental-metrics
 zhmc_cpc_power_cord1_phase_a_watt                       C+D   G     Power in Phase A of line cord 1 - 0 if not available
 zhmc_cpc_power_cord1_phase_b_watt                       C+D   G     Power in Phase B of line cord 1 - 0 if not available
 zhmc_cpc_power_cord1_phase_c_watt                       C+D   G     Power in Phase C of line cord 1 - 0 if not available
@@ -524,6 +527,7 @@ zhmc_partition_crypto_adapter_usage_ratio               D     G     Usage ratio 
 zhmc_partition_network_adapter_usage_ratio              D     G     Usage ratio of all network adapters of the partition
 zhmc_partition_storage_adapter_usage_ratio              D     G     Usage ratio of all storage adapters of the partition
 zhmc_partition_zvm_paging_rate_pages_per_second         C     G     z/VM paging rate in pages/sec
+zhmc_partition_power_watt                               C     G     Power consumption of the partition; only with SE feature environmental-metrics
 zhmc_partition_processor_mode_int                       C+D   G     Allocation mode for processors as an integer (0=shared, 1=dedicated); since HMC 2.15
 zhmc_partition_threads_per_processor_ratio              D     G     Number of threads per processor used by OS
 zhmc_partition_defined_capacity_msu_per_hour            C     G     Defined capacity expressed in terms of MSU per hour

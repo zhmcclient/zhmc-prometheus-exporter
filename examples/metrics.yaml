@@ -337,6 +337,11 @@ metrics:
       percent: false
       exporter_name: zvm_paging_rate_pages_per_second
       exporter_desc: z/VM paging rate in pages/sec
+    power-consumption:
+      if: "'environmental-metrics' in se_features"
+      percent: false
+      exporter_name: power_watt
+      exporter_desc: Power consumption of the partition
 
   channel-usage:
     channel-usage:
@@ -1140,6 +1145,21 @@ metrics:
       percent: false
       exporter_name: exhaust_temperature_celsius
       exporter_desc: Exhaust temperature of the CPC
+    total-partition-power-consumption-watts:
+      if: "'environmental-metrics' in se_features"  # and only in classic mode (no need to put that into condition)
+      percent: false
+      exporter_name: total_partition_power_watt
+      exporter_desc: Total power consumption of all partitions of the CPC (CPU, memory, I/O adapters)
+    total-infrastructure-power-consumption-watts:
+      if: "'environmental-metrics' in se_features"
+      percent: false
+      exporter_name: total_infrastructure_power_watt
+      exporter_desc: Total power consumption of all infrastructure components of the CPC (TOR switches, SE/HMAs, PDUs)
+    total-unassigned-power-consumption-watts:
+      if: "'environmental-metrics' in se_features"
+      percent: false
+      exporter_name: total_unassigned_power_watt
+      exporter_desc: Total power consumption of all unassigned components of the CPC (CPU, memory, I/O adapters)
 
   environmental-power-status:
     linecord-one-power-phase-A:
