@@ -500,7 +500,9 @@ def resource_str(resource_obj):
     return res_str
 
 
-def eval_condition(condition, hmc_version, se_version):
+def eval_condition(
+        condition, hmc_version, hmc_api_version, hmc_features, se_version,
+        se_features, resource_obj):
     """
     Evaluate a Python expression as a condition and return a boolean indicating
     whether the condition is true.
@@ -513,10 +515,27 @@ def eval_condition(condition, hmc_version, se_version):
       condition (string): Python expression to evaluate as a condition. The
         remaining parameters are valid variables to use in the expression.
 
-      hmc_version (string): Expression variable: HMC version as a string.
+      hmc_version (string): Expression variable: HMC version, as a string
+        'M.N.U'.
 
-      se_version (string): Expression variable: SE/CPC version as a string.
-        May be None.
+      hmc_api_version (tuple(M,N): Expression variable: HMC API version as a
+        tuple (M, N).
+
+      hmc_features (list of string): Expression variable: List of the names of
+        the API features supported by the HMC. Will be empty before HMC API
+        version 4.10.
+
+      se_version (string): Expression variable: SE/CPC version, as a string
+        'M.N.U'., or None for metric groups or when there is no CPC context
+        for the metric.
+
+      se_features (list of string): Expression variable: List of the names of
+        the API features supported by the SE/CPC (will be empty before HMC API
+        version 4.10 or before SE version 2.16.0), or None for metric groups
+        or when there is no CPC context for the metric.
+
+      resource_obj (zhmcclient.BaseResource): Expression variable: The resource
+        object for metrics, or None for metric groups.
 
     Returns:
 
@@ -526,21 +545,56 @@ def eval_condition(condition, hmc_version, se_version):
     hmc_version = split_version(hmc_version, 3)
     if se_version:
         se_version = split_version(se_version, 3)
+    if se_features is None:
+        se_features = []
+    if hmc_features is None:
+        hmc_features = []
+
+    # Convert literal strings 'M.N.U' in condition to tuple syntax (M, N, U)
     while True:
         m = COND_PATTERN.match(condition)
         if m is None:
             break
         condition = "{}{}{}".format(
             m.group(1), split_version(m.group(2), 3), m.group(3))
+
+    # The variables that can be used in the expression
+    eval_vars = dict(
+        hmc_version=hmc_version,
+        hmc_api_version=hmc_api_version,
+        hmc_features=hmc_features,
+    )
+    if resource_obj:
+        # In an export-condition (not in a fetch-condition)
+        eval_vars.update(dict(
+            se_version=se_version,
+            se_features=se_features,
+            resource_obj=resource_obj,
+        ))
+
+    # --- begin debug code - enable in case of issues with conditions
+    # var_dict = dict(eval_vars)
+    # if resource_obj:
+    #     var_dict['resource_obj'] = "{rt} {rn!r}".format(
+    #         rt=resource_obj.__class__.__name__, rn=resource_obj.name)
+    # print("Debug: Evaluating 'if' condition: {c!r} with variables: {vd}".
+    #       format(c=condition, vd=var_dict))
+    # --- end debug code
+
     try:
         # pylint: disable=eval-used
-        return eval(condition, None,
-                    dict(hmc_version=hmc_version, se_version=se_version))
+        result = eval(condition, None, eval_vars)
     except Exception as exc:  # pylint: disable=broad-exception-caught
         warnings.warn("Ignoring item because its condition {!r} does not "
                       "properly evaluate: {}: {}".
                       format(org_condition, exc.__class__.__name__, exc))
         return False
+
+    # --- begin debug code - enable in case of issues with conditions
+    # print("Debug: Result of 'if' condition: {r!r}".format(r=result))
+    # --- end debug code
+
+    return result
 
 
 # Metrics context creation & deletion and retrieval derived from
@@ -588,6 +642,13 @@ def get_hmc_info(session):
     the HMC version, HMC name and other data. For details, see the operation's
     result description in the HMC WS API book.
 
+    Returns:
+        dict: Dict of properties returned from the 'Query API Version'
+        operation. Some important properties are:
+        - api-major-version (int) : Major part of the HMC API version
+        - api-minor-version (int) : Minor part of the HMC API version
+        - hmc-version (string): HMC version, as a string of the form 'M.N.U'.
+
     Raises: zhmccclient exceptions
     """
     client = zhmcclient.Client(session)
@@ -595,7 +656,9 @@ def get_hmc_info(session):
     return hmc_info
 
 
-def create_metrics_context(session, yaml_metric_groups, hmc_version):
+def create_metrics_context(
+        session, yaml_metric_groups, hmc_version, hmc_api_version,
+        hmc_features):
     """
     Creating a context is mandatory for reading metrics from the Z HMC.
     Takes the session, the metric_groups dictionary from the metrics YAML file
@@ -620,7 +683,9 @@ def create_metrics_context(session, yaml_metric_groups, hmc_version):
         fetch = mg_dict["fetch"]
         # if is optional in the metrics schema:
         if fetch and "if" in mg_dict:
-            fetch = eval_condition(mg_dict["if"], hmc_version, None)
+            fetch = eval_condition(
+                mg_dict["if"], hmc_version, hmc_api_version, hmc_features,
+                None, None, None)
         if fetch:
             if mg_type == 'hmc':
                 fetched_hmc_metric_groups.append(metric_group)
@@ -1072,7 +1137,8 @@ def cpc_from_resource(resource):
 
 def build_family_objects(
         metrics_object, yaml_metric_groups, yaml_metrics, metrics_filename,
-        extra_labels, hmc_version, se_versions, resource_cache=None,
+        extra_labels, hmc_version, hmc_api_version, hmc_features,
+        se_versions_by_cpc, se_features_by_cpc, resource_cache=None,
         uri2resource=None):
     """
     Go through all retrieved metrics and build the Prometheus Family objects.
@@ -1120,10 +1186,12 @@ def build_family_objects(
             cpc = cpc_from_resource(resource)
             if cpc:
                 # This resource is a CPC or part of a CPC
-                se_version = se_versions[cpc.name]
+                se_version = se_versions_by_cpc[cpc.name]
+                se_features = se_features_by_cpc[cpc.name]
             else:
                 # This resource is an HMC or part of an HMC
                 se_version = None
+                se_features = []
 
             # Calculate the resource labels at the metric group level:
             mg_labels = dict(extra_labels)
@@ -1167,8 +1235,9 @@ def build_family_objects(
 
                 # Skip conditional metrics that their condition not met
                 if_expr = yaml_metric.get("if", None)
-                if if_expr and \
-                        not eval_condition(if_expr, hmc_version, se_version):
+                if if_expr and not eval_condition(
+                        if_expr, hmc_version, hmc_api_version, hmc_features,
+                        se_version, se_features, resource):
                     continue
 
                 # Transform HMC percentages (value 100 means 100% = 1) to
@@ -1222,7 +1291,8 @@ def build_family_objects(
 
 def build_family_objects_res(
         resources, yaml_metric_groups, yaml_metrics, metrics_filename,
-        extra_labels, hmc_version, se_versions, resource_cache=None,
+        extra_labels, hmc_version, hmc_api_version, hmc_features,
+        se_versions_by_cpc, se_features_by_cpc, resource_cache=None,
         uri2resource=None):
     """
     Go through all auto-updated resources and build the Prometheus Family
@@ -1271,10 +1341,12 @@ def build_family_objects_res(
             cpc = cpc_from_resource(resource)
             if cpc:
                 # This resource is a CPC or part of a CPC
-                se_version = se_versions[cpc.name]
+                se_version = se_versions_by_cpc[cpc.name]
+                se_features = se_features_by_cpc[cpc.name]
             else:
                 # This resource is an HMC or part of an HMC
                 se_version = None
+                se_features = []
 
             # Calculate the resource labels at the metric group level:
             mg_labels = dict(extra_labels)
@@ -1312,8 +1384,9 @@ def build_family_objects_res(
 
                 # Skip conditional metrics that their condition not met
                 if_expr = yaml_metric.get("if", None)
-                if if_expr and \
-                        not eval_condition(if_expr, hmc_version, se_version):
+                if if_expr and not eval_condition(
+                        if_expr, hmc_version, hmc_api_version, hmc_features,
+                        se_version, se_features, resource):
                     continue
 
                 if prop_name:
@@ -1388,8 +1461,9 @@ def build_family_objects_res(
 
                 # Skip conditional metrics that their condition not met
                 if_expr = yaml_metric.get("if", None)
-                if if_expr and \
-                        not eval_condition(if_expr, hmc_version, se_version):
+                if if_expr and not eval_condition(
+                        if_expr, hmc_version, hmc_api_version, hmc_features,
+                        se_version, se_features, resource):
                     continue
 
                 # Transform the HMC value using the valuemap, if defined:
@@ -1457,13 +1531,14 @@ def build_family_objects_res(
 
 
 class ZHMCUsageCollector():
-    # pylint: disable=too-few-public-methods
+    # pylint: disable=too-few-public-methods,too-many-instance-attributes
     """Collects the usage for exporting."""
 
     def __init__(self, yaml_creds, session, context, resources,
                  yaml_metric_groups,
                  yaml_metrics, extra_labels, filename_metrics, filename_creds,
-                 resource_cache, uri2resource, hmc_version, se_versions):
+                 resource_cache, uri2resource, hmc_version, hmc_api_version,
+                 hmc_features, se_versions_by_cpc, se_features_by_cpc):
         self.yaml_creds = yaml_creds
         self.session = session
         self.context = context
@@ -1476,7 +1551,10 @@ class ZHMCUsageCollector():
         self.resource_cache = resource_cache
         self.uri2resource = uri2resource
         self.hmc_version = hmc_version
-        self.se_versions = se_versions
+        self.hmc_api_version = hmc_api_version
+        self.hmc_features = hmc_features
+        self.se_versions_by_cpc = se_versions_by_cpc
+        self.se_features_by_cpc = se_features_by_cpc
 
     def collect(self):
         """
@@ -1508,7 +1586,8 @@ class ZHMCUsageCollector():
                                  format(exc.http_status, exc.reason))
                         self.context, _, _ = create_metrics_context(
                             self.session, self.yaml_metric_groups,
-                            self.hmc_version)
+                            self.hmc_version, self.hmc_api_version,
+                            self.hmc_features)
                         continue
                     logprint(logging.WARNING, PRINT_ALWAYS,
                              "Retrying after HTTP status {}.{}: {}".
@@ -1546,7 +1625,8 @@ class ZHMCUsageCollector():
         family_objects = build_family_objects(
             metrics_object, self.yaml_metric_groups,
             self.yaml_metrics, self.filename_metrics,
-            self.extra_labels, self.hmc_version, self.se_versions,
+            self.extra_labels, self.hmc_version, self.hmc_api_version,
+            self.hmc_features, self.se_versions_by_cpc, self.se_features_by_cpc,
             self.resource_cache, self.uri2resource)
 
         logprint(logging.DEBUG, None,
@@ -1554,7 +1634,8 @@ class ZHMCUsageCollector():
         family_objects.update(build_family_objects_res(
             self.resources, self.yaml_metric_groups,
             self.yaml_metrics, self.filename_metrics,
-            self.extra_labels, self.hmc_version, self.se_versions,
+            self.extra_labels, self.hmc_version, self.hmc_api_version,
+            self.hmc_features, self.se_versions_by_cpc, self.se_features_by_cpc,
             self.resource_cache, self.uri2resource))
 
         logprint(logging.DEBUG, None,
@@ -1855,22 +1936,40 @@ def main():
             with zhmc_exceptions(session, hmccreds_filename):
                 hmc_info = get_hmc_info(session)
                 hmc_version = hmc_info['hmc-version']
+                hmc_api_version = (hmc_info['api-major-version'],
+                                   hmc_info['api-minor-version'])
                 client = zhmcclient.Client(session)
+                hmc_features = client.consoles.console.list_api_features()
                 cpc_list = client.cpcs.list()
-                se_versions = {}
+                se_versions_by_cpc = {}
+                se_features_by_cpc = {}
                 for cpc in cpc_list:
                     cpc_name = cpc.name
-                    se_versions[cpc_name] = cpc.prop('se-version')
-                se_versions_str = ', '.join(
+                    se_versions_by_cpc[cpc_name] = cpc.prop('se-version')
+                    se_features_by_cpc[cpc_name] = cpc.list_api_features()
+                se_versions_str = '; '.join(
                     ["{}: {}".format(cpc, v)
-                     for cpc, v in se_versions.items()])
+                     for cpc, v in se_versions_by_cpc.items()])
+                se_features_str = '; '.join(
+                    ["{}: {}".format(cpc, ', '.join(v) or 'None')
+                     for cpc, v in se_features_by_cpc.items()])
+                hmc_api_version_str = "{}.{}".format(*hmc_api_version)
+                hmc_features_str = ', '.join(hmc_features) or 'None'
                 logprint(logging.INFO, PRINT_V,
                          "HMC version: {}".format(hmc_version))
                 logprint(logging.INFO, PRINT_V,
+                         "HMC API version: {}".format(hmc_api_version_str))
+                logprint(logging.INFO, PRINT_V,
+                         "HMC features: {}".format(hmc_features_str))
+                logprint(logging.INFO, PRINT_V,
                          "Managed CPCs and their SE versions: {}".
                          format(se_versions_str))
+                logprint(logging.INFO, PRINT_V,
+                         "Managed CPCs and their SE features: {}".
+                         format(se_features_str))
                 context, resources, uri2resource = create_metrics_context(
-                    session, yaml_metric_groups, hmc_version)
+                    session, yaml_metric_groups, hmc_version, hmc_api_version,
+                    hmc_features)
         except (ConnectionError, AuthError, OtherError) as exc:
             raise ImproperExit(exc)
 
@@ -1896,7 +1995,8 @@ def main():
         coll = ZHMCUsageCollector(
             yaml_creds, session, context, resources, yaml_metric_groups,
             yaml_metrics, extra_labels, args.m, hmccreds_filename,
-            resource_cache, uri2resource, hmc_version, se_versions)
+            resource_cache, uri2resource, hmc_version, hmc_api_version,
+            hmc_features, se_versions_by_cpc, se_features_by_cpc)
 
         logprint(logging.INFO, PRINT_V,
                  "Registering the collector and performing first collection")

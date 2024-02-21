@@ -175,16 +175,54 @@ TESTCASES_EVAL_CONDITION = [
     "condition, hmc_version, se_version, exp_result",
     TESTCASES_EVAL_CONDITION
 )
-def test_eval_condition(condition, hmc_version, se_version, exp_result):
+def test_eval_condition_versions(
+        condition, hmc_version, se_version, exp_result):
     """
-    Tests eval_condition().
+    Tests eval_condition() with hmc_version and se_version variables.
     """
+
+    session = setup_faked_session()
+    client = zhmcclient.Client(session)
+    cpc = client.cpcs.find(name='cpc_1')
+
+    # Arbitrary values for these variables, since we are not testing that here:
+    hmc_api_version = (4, 10)
+    hmc_features = []
+    se_features = []
+    resource_obj = cpc  # to indicate it is a export-condition
 
     # The code to be tested
     result = zhmc_prometheus_exporter.eval_condition(
-        condition, hmc_version, se_version)
+        condition, hmc_version, hmc_api_version, hmc_features, se_version,
+        se_features, resource_obj)
 
     assert result == exp_result
+
+
+def test_eval_condition_resource():
+    """
+    Tests eval_condition() with resource_obj variable.
+    """
+    session = setup_faked_session()
+    client = zhmcclient.Client(session)
+    cpc = client.cpcs.find(name='cpc_1')
+
+    # Arbitrary values for these variables, since we are not testing that here:
+    hmc_version = '2.16.0'
+    hmc_api_version = (4, 10)
+    hmc_features = []
+    se_version = '2.15.0'
+    se_features = []
+
+    resource_obj = cpc
+    condition = 'resource_obj.name'
+
+    # The code to be tested
+    result = zhmc_prometheus_exporter.eval_condition(
+        condition, hmc_version, hmc_api_version, hmc_features, se_version,
+        se_features, resource_obj)
+
+    assert result == 'cpc_1'
 
 
 # Fake HMC derived from
@@ -194,12 +232,19 @@ class TestCreateContext(unittest.TestCase):
 
     def test_normal_input(self):
         """Tests normal input with a generic metric group."""
-        session = zhmcclient_mock.FakedSession("fake-host", "fake-hmc",
-                                               "2.13.1", "1.8")
+
+        hmc_version = '2.13.1'
+        hmc_api_version_str = '1.8'
+        hmc_api_version = (1, 8)
+        hmc_features = []
+
+        session = zhmcclient_mock.FakedSession(
+            "fake-host", "fake-hmc", hmc_version, hmc_api_version_str)
+
         context, _, _ = zhmc_prometheus_exporter.create_metrics_context(
             session,
             {"dpm-system-usage-overview": {"prefix": "pre", "fetch": True}},
-            '2.14')
+            hmc_version, hmc_api_version, hmc_features)
         # pylint: disable=protected-access
         self.assertEqual(type(context), zhmcclient._metrics.MetricsContext)
         context.delete()
@@ -207,12 +252,17 @@ class TestCreateContext(unittest.TestCase):
 
     def test_timeout(self):
         """Tests a timeout with an IP where no HMC is sitting."""
+
+        hmc_version = '2.14.1'
+        hmc_api_version = (2, 37)
+        hmc_features = []
+
         cred_dict = {"hmc": "192.168.0.0", "userid": "user", "password": "pwd"}
         session = zhmc_prometheus_exporter.create_session(
             cred_dict, "filename")
         with self.assertRaises(zhmcclient.ConnectionError):
             zhmc_prometheus_exporter.create_metrics_context(
-                session, {}, '2.14')
+                session, {}, hmc_version, hmc_api_version, hmc_features)
 
 
 class TestCleanup(unittest.TestCase):
@@ -352,14 +402,18 @@ class TestMetrics(unittest.TestCase):
         }
         extra_labels = {"label1": "value1"}
         hmc_version = '2.15.0'
-        se_versions = {'cpc_1': '2.15.0'}
+        hmc_api_version = (3, 13)
+        hmc_features = []
+        se_versions_by_cpc = {'cpc_1': '2.15.0'}
+        se_features_by_cpc = {'cpc_1': []}
 
         context, resources = setup_metrics_context()
         metrics_object = zhmc_prometheus_exporter.retrieve_metrics(context)
 
         families = zhmc_prometheus_exporter.build_family_objects(
             metrics_object, yaml_metric_groups, yaml_metrics, 'file',
-            extra_labels, hmc_version, se_versions)
+            extra_labels, hmc_version, hmc_api_version, hmc_features,
+            se_versions_by_cpc, se_features_by_cpc)
 
         assert len(families) == 1
         assert "zhmc_pre_processor_usage" in families
@@ -380,7 +434,8 @@ class TestMetrics(unittest.TestCase):
 
         families = zhmc_prometheus_exporter.build_family_objects_res(
             resources, yaml_metric_groups, yaml_metrics, 'file',
-            extra_labels, hmc_version, se_versions)
+            extra_labels, hmc_version, hmc_api_version, hmc_features,
+            se_versions_by_cpc, se_features_by_cpc)
 
         assert len(families) == 1
         assert "zhmc_foo_name" in families
@@ -408,13 +463,20 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
     def test_init(self):
         """Tests ZHMCUsageCollector.__init__."""
 
+        hmc_version = '2.15.0'
+        hmc_api_version = (3, 13)
+        hmc_features = []
+        se_versions_by_cpc = {'cpc_1': '2.15.0'}
+        se_features_by_cpc = {'cpc_1': []}
+
         cred_dict = {"hmc": "192.168.0.0", "userid": "user", "password": "pwd"}
         session = setup_faked_session()
         yaml_metric_groups = {"dpm-system-usage-overview": {"prefix": "pre",
                                                             "fetch": True}}
         context, resources, _ = \
             zhmc_prometheus_exporter.create_metrics_context(
-                session, yaml_metric_groups, '2.14')
+                session, yaml_metric_groups, hmc_version, hmc_api_version,
+                hmc_features)
         yaml_metrics = {
             "dpm-system-usage-overview": {
                 "processor-usage": {
@@ -425,13 +487,12 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
             }
         }
         extra_labels = {}
-        hmc_version = '2.15.0'
-        se_versions = {'cpc_1': '2.15.0'}
 
         my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
             cred_dict, session, context, resources, yaml_metric_groups,
             yaml_metrics, extra_labels, "filename", "filename", None, None,
-            hmc_version, se_versions)
+            hmc_version, hmc_api_version, hmc_features, se_versions_by_cpc,
+            se_features_by_cpc)
         self.assertEqual(my_zhmc_usage_collector.yaml_creds, cred_dict)
         self.assertEqual(my_zhmc_usage_collector.session, session)
         self.assertEqual(my_zhmc_usage_collector.context, context)
@@ -444,6 +505,12 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
     def test_collect(self):
         """Test ZHMCUsageCollector.collect"""
 
+        hmc_version = '2.15.0'
+        hmc_api_version = (3, 13)
+        hmc_features = []
+        se_versions_by_cpc = {'cpc_1': '2.15.0'}
+        se_features_by_cpc = {'cpc_1': []}
+
         cred_dict = {"hmc": "192.168.0.0", "userid": "user", "password": "pwd"}
         session = setup_faked_session()
         yaml_metric_groups = {
@@ -454,7 +521,8 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
         }
         context, resources, _ = \
             zhmc_prometheus_exporter.create_metrics_context(
-                session, yaml_metric_groups, '2.14')
+                session, yaml_metric_groups,
+                hmc_version, hmc_api_version, hmc_features)
         yaml_metrics = {
             "dpm-system-usage-overview": {
                 "processor-usage": {
@@ -465,13 +533,12 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
             }
         }
         extra_labels = {}
-        hmc_version = '2.15.0'
-        se_versions = {'cpc_1': '2.15.0'}
 
         my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
             cred_dict, session, context, resources, yaml_metric_groups,
             yaml_metrics, extra_labels, "filename", "filename", None, None,
-            hmc_version, se_versions)
+            hmc_version, hmc_api_version, hmc_features, se_versions_by_cpc,
+            se_features_by_cpc)
         collected = list(my_zhmc_usage_collector.collect())
         self.assertEqual(len(collected), 1)
         self.assertEqual(type(collected[0]),
