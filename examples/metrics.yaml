@@ -280,17 +280,17 @@ metrics:
       exporter_desc: Usage ratio across all dedicated zAAP processors of the CPC
     # aap-all-processor-usage does not seem to exist
     cbp-all-processor-usage:
-      # only returned on z14,z15 (no conditional export needed)
+      # only returned between SE versions 2.14.0+MCLs and 2.15.0 (no conditional export needed)
       percent: true
       exporter_name: cbp_processor_usage_ratio
       exporter_desc: Usage ratio across all CBP processors of the CPC
     cbp-shared-processor-usage:
-      # only returned on z14,z15 (no conditional export needed)
+      # only returned between SE versions 2.14.0+MCLs and 2.15.0 (no conditional export needed)
       percent: true
       exporter_name: cbp_shared_processor_usage_ratio
       exporter_desc: Usage ratio across all shared CBP processors of the CPC
     cbp-dedicated-processor-usage:
-      # only returned on z14,z15 (no conditional export needed)
+      # only returned between SE versions 2.14.0+MCLs and 2.15.0 (no conditional export needed)
       percent: true
       exporter_name: cbp_dedicated_processor_usage_ratio
       exporter_desc: Usage ratio across all dedicated CBP processors of the CPC
@@ -329,7 +329,7 @@ metrics:
       exporter_name: iip_processor_usage_ratio
       exporter_desc: Usage ratio across all IIP processors of the partition
     cbp-processor-usage:
-      # only returned on z14,z15 (no conditional export needed)
+      # only returned between SE versions 2.14.0+MCLs and 2.15.0 (no conditional export needed)
       percent: true
       exporter_name: cbp_processor_usage_ratio
       exporter_desc: Usage ratio across all CBP processors of the partition
@@ -600,41 +600,41 @@ metrics:
           value: "'bool'"
     # Note: number-...-processors/cores properties do not exist in 2.15 for CBP processors
     - property_name: initial-cbp-processing-weight
-      if: "se_version>='2.14.0' and se_version<='2.15.0'"
+      if: "'initial-cbp-processing-weight' in resource_obj.properties"  # Between SE versions 2.14.0+MCLs and 2.15.0
       exporter_name: cbp_initial_processing_weight
       exporter_desc: Initial CBP processing weight for the active partition in shared mode (1..999)
     - property_name: minimum-cbp-processing-weight
-      if: "se_version>='2.14.0' and se_version<='2.15.0'"
+      if: "'minimum-cbp-processing-weight' in resource_obj.properties"  # Between SE versions 2.14.0+MCLs and 2.15.0
       exporter_name: cbp_minimum_processing_weight
       exporter_desc: Minimum CBP processing weight for the active partition in shared mode (1..999)
     - property_name: maximum-cbp-processing-weight
-      if: "se_version>='2.14.0' and se_version<='2.15.0'"
+      if: "'maximum-cbp-processing-weight' in resource_obj.properties"  # Between SE versions 2.14.0+MCLs and 2.15.0
       exporter_name: cbp_maximum_processing_weight
       exporter_desc: Maximum CBP processing weight for the active partition in shared mode (1..999)
     - property_name: current-cbp-processing-weight
-      if: "se_version>='2.14.0' and se_version<='2.15.0'"
+      if: "'current-cbp-processing-weight' in resource_obj.properties"  # Between SE versions 2.14.0+MCLs and 2.15.0
       exporter_name: cbp_current_processing_weight
       exporter_desc: Current CBP processing weight for the active partition in shared mode (1..999)
     - properties_expression: "properties['absolute-cbp-capping'].type == 'processors'"
-      if: "se_version>='2.14.0' and se_version<='2.15.0'"
+      if: "'absolute-cbp-capping' in resource_obj.properties"  # Between SE versions 2.14.0+MCLs and 2.15.0
       exporter_name: cbp_processor_count_is_capped
       exporter_desc: Boolean indicating whether absolute capping is enabled for CBP processors (0=false, 1=true)
       labels:
         - name: valuetype
           value: "'bool'"
     - properties_expression: "properties['absolute-cbp-capping'].value if properties['absolute-cbp-capping'].type == 'processors' else 0"
-      if: "se_version>='2.14.0' and se_version<='2.15.0'"
+      if: "'absolute-cbp-capping' in resource_obj.properties"  # Between SE versions 2.14.0+MCLs and 2.15.0
       exporter_name: cbp_processor_count_cap
       exporter_desc: Maximum number of CBP processors that can be used if absolute capping is enabled, else 0
     - property_name: initial-cbp-processing-weight-capped
-      if: "se_version>='2.14.0' and se_version<='2.15.0'"
+      if: "'initial-cbp-processing-weight-capped' in resource_obj.properties"  # Between SE versions 2.14.0+MCLs and 2.15.0
       exporter_name: cbp_initial_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the initial CBP processing weight is capped (0=false, 1=true)
       labels:
         - name: valuetype
           value: "'bool'"
     - property_name: current-cbp-processing-weight-capped
-      if: "se_version>='2.14.0' and se_version<='2.15.0'"
+      if: "'current-cbp-processing-weight-capped' in resource_obj.properties"  # Between SE versions 2.14.0+MCLs and 2.15.0
       exporter_name: cbp_current_processing_weight_is_capped
       exporter_desc: Boolean indicating whether the current CBP processing weight is capped (0=false, 1=true)
       labels:
@@ -1075,6 +1075,7 @@ metrics:
         - name: valuetype
           value: "'bool'"
     - property_name: max-partitions
+      if: "'max-partitions' in resource_obj.properties"  # Only for FCP-type storage groups
       exporter_name: max_partitions
       exporter_desc: Maximum number of partitions a storage group can be attached to
 
@@ -1095,8 +1096,9 @@ metrics:
       exporter_name: size_gib
       exporter_desc: "Size of volume in GiB (0 for ECKD alias volumes)"
     - property_name: cylinders
+      if: "'cylinders' in resource_obj.properties"  # Only for FC-type storage groups
       exporter_name: cylinders
-      exporter_desc: "Size of ECKD volume in cylinders (0 for ECKD alias volumes, not present for non-ECKD volumes)"
+      exporter_desc: "Size of ECKD volume in cylinders (0 for ECKD alias volumes)"
 
   # Available for CPCs in any mode
 
@@ -1469,7 +1471,7 @@ metrics:
       exporter_name: aap_processor_count
       exporter_desc: Number of active zAAP processors
     - property_name: processor-count-cbp
-      if: "se_version>='2.14.0' and se_version<='2.15.0'"
+      if: "'processor-count-cbp' in resource_obj.properties"  # Between SE versions 2.14.0+MCLs and 2.15.0
       exporter_name: cbp_processor_count
       exporter_desc: Number of active CBP processors
     - property_name: processor-count-service-assist

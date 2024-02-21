@@ -24,6 +24,10 @@ This version contains all fixes up to version 1.5.x.
 
 Released: not yet
 
+**Important:** The standard metric definitions file examples/metrics.yaml has
+been updated. Please use the new file in your setup. This new exporter version
+will also work with the prior version of the file (but not vice versa).
+
 **Incompatible changes:**
 
 **Deprecations:**
@@ -38,10 +42,39 @@ Released: not yet
   Disabled Sphinx runs on Python <=3.7 in order to no longer having to deal
   with older Sphinx versions. (issue #444)
 
+* Docs: Added missing 'se_version' variable to description of 'export-condition'
+  and 'fetch-condition' in the Usage section. (part of issue #459)
+
 **Enhancements:**
 
 * Split safety runs into one against all requirements that may fail and one
   against the install requirements that must succeed. (issue #441)
+
+* Added support for the following new variables for use in 'fetch-condition' in
+  the metric definition file (issue #459):
+
+  - 'hmc_api_version' - HMC API version as a tuple of integers (M, N)
+  - 'hmc_features' - List of names of HMC API features
+
+* Added support for the following new variables for use in 'export-condition'
+  in the metric definition file (issue #459):
+
+  - 'hmc_api_version' - HMC API version as a tuple of integers (M, N)
+  - 'hmc_features' - List of names of HMC API features
+  - 'se_features' - List of names of SE/CPC API features
+  - 'resource_obj' - zhmcclient resource object for the metric
+
+* Used these new variables to improve the conditions in the metric definition
+  file in order to eliminate the following warnings about properties not
+  returned by the HMC (issue #459):
+
+  - 'cylinders' in resource metric group 'storagevolume-resource'
+    (only returned for FC-type storage groups)
+  - 'max-partitions' in resource metric group 'storagegroup-resource'
+    (only returned for FCP-type storage groups)
+  - Various cbp related properties in resource metric groups 'cpc-resource'
+    and 'logical-partition-resource' (only returned for SE versions between
+    2.14.0+MCLs and 2.15.0)
 
 **Cleanup:**
 

@@ -437,7 +437,7 @@ zhmc_cpc_ifl_processor_count                            C+D   G     Number of ac
 zhmc_cpc_icf_processor_count                            C+D   G     Number of active ICF processors
 zhmc_cpc_iip_processor_count                            C+D   G     Number of active zIIP processors
 zhmc_cpc_aap_processor_count                            C+D   G     Number of active zAAP processors
-zhmc_cpc_cbp_processor_count                            C+D   G     Number of active CBP processors
+zhmc_cpc_cbp_processor_count                            C+D   G     Number of active CBP processors; only for z14-z15
 zhmc_cpc_sap_processor_count                            C+D   G     Number of active SAP processors
 zhmc_cpc_defective_processor_count                      C+D   G     Number of defective processors of all processor types
 zhmc_cpc_spare_processor_count                          C+D   G     Number of spare processors of all processor types
@@ -460,9 +460,9 @@ zhmc_cpc_ifl_shared_processor_usage_ratio               C+D   G     Usage ratio 
 zhmc_cpc_ifl_dedicated_processor_usage_ratio            C     G     Usage ratio across all dedicated IFL processors of the CPC
 zhmc_cpc_aap_shared_processor_usage_ratio               C     G     Usage ratio across all shared zAAP processors of the CPC
 zhmc_cpc_aap_dedicated_processor_usage_ratio            C     G     Usage ratio across all dedicated zAAP processors of the CPC
-zhmc_cpc_cbp_processor_usage_ratio                      C     G     Usage ratio across all CBP processors of the CPC
-zhmc_cpc_cbp_shared_processor_usage_ratio               C     G     Usage ratio across all shared CBP processors of the CPC
-zhmc_cpc_cbp_dedicated_processor_usage_ratio            C     G     Usage ratio across all dedicated CBP processors of the CPC
+zhmc_cpc_cbp_processor_usage_ratio                      C     G     Usage ratio across all CBP processors of the CPC; only for z14-z15
+zhmc_cpc_cbp_shared_processor_usage_ratio               C     G     Usage ratio across all shared CBP processors of the CPC; only for z14-z15
+zhmc_cpc_cbp_dedicated_processor_usage_ratio            C     G     Usage ratio across all dedicated CBP processors of the CPC; only for z14-z15
 zhmc_cpc_icf_processor_usage_ratio                      C     G     Usage ratio across all ICF processors of the CPC
 zhmc_cpc_icf_shared_processor_usage_ratio               C     G     Usage ratio across all shared ICF processors of the CPC
 zhmc_cpc_icf_dedicated_processor_usage_ratio            C     G     Usage ratio across all dedicated ICF processors of the CPC
@@ -517,7 +517,7 @@ zhmc_partition_processor_usage_ratio                    C+D   G     Usage ratio 
 zhmc_partition_cp_processor_usage_ratio                 C     G     Usage ratio across all CP processors of the partition
 zhmc_partition_ifl_processor_usage_ratio                C     G     Usage ratio across all IFL processors of the partition
 zhmc_partition_icf_processor_usage_ratio                C     G     Usage ratio across all ICF processors of the partition
-zhmc_partition_cbp_processor_usage_ratio                C     G     Usage ratio across all CBP processors of the partition
+zhmc_partition_cbp_processor_usage_ratio                C     G     Usage ratio across all CBP processors of the partition; only for z14-z15
 zhmc_partition_iip_processor_usage_ratio                C     G     Usage ratio across all IIP processors of the partition
 zhmc_partition_accelerator_adapter_usage_ratio          D     G     Usage ratio of all accelerator adapters of the partition
 zhmc_partition_crypto_adapter_usage_ratio               D     G     Usage ratio of all crypto adapters of the partition
@@ -578,14 +578,14 @@ zhmc_partition_aap_maximum_processing_weight            C     G     Maximum zAAP
 zhmc_partition_aap_current_processing_weight            C     G     Current zAAP processing weight for the active partition in shared mode
 zhmc_partition_aap_initial_processing_weight_is_capped  C     G     Boolean indicating whether the initial zAAP processing weight is capped (0=false, 1=true)
 zhmc_partition_aap_current_processing_weight_is_capped  C     G     Boolean indicating whether the current zAAP processing weight is capped (0=false, 1=true)
-zhmc_partition_cbp_processor_count_is_capped            C     G     Boolean indicating whether absolute capping is enabled for CBP processors (0=false, 1=true)
-zhmc_partition_cbp_processor_count_cap                  C     G     Maximum number of CBP processors that can be used if absolute capping is enabled, else 0
-zhmc_partition_cbp_initial_processing_weight            C     G     Initial CBP processing weight for the active partition in shared mode
-zhmc_partition_cbp_minimum_processing_weight            C     G     Minimum CBP processing weight for the active partition in shared mode
-zhmc_partition_cbp_maximum_processing_weight            C     G     Maximum CBP processing weight for the active partition in shared mode
-zhmc_partition_cbp_current_processing_weight            C     G     Current CBP processing weight for the active partition in shared mode
-zhmc_partition_cbp_initial_processing_weight_is_capped  C     G     Boolean indicating whether the initial CBP processing weight is capped (0=false, 1=true)
-zhmc_partition_cbp_current_processing_weight_is_capped  C     G     Boolean indicating whether the current CBP processing weight is capped (0=false, 1=true)
+zhmc_partition_cbp_processor_count_is_capped            C     G     Boolean indicating whether absolute capping is enabled for CBP processors (0=false, 1=true); only for z14-z15
+zhmc_partition_cbp_processor_count_cap                  C     G     Maximum number of CBP processors that can be used if absolute capping is enabled, else 0; only for z14-z15
+zhmc_partition_cbp_initial_processing_weight            C     G     Initial CBP processing weight for the active partition in shared mode; only for z14-z15
+zhmc_partition_cbp_minimum_processing_weight            C     G     Minimum CBP processing weight for the active partition in shared mode; only for z14-z15
+zhmc_partition_cbp_maximum_processing_weight            C     G     Maximum CBP processing weight for the active partition in shared mode; only for z14-z15
+zhmc_partition_cbp_current_processing_weight            C     G     Current CBP processing weight for the active partition in shared mode; only for z14-z15
+zhmc_partition_cbp_initial_processing_weight_is_capped  C     G     Boolean indicating whether the initial CBP processing weight is capped (0=false, 1=true); only for z14-z15
+zhmc_partition_cbp_current_processing_weight_is_capped  C     G     Boolean indicating whether the current CBP processing weight is capped (0=false, 1=true); only for z14-z15
 zhmc_partition_initial_memory_mib                       D     G     Initial amount of memory allocated to the partition when it becomes active, in MiB
 zhmc_partition_reserved_memory_mib                      D     G     Amount of reserved memory (maximum memory minus initial memory), in MiB
 zhmc_partition_maximum_memory_mib                       D     G     Maximum amount of memory to which the OS can increase, in MiB
@@ -605,11 +605,11 @@ zhmc_partition_storage_groups                           D     G     Storage grou
 zhmc_storagegroup_type_int                              D     G     Storage group type as integer (0=fcp, 1=fc, 2=nvme, 99=unsupported value)
 zhmc_storagegroup_fulfillment_state_int                 D     G     Storage group fulfillment state as integer (0=complete, 1=pending, 2=pending-with-mismatches, 3=checking-migration, 4=incomplete, 99=unsupported value)
 zhmc_storagegroup_shared                                D     G     Boolean indicating whether the storage group is shared (0=false, 1=true)
-zhmc_storagegroup_max_partitions                        D     G     Maximum number of partitions a storage group can be attached to
+zhmc_storagegroup_max_partitions                        D     G     Maximum number of partitions a storage group can be attached to; only for FCP-type SGs
 zhmc_storagevolume_fulfillment_state_int                D     G     Storage volume fulfillment state as integer (0=complete, 1=configuration-error, 2=deleting, 3=incomplete, 4=overprovisioned, 5=pending, 6=pending-with-mismatches, 99=unsupported value)
 zhmc_storagevolume_usage_int                            D     G     Usage of volume as integer (0=boot, 1=data, 2=not-applicable, 99=unsupported value)
 zhmc_storagevolume_size_gib                             D     G     Size of volume in GiB (0 for ECKD alias volumes)
-zhmc_storagevolume_cylinders                            D     G     Size of ECKD volume in cylinders (0 for ECKD alias volumes, not present for non-ECKD volumes)
+zhmc_storagevolume_cylinders                            D     G     Size of ECKD volume in cylinders (0 for ECKD alias volumes); only for FC-type SGs
 zhmc_crypto_adapter_usage_ratio                         C     G     Usage ratio of the crypto adapter
 zhmc_flash_memory_adapter_usage_ratio                   C     G     Usage ratio of the flash memory adapter
 zhmc_adapter_usage_ratio                                D     G     Usage ratio of the adapter
@@ -929,9 +929,14 @@ Where:
 * ``{fetch-condition}`` is a string that is evaluated as a Python expression and
   that indicates whether the metric group can be fetched. For the metric group
   to actually be fetched, the ``fetch`` property also needs to be True.
-  The expression may contain the ``hmc_version`` variable which evaluates to
-  the HMC version. The HMC versions are evaluated as tuples of integers,
-  padding them to 3 version parts by appending 0 if needed.
+  The expression may use the following variables:
+
+  - ``hmc_version`` - HMC version as a tuple of integers (M, N, U), e.g.
+    (2, 16, 0).
+  - ``hmc_api_version`` - HMC API version as a tuple of integers (M, N), e.g.
+    (4, 10).
+  - ``hmc_features`` - List of names of HMC API features. Will be empty before
+    HMC API version 4.10.
 
 * ``{properties-expression}`` is a :term:`Jinja2 expression` whose value should
   be used as the metric value, for :term:`resource property based metrics`. The
@@ -942,9 +947,20 @@ Where:
 * ``{export-condition}`` is a string that is evaluated as a Python expression
   and that controls whether the metric is exported. If it evaluates to false,
   the export of the metric is disabled, regardless of other such controls.
-  The expression may contain the ``hmc_version`` variable which evaluates to
-  the HMC version. The HMC versions are evaluated as tuples of integers,
-  padding them to 3 version parts by appending 0 if needed.
+  The expression may use the following variables:
+
+  - ``hmc_version`` - HMC version as a tuple of integers (M, N, U), e.g.
+    (2, 16, 0).
+  - ``hmc_api_version`` - HMC API version as a tuple of integers (M, N), e.g.
+    (4, 10).
+  - ``hmc_features`` - List of names of HMC API features. Will be empty before
+    HMC API version 4.10.
+  - ``se_version`` - SE/CPC version as a tuple of integers (M, N, U), e.g.
+    (2, 16, 0). Will be `None` when there is no CPC context for the metric.
+  - ``se_features`` - List of names of SE/CPC API features. Will be an empty
+    list before HMC API version 4.10 or before SE version 2.16.0 or when there
+    is no CPC context for the metric.
+  - ``resource_obj`` - zhmcclient resource object for the metric.
 
 * ``{exporter-name}`` is the local metric name and unit in the exported metric
   name ``zhmc_{resource-type}_{exporter-name}``.
