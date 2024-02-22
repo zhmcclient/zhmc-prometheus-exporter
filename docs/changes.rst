@@ -76,6 +76,9 @@ will also work with the prior version of the file (but not vice versa).
     and 'logical-partition-resource' (only returned for SE versions between
     2.14.0+MCLs and 2.15.0)
 
+* Added support for environment variables 'TESTCASES' for specifying testcases
+  for the unit test, and 'TESTOPTS' for specifying pytest options. (issue #461)
+
 **Cleanup:**
 
 * Increased versions of GitHub Actions plugins to increase node.js runtime
