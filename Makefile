@@ -147,6 +147,12 @@ endif
 safety_install_policy_file := .safety-policy-install.yml
 safety_all_policy_file := .safety-policy-all.yml
 
+ifdef TESTCASES
+  pytest_opts := $(TESTOPTS) -k "$(TESTCASES)"
+else
+  pytest_opts := $(TESTOPTS)
+endif
+
 pytest_cov_opts := --cov $(package_name) --cov-config .coveragerc --cov-append --cov-report=html:htmlcov
 pytest_cov_files := .coveragerc
 
@@ -183,6 +189,8 @@ help:
 	@echo "  platform   - Display the information about the platform as seen by make"
 	@echo "  env        - Display the environment as seen by make"
 	@echo 'Environment variables:'
+	@echo "  TESTCASES=... - Testcase filter for pytest -k"
+	@echo "  TESTOPTS=... - Additional options for pytest"
 	@echo "  PACKAGE_LEVEL - Package level to be used for installing dependent Python"
 	@echo "      packages in 'install' and 'develop' targets:"
 	@echo "        latest - Latest package versions available on Pypi"
@@ -285,7 +293,7 @@ endif
 test: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done $(pytest_cov_files)
 	@echo "Makefile: Performing unit tests and coverage with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
 	@echo "Makefile: Note that the warning about an unknown metric is part of the tests"
-	pytest $(pytest_cov_opts) -s $(test_dir)
+	pytest $(pytest_cov_opts) -s $(test_dir) $(pytest_opts)
 	@echo "Makefile: Done performing unit tests and coverage"
 	@echo "Makefile: $@ done."
 

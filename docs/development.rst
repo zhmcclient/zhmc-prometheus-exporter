@@ -516,6 +516,9 @@ You can perform unit tests with:
 
   $ make test
 
+The environment variables ``TESTCASES`` and ``TESTOPTS`` can be specified for
+unit tests. Invoke ``make help`` for details.
+
 You can perform a flake8 check with:
 
 .. code-block:: bash
