@@ -929,7 +929,7 @@ Where:
 * ``{fetch-condition}`` is a string that is evaluated as a Python expression and
   that indicates whether the metric group can be fetched. For the metric group
   to actually be fetched, the ``fetch`` property also needs to be True.
-  The expression may use the following variables:
+  The expression may use the following variables; builtins are not available:
 
   - ``hmc_version`` - HMC version as a tuple of integers (M, N, U), e.g.
     (2, 16, 0).
@@ -947,7 +947,7 @@ Where:
 * ``{export-condition}`` is a string that is evaluated as a Python expression
   and that controls whether the metric is exported. If it evaluates to false,
   the export of the metric is disabled, regardless of other such controls.
-  The expression may use the following variables:
+  The expression may use the following variables; builtins are not available:
 
   - ``hmc_version`` - HMC version as a tuple of integers (M, N, U), e.g.
     (2, 16, 0).

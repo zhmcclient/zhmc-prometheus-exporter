@@ -560,6 +560,7 @@ def eval_condition(
 
     # The variables that can be used in the expression
     eval_vars = dict(
+        __builtins__={},
         hmc_version=hmc_version,
         hmc_api_version=hmc_api_version,
         hmc_features=hmc_features,
@@ -583,7 +584,7 @@ def eval_condition(
 
     try:
         # pylint: disable=eval-used
-        result = eval(condition, None, eval_vars)
+        result = eval(condition, eval_vars, None)
     except Exception as exc:  # pylint: disable=broad-exception-caught
         warnings.warn("Ignoring item because its condition {!r} does not "
                       "properly evaluate: {}: {}".

@@ -16,6 +16,7 @@
 
 """Unit tests for the zhmc_prometheus_exporter"""
 
+import re
 import time
 import datetime
 import hashlib
@@ -223,6 +224,47 @@ def test_eval_condition_resource():
         se_features, resource_obj)
 
     assert result == 'cpc_1'
+
+
+TESTCASES_EVAL_CONDITION_ERROR = [
+    # (condition, warn_msg_pattern)
+    ('dir()', "NameError: name 'dir' is not defined"),
+    ('builtins.dir()', "NameError: name 'builtins' is not defined"),
+    ('__builtins__["dir"]', "KeyError: 'dir'"),
+]
+
+
+@pytest.mark.parametrize(
+    "condition, warn_msg_pattern",
+    TESTCASES_EVAL_CONDITION_ERROR
+)
+def test_eval_condition_error(condition, warn_msg_pattern):
+    """
+    Tests eval_condition() with evaluation errors.
+    """
+    session = setup_faked_session()
+    client = zhmcclient.Client(session)
+    cpc = client.cpcs.find(name='cpc_1')
+
+    # Arbitrary values for these variables, since we are not testing that here:
+    hmc_version = '2.16.0'
+    hmc_api_version = (4, 10)
+    hmc_features = []
+    se_version = '2.15.0'
+    se_features = []
+    resource_obj = cpc
+
+    with pytest.warns(UserWarning) as warn_records:
+
+        # The code to be tested
+        zhmc_prometheus_exporter.eval_condition(
+            condition, hmc_version, hmc_api_version, hmc_features, se_version,
+            se_features, resource_obj)
+
+    # Evaluation errors surface as one UserWarning
+    assert len(warn_records) == 1
+    warn_record = warn_records[0]
+    assert re.search(warn_msg_pattern, str(warn_record.message))
 
 
 # Fake HMC derived from

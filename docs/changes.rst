@@ -84,6 +84,9 @@ will also work with the prior version of the file (but not vice versa).
 * Increased versions of GitHub Actions plugins to increase node.js runtime
   to version 20.
 
+* Disabled the use of Python builtins in the evaluation of 'fetch-condition' and
+  'export-condition' in the metric definition file. (issue #463)
+
 **Known issues:**
 
 * See `list of open issues`_.
