@@ -49,6 +49,13 @@ will also work with the prior version of the file (but not vice versa).
   'partition-attached-network-interface' due to error in rendering the Jinja2
   expression for a label value. (issue #450)
 
+* Added missing fetch-conditions to all remaining properties of resource metric
+  groups that were added at some point in the HMC/SE, but so far were assumed
+  to always be present.
+
+* Docs: Added missing metrics to the metrics table in the Usage section:
+  zhmc_partition_storage_group_uris
+
 **Enhancements:**
 
 * Split safety runs into one against all requirements that may fail and one

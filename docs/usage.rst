@@ -524,14 +524,14 @@ zhmc_partition_crypto_adapter_usage_ratio               D     G     Usage ratio 
 zhmc_partition_network_adapter_usage_ratio              D     G     Usage ratio of all network adapters of the partition
 zhmc_partition_storage_adapter_usage_ratio              D     G     Usage ratio of all storage adapters of the partition
 zhmc_partition_zvm_paging_rate_pages_per_second         C     G     z/VM paging rate in pages/sec
-zhmc_partition_processor_mode_int                       C+D   G     Allocation mode for processors as an integer (0=shared, 1=dedicated)
+zhmc_partition_processor_mode_int                       C+D   G     Allocation mode for processors as an integer (0=shared, 1=dedicated); since HMC 2.15
 zhmc_partition_threads_per_processor_ratio              D     G     Number of threads per processor used by OS
 zhmc_partition_defined_capacity_msu_per_hour            C     G     Defined capacity expressed in terms of MSU per hour
 zhmc_partition_workload_manager_is_enabled              C     G     Boolean indicating whether z/OS WLM is allowed to change processing weight related properties (0=false, 1=true)
-zhmc_partition_cp_processor_count                       C+D   G     Number of CP processors allocated to the active partition
+zhmc_partition_cp_processor_count                       C+D   G     Number of CP processors allocated to the active partition; since HMC 2.15
 zhmc_partition_cp_processor_count_is_capped             C+D   G     Boolean indicating whether absolute capping is enabled for CP processors (0=false, 1=true)
 zhmc_partition_cp_processor_count_cap                   C+D   G     Maximum number of CP processors that can be used if absolute capping is enabled, else 0
-zhmc_partition_cp_reserved_processor_count              C     G     Number of CP processors reserved for the active partition
+zhmc_partition_cp_reserved_processor_count              C     G     Number of CP processors reserved for the active partition; since HMC 2.15
 zhmc_partition_cp_initial_processing_weight             C+D   G     Initial CP processing weight for the active partition in shared mode
 zhmc_partition_cp_minimum_processing_weight             C+D   G     Minimum CP processing weight for the active partition in shared mode
 zhmc_partition_cp_maximum_processing_weight             C+D   G     Maximum CP processing weight for the active partition in shared mode
@@ -601,7 +601,8 @@ zhmc_partition_current_vfm_memory_gib                   C     G     Current amou
 zhmc_partition_status_int                               D     G     Partition status as integer (0=active, 1=degraded, 10=paused, 11=stopped, 12=starting, 13=stopping, 20=reservation-error, 21=terminated, 22=communications-not-active, 23=status-check, 99=unsupported value)
 zhmc_partition_lpar_status_int                          C     G     LPAR status as integer (0=operating, 1=not-operating, 2=not-activated, 10=exceptions, 99=unsupported value)
 zhmc_partition_has_unacceptable_status                  C+D   G     Boolean indicating whether the partition has an unacceptable status
-zhmc_partition_storage_groups                           D     G     Storage groups attached to the partition, as a comma-separated list
+zhmc_partition_storage_group_uris                       D     G     URIs of storage groups attached to the partition, as a comma-separated list; since HMC 2.15
+zhmc_partition_storage_groups                           D     G     Storage groups attached to the partition, as a comma-separated list; since HMC 2.15
 zhmc_storagegroup_type_int                              D     G     Storage group type as integer (0=fcp, 1=fc, 2=nvme, 99=unsupported value)
 zhmc_storagegroup_fulfillment_state_int                 D     G     Storage group fulfillment state as integer (0=complete, 1=pending, 2=pending-with-mismatches, 3=checking-migration, 4=incomplete, 99=unsupported value)
 zhmc_storagegroup_shared                                D     G     Boolean indicating whether the storage group is shared (0=false, 1=true)
