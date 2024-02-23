@@ -186,3 +186,37 @@ properties:
                     value:
                       description: "Label value. There are some keywords with special handling - see documentation for details"
                       type: string
+  fetch_properties:
+    description: Properties that need to be fetched because they can change but have no property change notification
+    type: object
+    additionalProperties: false
+    patternProperties:
+      "^[a-z0-9\\-]+$":
+        description: "Key: Class of the HMC resource; Value: List of items for each HMC property that needs to be fetched"
+        type: object
+        required:
+          - metric-groups
+          - properties
+        additionalProperties: false
+        properties:
+          metric-groups:
+            description: "The resource metric groups this resource is used in"
+            type: array
+            items:
+              type: string
+          properties:
+            description: "The properties to be fetched"
+            type: array
+            items:
+              type: object
+              required:
+                - property_name
+              additionalProperties: false
+              properties:
+                property_name:
+                  description: "Name of the HMC property"
+                  type: string
+                if:
+                  description: "Condition for fetching the property, as a Python expression using certain variables"
+                  type: string
+                  default: true

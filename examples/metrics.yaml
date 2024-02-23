@@ -1066,7 +1066,7 @@ metrics:
           value: "uris2resources(resource_obj.properties['storage-group-uris']) | map(attribute='name') | join(',')"
 
   storagegroup-resource:  # can be in dictionary or list format
-    - properties_expression: "{'fcp': 0, 'fc': 1, 'nvme': 2}.get(properties.type, 99)"
+    - properties_expression: "{'fcp': 0, 'fc': 1, 'nvme': 2}.get(properties.type, 99)"  # No change notification, but never changes
       exporter_name: type_int
       exporter_desc: "Storage group type as integer (0=fcp, 1=fc, 2=nvme, 99=unsupported value)"
       labels:
@@ -1552,3 +1552,138 @@ metrics:
       labels:
         - name: valuetype
           value: "'bool'"
+
+# Properties that need to be fetched because they can change but have no property change notification
+fetch_properties:
+  cpc:
+    metric-groups:
+      - cpc-resource
+    properties:
+      - property_name: processor-count-aap
+      - property_name: processor-count-cbp
+        if: "hmc_version >= (2,14) and hmc_version <= (2,15)"
+      - property_name: processor-count-service-assist
+      - property_name: processor-count-defective
+      - property_name: processor-count-spare
+
+      - property_name: storage-total-installed
+        if: "hmc_version < (2,16)"
+      - property_name: storage-hardware-system-area
+      - property_name: storage-customer
+      - property_name: storage-customer-central
+      - property_name: storage-customer-expanded
+      - property_name: storage-customer-available
+      - property_name: storage-vfm-increment-size
+      - property_name: storage-vfm-total
+
+      - property_name: processor-count-general-purpose
+        if: "hmc_version < (2,16)"
+      - property_name: processor-count-ifl
+        if: "hmc_version < (2,16)"
+      - property_name: processor-count-icf
+        if: "hmc_version < (2,16)"
+      - property_name: processor-count-iip
+        if: "hmc_version < (2,16)"
+
+  logical-partition:
+    metric-groups:
+      - logical-partition-resource
+    properties:
+      - property_name: description
+      - property_name: defined-capacity
+      - property_name: workload-manager-enabled
+        if: "hmc_version < (2,16)"
+      - property_name: processor-usage
+        if: "hmc_version < (2,16)"
+
+      - property_name: number-general-purpose-processors
+      - property_name: number-reserved-general-purpose-processors
+      - property_name: absolute-processing-capping
+        if: "hmc_version < (2,16)"
+      - property_name: initial-processing-weight
+        if: "hmc_version < (2,16)"
+      - property_name: initial-processing-weight-capped
+        if: "hmc_version < (2,16)"
+      - property_name: minimum-processing-weight
+        if: "hmc_version < (2,16)"
+      - property_name: maximum-processing-weight
+        if: "hmc_version < (2,16)"
+      - property_name: current-processing-weight
+        if: "hmc_version < (2,16)"
+      - property_name: current-processing-weight-capped
+
+      - property_name: number-ifl-processors
+      - property_name: number-reserved-ifl-processors
+      - property_name: absolute-ifl-capping'
+        if: "hmc_version < (2,16)"
+      - property_name: initial-ifl-processing-weight
+        if: "hmc_version < (2,16)"
+      - property_name: initial-ifl-processing-weight-capped
+        if: "hmc_version < (2,16)"
+      - property_name: minimum-ifl-processing-weight
+        if: "hmc_version < (2,16)"
+      - property_name: maximum-ifl-processing-weight
+        if: "hmc_version < (2,16)"
+      - property_name: current-ifl-processing-weight
+        if: "hmc_version < (2,16)"
+      - property_name: current-ifl-processing-weight-capped
+
+      - property_name: number-icf-processors
+      - property_name: number-reserved-icf-processors
+      - property_name: absolute-cf-capping
+        if: "hmc_version < (2,16)"
+      - property_name: initial-cf-processing-weight
+        if: "hmc_version < (2,16)"
+      - property_name: initial-cf-processing-weight-capped
+        if: "hmc_version < (2,16)"
+      - property_name: minimum-cf-processing-weight
+        if: "hmc_version < (2,16)"
+      - property_name: maximum-cf-processing-weight
+        if: "hmc_version < (2,16)"
+      - property_name: current-cf-processing-weight
+        if: "hmc_version < (2,16)"
+      - property_name: current-cf-processing-weight-capped
+
+      - property_name: number-ziip-processors
+      - property_name: number-reserved-ziip-processors
+      - property_name: absolute-ziip-capping
+        if: "hmc_version < (2,16)"
+      - property_name: initial-ziip-processing-weight
+        if: "hmc_version < (2,16)"
+      - property_name: minimum-ziip-processing-weight
+        if: "hmc_version < (2,16)"
+      - property_name: maximum-ziip-processing-weight
+        if: "hmc_version < (2,16)"
+      - property_name: current-ziip-processing-weight
+        if: "hmc_version < (2,16)"
+      - property_name: current-ziip-processing-weight-capped
+
+      - property_name: absolute-aap-capping
+      - property_name: initial-aap-processing-weight
+      - property_name: initial-aap-processing-weight-capped
+      - property_name: minimum-aap-processing-weight
+      - property_name: maximum-aap-processing-weight
+      - property_name: current-aap-processing-weight
+      - property_name: current-aap-processing-weight-capped
+
+      - property_name: absolute-cbp-capping
+        if: "hmc_version >= (2,14) and hmc_version <= (2,15)"
+      - property_name: initial-cbp-processing-weight
+        if: "hmc_version >= (2,14) and hmc_version <= (2,15)"
+      - property_name: initial-cbp-processing-weight-capped
+        if: "hmc_version >= (2,14) and hmc_version <= (2,15)"
+      - property_name: minimum-cbp-processing-weight
+        if: "hmc_version >= (2,14) and hmc_version <= (2,15)"
+      - property_name: maximum-cbp-processing-weight
+        if: "hmc_version >= (2,14) and hmc_version <= (2,15)"
+      - property_name: current-cbp-processing-weight
+        if: "hmc_version >= (2,14) and hmc_version <= (2,15)"
+      - property_name: current-cbp-processing-weight-capped
+        if: "hmc_version >= (2,14) and hmc_version <= (2,15)"
+
+      - property_name: storage-central-allocation
+      - property_name: storage-expanded-allocation
+
+      - property_name: initial-vfm-storage
+      - property_name: maximum-vfm-storage
+      - property_name: current-vfm-storage
