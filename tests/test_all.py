@@ -136,7 +136,7 @@ def test_split_version(version_str, pad_to, exp_result):
 
 
 TESTCASES_EVAL_CONDITION = [
-    # (condition, hmc_version, se_version, exp_result)
+    # (condition, hmc_version_str, se_version_str, exp_result)
     ('True', '', '', True),
     ('False', '', '', False),
     ('"a" == "a"', '', '', True),
@@ -173,11 +173,11 @@ TESTCASES_EVAL_CONDITION = [
 
 
 @pytest.mark.parametrize(
-    "condition, hmc_version, se_version, exp_result",
+    "condition, hmc_version_str, se_version_str, exp_result",
     TESTCASES_EVAL_CONDITION
 )
 def test_eval_condition_versions(
-        condition, hmc_version, se_version, exp_result):
+        condition, hmc_version_str, se_version_str, exp_result):
     """
     Tests eval_condition() with hmc_version and se_version variables.
     """
@@ -188,6 +188,8 @@ def test_eval_condition_versions(
 
     # Arbitrary values for these variables, since we are not testing that here:
     hmc_api_version = (4, 10)
+    hmc_version = zhmc_prometheus_exporter.split_version(hmc_version_str, 3)
+    se_version = zhmc_prometheus_exporter.split_version(se_version_str, 3)
     hmc_features = []
     se_features = []
     resource_obj = cpc  # to indicate it is a export-condition
@@ -209,10 +211,10 @@ def test_eval_condition_resource():
     cpc = client.cpcs.find(name='cpc_1')
 
     # Arbitrary values for these variables, since we are not testing that here:
-    hmc_version = '2.16.0'
+    hmc_version = (2, 16, 0)
     hmc_api_version = (4, 10)
     hmc_features = []
-    se_version = '2.15.0'
+    se_version = (2, 15, 0)
     se_features = []
 
     resource_obj = cpc
@@ -247,10 +249,10 @@ def test_eval_condition_error(condition, warn_msg_pattern):
     cpc = client.cpcs.find(name='cpc_1')
 
     # Arbitrary values for these variables, since we are not testing that here:
-    hmc_version = '2.16.0'
+    hmc_version = (2, 16, 0)
     hmc_api_version = (4, 10)
     hmc_features = []
-    se_version = '2.15.0'
+    se_version = (2, 15, 0)
     se_features = []
     resource_obj = cpc
 

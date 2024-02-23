@@ -450,9 +450,9 @@ def json_path_str(path_list):
     return "element '{}'".format(path_str)
 
 
-def split_version(version_str, pad_to):
+def split_version(version_str_, pad_to):
     """
-    Return a tuple with the version parts as integers.
+    Return a tuple from a version string, with the version parts as integers.
 
     Parameters:
 
@@ -468,7 +468,7 @@ def split_version(version_str, pad_to):
       tuple(int, ...): Tuple of version parts, as integers.
     """
     version_info = []
-    for v in version_str.strip('"\'').split('.'):
+    for v in version_str_.strip('"\'').split('.'):
         if v == '':
             v = 0
         vint = int(v)  # May raise ValueError
@@ -477,6 +477,23 @@ def split_version(version_str, pad_to):
         version_info.append(0)
         pad_to -= 1
     return tuple(version_info)
+
+
+def version_str(version_tuple):
+    """
+    Return a version string from a version tuple.
+
+    Parameters:
+
+      version_tuple (tuple(int, ...)): Tuple of version parts, as integers.
+        Example: (2, 14)
+
+    Returns:
+
+      str: Version string, e.g. '2.14'
+    """
+    vt = [str(v) for v in version_tuple]
+    return '.'.join(vt)
 
 
 MNU_PATTERN = r'\d+(?:\.\d+(?:\.\d+)?)?'  # M.N.U
@@ -515,19 +532,16 @@ def eval_condition(
       condition (string): Python expression to evaluate as a condition. The
         remaining parameters are valid variables to use in the expression.
 
-      hmc_version (string): Expression variable: HMC version, as a string
-        'M.N.U'.
+      hmc_version (tuple(M,N,U)): Expression variable: HMC version.
 
-      hmc_api_version (tuple(M,N): Expression variable: HMC API version as a
-        tuple (M, N).
+      hmc_api_version (tuple(M,N)): Expression variable: HMC API version.
 
       hmc_features (list of string): Expression variable: List of the names of
         the API features supported by the HMC. Will be empty before HMC API
         version 4.10.
 
-      se_version (string): Expression variable: SE/CPC version, as a string
-        'M.N.U'., or None for metric groups or when there is no CPC context
-        for the metric.
+      se_version (tuple(M,N,U)): Expression variable: SE/CPC version, or None
+        for metric groups or when there is no CPC context for the metric.
 
       se_features (list of string): Expression variable: List of the names of
         the API features supported by the SE/CPC (will be empty before HMC API
@@ -542,9 +556,6 @@ def eval_condition(
       bool: Evaluated condition
     """
     org_condition = condition
-    hmc_version = split_version(hmc_version, 3)
-    if se_version:
-        se_version = split_version(se_version, 3)
     if se_features is None:
         se_features = []
     if hmc_features is None:
@@ -2010,7 +2021,7 @@ def main():
         try:
             with zhmc_exceptions(session, hmccreds_filename):
                 hmc_info = get_hmc_info(session)
-                hmc_version = hmc_info['hmc-version']
+                hmc_version = split_version(hmc_info['hmc-version'], 3)
                 hmc_api_version = (hmc_info['api-major-version'],
                                    hmc_info['api-minor-version'])
                 client = zhmcclient.Client(session)
@@ -2020,20 +2031,22 @@ def main():
                 se_features_by_cpc = {}
                 for cpc in cpc_list:
                     cpc_name = cpc.name
-                    se_versions_by_cpc[cpc_name] = cpc.prop('se-version')
+                    se_versions_by_cpc[cpc_name] = split_version(
+                        cpc.prop('se-version'), 3)
                     se_features_by_cpc[cpc_name] = cpc.list_api_features()
                 se_versions_str = '; '.join(
-                    ["{}: {}".format(cpc, v)
-                     for cpc, v in se_versions_by_cpc.items()])
+                    ["{}: {}".format(cpc, version_str(vers))
+                     for cpc, vers in se_versions_by_cpc.items()])
                 se_features_str = '; '.join(
-                    ["{}: {}".format(cpc, ', '.join(v) or 'None')
-                     for cpc, v in se_features_by_cpc.items()])
-                hmc_api_version_str = "{}.{}".format(*hmc_api_version)
+                    ["{}: {}".format(cpc, ', '.join(feat) or 'None')
+                     for cpc, feat in se_features_by_cpc.items()])
                 hmc_features_str = ', '.join(hmc_features) or 'None'
                 logprint(logging.INFO, PRINT_V,
-                         "HMC version: {}".format(hmc_version))
+                         "HMC version: {}".
+                         format(version_str(hmc_version)))
                 logprint(logging.INFO, PRINT_V,
-                         "HMC API version: {}".format(hmc_api_version_str))
+                         "HMC API version: {}".
+                         format(version_str(hmc_api_version)))
                 logprint(logging.INFO, PRINT_V,
                          "HMC features: {}".format(hmc_features_str))
                 logprint(logging.INFO, PRINT_V,
