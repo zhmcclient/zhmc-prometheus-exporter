@@ -403,15 +403,18 @@ metrics:
         - name: valuetype
           value: "'bool'"
     - property_name: processor-usage
+      if: "'processor-usage' in resource_obj.properties"  # Added in HMC 2.15.0
       exporter_name: processor_mode_int
       exporter_desc: Allocation mode for processors to the active partition as an integer (0=shared, 1=dedicated)
       valuemap:
         shared: 0
         dedicated: 1
     - property_name: number-general-purpose-processors
+      if: "'number-general-purpose-processors' in resource_obj.properties"  # Added in HMC 2.15.0
       exporter_name: cp_processor_count
       exporter_desc: Number of CP processors currently allocated to the active partition
     - property_name: number-reserved-general-purpose-processors
+      if: "'number-reserved-general-purpose-processors' in resource_obj.properties"  # Added in HMC 2.15.0
       exporter_name: cp_reserved_processor_count
       exporter_desc: Number of CP processors reserved for the active partition (this is the maximum when increasing the number)
     - property_name: initial-processing-weight
@@ -1043,12 +1046,14 @@ metrics:
         - name: valuetype
           value: "'bool'"
     - properties_expression: "0"
+      if: "'storage-group-uris' in resource_obj.properties"  # Added in HMC 2.15.0
       exporter_name: storage_group_uris
       exporter_desc: "URIs of storage groups attached to the partition, as a comma-separated list"
       labels:
         - name: value
           value: "resource_obj.properties['storage-group-uris'] | join(',')"
     - properties_expression: "0"
+      if: "'storage-group-uris' in resource_obj.properties"  # Added in HMC 2.15.0
       exporter_name: storage_groups
       exporter_desc: "Storage groups attached to the partition, as a comma-separated list"
       labels:
