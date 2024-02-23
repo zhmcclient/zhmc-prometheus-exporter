@@ -25,9 +25,11 @@ import types
 import platform
 import re
 import time
+from datetime import datetime
 import warnings
 import logging
 import logging.handlers
+import threading
 from contextlib import contextmanager
 
 import jinja2
@@ -94,6 +96,12 @@ SYSLOG_ADDRESS = {
     'CYGWIN_NT': '/dev/log',  # Requires syslog-ng pkg
     'other': ('localhost', 514),  # used if no key matches
 }
+
+# Sleep time and hysteresis in property fetch thread
+INITIAL_FETCH_SLEEP_TIME = 30
+MIN_FETCH_SLEEP_TIME = 30
+MAX_FETCH_SLEEP_TIME = 3600
+FETCH_HYSTERESIS = 10
 
 # Sleep time in seconds when retrying metrics retrieval
 RETRY_SLEEP_TIME = 10
@@ -859,15 +867,22 @@ def create_metrics_context(
     return context, resources, uri2resource
 
 
-def cleanup(session, context, resources):
+def cleanup(session, context, resources, coll):
     """
     Clean up:
+    - cleanup the fetch thread
     - delete the metric context
     - disable auto-update on resources
     - logoff from the HMC session
     """
 
     try:
+
+        if coll:
+            logprint(logging.INFO, PRINT_ALWAYS,
+                     "Cleaning up thread for fetching properties in background "
+                     "(may take some time)")
+            coll.cleanup_fetch_thread()
 
         if context:
             logprint(logging.INFO, PRINT_ALWAYS,
@@ -1621,8 +1636,8 @@ class ZHMCUsageCollector():
     """Collects the usage for exporting."""
 
     def __init__(self, yaml_creds, session, context, resources,
-                 yaml_metric_groups,
-                 yaml_metrics, extra_labels, filename_metrics, filename_creds,
+                 yaml_metric_groups, yaml_metrics, yaml_fetch_properties,
+                 extra_labels, filename_metrics, filename_creds,
                  resource_cache, uri2resource, hmc_version, hmc_api_version,
                  hmc_features, se_versions_by_cpc, se_features_by_cpc):
         self.yaml_creds = yaml_creds
@@ -1631,6 +1646,7 @@ class ZHMCUsageCollector():
         self.resources = resources
         self.yaml_metric_groups = yaml_metric_groups
         self.yaml_metrics = yaml_metrics
+        self.yaml_fetch_properties = yaml_fetch_properties
         self.extra_labels = extra_labels
         self.filename_metrics = filename_metrics
         self.filename_creds = filename_creds
@@ -1641,6 +1657,10 @@ class ZHMCUsageCollector():
         self.hmc_features = hmc_features
         self.se_versions_by_cpc = se_versions_by_cpc
         self.se_features_by_cpc = se_features_by_cpc
+        self.fetch_thread = None
+        self.fetch_event = None
+        self.last_export_dt = None
+        self.export_interval = None
 
     def collect(self):
         """
@@ -1656,6 +1676,8 @@ class ZHMCUsageCollector():
         """
         logprint(logging.INFO, None,
                  "Collecting metrics")
+
+        start_dt = datetime.now()
 
         with zhmc_exceptions(self.session, self.filename_creds):
 
@@ -1730,8 +1752,148 @@ class ZHMCUsageCollector():
         for family_obj in family_objects.values():
             yield family_obj
 
+        end_dt = datetime.now()
+        duration = (end_dt - start_dt).total_seconds()
+        if self.last_export_dt:
+            self.export_interval = \
+                (end_dt - self.last_export_dt).total_seconds()
+        self.last_export_dt = end_dt
+        interval_str = "{:.1f} sec".format(self.export_interval) if \
+            self.export_interval else "None"
         logprint(logging.INFO, None,
-                 "Done collecting metrics")
+                 "Done collecting metrics after {:.1f} sec (export interval: "
+                 "{})".format(duration, interval_str))
+
+    def run_fetch_thread(self, session):
+        """
+        Function that runs as the property fetch thread.
+        """
+        assert isinstance(self, ZHMCUsageCollector)
+        assert isinstance(session, zhmcclient.Session)
+        client = zhmcclient.Client(session)
+        console = client.consoles.console
+        sleep_time = INITIAL_FETCH_SLEEP_TIME
+
+        while True:
+
+            # Sleep, but wake up when stop event is set
+            self.fetch_event.wait(timeout=sleep_time)
+
+            # Check for thread to stop
+            if self.fetch_event.is_set():
+                break
+
+            # Build the list of properties to be fetched.
+            # We do that every time, in order to handle new HMC features after
+            # an online upgrade.
+            cpc_props = []  # HMC property names of CPC to be fetched
+            lpar_props = []  # HMC property names of LPAR to be fetched
+            for fetch_class, fetch_item in self.yaml_fetch_properties.items():
+                for prop_item in fetch_item['properties']:
+                    prop_name = prop_item["property_name"]
+
+                    # Skip properties where fetch condition is not met
+                    if_expr = prop_item.get("if", None)
+                    if if_expr and not eval_condition(
+                            if_expr, self.hmc_version, self.hmc_api_version,
+                            self.hmc_features, None, None, None):
+                        continue
+
+                    if fetch_class == 'cpc':
+                        cpc_props.append(prop_name)
+                    elif fetch_class == 'logical-partition':
+                        lpar_props.append(prop_name)
+                    else:
+                        logprint(logging.WARNING, PRINT_ALWAYS,
+                                 "Ignoring invalid resource type {} when "
+                                 "fetching properties in background".
+                                 format(fetch_class))
+
+            # Fetch the properties.
+            # The zhmcclient methods used for that are supported for all HMC
+            # versions, but they run faster starting with HMC API version 4.10
+            # (2.16.0 GA 1.5).
+            logprint(logging.INFO, None,
+                     "Fetching properties in background")
+            start_dt = datetime.now()
+            updated_resources = {}  # Resource object by URI
+            for lpar in console.list_permitted_lpars(
+                    additional_properties=lpar_props):
+                updated_resources[lpar.uri] = lpar
+            for cpc in client.cpcs.list():
+                cpc.pull_properties(cpc_props)
+                updated_resources[cpc.uri] = cpc
+            end_dt = datetime.now()
+            duration = (end_dt - start_dt).total_seconds()
+            logprint(logging.INFO, None,
+                     "Done fetching properties in background after {:.1f} sec".
+                     format(duration))
+
+            # Adjust the fetch sleep time based on the exporter interval.
+            # This assumes that the export to Prometheus happens on a fairly
+            # regular basis.
+            if self.export_interval:
+                old_sleep_time = sleep_time
+                if duration + sleep_time < \
+                        self.export_interval - FETCH_HYSTERESIS:
+                    sleep_time = int(self.export_interval - duration)
+                elif duration + sleep_time > \
+                        self.export_interval + FETCH_HYSTERESIS:
+                    sleep_time = int(self.export_interval - duration)
+                sleep_time = max(sleep_time, MIN_FETCH_SLEEP_TIME)
+                sleep_time = min(sleep_time, MAX_FETCH_SLEEP_TIME)
+                if sleep_time > old_sleep_time:
+                    direction_str = "Increasing"
+                elif sleep_time < old_sleep_time:
+                    direction_str = "Decreasing"
+                else:
+                    direction_str = None
+                if direction_str:
+                    logprint(logging.INFO, PRINT_ALWAYS,
+                             "{} sleep time for fetching properties in "
+                             "background from {} sec to {} sec to adjust to "
+                             "export interval of {:.1f} sec".
+                             format(direction_str, old_sleep_time, sleep_time,
+                                    self.export_interval))
+
+            # Update properties of our local resource objects from result
+            for uri, updated_res in updated_resources.items():
+                try:
+                    res = self.uri2resource[uri]
+                except KeyError:
+                    continue
+                res.update_properties_local(updated_res.properties)
+            for fetch_item in self.yaml_fetch_properties.values():
+                for metric_group in fetch_item["metric-groups"]:
+                    try:
+                        resources = self.resources[metric_group]
+                    except KeyError:
+                        continue
+                    for res in resources:
+                        try:
+                            updated_res = updated_resources[res.uri]
+                        except KeyError:
+                            continue
+                        res.update_properties_local(updated_res.properties)
+
+    def start_fetch_thread(self, session):
+        """
+        Start the property fetch thread.
+        """
+        self.fetch_event = threading.Event()
+        self.fetch_thread = threading.Thread(
+            name='FetchThread',
+            target=self.run_fetch_thread,
+            kwargs=dict(session=session))
+        self.fetch_thread.start()
+
+    def cleanup_fetch_thread(self):
+        """
+        Stop and clean up the property fetch thread.
+        """
+        if self.fetch_thread:
+            self.fetch_event.set()
+            self.fetch_thread.join()
 
 
 # Global variable with the verbosity level from the command line
@@ -1890,8 +2052,8 @@ def setup_logging(log_dest, log_complevels, syslog_facility):
             max_msg = '.{}'.format(2048 - 41 - 47)
         else:
             max_msg = ''
-        fs = ('%(asctime)s %(levelname)s %(name)s: %(message){m}s'.
-              format(m=max_msg))
+        fs = ('%(asctime)s %(threadName)s %(levelname)s %(name)s: '
+              '%(message){m}s'.format(m=max_msg))
 
         # Set the formatter to always log times in UTC. Since the %z
         # formatting string does not get adjusted for that, set the timezone
@@ -1970,6 +2132,8 @@ def main():
         # metric_groups and metrics are required in the metrics schema:
         yaml_metric_groups = yaml_metric_content['metric_groups']
         yaml_metrics = yaml_metric_content['metrics']
+        yaml_fetch_properties = yaml_metric_content.get(
+            'fetch_properties', None)
 
         # Check that the metric_groups and metrics items are consistent
         for mg in yaml_metrics:
@@ -2004,8 +2168,12 @@ def main():
         # Unregister the default collectors (Python, Platform)
         if hasattr(REGISTRY, '_collector_to_names'):
             # pylint: disable=protected-access
-            for coll in list(REGISTRY._collector_to_names.keys()):
-                REGISTRY.unregister(coll)
+            for coll_ in list(REGISTRY._collector_to_names.keys()):
+                REGISTRY.unregister(coll_)
+
+        logprint(logging.INFO, PRINT_V,
+                 "Initial sleep time for fetching properties in background: "
+                 "{} sec".format(INITIAL_FETCH_SLEEP_TIME))
 
         logprint(logging.INFO, PRINT_V,
                  "Timeout/retry configuration: "
@@ -2018,6 +2186,7 @@ def main():
         # hmc is required in the HMC creds schema:
         session = create_session(yaml_creds, hmccreds_filename)
 
+        coll = None  # For exceptions that happen before it is set
         try:
             with zhmc_exceptions(session, hmccreds_filename):
                 hmc_info = get_hmc_info(session)
@@ -2082,9 +2251,10 @@ def main():
         resource_cache = ResourceCache()
         coll = ZHMCUsageCollector(
             yaml_creds, session, context, resources, yaml_metric_groups,
-            yaml_metrics, extra_labels, args.m, hmccreds_filename,
-            resource_cache, uri2resource, hmc_version, hmc_api_version,
-            hmc_features, se_versions_by_cpc, se_features_by_cpc)
+            yaml_metrics, yaml_fetch_properties, extra_labels, args.m,
+            hmccreds_filename, resource_cache, uri2resource, hmc_version,
+            hmc_api_version, hmc_features, se_versions_by_cpc,
+            se_features_by_cpc)
 
         logprint(logging.INFO, PRINT_V,
                  "Registering the collector and performing first collection")
@@ -2161,6 +2331,11 @@ def main():
                     "Cannot start HTTP server: {}: {}".
                     format(exc.__class__.__name__, exc))
 
+        logprint(logging.INFO, PRINT_V,
+                 "Starting thread for fetching properties in background "
+                 "for which change notification is not supported")
+        coll.start_fetch_thread(session)
+
         logprint(logging.INFO, PRINT_ALWAYS,
                  "Exporter is up and running on port {}".format(port))
         while True:
@@ -2171,7 +2346,7 @@ def main():
     except KeyboardInterrupt:
         logprint(logging.WARNING, PRINT_ALWAYS,
                  "Exporter interrupted before server start.")
-        cleanup(session, context, resources)
+        cleanup(session, context, resources, coll)
         exit_rc(1)
     except EarlyExit as exc:
         logprint(logging.ERROR, PRINT_ALWAYS,
@@ -2180,12 +2355,12 @@ def main():
     except ImproperExit as exc:
         logprint(logging.ERROR, PRINT_ALWAYS,
                  "Error: {}".format(exc))
-        cleanup(session, context, resources)
+        cleanup(session, context, resources, coll)
         exit_rc(1)
     except ProperExit:
         logprint(logging.WARNING, PRINT_ALWAYS,
                  "Exporter interrupted after server start.")
-        cleanup(session, context, resources)
+        cleanup(session, context, resources, coll)
         exit_rc(0)
 
 

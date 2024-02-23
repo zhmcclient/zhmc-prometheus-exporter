@@ -321,7 +321,7 @@ class TestCleanup(unittest.TestCase):
         context = client.metrics_contexts.create(
             {"anticipated-frequency-seconds": 15,
              "metric-groups": ["dpm-system-usage-overview"]})
-        zhmc_prometheus_exporter.cleanup(session, context, None)
+        zhmc_prometheus_exporter.cleanup(session, context, None, None)
 
 
 def setup_faked_session():
@@ -530,13 +530,18 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
                 }
             }
         }
+        yaml_fetch_properties = {
+            "cpc": [
+                {"property_name": "processor-count-spare"},
+            ],
+        }
         extra_labels = {}
 
         my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
             cred_dict, session, context, resources, yaml_metric_groups,
-            yaml_metrics, extra_labels, "filename", "filename", None, None,
-            hmc_version, hmc_api_version, hmc_features, se_versions_by_cpc,
-            se_features_by_cpc)
+            yaml_metrics, yaml_fetch_properties, extra_labels, "filename",
+            "filename", None, None, hmc_version, hmc_api_version, hmc_features,
+            se_versions_by_cpc, se_features_by_cpc)
         self.assertEqual(my_zhmc_usage_collector.yaml_creds, cred_dict)
         self.assertEqual(my_zhmc_usage_collector.session, session)
         self.assertEqual(my_zhmc_usage_collector.context, context)
@@ -576,13 +581,18 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
                 }
             }
         }
+        yaml_fetch_properties = {
+            "cpc": [
+                {"property_name": "processor-count-spare"},
+            ],
+        }
         extra_labels = {}
 
         my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
             cred_dict, session, context, resources, yaml_metric_groups,
-            yaml_metrics, extra_labels, "filename", "filename", None, None,
-            hmc_version, hmc_api_version, hmc_features, se_versions_by_cpc,
-            se_features_by_cpc)
+            yaml_metrics, yaml_fetch_properties, extra_labels, "filename",
+            "filename", None, None, hmc_version, hmc_api_version, hmc_features,
+            se_versions_by_cpc, se_features_by_cpc)
         collected = list(my_zhmc_usage_collector.collect())
         self.assertEqual(len(collected), 1)
         self.assertEqual(type(collected[0]),

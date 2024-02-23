@@ -61,6 +61,8 @@ will also work with the prior version of the file (but not vice versa).
 
 **Enhancements:**
 
+* Increased zhmcclient version to 1.14.0 to pick up fixes and improvements.
+
 * Split safety runs into one against all requirements that may fail and one
   against the install requirements that must succeed. (issue #441)
 
@@ -108,6 +110,14 @@ will also work with the prior version of the file (but not vice versa).
   In metric group 'logical-partition-usage':
 
   - 'zhmc_partition_power_watt' - Power consumption of the partition
+
+* Added support for regularly fetching properties in the background, for which
+  object change notifications are not supported. These properties are defined
+  in the metric definition file along with an 'if' condition to express in
+  which environment they need to be fetched. The properties are fetched in the
+  background in a property fetch thread. The cycle time for fetching is
+  initially 30 seconds and will be adjusted to the cycle time in which
+  Prometheus fetches the exported metrics. (issue #358)
 
 **Cleanup:**
 

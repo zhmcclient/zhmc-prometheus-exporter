@@ -366,10 +366,30 @@ retrieved from the HMC, but they are exported to Prometheus in the same way:
   properties of HMC resources, such as the number of processors assigned
   to a partition. The exporter maintains representations of the corresponding
   resources in memory. These representations are automatically and
-  asynchronously updated via HMC object notifications. When Prometheus retrieves
-  these metrics from the exporter, the exporter always has up-to-date resource
-  representations and can immediately return them without having to turn around
-  for getting them from the HMC.
+  asynchronously updated. When Prometheus retrieves these metrics from the
+  exporter, the exporter always has up-to-date resource representations and can
+  immediately return them without having to turn around for getting them from
+  the HMC.
+
+  There are two mechanisms for retrieving resource properties asynchronously:
+
+  - **via HMC object notifications** - This is used for properties for which
+    object notifications are supported. As the set of properties with support
+    for object notifications tends to get larger with each HMC generation, the
+    metric definition file of the exporter specifies for which properties
+    object notifications are not supported (for each environment).
+
+  - **via background property fetching** - For properties for which object
+    notifications are not supported, a background thread fetches them from the
+    HMC. The background thread sleeps for some time between subsequent property
+    fetches. The sleep time is initially 30 seconds, and gets automatically
+    adjusted to the cycle time used by Prometheus to fetch the metrics from the
+    exporter. The sleep time always stays between 30 and 3600 seconds. As a
+    result, it takes at least one extra Prometheus fetch cycle until the changed
+    value of such a property appears in the Prometheus data. More than one cycle
+    is needed only if the Prometheus cycle is shorter than the fetch time plus
+    30 seconds. The timing can be observed in the log at log level info
+    (i.e. ``--log-comp all=info``).
 
   Resources that no longer exist on the HMC are automatically not exported
   anymore. Resources that were created on the HMC since the exporter was
@@ -916,6 +936,13 @@ The metric definition file is in YAML format and has the following structure:
             - name: {label-name}
               value: {label-value}
 
+    fetch_properties:
+      # dictionary of properties that need to be fetched because they can
+      # change but have no property change notification
+      {hmc-resource-class}:
+        - property_name: {hmc-property}
+          if: {fetch-condition}  # optional
+
 Where:
 
 * ``{hmc-metric-group}`` is the name of the metric group on the HMC.
@@ -992,6 +1019,11 @@ Where:
 
 * ``{label-value}`` is a :term:`Jinja2 expression` that is evaluated and used
   as the label value. For details, see :ref:`Labels on exported metrics`.
+
+* ``{hmc-resource-class}`` is the class of the HMC resource for which properties
+  are to be fetched (i.e. the value of its ``class`` property, e.g. ``cpc``).
+
+* ``{hmc-property}`` is the HMC name of the property that is to be fetched.
 
 Sample metric definition file
 -----------------------------
