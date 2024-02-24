@@ -47,6 +47,9 @@ Released: not yet
 * Docs: Added missing metrics to the metrics table in the Usage section:
   zhmc_partition_storage_group_uris
 
+* Dev: Fixed the call to pipdeptree in the test workflow to use 'python -m'
+  because otherwise it does not show the correct packages of the virtual env.
+
 **Enhancements:**
 
 **Cleanup:**
