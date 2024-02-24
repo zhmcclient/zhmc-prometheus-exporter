@@ -61,6 +61,9 @@ will also work with the prior version of the file (but not vice versa).
 
 * Fixed traceback when HMC credentials file does not exist.
 
+* Fixed the name of the 'power-consumption-watts' metric in the
+  'logical-partition-usage' HMC metric group. (issue #475)
+
 **Enhancements:**
 
 * Increased zhmcclient version to 1.14.0 to pick up fixes and improvements.
