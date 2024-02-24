@@ -2086,6 +2086,8 @@ def main():
     session = None
     context = None
     resources = None
+    coll = None  # For exceptions that happen before it is set
+
     try:
         args = parse_args(sys.argv[1:])
         if args.version:
@@ -2186,7 +2188,6 @@ def main():
         # hmc is required in the HMC creds schema:
         session = create_session(yaml_creds, hmccreds_filename)
 
-        coll = None  # For exceptions that happen before it is set
         try:
             with zhmc_exceptions(session, hmccreds_filename):
                 hmc_info = get_hmc_info(session)
