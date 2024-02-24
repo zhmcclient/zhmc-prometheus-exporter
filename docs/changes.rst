@@ -56,6 +56,9 @@ will also work with the prior version of the file (but not vice versa).
 * Docs: Added missing metrics to the metrics table in the Usage section:
   zhmc_partition_storage_group_uris
 
+* Dev: Fixed the call to pipdeptree in the test workflow to use 'python -m'
+  because otherwise it does not show the correct packages of the virtual env.
+
 **Enhancements:**
 
 * Split safety runs into one against all requirements that may fail and one
