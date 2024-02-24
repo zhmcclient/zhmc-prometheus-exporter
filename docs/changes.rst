@@ -17,14 +17,10 @@ Change log
 ----------
 
 
-Version 1.5.1.dev1
-^^^^^^^^^^^^^^^^^^
+Version 1.5.1
+^^^^^^^^^^^^^
 
-Released: not yet
-
-**Incompatible changes:**
-
-**Deprecations:**
+Released: 2024-02-24
 
 **Bug fixes:**
 
@@ -49,16 +45,6 @@ Released: not yet
 
 * Dev: Fixed the call to pipdeptree in the test workflow to use 'python -m'
   because otherwise it does not show the correct packages of the virtual env.
-
-**Enhancements:**
-
-**Cleanup:**
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 1.5.0
