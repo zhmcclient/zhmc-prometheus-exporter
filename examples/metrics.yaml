@@ -337,7 +337,7 @@ metrics:
       percent: false
       exporter_name: zvm_paging_rate_pages_per_second
       exporter_desc: z/VM paging rate in pages/sec
-    power-consumption:
+    power-consumption-watts:
       if: "'environmental-metrics' in se_features"
       percent: false
       exporter_name: power_watt
