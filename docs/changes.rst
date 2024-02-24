@@ -59,6 +59,8 @@ will also work with the prior version of the file (but not vice versa).
 * Dev: Fixed the call to pipdeptree in the test workflow to use 'python -m'
   because otherwise it does not show the correct packages of the virtual env.
 
+* Fixed traceback when HMC credentials file does not exist.
+
 **Enhancements:**
 
 * Increased zhmcclient version to 1.14.0 to pick up fixes and improvements.
