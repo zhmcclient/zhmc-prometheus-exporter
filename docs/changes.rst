@@ -139,6 +139,9 @@ will also work with the prior version of the file (but not vice versa).
 * Disabled the use of Python builtins in the evaluation of 'fetch-condition' and
   'export-condition' in the metric definition file. (issue #463)
 
+* Improved the lengthy warning details messages when resources have not been
+  found to a more condensed and useful format. (issue #473)
+
 **Known issues:**
 
 * See `list of open issues`_.

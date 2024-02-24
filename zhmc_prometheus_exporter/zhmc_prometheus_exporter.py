@@ -966,19 +966,19 @@ class ResourceCache(object):
                          format(uri, mgd.name))
                 for mgr in exc.managers:
                     res_class = mgr.class_name
-                    logprint(logging.WARNING, PRINT_ALWAYS,
+                    logprint(logging.WARNING, PRINT_VV,
                              "Warning details: List of {} resources found:".
                              format(res_class))
-                    res_dict = {}
-                    resources = mgr.list()
-                    for res in resources:
-                        res_dict[res.uri] = res
-                    logprint(logging.WARNING, PRINT_ALWAYS,
-                             repr(res_dict))
-                logprint(logging.WARNING, PRINT_ALWAYS,
+                    for res in mgr.list():
+                        logprint(logging.WARNING, PRINT_VV,
+                                 "Warning details: Resource found: {} ({})".
+                                 format(res.uri, res.name))
+                logprint(logging.WARNING, PRINT_VV,
                          "Warning details: Current resource cache:")
-                logprint(logging.WARNING, PRINT_ALWAYS,
-                         repr(self._resources))
+                for res in self._resources.values():
+                    logprint(logging.WARNING, PRINT_VV,
+                             "Warning details: Resource cache: {} ({})".
+                             format(res.uri, res.name))
                 raise
             self._resources[uri] = _resource
         return _resource
