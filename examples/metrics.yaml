@@ -456,9 +456,11 @@ metrics:
         - name: valuetype
           value: "'bool'"
     - property_name: number-ifl-processors
+      if: "'number-ifl-processors' in resource_obj.properties"  # Added in SE 2.15.0
       exporter_name: ifl_processor_count
       exporter_desc: Number of IFL processors currently allocated to the active partition
     - property_name: number-reserved-ifl-processors
+      if: "'number-reserved-ifl-processors' in resource_obj.properties"  # Added in SE 2.15.0
       exporter_name: ifl_reserved_processor_count
       exporter_desc: Number of IFL processors reserved for the active partition (this is the maximum when increasing the number)
     - property_name: initial-ifl-processing-weight
@@ -495,9 +497,11 @@ metrics:
         - name: valuetype
           value: "'bool'"
     - property_name: number-icf-processors
+      if: "'number-ifc-processors' in resource_obj.properties"  # Added in SE 2.15.0
       exporter_name: icf_processor_count
       exporter_desc: Number of ICF processors currently allocated to the active partition
     - property_name: number-reserved-icf-processors
+      if: "'number-reserved-ifc-processors' in resource_obj.properties"  # Added in SE 2.15.0
       exporter_name: icf_reserved_processor_count
       exporter_desc: Number of ICF processors reserved for the active partition (this is the maximum when increasing the number)
     - property_name: initial-cf-processing-weight
@@ -534,9 +538,11 @@ metrics:
         - name: valuetype
           value: "'bool'"
     - property_name: number-ziip-processors
+      if: "'number-ziip-processors' in resource_obj.properties"  # Added in SE 2.15.0
       exporter_name: iip_processor_count
       exporter_desc: Number of zIIP processors currently allocated to the active partition
     - property_name: number-reserved-ziip-processors
+      if: "'number-reserved-ziip-processors' in resource_obj.properties"  # Added in SE 2.15.0
       exporter_name: iip_reserved_processor_count
       exporter_desc: Number of zIIP processors reserved for the active partition (this is the maximum when increasing the number)
     - property_name: initial-ziip-processing-weight
@@ -1597,7 +1603,9 @@ fetch_properties:
         if: "hmc_version < (2,16)"
 
       - property_name: number-general-purpose-processors
+        if: "hmc_version >= (2,15)"  # Actually SE 2.15.0
       - property_name: number-reserved-general-purpose-processors
+        if: "hmc_version >= (2,15)"  # Actually SE 2.15.0
       - property_name: absolute-processing-capping
         if: "hmc_version < (2,16)"
       - property_name: initial-processing-weight
@@ -1613,7 +1621,9 @@ fetch_properties:
       - property_name: current-processing-weight-capped
 
       - property_name: number-ifl-processors
+        if: "hmc_version >= (2,15)"  # Actually SE 2.15.0
       - property_name: number-reserved-ifl-processors
+        if: "hmc_version >= (2,15)"  # Actually SE 2.15.0
       - property_name: absolute-ifl-capping'
         if: "hmc_version < (2,16)"
       - property_name: initial-ifl-processing-weight
@@ -1629,7 +1639,9 @@ fetch_properties:
       - property_name: current-ifl-processing-weight-capped
 
       - property_name: number-icf-processors
+        if: "hmc_version >= (2,15)"  # Actually SE 2.15.0
       - property_name: number-reserved-icf-processors
+        if: "hmc_version >= (2,15)"  # Actually SE 2.15.0
       - property_name: absolute-cf-capping
         if: "hmc_version < (2,16)"
       - property_name: initial-cf-processing-weight
@@ -1645,7 +1657,9 @@ fetch_properties:
       - property_name: current-cf-processing-weight-capped
 
       - property_name: number-ziip-processors
+        if: "hmc_version >= (2,15)"  # Actually SE 2.15.0
       - property_name: number-reserved-ziip-processors
+        if: "hmc_version >= (2,15)"  # Actually SE 2.15.0
       - property_name: absolute-ziip-capping
         if: "hmc_version < (2,16)"
       - property_name: initial-ziip-processing-weight
