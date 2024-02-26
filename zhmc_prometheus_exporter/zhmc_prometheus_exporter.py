@@ -2196,6 +2196,7 @@ def main():
                 client = zhmcclient.Client(session)
                 hmc_features = client.consoles.console.list_api_features()
                 cpc_list = client.cpcs.list()
+
                 se_versions_by_cpc = {}
                 se_features_by_cpc = {}
                 for cpc in cpc_list:
@@ -2203,30 +2204,34 @@ def main():
                     se_versions_by_cpc[cpc_name] = split_version(
                         cpc.prop('se-version'), 3)
                     se_features_by_cpc[cpc_name] = cpc.list_api_features()
-                se_versions_str = '; '.join(
-                    ["{}: {}".format(cpc, version_str(vers))
-                     for cpc, vers in se_versions_by_cpc.items()])
-                se_features_str = '; '.join(
-                    ["{}: {}".format(cpc, ', '.join(feat) or 'None')
-                     for cpc, feat in se_features_by_cpc.items()])
-                hmc_features_str = ', '.join(hmc_features) or 'None'
+
                 logprint(logging.INFO, PRINT_V,
                          "HMC version: {}".
                          format(version_str(hmc_version)))
                 logprint(logging.INFO, PRINT_V,
                          "HMC API version: {}".
                          format(version_str(hmc_api_version)))
+                hmc_features_str = ', '.join(hmc_features) or 'None'
                 logprint(logging.INFO, PRINT_V,
                          "HMC features: {}".format(hmc_features_str))
-                logprint(logging.INFO, PRINT_V,
-                         "Managed CPCs and their SE versions: {}".
-                         format(se_versions_str))
-                logprint(logging.INFO, PRINT_V,
-                         "Managed CPCs and their SE features: {}".
-                         format(se_features_str))
+                for cpc in cpc_list:
+                    cpc_name = cpc.name
+                    se_version_str = version_str(se_versions_by_cpc[cpc_name])
+                    logprint(logging.INFO, PRINT_V,
+                             "SE version of CPC {}: {}".
+                             format(cpc_name, se_version_str))
+                for cpc in cpc_list:
+                    cpc_name = cpc.name
+                    se_features_str = ', '.join(se_features_by_cpc[cpc_name]) \
+                        or 'None'
+                    logprint(logging.INFO, PRINT_V,
+                             "SE features of CPC {}: {}".
+                             format(cpc_name, se_features_str))
+
                 context, resources, uri2resource = create_metrics_context(
                     session, yaml_metric_groups, hmc_version, hmc_api_version,
                     hmc_features)
+
         except (ConnectionError, AuthError, OtherError) as exc:
             raise ImproperExit(exc)
 
