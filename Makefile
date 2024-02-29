@@ -183,6 +183,7 @@ help:
 	@echo "  builddoc   - Build the documentation in $(doc_build_dir)"
 	@echo "  all        - Do all of the above"
 	@echo "  docker     - Build local Docker image in registry $(docker_registry)"
+	@echo "  authors    - Generate AUTHORS.md file from git log"
 	@echo "  upload     - Upload the package to Pypi"
 	@echo "  clean      - Remove any temporary files"
 	@echo "  clobber    - Remove any build products"
@@ -312,6 +313,16 @@ all: install develop check_reqs check pylint test build builddoc check_reqs
 .PHONY: all
 docker: _check_version $(done_dir)/docker_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: $@ done."
+
+.PHONY: authors
+authors: _check_version
+	echo "# Authors of this project" >AUTHORS.md
+	echo "" >>AUTHORS.md
+	echo "Sorted list of authors derived from git commit history:" >>AUTHORS.md
+	echo '```' >>AUTHORS.md
+	git shortlog --summary --email | cut -f 2 | sort >>AUTHORS.md
+	echo '```' >>AUTHORS.md
+	@echo '$@ done.'
 
 .PHONY: upload
 upload: _check_version $(bdist_file) $(sdist_file)

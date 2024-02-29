@@ -128,6 +128,9 @@ will also work with the prior version of the file (but not vice versa).
   initially 30 seconds and will be adjusted to the cycle time in which
   Prometheus fetches the exported metrics. (issue #358)
 
+* Added support for a new make target 'authors' that generates an AUTHORS.md
+  file from the git commit history. (issue #442)
+
 **Cleanup:**
 
 * Increased versions of GitHub Actions plugins to increase node.js runtime
