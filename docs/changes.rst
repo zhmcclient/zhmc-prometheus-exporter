@@ -75,6 +75,11 @@ will also work with the prior version of the file (but not vice versa).
 * Split safety runs into one against all requirements that may fail and one
   against the install requirements that must succeed. (issue #441)
 
+* Changed safety run for install dependencies to use the exact minimum versions
+  of the dependent packages, by moving them into a separate
+  minimum-constraints-install.txt file that is included by the existing
+  minimum-constraints.txt file. (issue #489)
+
 * Added support for the following new variables for use in 'fetch-condition' in
   the metric definition file (issue #459):
 
