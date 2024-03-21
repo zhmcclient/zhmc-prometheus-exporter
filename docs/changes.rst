@@ -136,6 +136,9 @@ will also work with the prior version of the file (but not vice versa).
 * Added support for a new make target 'authors' that generates an AUTHORS.md
   file from the git commit history. (issue #442)
 
+* The safety run for all dependencies now must succeed when the test workflow
+  is run for a release (i.e. branch name 'release_...').
+
 **Cleanup:**
 
 * Increased versions of GitHub Actions plugins to increase node.js runtime
