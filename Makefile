@@ -353,7 +353,7 @@ clobber: clean
 	-$(call RM_R_FUNC,*.done)
 	@echo "Makefile: $@ done."
 
-$(done_dir)/install_base_$(pymn)_$(PACKAGE_LEVEL).done:
+$(done_dir)/install_base_$(pymn)_$(PACKAGE_LEVEL).done: minimum-constraints.txt minimum-constraints-install.txt
 	@echo "Makefile: Installing base packages with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
 	-$(call RM_FUNC,$@)
 	bash -c 'pv=$$($(PYTHON_CMD) -m pip --version); if [[ $$pv =~ (^pip [1-8]\..*) ]]; then $(PYTHON_CMD) -m pip install pip==9.0.1; fi'
@@ -361,14 +361,14 @@ $(done_dir)/install_base_$(pymn)_$(PACKAGE_LEVEL).done:
 	@echo "Makefile: Done installing base packages"
 	echo "done" >$@
 
-$(done_dir)/install_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/install_base_$(pymn)_$(PACKAGE_LEVEL).done requirements.txt setup.py
+$(done_dir)/install_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/install_base_$(pymn)_$(PACKAGE_LEVEL).done requirements.txt minimum-constraints.txt minimum-constraints-install.txt setup.py
 	@echo "Makefile: Installing package and its prerequisites with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
 	-$(call RM_FUNC,$@)
 	$(PYTHON_CMD) -m pip install $(pip_level_opts) -e .
 	@echo "Makefile: Done installing package and its prerequisites"
 	echo "done" >$@
 
-$(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/install_$(pymn)_$(PACKAGE_LEVEL).done dev-requirements.txt
+$(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/install_$(pymn)_$(PACKAGE_LEVEL).done dev-requirements.txt requirements.txt minimum-constraints.txt minimum-constraints-install.txt
 	@echo "Makefile: Installing prerequisites for development with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
 	-$(call RM_FUNC,$@)
 	$(PYTHON_CMD) -m pip install $(pip_level_opts) -r dev-requirements.txt
