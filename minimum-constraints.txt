@@ -1,15 +1,19 @@
-# Pip constraints file for install and development.
+# Pip constraints file for install and development dependencies.
 #
-# This constraints file specifies constraints that match the minimum versions
-# specified in the requirements files for install and development. The reason
-# for this approach is that in the CI systems, we want to be able to test with
-# the minimum package versions in order to catch any incorrect minimum versions.
+# This file specifies constraints that match the minimum versions specified in
+# the requirement files for install and development. They are used for example
+# when setting up test environments with the minimum versions of any dependent
+# packages.
 
 
+# Note: The included file is processed by Pip but ignored by the Safety tool.
+# Thus, safety with the 'all' profile actually only checks development packages,
+# but that's ok since the 'install' profile checks the install packages.
 -c minimum-constraints-install.txt
 
 
-# Direct dependencies for development (must be consistent with dev-requirements.txt)
+# Direct dependencies for development and indirect dependencies for development
+# that are needed for some reason (must be consistent with dev-requirements.txt)
 
 # PEP517 package builder, used in Makefile
 build==0.5.0
@@ -113,9 +117,6 @@ pip-check-reqs==2.3.2; python_version <= '3.7'
 pip-check-reqs==2.4.3; python_version >= '3.8' and python_version <= '3.11'
 pip-check-reqs==2.5.1; python_version >= '3.12'
 
-# Indirect dependencies for development that require a version constraint (must be consistent with dev-requirements.txt)
-
-# None
 
 # Indirect dependencies for development that are not in dev-requirements.txt
 
@@ -147,6 +148,5 @@ tomli==1.1.0; python_version >= '3.7' and python_version <= '3.10'
 tqdm==4.28.1
 typing==3.6.1
 webencodings==0.5.1
-
-# used by twine 4.0 which requires python_version >= '3.7'
+# rich is used by twine 4.0 which requires python_version >= '3.7'
 rich==12.0.0; python_version >= '3.7'
