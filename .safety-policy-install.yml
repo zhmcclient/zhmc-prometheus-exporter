@@ -1,5 +1,7 @@
-# Safety policy file
+# Safety policy file for packages needed for installation.
 # For documentation, see https://docs.pyup.io/docs/safety-20-policy-file
+
+# Note: This policy file is used against the versions in minimum-constraints-install.txt.
 
 # Configuration for the 'safety check' command
 security:
@@ -32,10 +34,6 @@ security:
             reason: Fixed Setuptools version requires Python>=3.7 and is used there; Risk is on Pypi side
         58755:
             reason: Fixed requests version 2.31.0 requires Python>=3.7 and is used there
-        61601:
-            reason: Fixed urllib3 version 2.0.5 is excluded by requests on Python 3.6
-        61893:
-            reason: Fixed urllib3 version 2.0.7 is excluded by requests on Python 3.6
         62044:
             reason: Fixed pip version 23.3 requires Python>=3.7 and is used there
         64227:
