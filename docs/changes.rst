@@ -103,6 +103,9 @@ will also work with the prior version of the file (but not vice versa).
 
 * Docs: Fixed link in description how to verify release in development.rst.
 
+* Added description of missing verify_cert parameter to help text for HMC
+  credentials file, displayed with --help-creds.
+
 **Enhancements:**
 
 * Increased zhmcclient version to 1.14.0 to pick up fixes and improvements.
