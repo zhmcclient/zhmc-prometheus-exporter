@@ -299,6 +299,14 @@ metrics:
   userid: myuser
   password: mypassword
 
+  # Note: The verify_cert parameter controls whether and how the HMC server
+  #       certificate is validated by the exporter. For more details,
+  #       see doc section 'HMC certificate'.
+  # verify_cert: true           # (default) Validate using default CA certs
+  # verify_cert: my_certs_file  # Validate using this CA certs file
+  # verify_cert: my_certs_dir   # Validate using this CA certs directory
+  # verify_cert: false          # Disable validation
+
 prometheus:
   port: 9291
 
