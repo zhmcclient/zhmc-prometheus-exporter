@@ -1633,9 +1633,9 @@ class ZHMCUsageCollector():
 
         logprint(logging.DEBUG, None,
                  "Returning family objects")
+
         # Yield all family objects
-        for family_obj in family_objects.values():
-            yield family_obj
+        yield from family_objects.values()
 
         logprint(logging.INFO, None,
                  "Done collecting metrics")
