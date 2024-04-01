@@ -139,6 +139,11 @@ will also work with the prior version of the file (but not vice versa).
 * The safety run for all dependencies now must succeed when the test workflow
   is run for a release (i.e. branch name 'release_...').
 
+* When the HMC userid cannot log on to the HMC because the password is invalid
+  or expired, or because the maximum number of sessions has been reached, the
+  exporter no longer retries the logon but abandons. The previous retrying has
+  lead to disabling the userid after some unsuccessful retries. (issue #493)
+
 **Cleanup:**
 
 * Increased versions of GitHub Actions plugins to increase node.js runtime
