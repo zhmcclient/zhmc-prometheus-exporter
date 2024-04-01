@@ -1687,6 +1687,13 @@ class ZHMCUsageCollector():
                 try:
                     metrics_object = retrieve_metrics(self.context)
                 except zhmcclient.HTTPError as exc:
+                    if exc.http_status == 400 and exc.reason in (13, 45):
+                        # 400.13: Logon: Max sessions reached for user
+                        # 400.45: Logon: Password expired
+                        logprint(logging.ERROR, PRINT_ALWAYS,
+                                 "Abandoning after HTTP status {}.{}: {}".
+                                 format(exc.http_status, exc.reason, exc))
+                        raise
                     if exc.http_status == 404 and exc.reason == 1:
                         logprint(logging.WARNING, PRINT_ALWAYS,
                                  "Recreating the metrics context after HTTP "
@@ -1708,13 +1715,10 @@ class ZHMCUsageCollector():
                     time.sleep(RETRY_SLEEP_TIME)
                     continue
                 except zhmcclient.ServerAuthError as exc:
-                    http_exc = exc.details  # zhmcclient.HTTPError
-                    logprint(logging.WARNING, PRINT_ALWAYS,
-                             "Retrying after server authentication error with "
-                             "HTTP status {}.{}".
-                             format(http_exc.http_status, http_exc.reason))
-                    time.sleep(RETRY_SLEEP_TIME)
-                    continue
+                    logprint(logging.ERROR, PRINT_ALWAYS,
+                             "Abandoning after server authentication error: {}".
+                             format(exc))
+                    raise
                 except zhmcclient.ClientAuthError as exc:
                     logprint(logging.ERROR, PRINT_ALWAYS,
                              "Abandoning after client authentication error: {}".
