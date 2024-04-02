@@ -17,26 +17,16 @@ Change log
 ----------
 
 
-Version 1.5.2.dev1
-^^^^^^^^^^^^^^^^^^
+Version 1.5.2
+^^^^^^^^^^^^^
 
-Released: not yet
-
-**Incompatible changes:**
-
-**Deprecations:**
+Released: 2024-04-02
 
 **Bug fixes:**
 
-**Enhancements:**
+* Dev: Fixed new pylint issue with yield from
 
-**Cleanup:**
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
+* Dev: Fixed missing deps of typer package
 
 
 Version 1.5.1 
