@@ -144,6 +144,12 @@ will also work with the prior version of the file (but not vice versa).
   exporter no longer retries the logon but abandons. The previous retrying has
   lead to disabling the userid after some unsuccessful retries. (issue #493)
 
+* Warning messages are now always printed to the output, and not just in verbose
+  mode (related to issue #488).
+
+* Added more detailed messages in the output and log for understanding the
+  Jinja2 rendering issue reported in issue #488.
+
 **Cleanup:**
 
 * Increased versions of GitHub Actions plugins to increase node.js runtime
