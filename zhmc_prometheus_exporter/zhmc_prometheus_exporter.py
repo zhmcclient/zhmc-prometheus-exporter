@@ -961,23 +961,23 @@ class ResourceCache(object):
             except zhmcclient.MetricsResourceNotFound as exc:
                 mgd = object_value.metric_group_definition
                 logprint(logging.WARNING, PRINT_ALWAYS,
-                         "Warning: Did not find resource {} specified in "
+                         "Did not find resource {} specified in "
                          "metric object value for metric group '{}'".
                          format(uri, mgd.name))
                 for mgr in exc.managers:
                     res_class = mgr.class_name
-                    logprint(logging.WARNING, PRINT_VV,
-                             "Warning details: List of {} resources found:".
+                    logprint(logging.WARNING, PRINT_ALWAYS,
+                             "Details: List of {} resources found:".
                              format(res_class))
                     for res in mgr.list():
-                        logprint(logging.WARNING, PRINT_VV,
-                                 "Warning details: Resource found: {} ({})".
+                        logprint(logging.WARNING, PRINT_ALWAYS,
+                                 "Details: Resource found: {} ({})".
                                  format(res.uri, res.name))
-                logprint(logging.WARNING, PRINT_VV,
-                         "Warning details: Current resource cache:")
+                logprint(logging.WARNING, PRINT_ALWAYS,
+                         "Details: Current resource cache:")
                 for res in self._resources.values():
-                    logprint(logging.WARNING, PRINT_VV,
-                             "Warning details: Resource cache: {} ({})".
+                    logprint(logging.WARNING, PRINT_ALWAYS,
+                             "Details: Resource cache: {} ({})".
                              format(res.uri, res.name))
                 raise
             self._resources[uri] = _resource
@@ -1002,7 +1002,7 @@ def expand_global_label_value(
     try:
         func = env.compile_expression(item_value)
     except jinja2.TemplateSyntaxError as exc:
-        logprint(logging.WARNING, PRINT_V,
+        logprint(logging.WARNING, PRINT_ALWAYS,
                  "Ignoring global label '{}' due to "
                  "syntax error in the Jinja2 expression in its value: {}".
                  format(label_name, exc))
@@ -1011,7 +1011,7 @@ def expand_global_label_value(
         value = func(hmc_info=hmc_info)
     # pylint: disable=broad-exception-caught,broad-except
     except Exception as exc:
-        logprint(logging.WARNING, PRINT_V,
+        logprint(logging.WARNING, PRINT_ALWAYS,
                  "Ignoring global label '{}' due to error in rendering "
                  "the Jinja2 expression in its value: {}: {}".
                  format(label_name, exc.__class__.__name__, exc))
@@ -1143,9 +1143,10 @@ def expand_group_label_value(
     try:
         func = env.compile_expression(item_value)
     except jinja2.TemplateSyntaxError as exc:
-        logprint(logging.WARNING, PRINT_V,
+        logprint(logging.WARNING, PRINT_ALWAYS,
                  "Ignoring label '{}' on metric group '{}' due to "
-                 "syntax error in label value Jinja2 expression: {}".
+                 "syntax error in the Jinja2 expression in the label value: "
+                 "{}".
                  format(label_name, group_name, exc))
         return None
     try:
@@ -1158,9 +1159,10 @@ def expand_group_label_value(
             adapter_port=adapter_port_func)
     # pylint: disable=broad-exception-caught,broad-except
     except Exception as exc:
-        logprint(logging.WARNING, PRINT_V,
+        logprint(logging.WARNING, PRINT_ALWAYS,
                  "Ignoring label '{}' on metric group '{}' due to "
-                 "error in rendering label value Jinja2 expression: {}: {}".
+                 "error when rendering the Jinja2 expression in the label "
+                 "value: {}: {}".
                  format(label_name, group_name, exc.__class__.__name__, exc))
         return None
     return str(value)
@@ -1194,9 +1196,10 @@ def expand_metric_label_value(
     try:
         func = env.compile_expression(item_value)
     except jinja2.TemplateSyntaxError as exc:
-        logprint(logging.WARNING, PRINT_V,
+        logprint(logging.WARNING, PRINT_ALWAYS,
                  "Ignoring label '{}' on metric with exporter name '{}' due to "
-                 "syntax error in the Jinja2 expression in its value: {}".
+                 "syntax error in the Jinja2 expression in the label value: "
+                 "{}".
                  format(label_name, metric_exporter_name, exc))
         return None
     try:
@@ -1209,12 +1212,20 @@ def expand_metric_label_value(
             adapter_port=adapter_port_func)
     # pylint: disable=broad-exception-caught,broad-except
     except Exception as exc:
-        logprint(logging.WARNING, PRINT_V,
+        logprint(logging.WARNING, PRINT_ALWAYS,
                  "Ignoring label '{}' on metric with exporter name '{}' due to "
-                 "error in rendering the Jinja2 expression in its value: "
-                 "{}: {}".
+                 "error when rendering the Jinja2 expression in the label "
+                 "value: {}: {}".
                  format(label_name, metric_exporter_name,
                         exc.__class__.__name__, exc))
+        # Additional information to debug the occasional KeyError in Jinja2
+        # expressions that access uris2resources / uri2resource
+        if 'uris2resources' in item_value or 'uri2resources' in item_value:
+            logprint(logging.WARNING, PRINT_ALWAYS,
+                     "Details: Jinja2 expression: {!r}; "
+                     "uri2resource: {!r}; resource_obj: {!r}".
+                     format(item_value, uri2resource,
+                            dict(resource_obj.properties)))
         return None
     return str(value)
 
