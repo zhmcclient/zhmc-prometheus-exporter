@@ -242,18 +242,18 @@ local clone of the zhmc-prometheus-exporter Git repo.
       add text for any known issues you want users to know about.
     * Remove all empty list items.
 
-6.  Commit your changes and push the topic branch to the remote repo:
+6.  Update the authors:
+
+    .. code-block:: sh
+
+        make authors
+
+7.  Commit your changes and push the topic branch to the remote repo:
 
     .. code-block:: sh
 
         git commit -asm "Release ${MNU}"
         git push --set-upstream origin release_${MNU}
-
-7.  Update the authors:
-
-    .. code-block:: sh
-
-        make authors
 
 8.  On GitHub, create a Pull Request for branch ``release_M.N.U``.
 
