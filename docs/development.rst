@@ -301,7 +301,7 @@ local clone of the zhmc-prometheus-exporter Git repo.
 12. Verify the publishing
 
     Wait for the "publish" workflow for the new release to have completed:
-    https://github.com/zhmcclient/zhmccli/actions/workflows/publish.yml
+    https://github.com/zhmcclient/zhmc-prometheus-exporter/actions/workflows/publish.yml
 
     Then, perform the following verifications:
 
