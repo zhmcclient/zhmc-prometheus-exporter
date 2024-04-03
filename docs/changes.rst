@@ -68,6 +68,8 @@ will also work with the prior version of the file (but not vice versa).
   properties of LPARs were retrieved for all HMC/SE versions, but they were
   introduced only with SE/CPC version 2.15.0. (issue #474)
 
+* Docs: Fixed link in description how to verify release in development.rst.
+
 **Enhancements:**
 
 * Increased zhmcclient version to 1.14.0 to pick up fixes and improvements.
