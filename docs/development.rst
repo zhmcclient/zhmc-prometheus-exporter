@@ -276,7 +276,7 @@ local clone of the zhmc-prometheus-exporter Git repo.
 
     If the PR did not succeed, fix the issues.
 
-10.  On GitHub, close milestone ``M.N.U``.
+10. On GitHub, close milestone ``M.N.U``.
 
     Verify that the milestone has no open items anymore. If it does have open
     items, investigate why and fix. If the milestone does not have open items

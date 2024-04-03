@@ -17,20 +17,16 @@ Change log
 ----------
 
 
-Version 1.6.0.dev1
-^^^^^^^^^^^^^^^^^^
+Version 1.6.0
+^^^^^^^^^^^^^
 
-This version contains all fixes up to version 1.5.x.
+This version contains all fixes up to version 1.5.2.
 
-Released: not yet
+Released: 2024-04-03
 
 **Important:** The standard metric definitions file examples/metrics.yaml has
 been updated. Please use the new file in your setup. This new exporter version
 will also work with the prior version of the file (but not vice versa).
-
-**Incompatible changes:**
-
-**Deprecations:**
 
 **Bug fixes:**
 
@@ -162,12 +158,6 @@ will also work with the prior version of the file (but not vice versa).
 
 * Improved the lengthy warning details messages when resources have not been
   found to a more condensed and useful format. (issue #473)
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 1.5.0
