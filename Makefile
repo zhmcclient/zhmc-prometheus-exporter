@@ -115,7 +115,7 @@ sdist_file := $(dist_dir)/$(package_name)-$(package_version).tar.gz
 dist_included_files := \
     setup.py \
     LICENSE \
-    README.rst \
+    README.md \
     requirements.txt \
     $(package_py_files) \
 
