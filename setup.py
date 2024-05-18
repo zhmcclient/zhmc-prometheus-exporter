@@ -98,8 +98,8 @@ setuptools.setup(
     # dependency_links is deprecated, and pip since 18.1 supports PEP-508 URLs.
 
     description='IBM Z HMC Prometheus Exporter',
-    long_description=read_file('README.rst'),
-    long_description_content_type='text/x-rst',
+    long_description=read_file('README.md'),
+    long_description_content_type='text/markdown',
     license='Apache License, Version 2.0',
     author='Jakob Naucke',
     author_email='jakob.naucke@ibm.com',
