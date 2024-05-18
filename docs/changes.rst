@@ -36,6 +36,8 @@ Released: not yet
   macos-latest back to macos-12 because macos-latest got upgraded from macOS 12
   to macOS 14 which no longer supports these Python versions.
 
+* Docs: Fixed README badges by converting it to Markdown. (issue #507)
+
 **Enhancements:**
 
 **Cleanup:**
