@@ -474,7 +474,7 @@ class TestMetrics(unittest.TestCase):
         self.assertEqual(family.samples, [sample1])
 
         # pylint: disable=protected-access
-        self.assertEqual(set(family._labelnames), set(["label1", "resource"]))
+        self.assertEqual(set(family._labelnames), {"label1", "resource"})
 
         families = zhmc_prometheus_exporter.build_family_objects_res(
             resources, yaml_metric_groups, yaml_metrics, 'file',
@@ -496,7 +496,7 @@ class TestMetrics(unittest.TestCase):
         self.assertEqual(family.samples, [sample1])
 
         # pylint: disable=protected-access
-        self.assertEqual(set(family._labelnames), set(["label1", "resource"]))
+        self.assertEqual(set(family._labelnames), {"label1", "resource"})
 
         teardown_metrics_context(context)
 
