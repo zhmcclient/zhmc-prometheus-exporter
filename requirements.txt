@@ -9,15 +9,12 @@
 # zhmcclient @ git+https://github.com/zhmcclient/python-zhmcclient.git@master
 zhmcclient>=1.14.0
 
-# prometheus-client 0.18.0 has removed support for py36,37
-# prometheus-client 0.19.0 added support for HTTPS/mTLS, but requires py38
-prometheus-client>=0.17.1; python_version <= '3.7'
-prometheus-client>=0.19.0; python_version >= '3.8'
+# prometheus-client 0.19.0 added support for HTTPS/mTLS
+prometheus-client>=0.19.0
 
 urllib3>=1.26.18
 jsonschema>=3.2.0
-Jinja2>=3.0.3; python_version == '3.6'
-Jinja2>=3.1.3; python_version >= '3.7'
+Jinja2>=3.1.3
 
 # PyYAML 5.3.x has wheel archives for Python 2.7, 3.5 - 3.9
 # PyYAML 5.4.x has wheel archives for Python 2.7, 3.6 - 3.9
@@ -25,16 +22,13 @@ Jinja2>=3.1.3; python_version >= '3.7'
 # PyYAML 6.0.1 has wheel archives for Python 3.6 - 3.12
 # PyYAML versions without wheel archives fail install since Cython 3 was
 #   released, see https://github.com/yaml/pyyaml/issues/724.
-PyYAML>=5.3.1,!=5.4.0,!=5.4.1; python_version >= '3.6' and python_version <= '3.11'
+PyYAML>=5.3.1,!=5.4.0,!=5.4.1; python_version <= '3.11'
 PyYAML>=5.3.1,!=5.4.0,!=5.4.1,!=6.0.0; python_version >= '3.12'
 
 
 # Indirect dependencies for install that are needed for some reason (must be consistent with minimum-constraints-install.txt)
 
 # pyrsistent is used by jsonschema 3.x (no longer by jsonschema 4.x)
-# Before its version 0.17.0, pyrsistent did not or not correctly declare its
-#   required Python versions in the package metadata.
 # pyrsistent 0.15.0 fixes import errors on Python>=3.10, but only 0.18.1 has
 #   Python 3.10 support (accordong to the change log).
-pyrsistent>=0.17.3; python_version == '3.6'
-pyrsistent>=0.18.1; python_version >= '3.7'
+pyrsistent>=0.18.1
