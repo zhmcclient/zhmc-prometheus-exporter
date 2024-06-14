@@ -307,5 +307,5 @@ if __name__ == "__main__":
     try:
         main()
     except zhmcclient.Error as exc:
-        print("Error: {}".format(exc))
+        print(f"Error: {exc}")
         sys.exit(1)

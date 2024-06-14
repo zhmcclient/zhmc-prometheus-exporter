@@ -197,13 +197,13 @@ def zhmc_exceptions(session, hmccreds_filename):
                    hs=http_exc.http_status, hr=http_exc.reason))
         new_exc.__cause__ = None
         raise new_exc  # AuthError
-    except (IOError, OSError) as exc:
+    except OSError as exc:
         new_exc = OtherError(str(exc))
         new_exc.__cause__ = None
         raise new_exc  # OtherError
     except zhmcclient.Error as exc:
         new_exc = OtherError(
-            "Error returned from HMC at {}: {}".format(session.host, exc))
+            f"Error returned from HMC at {session.host}: {exc}")
         new_exc.__cause__ = None
         raise new_exc  # OtherError
 
@@ -373,7 +373,7 @@ def parse_yaml_file(yamlfile, name, schemafilename=None):
     """
 
     try:
-        with open(yamlfile, "r", encoding='utf-8') as fp:
+        with open(yamlfile, encoding='utf-8') as fp:
             yaml_obj = yaml.safe_load(fp)
     except FileNotFoundError as exc:
         new_exc = ImproperExit(
@@ -399,7 +399,7 @@ def parse_yaml_file(yamlfile, name, schemafilename=None):
         schemafile = os.path.join(
             os.path.dirname(__file__), 'schemas', schemafilename)
         try:
-            with open(schemafile, 'r', encoding='utf-8') as fp:
+            with open(schemafile, encoding='utf-8') as fp:
                 schema = yaml.safe_load(fp)
         except FileNotFoundError as exc:
             new_exc = ImproperExit(
@@ -450,12 +450,12 @@ def json_path_str(path_list):
     path_str = ""
     for p in path_list:
         if isinstance(p, int):
-            path_str += "[{}]".format(p)
+            path_str += f"[{p}]"
         else:
-            path_str += ".{}".format(p)
+            path_str += f".{p}"
     if path_str.startswith('.'):
         path_str = path_str[1:]
-    return "element '{}'".format(path_str)
+    return f"element '{path_str}'"
 
 
 def split_version(version_str_, pad_to):
@@ -516,12 +516,12 @@ def resource_str(resource_obj):
     """
     res_class = resource_obj.properties['class']
     if res_class == 'cpc':
-        res_str = "CPC '{}'".format(resource_obj.name)
+        res_str = f"CPC '{resource_obj.name}'"
     elif res_class in ('partition', 'logical-partition'):
         res_str = "partition '{}' on CPC '{}'". \
             format(resource_obj.name, resource_obj.manager.parent.name)
     else:
-        raise ValueError("Resource class {} is not supported".format(res_class))
+        raise ValueError(f"Resource class {res_class} is not supported")
     return res_str
 
 
@@ -646,7 +646,7 @@ def create_session(cred_dict, hmccreds_filename):
             verify_cert = os.path.join(
                 os.path.dirname(hmccreds_filename), verify_cert)
     logprint(logging.INFO, PRINT_V,
-             "HMC certificate validation: {}".format(verify_cert))
+             f"HMC certificate validation: {verify_cert}")
 
     session = zhmcclient.Session(cred_dict["hmc"],
                                  cred_dict["userid"],
@@ -742,7 +742,7 @@ def create_metrics_context(
             cpcs = client.cpcs.list()
             for cpc in cpcs:
                 logprint(logging.INFO, PRINT_V,
-                         "Enabling auto-update for CPC {}".format(cpc.name))
+                         f"Enabling auto-update for CPC {cpc.name}")
                 try:
                     cpc.enable_auto_update()
                 except zhmcclient.Error as exc:
@@ -920,7 +920,7 @@ def cleanup(session, context, resources, coll):
 
     except zhmcclient.Error as exc:
         logprint(logging.ERROR, PRINT_ALWAYS,
-                 "Error when cleaning up: {}".format(exc))
+                 f"Error when cleaning up: {exc}")
 
 
 def retrieve_metrics(context):
@@ -936,7 +936,7 @@ def retrieve_metrics(context):
     return metrics_object
 
 
-class ResourceCache(object):
+class ResourceCache:
     # pylint: disable=too-few-public-methods
     """
     Cache for zhmcclient resource objects to avoid having to look them up
@@ -955,7 +955,7 @@ class ResourceCache(object):
             _resource = self._resources[uri]
         except KeyError:
             logprint(logging.INFO, PRINT_VV,
-                     "Finding resource for {}".format(uri))
+                     f"Finding resource for {uri}")
             try:
                 _resource = object_value.resource  # Takes time to find on HMC
             except zhmcclient.MetricsResourceNotFound as exc:
@@ -1436,7 +1436,7 @@ def build_family_objects_res(
                 except zhmcclient.CeasedExistence:
                     # For attribute 'name', the exception is only raised when
                     # the name is not yet known locally.
-                    res_str = "with URI {}".format(resource.uri)
+                    res_str = f"with URI {resource.uri}"
                 logprint(logging.INFO, PRINT_VV,
                          "Resource no longer exists on HMC: {} {}".
                          format(resource.manager.class_name, res_str))
@@ -1506,7 +1506,7 @@ def build_family_objects_res(
                         metric_value = resource.properties[prop_name]
                     except KeyError:
                         if cpc:
-                            res_str = " for CPC '{}'".format(cpc.name)
+                            res_str = f" for CPC '{cpc.name}'"
                         else:
                             res_str = ""
                         warnings.warn(
@@ -1722,7 +1722,7 @@ class ZHMCUsageCollector():
                     continue
                 except zhmcclient.ConnectionError as exc:
                     logprint(logging.WARNING, PRINT_ALWAYS,
-                             "Retrying after connection error: {}".format(exc))
+                             f"Retrying after connection error: {exc}")
                     time.sleep(RETRY_SLEEP_TIME)
                     continue
                 except zhmcclient.ServerAuthError as exc:
@@ -1772,7 +1772,7 @@ class ZHMCUsageCollector():
             self.export_interval = \
                 (end_dt - self.last_export_dt).total_seconds()
         self.last_export_dt = end_dt
-        interval_str = "{:.1f} sec".format(self.export_interval) if \
+        interval_str = f"{self.export_interval:.1f} sec" if \
             self.export_interval else "None"
         logprint(logging.INFO, None,
                  "Done collecting metrics after {:.1f} sec (export interval: "
@@ -1953,7 +1953,7 @@ def setup_logging(log_dest, log_complevels, syslog_facility):
         dest_str = None
     elif log_dest == 'stderr':
         dest_str = "the Standard Error stream"
-        logprint(None, PRINT_V, "Logging to {}".format(dest_str))
+        logprint(None, PRINT_V, f"Logging to {dest_str}")
         handler = logging.StreamHandler(stream=sys.stderr)
     elif log_dest == 'syslog':
         system = platform.system()
@@ -1966,7 +1966,7 @@ def setup_logging(log_dest, log_complevels, syslog_facility):
             address = SYSLOG_ADDRESS['other']
         dest_str = ("the System Log at address {a!r} with syslog facility "
                     "{slf!r}".format(a=address, slf=syslog_facility))
-        logprint(None, PRINT_V, "Logging to {}".format(dest_str))
+        logprint(None, PRINT_V, f"Logging to {dest_str}")
         try:
             facility = logging.handlers.SysLogHandler.facility_names[
                 syslog_facility]
@@ -1983,8 +1983,8 @@ def setup_logging(log_dest, log_complevels, syslog_facility):
         handler = logging.handlers.SysLogHandler(
             address=address, facility=facility)
     else:
-        dest_str = "file {fn}".format(fn=log_dest)
-        logprint(None, PRINT_V, "Logging to {}".format(dest_str))
+        dest_str = f"file {log_dest}"
+        logprint(None, PRINT_V, f"Logging to {dest_str}")
         try:
             handler = logging.FileHandler(log_dest)
         except OSError as exc:
@@ -2047,7 +2047,7 @@ def setup_logging(log_dest, log_complevels, syslog_facility):
                 logger_level_dict[logger_name] = level
 
         complevels = ', '.join(
-            ["{name}={level}".format(name=name, level=level)
+            [f"{name}={level}"
              for name, level in logger_level_dict.items()])
         logprint(None, PRINT_V,
                  "Logging components: {complevels}".
@@ -2063,7 +2063,7 @@ def setup_logging(log_dest, log_complevels, syslog_facility):
             # Example syslog message:
             #   <34>1 2003-10-11T22:14:15.003Z localhost MESSAGE
             # where MESSAGE is the formatted Python log message.
-            max_msg = '.{}'.format(2048 - 41 - 47)
+            max_msg = f'.{2048 - 41 - 47}'
         else:
             max_msg = ''
         fs = ('%(asctime)s %(threadName)s %(levelname)s %(name)s: '
@@ -2124,25 +2124,25 @@ def main():
                  "----------------")
 
         logprint(logging.INFO, PRINT_ALWAYS,
-                 "zhmc_prometheus_exporter version: {}".format(__version__))
+                 f"zhmc_prometheus_exporter version: {__version__}")
 
         # pylint: disable=no-member
         logprint(logging.INFO, PRINT_ALWAYS,
-                 "zhmcclient version: {}".format(zhmcclient.__version__))
+                 f"zhmcclient version: {zhmcclient.__version__}")
 
         logprint(logging.INFO, PRINT_ALWAYS,
-                 "Verbosity level: {}".format(VERBOSE_LEVEL))
+                 f"Verbosity level: {VERBOSE_LEVEL}")
 
         hmccreds_filename = args.c
         logprint(logging.INFO, PRINT_V,
-                 "Parsing HMC credentials file: {}".format(hmccreds_filename))
+                 f"Parsing HMC credentials file: {hmccreds_filename}")
         yaml_creds_content = parse_yaml_file(
             hmccreds_filename, 'HMC credentials file', 'hmccreds_schema.yaml')
         # metrics is required in the metrics schema:
         yaml_creds = yaml_creds_content["metrics"]
 
         logprint(logging.INFO, PRINT_V,
-                 "Parsing metric definition file: {}".format(args.m))
+                 f"Parsing metric definition file: {args.m}")
         yaml_metric_content = parse_yaml_file(
             args.m, 'metric definition file', 'metrics_schema.yaml')
         # metric_groups and metrics are required in the metrics schema:
@@ -2228,7 +2228,7 @@ def main():
                          format(version_str(hmc_api_version)))
                 hmc_features_str = ', '.join(hmc_features) or 'None'
                 logprint(logging.INFO, PRINT_V,
-                         "HMC features: {}".format(hmc_features_str))
+                         f"HMC features: {hmc_features_str}")
                 for cpc in cpc_list:
                     cpc_name = cpc.name
                     se_version_str = version_str(se_versions_by_cpc[cpc_name])
@@ -2264,9 +2264,9 @@ def main():
                 extra_labels[label_name] = label_value
 
         extra_labels_str = ','.join(
-            ['{}="{}"'.format(k, v) for k, v in extra_labels.items()])
+            [f'{k}="{v}"' for k, v in extra_labels.items()])
         logprint(logging.INFO, PRINT_V,
-                 "Using extra labels: {}".format(extra_labels_str))
+                 f"Using extra labels: {extra_labels_str}")
 
         resource_cache = ResourceCache()
         coll = ZHMCUsageCollector(
@@ -2311,11 +2311,11 @@ def main():
 
         if server_cert_file:
             logprint(logging.INFO, PRINT_V,
-                     "Starting the server with HTTPS on port {}".format(port))
+                     f"Starting the server with HTTPS on port {port}")
             logprint(logging.INFO, PRINT_V,
-                     "Server certificate file: {}".format(server_cert_file))
+                     f"Server certificate file: {server_cert_file}")
             logprint(logging.INFO, PRINT_V,
-                     "Server private key file: {}".format(server_key_file))
+                     f"Server private key file: {server_key_file}")
             if ca_cert_file:
                 logprint(logging.INFO, PRINT_V,
                          "Mutual TLS: Enabled with CA certificates file: {}".
@@ -2325,7 +2325,7 @@ def main():
                          "Mutual TLS: Disabled")
         else:
             logprint(logging.INFO, PRINT_V,
-                     "Starting the server with HTTP on port {}".format(port))
+                     f"Starting the server with HTTP on port {port}")
 
         if server_cert_file:
             try:
@@ -2346,7 +2346,7 @@ def main():
         else:
             try:
                 start_http_server(port=port)
-            except IOError as exc:
+            except OSError as exc:
                 raise ImproperExit(
                     "Cannot start HTTP server: {}: {}".
                     format(exc.__class__.__name__, exc))
@@ -2357,7 +2357,7 @@ def main():
         coll.start_fetch_thread(session)
 
         logprint(logging.INFO, PRINT_ALWAYS,
-                 "Exporter is up and running on port {}".format(port))
+                 f"Exporter is up and running on port {port}")
         while True:
             try:
                 time.sleep(1)
@@ -2370,11 +2370,11 @@ def main():
         exit_rc(1)
     except EarlyExit as exc:
         logprint(logging.ERROR, PRINT_ALWAYS,
-                 "Error: {}".format(exc))
+                 f"Error: {exc}")
         exit_rc(1)
     except ImproperExit as exc:
         logprint(logging.ERROR, PRINT_ALWAYS,
-                 "Error: {}".format(exc))
+                 f"Error: {exc}")
         cleanup(session, context, resources, coll)
         exit_rc(1)
     except ProperExit:
