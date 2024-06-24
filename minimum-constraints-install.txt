@@ -44,7 +44,8 @@ idna==3.7
 immutable-views==0.6.0
 MarkupSafe==2.0.0
 pytz==2019.1
-requests==2.31.0
+requests==2.31.0; python_version <= '3.7'
+requests==2.32.2; python_version >= '3.8'
 stomp.py==4.1.23
 typing-extensions==4.7.1
 zipp==0.5.2  # Used in some combinations of Python version and package level
