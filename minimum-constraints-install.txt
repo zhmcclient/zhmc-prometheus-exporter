@@ -69,7 +69,8 @@ MarkupSafe==2.0.0
 pytz==2016.10; python_version <= '3.9'
 pytz==2019.1; python_version >= '3.10'
 requests==2.26.0; python_version == '3.6'
-requests==2.31.0; python_version >= '3.7'
+requests==2.31.0; python_version == '3.7'
+requests==2.32.2; python_version >= '3.8'
 stomp.py==4.1.23
 typing-extensions==3.10.0; python_version == '3.6'
 typing-extensions==4.7.1; python_version >= '3.7'
