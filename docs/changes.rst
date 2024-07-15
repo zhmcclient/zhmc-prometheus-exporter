@@ -36,6 +36,8 @@ Released: not yet
 
 * Docs: Fixed README badges by converting it to Markdown. (issue #507)
 
+* Dev: Added missing development requirement for 'filelock' package.
+
 **Enhancements:**
 
 **Cleanup:**
