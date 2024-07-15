@@ -237,7 +237,8 @@ def parse_args(args):
                         help="set a logging level ({levels}, default: "
                         "{def_level}) for a component ({comps}). May be "
                         "specified multiple times; options add to the default "
-                        "of: {def_comp}".
+                        "of: {def_comp}. Note that using log levels 'info' or "
+                        "'debug' will produce continuously growing log output.".
                         format(levels=', '.join(VALID_LOG_LEVELS),
                                comps=', '.join(VALID_LOG_COMPONENTS),
                                def_level=DEFAULT_LOG_LEVEL,
@@ -249,7 +250,11 @@ def parse_args(args):
                         format(slfs=', '.join(VALID_SYSLOG_FACILITIES),
                                def_slf=DEFAULT_SYSLOG_FACILITY))
     parser.add_argument("--verbose", "-v", action='count', default=0,
-                        help="increase the verbosity level (max: 2)")
+                        help="increase the verbosity level of terminal output "
+                        "during startup of the exporter (max: 2). After the "
+                        "exporter is up and running, no more terminal output "
+                        "will be produced, except in the case of warnings or "
+                        "connection issues.")
     parser.add_argument("--version", action='store_true',
                         help="show versions of exporter and zhmcclient library "
                         "and exit")
