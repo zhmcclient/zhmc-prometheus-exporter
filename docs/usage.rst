@@ -172,6 +172,10 @@ accordingly:
   for the respective task on the HMC. In that case, there should be some
   other HMC admin you can go to to get the Web Services API enabled.
 
+* The HMC should be configured with a CA-verifiable server certificate because
+  since version 0.7.0, the zhmc exporter will reject self-signed certificates
+  by default. See :ref:`HMC certificate` for details.
+
 
 Setting up firewalls or proxies
 -------------------------------
@@ -288,6 +292,16 @@ or in this `serverfault.com answer <https://serverfault.com/a/9717/330351>`_.
 
 Note that setting the ``REQUESTS_CA_BUNDLE`` or ``CURL_CA_BUNDLE`` environment
 variables influences other programs that use these variables, too.
+
+If you do not know which CA certificate the HMC has been configured with,
+you can use the following OpenSSL commands to display the certificates
+returned by the HMC. Look at the Issuer of the highest certificate in the CA
+chain (usually the last one displayed):
+
+.. code-block:: sh
+
+    $ echo | openssl s_client -showcerts -connect $hmc_ip:6794 2>/dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/tmp/get-server-certs.pem
+    $ openssl storeutl -noout -text -certs /tmp/get-server-certs.pem | grep -E "Certificate|Subject:|Issuer"
 
 For more information, see the
 `Security <https://python-zhmcclient.readthedocs.io/en/latest/security.html>`_

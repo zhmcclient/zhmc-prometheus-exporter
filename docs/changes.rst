@@ -45,6 +45,8 @@ Released: not yet
 * Docs: Added a section about the size of captured terminal output and log
   files. (issue #528)
 
+* Docs: Improved the section about HMC certificates. (related to issue #529)
+
 **Cleanup:**
 
 **Known issues:**
