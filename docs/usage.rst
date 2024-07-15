@@ -97,7 +97,7 @@ The ``zhmc_prometheus_exporter`` command supports the following arguments:
       -m METRICS_FILE       path name of metric definition file. Use --help-metrics for details.
                             Default: /etc/zhmc-prometheus-exporter/metrics.yaml
 
-      -p PORT               port for exporting. Default: prometheus.port in HMC credentials file.
+      -p PORT               port for exporting. Default: prometheus.port in HMC credentials file
 
       --log DEST            enable logging and set a log destination (stderr, syslog, FILE). Default:
                             no logging
@@ -105,17 +105,52 @@ The ``zhmc_prometheus_exporter`` command supports the following arguments:
       --log-comp COMP[=LEVEL]
                             set a logging level (error, warning, info, debug, off, default: warning)
                             for a component (exporter, hmc, jms, all). May be specified multiple
-                            times; options add to the default of: all=warning
+                            times; options add to the default of: all=warning. Note that using log
+                            levels 'info' or 'debug' will produce continuously growing log output.
 
       --syslog-facility TEXT
                             syslog facility (user, local0, local1, local2, local3, local4, local5,
                             local6, local7) when logging to the system log. Default: user
 
-      --verbose, -v         increase the verbosity level (max: 2)
+      --verbose, -v         increase the verbosity level of terminal output during startup of the
+                            exporter (max: 2). After the exporter is up and running, no more terminal
+                            output will be produced, except in the case of warnings or connection
+                            issues.
+
+      --version             show versions of exporter and zhmcclient library and exit
 
       --help-creds          show help for HMC credentials file and exit
 
       --help-metrics        show help for metric definition file and exit
+
+
+Size of log files and terminal output
+-------------------------------------
+
+Since the exporter is a long-running process, the size of log files and
+of any captured terminal output is important to understand.
+
+The amount of terminal output during startup of the exporter can be controlled
+using the ``-v`` / ``--verbose`` option. Once the exporter is up and running,
+no more terminal output will be produced (independent of the verbosity level),
+except in the case of warnings or connection issues.
+
+When running the exporter in a container, the container tools usually provide
+ways to limit the size of the log files with captured terminal output.
+For example, Docker provides the ``--log-opt max-size`` and ``--log-opt max-file``
+options. Even though the exporter should not produce continuously growing
+terminal output, it may still be a good idea to use such options, just to be on
+the safe side.
+
+If logging is enabled (with the ``--log`` option of the forwarder), the amount
+of log entries can be controlled with the ``--log-comp`` option. Log levels
+``info`` and ``debug`` will produce log entries upon each data collection by
+Prometheus, and therefore will produce continuously growing log output.
+
+If you experience continuously growing terminal or log output when it should
+not be growing according to the above, please open an
+`issue <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues>`_
+and provide the captured terminal output or the log file that is growing.
 
 
 Setting up the HMC

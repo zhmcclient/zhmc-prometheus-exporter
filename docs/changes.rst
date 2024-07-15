@@ -42,6 +42,9 @@ Released: not yet
 
 **Enhancements:**
 
+* Docs: Added a section about the size of captured terminal output and log
+  files. (issue #528)
+
 **Cleanup:**
 
 **Known issues:**
