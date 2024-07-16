@@ -690,10 +690,13 @@ def create_metrics_context(
     for fetch/do not fetch information, and the name of the YAML file for error
     output.
 
-    Returns a tuple(context, resources, uri2resource), where:
+    Returns a tuple(context, resources, managers, uri2resource), with:
       * context is the metric context
       * resources is a dict(key: metric group name, value: list of
         auto-enabled resource objects for the metric group).
+      * managers (dict): Managers for each resource-type metric group
+        with key: metric group name, value: list of auto-enabled manager
+        objects for the metric group.
       * uri2resource is a dict(key: resource URI, value: auto-enabled resource
         object for the URI).
 
@@ -720,6 +723,8 @@ def create_metrics_context(
 
     client = zhmcclient.Client(session)
 
+    client.cpcs.enable_auto_update()
+
     logprint(logging.INFO, PRINT_V,
              "Creating a metrics context on the HMC for HMC metric "
              "groups: {}".format(', '.join(fetched_hmc_metric_groups)))
@@ -729,7 +734,12 @@ def create_metrics_context(
 
     resources = {}
     uri2resource = {}
+    managers = {}
+    cpc_mgr = None
+    sg_mgr = None
     for metric_group in fetched_res_metric_groups:
+        resources[metric_group] = []
+        managers[metric_group] = []
         logprint(logging.INFO, PRINT_V,
                  "Retrieving resources from the HMC for resource metric "
                  "group {}".format(metric_group))
@@ -742,9 +752,16 @@ def create_metrics_context(
                 format(metric_group))
             new_exc.__cause__ = None  # pylint: disable=invalid-name
             raise new_exc
+
         if resource_path == 'cpc':
-            resources[metric_group] = []
-            cpcs = client.cpcs.list()
+            if not cpc_mgr:
+                cpc_mgr = client.cpcs
+                logprint(logging.INFO, PRINT_V,
+                         "Enabling auto-update for CPC manager")
+                cpc_mgr.enable_auto_update()
+            managers[metric_group].append(cpc_mgr)
+
+            cpcs = cpc_mgr.list()
             for cpc in cpcs:
                 logprint(logging.INFO, PRINT_V,
                          f"Enabling auto-update for CPC {cpc.name}")
@@ -760,10 +777,23 @@ def create_metrics_context(
                 resources[metric_group].append(cpc)
                 uri2resource[cpc.uri] = cpc
         elif resource_path == 'cpc.partition':
-            resources[metric_group] = []
-            cpcs = client.cpcs.list()
+            if not cpc_mgr:
+                cpc_mgr = client.cpcs
+                logprint(logging.INFO, PRINT_V,
+                         "Enabling auto-update for CPC manager")
+                cpc_mgr.enable_auto_update()
+            managers[metric_group].append(cpc_mgr)
+
+            cpcs = cpc_mgr.list()
             for cpc in cpcs:
-                partitions = cpc.partitions.list()
+                partition_mgr = cpc.partitions
+                logprint(logging.INFO, PRINT_V,
+                         "Enabling auto-update for partition manager for "
+                         "CPC {}".format(cpc.name))
+                partition_mgr.enable_auto_update()
+                managers[metric_group].append(partition_mgr)
+
+                partitions = partition_mgr.list()
                 for partition in partitions:
                     logprint(logging.INFO, PRINT_V,
                              "Enabling auto-update for partition {}.{}".
@@ -781,10 +811,23 @@ def create_metrics_context(
                     resources[metric_group].append(partition)
                     uri2resource[partition.uri] = partition
         elif resource_path == 'cpc.logical-partition':
-            resources[metric_group] = []
-            cpcs = client.cpcs.list()
+            if not cpc_mgr:
+                cpc_mgr = client.cpcs
+                logprint(logging.INFO, PRINT_V,
+                         "Enabling auto-update for CPC manager")
+                cpc_mgr.enable_auto_update()
+            managers[metric_group].append(cpc_mgr)
+
+            cpcs = cpc_mgr.list()
             for cpc in cpcs:
-                lpars = cpc.lpars.list()
+                lpar_mgr = cpc.lpars
+                logprint(logging.INFO, PRINT_V,
+                         "Enabling auto-update for LPAR manager for "
+                         "CPC {}".format(cpc.name))
+                lpar_mgr.enable_auto_update()
+                managers[metric_group].append(lpar_mgr)
+
+                lpars = lpar_mgr.list()
                 for lpar in lpars:
                     logprint(logging.INFO, PRINT_V,
                              "Enabling auto-update for LPAR {}.{}".
@@ -802,9 +845,13 @@ def create_metrics_context(
                     resources[metric_group].append(lpar)
                     uri2resource[lpar.uri] = lpar
         elif resource_path == 'console.storagegroup':
-            resources[metric_group] = []
-            console = client.consoles.console
-            storage_groups = console.storage_groups.list()
+            if not sg_mgr:
+                sg_mgr = client.consoles.console.storage_groups
+                logprint(logging.INFO, PRINT_V,
+                         "Enabling auto-update for Storage Group manager")
+                sg_mgr.enable_auto_update()
+            managers[metric_group].append(sg_mgr)
+            storage_groups = sg_mgr.list()
             for sg in storage_groups:
                 logprint(logging.INFO, PRINT_V,
                          "Enabling auto-update for storage group {}".
@@ -821,9 +868,13 @@ def create_metrics_context(
                 resources[metric_group].append(sg)
                 uri2resource[sg.uri] = sg
         elif resource_path == 'console.storagevolume':
-            resources[metric_group] = []
-            console = client.consoles.console
-            storage_groups = console.storage_groups.list()
+            if not sg_mgr:
+                sg_mgr = client.consoles.console.storage_groups
+                logprint(logging.INFO, PRINT_V,
+                         "Enabling auto-update for Storage Group manager")
+                sg_mgr.enable_auto_update()
+            managers[metric_group].append(sg_mgr)
+            storage_groups = sg_mgr.list()
             for sg in storage_groups:
                 storage_volumes = sg.storage_volumes.list()
                 for sv in storage_volumes:
@@ -869,7 +920,9 @@ def create_metrics_context(
                     nic.port_index = port_index
                     uri2resource[nic.uri] = nic
 
-    return context, resources, uri2resource
+    print("Debug: create_metrics_context: resources={!r}".format(resources))
+    print("Debug: create_metrics_context: managers={!r}".format(managers))
+    return context, resources, managers, uri2resource
 
 
 def cleanup(session, context, resources, coll):
@@ -974,6 +1027,7 @@ class ResourceCache:
                     logprint(logging.WARNING, PRINT_ALWAYS,
                              "Details: List of {} resources found:".
                              format(res_class))
+                    mgr.enable_auto_update()
                     for res in mgr.list():
                         logprint(logging.WARNING, PRINT_ALWAYS,
                                  "Details: Resource found: {} ({})".
@@ -1406,7 +1460,7 @@ def build_family_objects(
 
 
 def build_family_objects_res(
-        resources, yaml_metric_groups, yaml_metrics, metrics_filename,
+        resources, managers, yaml_metric_groups, yaml_metrics, metrics_filename,
         extra_labels, hmc_version, hmc_api_version, hmc_features,
         se_versions_by_cpc, se_features_by_cpc, session, resource_cache=None,
         uri2resource=None):
@@ -1651,7 +1705,7 @@ class ZHMCUsageCollector():
     # pylint: disable=too-few-public-methods,too-many-instance-attributes
     """Collects the usage for exporting."""
 
-    def __init__(self, yaml_creds, session, context, resources,
+    def __init__(self, yaml_creds, session, context, resources, managers,
                  yaml_metric_groups, yaml_metrics, yaml_fetch_properties,
                  extra_labels, filename_metrics, filename_creds,
                  resource_cache, uri2resource, hmc_version, hmc_api_version,
@@ -1660,6 +1714,7 @@ class ZHMCUsageCollector():
         self.session = session
         self.context = context
         self.resources = resources
+        self.managers = managers
         self.yaml_metric_groups = yaml_metric_groups
         self.yaml_metrics = yaml_metrics
         self.yaml_fetch_properties = yaml_fetch_properties
@@ -1715,7 +1770,7 @@ class ZHMCUsageCollector():
                                  "Recreating the metrics context after HTTP "
                                  "status {}.{}".
                                  format(exc.http_status, exc.reason))
-                        self.context, _, _ = create_metrics_context(
+                        self.context, _, _, _ = create_metrics_context(
                             self.session, self.yaml_metric_groups,
                             self.hmc_version, self.hmc_api_version,
                             self.hmc_features)
@@ -1760,7 +1815,7 @@ class ZHMCUsageCollector():
         logprint(logging.DEBUG, None,
                  "Building family objects for resource metrics")
         family_objects.update(build_family_objects_res(
-            self.resources, self.yaml_metric_groups,
+            self.resources, self.managers, self.yaml_metric_groups,
             self.yaml_metrics, self.filename_metrics,
             self.extra_labels, self.hmc_version, self.hmc_api_version,
             self.hmc_features, self.se_versions_by_cpc, self.se_features_by_cpc,
@@ -2248,9 +2303,10 @@ def main():
                              "SE features of CPC {}: {}".
                              format(cpc_name, se_features_str))
 
-                context, resources, uri2resource = create_metrics_context(
-                    session, yaml_metric_groups, hmc_version, hmc_api_version,
-                    hmc_features)
+                context, resources, managers, uri2resource = \
+                    create_metrics_context(
+                        session, yaml_metric_groups, hmc_version,
+                        hmc_api_version, hmc_features)
 
         except (ConnectionError, AuthError, OtherError) as exc:
             raise ImproperExit(exc)
@@ -2275,11 +2331,11 @@ def main():
 
         resource_cache = ResourceCache()
         coll = ZHMCUsageCollector(
-            yaml_creds, session, context, resources, yaml_metric_groups,
-            yaml_metrics, yaml_fetch_properties, extra_labels, args.m,
-            hmccreds_filename, resource_cache, uri2resource, hmc_version,
-            hmc_api_version, hmc_features, se_versions_by_cpc,
-            se_features_by_cpc)
+            yaml_creds, session, context, resources, managers,
+            yaml_metric_groups, yaml_metrics, yaml_fetch_properties,
+            extra_labels, args.m, hmccreds_filename, resource_cache,
+            uri2resource, hmc_version, hmc_api_version, hmc_features,
+            se_versions_by_cpc, se_features_by_cpc)
 
         logprint(logging.INFO, PRINT_V,
                  "Registering the collector and performing first collection")
