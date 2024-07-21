@@ -30,7 +30,7 @@ Released: not yet
 
 **Bug fixes:**
 
-* Addressed safety issues up to 2024-06-24.
+* Addressed safety issues up to 2024-07-21.
 
 * In the Github Actions test workflow for Python 3.6 and 3.7, changed
   macos-latest back to macos-12 because macos-latest got upgraded from macOS 12
