@@ -54,23 +54,19 @@ you want to embed the exporter in your own Docker/OCI image.
   This builds a container image named 'zhmcexporter:latest' in your local Docker
   environment.
 
-  The image contains the standard metric definition file in its default
-  location, so the ``-m`` option of the exporter does not need to be specified
-  when running the image.
-
-  The HMC credentials file is not included in the image, and needs to be
+  The exporter config file is not included in the image, and needs to be
   provided when running the image.
 
 * Run the local Docker image as follows:
 
   .. code-block:: bash
 
-      $ docker run -it --rm -v $(pwd)/myconfig:/root/myconfig -p 9291:9291 zhmcexporter -c /root/myconfig/hmccreds.yaml -v
+      $ docker run -it --rm -v $(pwd)/myconfig:/root/myconfig -p 9291:9291 zhmcexporter -c /root/myconfig/config.yaml -v
 
-  In this command, the HMC credentials file is provided on the local system
-  as ``./myconfig/hmccreds.yaml``. The ``-v`` option of 'docker run' mounts the
+  In this command, the exporter config file is provided on the local system
+  as ``./myconfig/config.yaml``. The ``-v`` option of 'docker run' mounts the
   ``./myconfig`` directory to ``/root/myconfig`` in the container's file system.
-  The ``-c`` option of the exporter references the HMC credentials file as it
+  The ``-c`` option of the exporter references the exporter config file as it
   appears in the container's file system.
 
 zhmc_prometheus_exporter command
@@ -81,9 +77,8 @@ The ``zhmc_prometheus_exporter`` command supports the following arguments:
 .. When updating the command help, use a 100 char wide terminal
 .. code-block:: text
 
-    usage: zhmc_prometheus_exporter [-h] [-c CREDS_FILE] [-m METRICS_FILE] [-p PORT] [--log DEST]
-                                    [--log-comp COMP[=LEVEL]] [--verbose] [--help-creds]
-                                    [--help-metrics]
+    usage: zhmc_prometheus_exporter [-h] [-c CONFIG_FILE] [-p PORT] [--log DEST]
+                                    [--log-comp COMP[=LEVEL]] [--verbose] [--help-config]
 
     IBM Z HMC Exporter - a Prometheus exporter for metrics from the IBM Z HMC
 
@@ -91,13 +86,10 @@ The ``zhmc_prometheus_exporter`` command supports the following arguments:
 
       -h, --help            show this help message and exit
 
-      -c CREDS_FILE         path name of HMC credentials file. Use --help-creds for details. Default:
-                            /etc/zhmc-prometheus-exporter/hmccreds.yaml
+      -c CONFIG_FILE        path name of exporter config file. Use --help-config for details. Default:
+                            /etc/zhmc-prometheus-exporter/config.yaml
 
-      -m METRICS_FILE       path name of metric definition file. Use --help-metrics for details.
-                            Default: /etc/zhmc-prometheus-exporter/metrics.yaml
-
-      -p PORT               port for exporting. Default: prometheus.port in HMC credentials file
+      -p PORT               port for exporting. Default: prometheus.port in exporter config file
 
       --log DEST            enable logging and set a log destination (stderr, syslog, FILE). Default:
                             no logging
@@ -119,9 +111,7 @@ The ``zhmc_prometheus_exporter`` command supports the following arguments:
 
       --version             show versions of exporter and zhmcclient library and exit
 
-      --help-creds          show help for HMC credentials file and exit
-
-      --help-metrics        show help for metric definition file and exit
+      --help-config         show help for exporter config file and exit
 
 
 Size of log files and terminal output
@@ -248,7 +238,7 @@ book and Chapter 3 "Invoking API operations" in the :term:`HMC API` book.
 
 Starting with version 0.7, the 'zhmc_prometheus_exporter' command provides
 control knobs for the verification of the HMC certificate via the
-``verify_cert`` attribute in the :ref:`HMC credentials file`, as follows:
+``verify_cert`` attribute in the :ref:`exporter config file`, as follows:
 
 * Not specified or specified as ``true`` (default): Verify the HMC certificate
   using the CA certificates from the first of these locations:
@@ -262,7 +252,7 @@ control knobs for the verification of the HMC certificate via the
     `Mozilla Included CA Certificate List <https://wiki.mozilla.org/CA/Included_Certificates>`_).
 
 * Specified with a string value: An absolute path or a path relative to the
-  directory of the HMC credentials file. Verify the HMC certificate using the CA
+  directory of the exporter config file. Verify the HMC certificate using the CA
   certificates in the specified certificate file or directory.
 
 * Specified as ``false``: Do not verify the HMC certificate.
@@ -315,7 +305,7 @@ The exporter is an HTTP or HTTPS server that is regularly contacted by Prometheu
 for collecting metrics using HTTP GET.
 
 The parameters for the communication with Prometheus are defined in the
-HMC credentials file in the ``prometheus`` section, as in the following example:
+exporter config file in the ``prometheus`` section, as in the following example:
 
 .. code-block:: yaml
 
@@ -342,7 +332,7 @@ validated using the specified CA certificate chain. If not specified, mTLS is
 disabled and the exporter will not require Prometheus to present a client
 certificate and will ignore it if presented.
 
-The meaning of the parameters is described in :ref:`HMC credentials file`.
+The meaning of the parameters is described in :ref:`exporter config file`.
 
 
 Exported metric concepts
@@ -352,13 +342,9 @@ The exporter provides its metrics in the `Prometheus text-based format`_.
 
 All metrics are of the `metric type gauge`_ and follow the
 `Prometheus metric naming`_. The names of the metrics are defined in the
-:ref:`metric definition file`. The metric names could be changed by users, but
-unless there is a strong reason for doing that, it is not recommended.
-It is recommended to use the :ref:`sample metric definition file` unchanged.
-The metrics mapping in the :ref:`sample metric definition file` is referred to
-as the *standard metric definition* in this documentation.
+:ref:`metric definition file`.
 
-In the standard metric definition, the metric names are structured as follows:
+The metric names are structured as follows:
 
 .. code-block:: text
 
@@ -449,13 +435,12 @@ A new metric exposed by the HMC metric service or a new property added to one of
 the auto-updated resources can immediately be supported by just adding it to
 the :ref:`metric definition file`.
 
-The :ref:`sample metric definition file` in the Git repository states in its
-header up to which HMC version or Z machine generation the metrics are defined.
+The :ref:`metric definition file` states in its header up to which HMC version
+or Z machine generation the metrics are defined.
 
 The following table shows the mapping between exporter metric groups and
-exported Prometheus metrics in the standard metric definition. Note that
-ensemble and zBX related metrics are not covered in the standard metric
-definition (support for them has been removed in z15). For more details on the
+exported Prometheus metrics. Note that ensemble and zBX related metrics are not
+supported (support for them has been removed in z15). For more details on the
 HMC metrics, see section "Metric Groups" in the :term:`HMC API` book.
 For more details on the resource properties of CPC and Partition (DPM mode)
 and Logical Partition (classic mode), see the corresponding data models
@@ -494,9 +479,8 @@ As you can see, the ``zhmc_cpc_*`` and ``zhmc_partition_*`` metrics are used
 for both DPM mode and classic mode. The names of the metrics are equal if and
 only if they have the same meaning in both modes.
 
-The following table shows the Prometheus metrics in the standard metric
-definition. This includes both :term:`metric service based metrics` and
-:term:`resource property based metrics`:
+The following table shows the Prometheus metrics. This includes both
+:term:`metric service based metrics` and :term:`resource property based metrics`:
 
 ======================================================  ====  ====  ==================================================================
 Prometheus Metric                                       Mode  Type  Description
@@ -733,14 +717,12 @@ Labels on exported metrics
 --------------------------
 
 The metrics exported to Prometheus are tagged with labels defined in the
-HMC credentials file (at the global level) or in the metric definition file
+exporter config file (at the global level) or in the metric definition file
 (at the level of HMC metric groups and HMC metrics).
 
-This section describes what kinds of labels can be defined in these files. For
-the actual use of this capability, see the example metric definition file and
-the example HMC credentials file.
+This section describes what kinds of labels can be defined in these files.
 
-Labels at the global level (defined in the HMC credentials file):
+Labels at the global level (defined in the exporter config file):
 
 .. code-block:: yaml
 
@@ -763,7 +745,7 @@ Where:
     - ``hmc-name`` - Name of the HMC.
     - ``hmc-version`` - Version of the HMC as a string (e.g. "2.16").
 
-Example (fragments from an HMC credentials file):
+Example (fragments from an exporter config file):
 
 .. code-block:: yaml
 
@@ -774,7 +756,9 @@ Example (fragments from an HMC credentials file):
         value: "'dal13'"                     # Literal value 'dal13'
 
 Labels at the HMC metric and HMC metric group level (defined in the metric
-definition file):
+definition file). This information is just for reference - the metric
+definition file is included in the exporter Python package and should not be
+changed by users:
 
 .. code-block:: yaml
 
@@ -844,10 +828,10 @@ Example (fragments from a metric definition file):
               value: "resource_obj.properties['status']"        # Value of 'status' property (as string)
 
 
-HMC credentials file
+Exporter config file
 --------------------
 
-The *HMC credentials file* tells the exporter which HMC to talk to for
+The *exporter config file* tells the exporter which HMC to talk to for
 obtaining metrics, and which userid and password to use for logging on to
 the HMC.
 
@@ -858,12 +842,16 @@ metrics exported to Prometheus. This can be used for defining labels that
 identify the environment managed by the HMC, in cases where metrics from
 multiple instances of exporters and HMCs come together.
 
-The HMC credentials file is in YAML format and has the following structure:
+Finally, it specifies which metric groups to export.
+
+The exporter config file is in YAML format and has the following structure:
 
 .. code-block:: yaml
 
-    metrics:
-      hmc: {hmc-ip-address}
+    version: 2
+
+    hmc:
+      host: {hmc-ip-address}
       userid: {hmc-userid}
       password: {hmc-password}
       verify_cert: {hmc-verify-cert}
@@ -878,6 +866,11 @@ The HMC credentials file is in YAML format and has the following structure:
       # list of labels:
       - name: {extra-label-name}
         value: {extra-label-value}
+
+    metric_groups:
+      # Dict of HMC and resource metric groups
+      {hmc-metric-group}:
+        export: {export-bool}
 
 Where:
 
@@ -895,20 +888,20 @@ Where:
 * ``{prom-server-cert-file}`` is the path name of a certificate file in PEM
   format containing an X.509 server certificate that will be presented to
   Prometheus during TLS handshake. Relative path names are relative to the
-  directory of the HMC credentials file. If the ``server_cert_file`` parameter
+  directory of the exporter config file. If the ``server_cert_file`` parameter
   is specified, the exporter will start its server with HTTPS, and otherwise
   with HTTP.
 
 * ``{prom-server-key-file}`` is the path name of a key file in PEM format
   containing an X.509 private key that belongs to the public key in the server
-  certificate. Relative path names are relative to the directory of the HMC
-  credentials file. The ``server_key_file`` parameter is required when
+  certificate. Relative path names are relative to the directory of the
+  exporter config file. The ``server_key_file`` parameter is required when
   the ``server_cert_file`` parameter is specified.
 
 * ``{prom-ca-cert-file}`` is the path name of a CA file in PEM format
   containing X.509 CA certificates that will be used for validating a client
   certificate presented by Prometheus during TLS handshake. Relative path names
-  are relative to the directory of the HMC credentials file. If the
+  are relative to the directory of the exporter config file. If the
   ``ca_cert_file`` parameter is specified, the exporter will require from
   Prometheus to present a client certificate during TLS handshake and will
   validate it using the specified CA certificate chain (mutual TLS, mTLS).
@@ -920,15 +913,110 @@ Where:
 * ``{extra-label-value}`` is the label value. The string value is used directly
   without any further interpretation.
 
-Sample HMC credentials file
+* ``{hmc-metric-group}`` is the name of the metric group on the HMC or the
+  resource metric group.
+
+* ``{export-bool}`` is a boolean indicating whether the user wants this metric
+  group to be exported to Prometheus. For the metric group to actually be
+  exported, the ``if`` property in the corresponding metric group in the
+  metric definition file, if specified, also needs to evaluate to True.
+
+
+Migration of exporter config file to version 2 format
+-----------------------------------------------------
+
+The exporter versions 1.x supported the version 1 format for the exporter config
+file and referred to it as the "HMC credentials file". If you have been using
+an exporter version 1.x, you should migrate your "HMC credentials file" to
+the version 2 format. The version 1 format is deprecated and support for it
+will be removed in a future version of the exporter.
+
+Migration to the version 2 format is done as follows:
+
+* Add a 'version' item:
+
+  .. code-block:: yaml
+
+      version: 2
+
+* Change the old 'metrics' item to the new 'hmc' item:
+
+  'metrics' item from version 1 format:
+
+  .. code-block:: yaml
+
+      metrics:
+        hmc: 9.10.11.12
+        userid: userid
+        password: password
+        verify_cert: true
+
+  'hmc' item from version 2 format:
+
+  .. code-block:: yaml
+
+      hmc:                     # changed
+        host: 9.10.11.12       # changed
+        userid: userid
+        password: password
+        verify_cert: true
+
+* Add a 'metric_groups' item to specify which metric groups to export:
+
+  .. code-block:: yaml
+
+      metric_groups:
+        # Available for CPCs in classic mode
+        cpc-usage-overview:
+          export: true
+        logical-partition-usage:
+          export: true
+        channel-usage:
+          export: true
+        crypto-usage:
+          export: true
+        flash-memory-usage:
+          export: true
+        roce-usage:
+          export: true
+        logical-partition-resource:
+          export: true
+        # Available for CPCs in DPM mode
+        dpm-system-usage-overview:
+          export: true
+        partition-usage:
+          export: true
+        adapter-usage:
+          export: true
+        network-physical-adapter-port:
+          export: true
+        partition-attached-network-interface:
+          export: true
+        partition-resource:
+          export: true
+        storagegroup-resource:
+          export: true
+        storagevolume-resource:
+          export: true
+        # Available for CPCs in any mode
+        zcpc-environmentals-and-power:
+          export: true
+        zcpc-processor-usage:
+          export: true
+        environmental-power-status:
+          export: true
+        cpc-resource:
+          export: true
+
+Sample exporter config file
 ---------------------------
 
-The following is a sample HMC credentials file (``hmccreds.yaml``).
+The following is a sample exporter config file (``config.yaml``).
 
 The file can be downloaded from the Git repo as
-`examples/hmccreds.yaml <https://github.com/zhmcclient/zhmc-prometheus-exporter/blob/master/examples/hmccreds.yaml>`_.
+`examples/config.yaml <https://github.com/zhmcclient/zhmc-prometheus-exporter/blob/master/examples/config.yaml>`_.
 
-.. literalinclude:: ../examples/hmccreds.yaml
+.. literalinclude:: ../examples/config.yaml
   :language: yaml
 
 Metric definition file
@@ -937,154 +1025,13 @@ Metric definition file
 The *metric definition file* maps the metrics returned by the HMC to metrics
 exported to Prometheus.
 
-Furthermore, the metric definition file allows optimizing the access time to
-the HMC by disabling the fetching of metrics that are not needed.
+Starting with exporter version 2.0, the metric definition file is included in
+the Python package and no longer needs to be downloaded or edited by users.
+The control flags for exporting metric groups are now in the exporter config
+file.
 
-The metric definition file is in YAML format and has the following structure:
-
-.. code-block:: yaml
-
-    metric_groups:
-      # dictionary of metric groups:
-      {hmc-metric-group}:
-        prefix: {resource-type}
-        fetch: {fetch-bool}
-        if: {fetch-condition}  # optional
-        labels:
-          # list of labels to be added to all metrics of this group:
-          - name: {label-name}
-            value: {label-value}
-
-    metrics:
-      # dictionary of metric groups:
-      {hmc-metric-group}:
-
-        # dictionary format for defining metrics:
-        {hmc-metric}:
-          if: {export-condition}  # optional
-          exporter_name: {exporter-name}
-          exporter_desc: {exporter-desc}
-          metric_type: {metric-type}
-          percent: {percent-bool}
-          valuemap: {valuemap}
-          labels:
-            # list of labels to be added to this metric:
-            - name: {label-name}
-              value: {label-value}
-
-        # list format for defining metrics:
-        - property_name: {hmc-metric}                     # either this
-          properties_expression: {properties-expression}  # or this
-          if: {export-condition}  # optional
-          exporter_name: {exporter-name}
-          exporter_desc: {exporter-desc}
-          percent: {percent-bool}
-          valuemap: {valuemap}
-          labels:
-            # list of labels to be added to this metric:
-            - name: {label-name}
-              value: {label-value}
-
-    fetch_properties:
-      # dictionary of properties that need to be fetched because they can
-      # change but have no property change notification
-      {hmc-resource-class}:
-        - property_name: {hmc-property}
-          if: {fetch-condition}  # optional
-
-Where:
-
-* ``{hmc-metric-group}`` is the name of the metric group on the HMC.
-
-* ``{hmc-metric}`` is the name of the metric (within the metric group) on the
-  HMC.
-
-* ``{resource-type}`` is a short lower case term for the type of resource
-  the metric applies to, for example ``cpc`` or ``partition``. It is used
-  in the Prometheus metric name directly after the initial ``zhmc_``.
-
-* ``{fetch-bool}`` is a boolean indicating whether the user wants this metric
-  group to be fetched from the HMC. For the metric group to actually be fetched,
-  the ``if`` property, if specified, also needs to evaluate to True.
-
-* ``{fetch-condition}`` is a string that is evaluated as a Python expression and
-  that indicates whether the metric group can be fetched. For the metric group
-  to actually be fetched, the ``fetch`` property also needs to be True.
-  The expression may use the following variables; builtins are not available:
-
-  - ``hmc_version`` - HMC version as a tuple of integers (M, N, U), e.g.
-    (2, 16, 0).
-  - ``hmc_api_version`` - HMC API version as a tuple of integers (M, N), e.g.
-    (4, 10).
-  - ``hmc_features`` - List of names of HMC API features. Will be empty before
-    HMC API version 4.10.
-
-* ``{properties-expression}`` is a :term:`Jinja2 expression` whose value should
-  be used as the metric value, for :term:`resource property based metrics`. The
-  expression uses the variable ``properties`` which is the resource properties
-  dictionary of the resource. The ``properties_expression`` attribute is
-  mutually exclusive with ``property_name``.
-
-* ``{export-condition}`` is a string that is evaluated as a Python expression
-  and that controls whether the metric is exported. If it evaluates to false,
-  the export of the metric is disabled, regardless of other such controls.
-  The expression may use the following variables; builtins are not available:
-
-  - ``hmc_version`` - HMC version as a tuple of integers (M, N, U), e.g.
-    (2, 16, 0).
-  - ``hmc_api_version`` - HMC API version as a tuple of integers (M, N), e.g.
-    (4, 10).
-  - ``hmc_features`` - List of names of HMC API features. Will be empty before
-    HMC API version 4.10.
-  - ``se_version`` - SE/CPC version as a tuple of integers (M, N, U), e.g.
-    (2, 16, 0). Will be `None` when there is no CPC context for the metric.
-  - ``se_features`` - List of names of SE/CPC API features. Will be an empty
-    list before HMC API version 4.10 or before SE version 2.16.0 or when there
-    is no CPC context for the metric.
-  - ``resource_obj`` - zhmcclient resource object for the metric.
-
-* ``{exporter-name}`` is the local metric name and unit in the exported metric
-  name ``zhmc_{resource-type}_{exporter-name}``.
-  If it is null, the export of the metric is disabled, regardless of other such
-  controls.
-
-* ``{exporter-desc}`` is the description text that is exported as ``# HELP``.
-
-* ``{metric-type}`` is an optional enum value that defines the Prometheus metric
-  type used for this metric:
-  - "gauge" (default) - For values that can go up and down
-  - "counter" - For values that are monotonically increasing counters
-
-* ``{percent-bool}`` is a boolean indicating whether the metric value should
-  be divided by 100. The reason for this is that the HMC metrics represent
-  percentages such that a value of 100 means 100% = 1, while Prometheus
-  represents them such that a value of 1.0 means 100% = 1.
-
-* ``{valuemap}`` is an optional dictionary for mapping string enumeration values
-  in the original HMC value to integers to be exported to Prometheus. This is
-  used for example for the processor mode (shared, dedicated).
-
-* ``{label-name}`` is the label name.
-
-* ``{label-value}`` is a :term:`Jinja2 expression` that is evaluated and used
-  as the label value. For details, see :ref:`Labels on exported metrics`.
-
-* ``{hmc-resource-class}`` is the class of the HMC resource for which properties
-  are to be fetched (i.e. the value of its ``class`` property, e.g. ``cpc``).
-
-* ``{hmc-property}`` is the HMC name of the property that is to be fetched.
-
-Sample metric definition file
------------------------------
-
-The following is a sample metric definition file (``metrics.yaml``) that defines
-all metrics as of HMC 2.15 (z15).
-
-The file can be downloaded from the Git repo as
-`examples/metrics.yaml <https://github.com/zhmcclient/zhmc-prometheus-exporter/blob/master/examples/metrics.yaml>`_.
-
-.. literalinclude:: ../examples/metrics.yaml
-  :language: yaml
+For reference, the format of the metric definition file is described
+in :ref:`Format of metric definition file`.
 
 Sample output to Prometheus
 ---------------------------

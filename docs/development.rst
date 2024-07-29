@@ -536,3 +536,135 @@ You can perform a pylint check with:
 .. code-block:: bash
 
   $ make pylint
+
+Format of metric definition file
+--------------------------------
+
+The metric definition file is in YAML format and has the following structure:
+
+.. code-block:: yaml
+
+    metric_groups:
+      # dictionary of metric groups:
+      {hmc-metric-group}:
+        prefix: {resource-type}
+        if: {fetch-condition}  # optional
+        labels:
+          # list of labels to be added to all metrics of this group:
+          - name: {label-name}
+            value: {label-value}
+
+    metrics:
+      # dictionary of metric groups:
+      {hmc-metric-group}:
+
+        # dictionary format for defining metrics:
+        {hmc-metric}:
+          if: {export-condition}  # optional
+          exporter_name: {exporter-name}
+          exporter_desc: {exporter-desc}
+          metric_type: {metric-type}
+          percent: {percent-bool}
+          valuemap: {valuemap}
+          labels:
+            # list of labels to be added to this metric:
+            - name: {label-name}
+              value: {label-value}
+
+        # list format for defining metrics:
+        - property_name: {hmc-metric}                     # either this
+          properties_expression: {properties-expression}  # or this
+          if: {export-condition}  # optional
+          exporter_name: {exporter-name}
+          exporter_desc: {exporter-desc}
+          percent: {percent-bool}
+          valuemap: {valuemap}
+          labels:
+            # list of labels to be added to this metric:
+            - name: {label-name}
+              value: {label-value}
+
+    fetch_properties:
+      # dictionary of properties that need to be fetched because they can
+      # change but have no property change notification
+      {hmc-resource-class}:
+        - property_name: {hmc-property}
+          if: {fetch-condition}  # optional
+
+Where:
+
+* ``{hmc-metric-group}`` is the name of the metric group on the HMC.
+
+* ``{hmc-metric}`` is the name of the metric (within the metric group) on the
+  HMC.
+
+* ``{resource-type}`` is a short lower case term for the type of resource
+  the metric applies to, for example ``cpc`` or ``partition``. It is used
+  in the Prometheus metric name directly after the initial ``zhmc_``.
+
+* ``{fetch-condition}`` is a string that is evaluated as a Python expression and
+  that indicates whether the metric group can be fetched. For the metric group
+  to actually be fetched, the ``fetch`` property also needs to be True.
+  The expression may use the following variables; builtins are not available:
+
+  - ``hmc_version`` - HMC version as a tuple of integers (M, N, U), e.g.
+    (2, 16, 0).
+  - ``hmc_api_version`` - HMC API version as a tuple of integers (M, N), e.g.
+    (4, 10).
+  - ``hmc_features`` - List of names of HMC API features. Will be empty before
+    HMC API version 4.10.
+
+* ``{properties-expression}`` is a :term:`Jinja2 expression` whose value should
+  be used as the metric value, for :term:`resource property based metrics`. The
+  expression uses the variable ``properties`` which is the resource properties
+  dictionary of the resource. The ``properties_expression`` attribute is
+  mutually exclusive with ``property_name``.
+
+* ``{export-condition}`` is a string that is evaluated as a Python expression
+  and that controls whether the metric is exported. If it evaluates to false,
+  the export of the metric is disabled, regardless of other such controls.
+  The expression may use the following variables; builtins are not available:
+
+  - ``hmc_version`` - HMC version as a tuple of integers (M, N, U), e.g.
+    (2, 16, 0).
+  - ``hmc_api_version`` - HMC API version as a tuple of integers (M, N), e.g.
+    (4, 10).
+  - ``hmc_features`` - List of names of HMC API features. Will be empty before
+    HMC API version 4.10.
+  - ``se_version`` - SE/CPC version as a tuple of integers (M, N, U), e.g.
+    (2, 16, 0). Will be `None` when there is no CPC context for the metric.
+  - ``se_features`` - List of names of SE/CPC API features. Will be an empty
+    list before HMC API version 4.10 or before SE version 2.16.0 or when there
+    is no CPC context for the metric.
+  - ``resource_obj`` - zhmcclient resource object for the metric.
+
+* ``{exporter-name}`` is the local metric name and unit in the exported metric
+  name ``zhmc_{resource-type}_{exporter-name}``.
+  If it is null, the export of the metric is disabled, regardless of other such
+  controls.
+
+* ``{exporter-desc}`` is the description text that is exported as ``# HELP``.
+
+* ``{metric-type}`` is an optional enum value that defines the Prometheus metric
+  type used for this metric:
+  - "gauge" (default) - For values that can go up and down
+  - "counter" - For values that are monotonically increasing counters
+
+* ``{percent-bool}`` is a boolean indicating whether the metric value should
+  be divided by 100. The reason for this is that the HMC metrics represent
+  percentages such that a value of 100 means 100% = 1, while Prometheus
+  represents them such that a value of 1.0 means 100% = 1.
+
+* ``{valuemap}`` is an optional dictionary for mapping string enumeration values
+  in the original HMC value to integers to be exported to Prometheus. This is
+  used for example for the processor mode (shared, dedicated).
+
+* ``{label-name}`` is the label name.
+
+* ``{label-value}`` is a :term:`Jinja2 expression` that is evaluated and used
+  as the label value. For details, see :ref:`Labels on exported metrics`.
+
+* ``{hmc-resource-class}`` is the class of the HMC resource for which properties
+  are to be fetched (i.e. the value of its ``class`` property, e.g. ``cpc``).
+
+* ``{hmc-property}`` is the HMC name of the property that is to be fetched.

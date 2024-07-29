@@ -26,6 +26,16 @@ Released: not yet
 
 **Incompatible changes:**
 
+* Changed the format of the exporter config file (previously referred to as
+  "HMC credentials file") to add controls for enabling or disabling the export
+  of the metric groups, and to clean up some naming idiosyncrasies on that
+  opportunity. The old format is now deprecated and support for it will be
+  removed in a future release. (issue #418)
+
+* Removed the '-m' option for specifying a metric definition file. The metric
+  definition file is now part of the Python distribution archive and there
+  is no need anymore for users to edit it. (related to issue #418)
+
 **Deprecations:**
 
 **Bug fixes:**

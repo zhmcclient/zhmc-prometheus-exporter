@@ -8,14 +8,12 @@ metric_groups:
 
   cpc-usage-overview:
     prefix: cpc
-    fetch: true
     labels:
       - name: cpc
         value: "resource_obj.name"
 
   logical-partition-usage:
     prefix: partition
-    fetch: true
     labels:
       - name: cpc
         value: "resource_obj.manager.parent.name"
@@ -24,7 +22,6 @@ metric_groups:
 
   channel-usage:
     prefix: channel
-    fetch: true
     labels:
       - name: cpc
         value: "resource_obj.name"
@@ -33,7 +30,6 @@ metric_groups:
 
   crypto-usage:
     prefix: crypto_adapter
-    fetch: true
     if: "hmc_version>='2.12.0'"
     labels:
       - name: cpc
@@ -43,7 +39,6 @@ metric_groups:
 
   flash-memory-usage:
     prefix: flash_memory_adapter
-    fetch: true
     if: "hmc_version>='2.12.0'"
     labels:
       - name: cpc
@@ -53,7 +48,6 @@ metric_groups:
 
   roce-usage:
     prefix: roce_adapter
-    fetch: true
     if: "hmc_version>='2.12.1'"
     labels:
       - name: cpc
@@ -65,7 +59,6 @@ metric_groups:
     type: resource
     resource: cpc.logical-partition
     prefix: partition
-    fetch: true
     labels:
       - name: cpc
         value: "resource_obj.manager.parent.name"
@@ -76,7 +69,6 @@ metric_groups:
 
   dpm-system-usage-overview:
     prefix: cpc
-    fetch: true
     if: "hmc_version>='2.13.1'"
     labels:
       - name: cpc
@@ -84,7 +76,6 @@ metric_groups:
 
   partition-usage:
     prefix: partition
-    fetch: true
     if: "hmc_version>='2.13.1'"
     labels:
       - name: cpc
@@ -94,7 +85,6 @@ metric_groups:
 
   adapter-usage:
     prefix: adapter
-    fetch: true
     if: "hmc_version>='2.13.1'"
     labels:
       - name: cpc
@@ -104,7 +94,6 @@ metric_groups:
 
   network-physical-adapter-port:
     prefix: port
-    fetch: true
     if: "hmc_version>='2.13.1'"
     labels:
       - name: cpc
@@ -116,7 +105,6 @@ metric_groups:
 
   partition-attached-network-interface:
     prefix: nic
-    fetch: true
     if: "hmc_version>='2.13.1'"
     labels:
       - name: cpc
@@ -134,7 +122,6 @@ metric_groups:
     type: resource
     resource: cpc.partition
     prefix: partition
-    fetch: true
     if: "hmc_version>='2.13.1'"
     labels:
       - name: cpc
@@ -146,7 +133,6 @@ metric_groups:
     type: resource
     resource: console.storagegroup
     prefix: storagegroup
-    fetch: true
     if: "hmc_version>='2.14.1'"
     labels:
       - name: cpc
@@ -158,7 +144,6 @@ metric_groups:
     type: resource
     resource: console.storagevolume
     prefix: storagevolume
-    fetch: true
     if: "hmc_version>='2.14.1'"
     labels:
       - name: cpc
@@ -172,14 +157,12 @@ metric_groups:
 
   zcpc-environmentals-and-power:
     prefix: cpc
-    fetch: true
     labels:
       - name: cpc
         value: "resource_obj.name"
 
   zcpc-processor-usage:
     prefix: processor
-    fetch: true
     labels:
       - name: cpc
         value: "resource_obj.name"
@@ -190,7 +173,6 @@ metric_groups:
 
   environmental-power-status:
     prefix: cpc
-    fetch: true
     if: "hmc_version>='2.15.0'"
     labels:
       - name: cpc
@@ -200,7 +182,6 @@ metric_groups:
     type: resource
     resource: cpc
     prefix: cpc
-    fetch: true
     labels:
       - name: cpc
         value: "resource_obj.name"

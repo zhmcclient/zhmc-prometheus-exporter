@@ -18,70 +18,66 @@ Trouble shooting
 This section describes some issues and how to resolve them. If you encounter
 an issue that is not covered here, see :ref:`Reporting issues`.
 
-Permission error with YAML file
--------------------------------
+Permission error with exporter config file
+------------------------------------------
 
 Example:
 
 .. code-block:: bash
 
   $ zhmc_prometheus_exporter
-  Error: Permission error reading HMC credentials file ...
+  Error: Permission error reading exporter config file ...
 
-You don't have permission to read from the HMC credentials file or
-metric definition file. Change the permissions with ``chmod``,
-check ``man chmod`` if you are unfamiliar with it.
+You don't have permission to read from the exporter config file. Change the
+permissions with ``chmod``, check ``man chmod`` if you are unfamiliar with it.
 
-YAML file not found
--------------------
-
-Example:
-
-.. code-block:: bash
-
-    $ zhmc_prometheus_exporter
-    Error: Cannot find HMC credentials file ...
-
-The HMC credentials file or the metric definition file does not exist.
-
-You need to create them as described in :ref:`Quickstart`.
-
-YAML syntax error
------------------
+Exporter config file not found
+------------------------------
 
 Example:
 
 .. code-block:: bash
 
     $ zhmc_prometheus_exporter
-    Error: YAML error reading HMC credentials file ...
+    Error: Cannot find exporter config file ...
 
-The HMC credentials file or the metric definition file breaks the syntax rules
-of the YAML specification.
+The exporter config file does not exist.
 
-Compare your HMC credentials file or metric definition file with the samples
-from the ``examples`` folder, see :ref:`Quickstart` for more information.
+You need to create an exporter config file as described in :ref:`Quickstart`.
+
+YAML syntax error in exporter config file
+-----------------------------------------
+
+Example:
+
+.. code-block:: bash
+
+    $ zhmc_prometheus_exporter
+    Error: YAML error reading exporter config file ...
+
+The exporter config file breaks the syntax rules of the YAML specification.
+
+Compare your exporter config file with the sample exporter config file from the
+``examples`` folder, see :ref:`Quickstart` for more information.
 You can also check the `YAML specification`_.
 
 .. _Quickstart: ./intro.rst#quickstart
 .. _YAML specification: http://yaml.org/spec/1.2/spec.html
 
-YAML validation error
----------------------
+YAML validation error in exporter config file
+---------------------------------------------
 
 Example:
 
 .. code-block:: bash
 
     $ zhmc_prometheus_exporter
-    Error: Validation of HMC credentials file ...
+    Error: Validation of exporter config file ... failed on ...
 
-There are additional elements in the HMC credentials file or
-metric definition file, or required elements are missing, or other validation
-rules are violated.
-
-Compare your HMC credentials file or metric definition file with the samples
-from the ``examples`` folder, see :ref:`Quickstart` for more information.
+There are additional elements in the exporter config file, or required elements
+are missing, or other validation rules are violated.
+Compare your exporter config file with the sample exporter config file from the
+``examples`` folder, see :ref:`Quickstart` for more information.
 
 Timeout
 -------
@@ -94,7 +90,7 @@ Example:
     Error: Connection error ...: Max retries exceeded ... Connection to ... timed out.
 
 Ensure that you have network connectivity to the HMC that is specified in the
-HMC credentials file.
+exporter config file.
 
 Authentication error
 --------------------
@@ -106,7 +102,7 @@ Example:
     $ zhmc_prometheus_exporter
     Error: Authentication error returned from the HMC at ... HTTP authentication failed with 403,0: Login failed
 
-Wrong username or password in the HMC credentials file. Check if you can
+Wrong username or password in the exporter config file. Check if you can
 access the HMC with this username-password combination.
 
 Warning: Skipping metric or metric group

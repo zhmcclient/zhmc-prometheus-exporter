@@ -47,8 +47,7 @@ from ._version import __version__
 
 __all__ = []
 
-DEFAULT_CREDS_FILE = '/etc/zhmc-prometheus-exporter/hmccreds.yaml'
-DEFAULT_METRICS_FILE = '/etc/zhmc-prometheus-exporter/metrics.yaml'
+DEFAULT_CONFIG_FILE = '/etc/zhmc-prometheus-exporter/config.yaml'
 DEFAULT_PORT = 9291
 
 EXPORTER_LOGGER_NAME = 'zhmcexporter'
@@ -162,7 +161,7 @@ class EarlyExit(Exception):
 
 
 @contextmanager
-def zhmc_exceptions(session, hmccreds_filename):
+def zhmc_exceptions(session, config_filename):
     # pylint: disable=invalid-name
     """
     Context manager that handles zhmcclient exceptions by raising the
@@ -170,7 +169,7 @@ def zhmc_exceptions(session, hmccreds_filename):
 
     Example::
 
-        with zhmc_exceptions(session, hmccreds_filename):
+        with zhmc_exceptions(session, config_filename):
             client = zhmcclient.Client(session)
             version_info = client.version_info()
     """
@@ -178,15 +177,15 @@ def zhmc_exceptions(session, hmccreds_filename):
         yield
     except zhmcclient.ConnectionError as exc:
         new_exc = ConnectionError(
-            "Connection error using IP address {} defined in HMC credentials "
-            "file {}: {}".format(session.host, hmccreds_filename, exc))
+            "Connection error using IP address {} defined in exporter config "
+            "file {}: {}".format(session.host, config_filename, exc))
         new_exc.__cause__ = None
         raise new_exc  # ConnectionError
     except zhmcclient.ClientAuthError as exc:
         new_exc = AuthError(
             "Client authentication error for the HMC at {h} using "
-            "userid '{u}' defined in HMC credentials file {f}: {m}".
-            format(h=session.host, u=session.userid, f=hmccreds_filename,
+            "userid '{u}' defined in exporter config file {f}: {m}".
+            format(h=session.host, u=session.userid, f=config_filename,
                    m=exc))
         new_exc.__cause__ = None
         raise new_exc  # AuthError
@@ -194,9 +193,9 @@ def zhmc_exceptions(session, hmccreds_filename):
         http_exc = exc.details  # zhmcclient.HTTPError
         new_exc = AuthError(
             "Authentication error returned from the HMC at {h} using "
-            "userid '{u}' defined in HMC credentials file {f}: {m} "
+            "userid '{u}' defined in exporter config file {f}: {m} "
             "(HMC operation {hm} {hu}, HTTP status {hs}.{hr})".
-            format(h=session.host, u=session.userid, f=hmccreds_filename,
+            format(h=session.host, u=session.userid, f=config_filename,
                    m=exc, hm=http_exc.request_method, hu=http_exc.request_uri,
                    hs=http_exc.http_status, hr=http_exc.reason))
         new_exc.__cause__ = None
@@ -218,20 +217,15 @@ def parse_args(args):
     parser = argparse.ArgumentParser(
         description="IBM Z HMC Exporter - a Prometheus exporter for metrics "
         "from the IBM Z HMC")
-    parser.add_argument("-c", metavar="CREDS_FILE",
-                        default=DEFAULT_CREDS_FILE,
-                        help="path name of HMC credentials file. "
-                        "Use --help-creds for details. "
-                        "Default: {}".format(DEFAULT_CREDS_FILE))
-    parser.add_argument("-m", metavar="METRICS_FILE",
-                        default=DEFAULT_METRICS_FILE,
-                        help="path name of metric definition file. "
-                        "Use --help-metrics for details. "
-                        "Default: {}".format(DEFAULT_METRICS_FILE))
+    parser.add_argument("-c", metavar="CONFIG_FILE",
+                        default=DEFAULT_CONFIG_FILE,
+                        help="path name of exporter config file. "
+                        "Use --help-config for details. "
+                        "Default: {}".format(DEFAULT_CONFIG_FILE))
     parser.add_argument("-p", metavar="PORT",
                         default=None,
                         help="port for exporting. Default: prometheus.port in "
-                        "HMC credentials file")
+                        "exporter config file")
     parser.add_argument("--log", dest='log_dest', metavar="DEST", default=None,
                         help="enable logging and set a log destination "
                         "({dests}). Default: no logging".
@@ -262,10 +256,8 @@ def parse_args(args):
     parser.add_argument("--version", action='store_true',
                         help="show versions of exporter and zhmcclient library "
                         "and exit")
-    parser.add_argument("--help-creds", action='store_true',
-                        help="show help for HMC credentials file and exit")
-    parser.add_argument("--help-metrics", action='store_true',
-                        help="show help for metric definition file and exit")
+    parser.add_argument("--help-config", action='store_true',
+                        help="show help for exporter config file and exit")
     return parser.parse_args(args)
 
 
@@ -281,30 +273,35 @@ def print_version():
                  prometheus_client_version))
 
 
-def help_creds():
+def help_config():
     """
-    Print help for HMC credentials file.
+    Print help for exporter config file.
     """
     print("""
-Help for HMC credentials file
+Help for exporter config file
 
-The HMC credentials file is a YAML file that defines the IP address of the HMC
-and the userid and password for logging on to the HMC.
+The exporter config file is a YAML file that specifies data for logging on
+to the HMC, data for exporting to Prometheus, and data for controlling which
+metric groups are exported.
 
 The HMC userid must be authorized for object access permission to the resources
 for which metrics are to be returned. Metrics of resources for which the userid
 does not have object access permission will not be included in the result,
 without raising an error.
 
-The following example shows a complete HMC credentials file. For more details,
-see the documentation at https://zhmc-prometheus-exporter.readthedocs.io/.
+The following example shows a complete exporter config file for the version 2
+format. For more details, see the documentation at
+https://zhmc-prometheus-exporter.readthedocs.io/.
 
 ---
-metrics:
-  hmc: 1.2.3.4
-  userid: myuser
-  password: mypassword
+# Version of config file format
+version: 2
 
+# HMC and its credentials
+hmc:
+  host: 9.10.11.12
+  userid: userid
+  password: password
   # Note: The verify_cert parameter controls whether and how the HMC server
   #       certificate is validated by the exporter. For more details,
   #       see doc section 'HMC certificate'.
@@ -312,7 +309,9 @@ metrics:
   # verify_cert: my_certs_file  # Validate using this CA certs file
   # verify_cert: my_certs_dir   # Validate using this CA certs directory
   # verify_cert: false          # Disable validation
+  verify_cert: false
 
+# Communication with Prometheus
 prometheus:
   port: 9291
 
@@ -323,46 +322,59 @@ prometheus:
   # Note: Activating the following parameter enables the use of mutual TLS
   # ca_cert_file: ca_certs.pem
 
+# Additional user-defined labels to be added to all metrics
 extra_labels:
-  - name: pod
-    value: mypod
-""")
+  # - name: hmc
+  #   value: "hmc_info['hmc-name']"
+  # - name: pod
+  #   value: "'mypod'"
 
-
-def help_metrics():
-    """
-    Print help for metric definition file.
-    """
-    print("""
-Help for metric definition file
-
-The metric definition file is a YAML file that defines which metrics are
-exported to prometheus and under which names.
-
-The following example shows a valid metric definition file that defines
-a small subset of metrics and metric groups for DPM mode to be exported. For
-more details and a full list of metrics and metric groups, see the
-documentation at https://zhmc-prometheus-exporter.readthedocs.io/.
-
----
+# Metric groups to be fetched
 metric_groups:
+
+  # Available for CPCs in classic mode
+  cpc-usage-overview:
+    export: true
+  logical-partition-usage:
+    export: true
+  channel-usage:
+    export: true
+  crypto-usage:
+    export: true
+  flash-memory-usage:
+    export: true
+  roce-usage:
+    export: true
+  logical-partition-resource:
+    export: true
+
+  # Available for CPCs in DPM mode
+  dpm-system-usage-overview:
+    export: true
   partition-usage:
-    prefix: partition
-    fetch: true
-    labels:
-      - name: cpc
-        value: resource.parent
-      - name: partition
-        value: resource
-  # ...
-metrics:
-  partition-usage:
-    processor-usage:
-      percent: true
-      exporter_name: processor_usage_ratio
-      exporter_desc: Usage ratio across all processors of the partition
-    # ...
-  # ...
+    export: true
+  adapter-usage:
+    export: true
+  network-physical-adapter-port:
+    export: true
+  partition-attached-network-interface:
+    export: true
+  partition-resource:
+    export: true
+  storagegroup-resource:
+    export: true
+  storagevolume-resource:
+    export: true
+
+  # Available for CPCs in any mode
+  zcpc-environmentals-and-power:
+    export: true
+  zcpc-processor-usage:
+    export: true
+  environmental-power-status:
+    export: true
+  cpc-resource:
+    export: true
 """)
 
 
@@ -643,38 +655,38 @@ def eval_condition(
 
 # Metrics context creation & deletion and retrieval derived from
 # github.com/zhmcclient/python-zhmcclient/examples/metrics.py
-def create_session(cred_dict, hmccreds_filename):
+def create_session(config_dict, config_filename):
     """
     To create a context, a session must be created first.
 
     Parameters:
-      cred_dict (dict): 'metric' object from the HMC credentials file,
-        specifying items: hmc, userid, password, verify_cert.
-      hmccreds_filename (string): Path name of HMC credentials file.
+      config_dict (dict): Content of the exporter config file.
+      config_filename (string): Path name of the exporter config file.
 
     Returns:
       zhmcclient.Session
     """
-
     # These warnings do not concern us
     urllib3.disable_warnings()
 
-    logprint(logging.INFO, PRINT_V,
-             "HMC host: {}".format(cred_dict["hmc"]))
-    logprint(logging.INFO, PRINT_V,
-             "HMC userid: {}".format(cred_dict["userid"]))
+    hmc_dict = config_dict["hmc"]
 
-    verify_cert = cred_dict.get("verify_cert", True)
+    logprint(logging.INFO, PRINT_V,
+             "HMC host: {}".format(hmc_dict["host"]))
+    logprint(logging.INFO, PRINT_V,
+             "HMC userid: {}".format(hmc_dict["userid"]))
+
+    verify_cert = hmc_dict.get("verify_cert", True)
     if isinstance(verify_cert, str):
         if not os.path.isabs(verify_cert):
             verify_cert = os.path.join(
-                os.path.dirname(hmccreds_filename), verify_cert)
+                os.path.dirname(config_filename), verify_cert)
     logprint(logging.INFO, PRINT_V,
              f"HMC certificate validation: {verify_cert}")
 
-    session = zhmcclient.Session(cred_dict["hmc"],
-                                 cred_dict["userid"],
-                                 cred_dict["password"],
+    session = zhmcclient.Session(hmc_dict["host"],
+                                 hmc_dict["userid"],
+                                 hmc_dict["password"],
                                  verify_cert=verify_cert,
                                  retry_timeout_config=RETRY_TIMEOUT_CONFIG)
     return session
@@ -701,8 +713,8 @@ def get_hmc_info(session):
 
 
 def create_metrics_context(
-        session, yaml_metric_groups, hmc_version, hmc_api_version,
-        hmc_features):
+        session, config_dict, yaml_metric_groups, hmc_version,
+        hmc_api_version, hmc_features):
     """
     Creating a context is mandatory for reading metrics from the Z HMC.
     Takes the session, the metric_groups dictionary from the metrics YAML file
@@ -718,38 +730,40 @@ def create_metrics_context(
 
     Raises: zhmccclient exceptions
     """
-    fetched_hmc_metric_groups = []
-    fetched_res_metric_groups = []
+    config_mg_dict = config_dict["metric_groups"]
+    exported_hmc_metric_groups = []
+    exported_res_metric_groups = []
     for metric_group in yaml_metric_groups:
         mg_dict = yaml_metric_groups[metric_group]
         mg_type = mg_dict.get("type", 'hmc')
-        # fetch is required in the metrics schema:
-        fetch = mg_dict["fetch"]
+        # Not all metric groups may be specified:
+        config_mg_item = config_mg_dict.get(metric_group, {})
+        export = config_mg_item.get("export", False)
         # if is optional in the metrics schema:
-        if fetch and "if" in mg_dict:
-            fetch = eval_condition(
+        if export and "if" in mg_dict:
+            export = eval_condition(
                 "metric group {!r}".format(metric_group),
                 mg_dict["if"], hmc_version, hmc_api_version, hmc_features,
                 None, None, None)
-        if fetch:
+        if export:
             if mg_type == 'hmc':
-                fetched_hmc_metric_groups.append(metric_group)
+                exported_hmc_metric_groups.append(metric_group)
             else:
                 assert mg_type == 'resource'  # ensured by enum
-                fetched_res_metric_groups.append(metric_group)
+                exported_res_metric_groups.append(metric_group)
 
     client = zhmcclient.Client(session)
 
     logprint(logging.INFO, PRINT_V,
              "Creating a metrics context on the HMC for HMC metric "
-             "groups: {}".format(', '.join(fetched_hmc_metric_groups)))
+             "groups: {}".format(', '.join(exported_hmc_metric_groups)))
     context = client.metrics_contexts.create(
         {"anticipated-frequency-seconds": 15,
-         "metric-groups": fetched_hmc_metric_groups})
+         "metric-groups": exported_hmc_metric_groups})
 
     resources = {}
     uri2resource = {}
-    for metric_group in fetched_res_metric_groups:
+    for metric_group in exported_res_metric_groups:
         logprint(logging.INFO, PRINT_V,
                  "Retrieving resources from the HMC for resource metric "
                  "group {}".format(metric_group))
@@ -873,7 +887,7 @@ def create_metrics_context(
                      format(rp=resource_path, mg=metric_group))
 
     # Fetch backing adapters of NICs, if needed
-    if 'partition-attached-network-interface' in fetched_hmc_metric_groups:
+    if 'partition-attached-network-interface' in exported_hmc_metric_groups:
         cpcs = client.cpcs.list()
         for cpc in cpcs:
             partitions = cpc.partitions.list()
@@ -1698,12 +1712,12 @@ class ZHMCUsageCollector():
     # pylint: disable=too-few-public-methods,too-many-instance-attributes
     """Collects the usage for exporting."""
 
-    def __init__(self, yaml_creds, session, context, resources,
+    def __init__(self, config_dict, session, context, resources,
                  yaml_metric_groups, yaml_metrics, yaml_fetch_properties,
-                 extra_labels, filename_metrics, filename_creds,
+                 extra_labels, metrics_filename, config_filename,
                  resource_cache, uri2resource, hmc_version, hmc_api_version,
                  hmc_features, se_versions_by_cpc, se_features_by_cpc):
-        self.yaml_creds = yaml_creds
+        self.config_dict = config_dict
         self.session = session
         self.context = context
         self.resources = resources
@@ -1711,8 +1725,8 @@ class ZHMCUsageCollector():
         self.yaml_metrics = yaml_metrics
         self.yaml_fetch_properties = yaml_fetch_properties
         self.extra_labels = extra_labels
-        self.filename_metrics = filename_metrics
-        self.filename_creds = filename_creds
+        self.metrics_filename = metrics_filename
+        self.config_filename = config_filename
         self.resource_cache = resource_cache
         self.uri2resource = uri2resource
         self.hmc_version = hmc_version
@@ -1742,7 +1756,7 @@ class ZHMCUsageCollector():
 
         start_dt = datetime.now()
 
-        with zhmc_exceptions(self.session, self.filename_creds):
+        with zhmc_exceptions(self.session, self.config_filename):
 
             while True:
                 logprint(logging.DEBUG, None,
@@ -1763,7 +1777,8 @@ class ZHMCUsageCollector():
                                  "status {}.{}".
                                  format(exc.http_status, exc.reason))
                         self.context, _, _ = create_metrics_context(
-                            self.session, self.yaml_metric_groups,
+                            self.session, self.config_dict,
+                            self.yaml_metric_groups,
                             self.hmc_version, self.hmc_api_version,
                             self.hmc_features)
                         continue
@@ -1800,7 +1815,7 @@ class ZHMCUsageCollector():
                  "Building family objects for HMC metrics")
         family_objects = build_family_objects(
             metrics_object, self.yaml_metric_groups,
-            self.yaml_metrics, self.filename_metrics,
+            self.yaml_metrics, self.metrics_filename,
             self.extra_labels, self.hmc_version, self.hmc_api_version,
             self.hmc_features, self.se_versions_by_cpc, self.se_features_by_cpc,
             self.session, self.resource_cache, self.uri2resource)
@@ -1809,7 +1824,7 @@ class ZHMCUsageCollector():
                  "Building family objects for resource metrics")
         family_objects.update(build_family_objects_res(
             self.resources, self.yaml_metric_groups,
-            self.yaml_metrics, self.filename_metrics,
+            self.yaml_metrics, self.metrics_filename,
             self.extra_labels, self.hmc_version, self.hmc_api_version,
             self.hmc_features, self.se_versions_by_cpc, self.se_features_by_cpc,
             self.session, self.resource_cache, self.uri2resource))
@@ -2161,11 +2176,8 @@ def main():
         if args.version:
             print_version()
             sys.exit(0)
-        if args.help_creds:
-            help_creds()
-            sys.exit(0)
-        if args.help_metrics:
-            help_metrics()
+        if args.help_config:
+            help_config()
             sys.exit(0)
 
         VERBOSE_LEVEL = args.verbose
@@ -2187,18 +2199,85 @@ def main():
         logprint(logging.INFO, PRINT_ALWAYS,
                  f"Verbosity level: {VERBOSE_LEVEL}")
 
-        hmccreds_filename = args.c
+        config_filename = args.c
         logprint(logging.INFO, PRINT_V,
-                 f"Parsing HMC credentials file: {hmccreds_filename}")
-        yaml_creds_content = parse_yaml_file(
-            hmccreds_filename, 'HMC credentials file', 'hmccreds_schema.yaml')
-        # metrics is required in the metrics schema:
-        yaml_creds = yaml_creds_content["metrics"]
+                 f"Parsing exporter config file: {config_filename}")
+        config_dict = parse_yaml_file(
+            config_filename, 'exporter config file', 'config_schema.yaml')
+
+        if 'metrics' not in config_dict and 'hmc' not in config_dict:
+            new_exc = ImproperExit(
+                "The exporter config file must specify either the new 'hmc' "
+                "item or the old 'metrics' item, but it specifies none.")
+            new_exc.__cause__ = None  # pylint: disable=invalid-name
+            raise new_exc
+
+        if 'metrics' in config_dict and 'hmc' in config_dict:
+            new_exc = ImproperExit(
+                "The exporter config file must specify either the new 'hmc' "
+                "item or the old 'metrics' item, but it specifies both.")
+            new_exc.__cause__ = None  # pylint: disable=invalid-name
+            raise new_exc
+
+        if 'version' in config_dict and config_dict['version'] != 2:
+            new_exc = ImproperExit(
+                "The exporter config file must have the version 2 format, "
+                "but it specifies the version {} format.".
+                format(config_dict['version']))
+            new_exc.__cause__ = None  # pylint: disable=invalid-name
+            raise new_exc
+
+        if 'metrics' in config_dict and 'hmc' not in config_dict:
+            logprint(logging.WARNING, PRINT_ALWAYS,
+                     "DEPRECATED: The exporter config file has the old version "
+                     "1 format. Please migrate to the new version 2 format "
+                     "(use --help-config). The version 1 format is deprecated "
+                     "and support for it will be removed in a future release.")
+
+            # Convert old format to new format
+            config_dict['version'] = 2
+            old_creds = config_dict['metrics']
+            config_dict['hmc'] = {
+                'host': old_creds['hmc'],
+                'userid': old_creds['userid'],
+                'password': old_creds['password'],
+                'verify_cert': old_creds.get('verify_cert', True),
+            }
+            del config_dict['metrics']
+
+        if 'metric_groups' not in config_dict:
+            logprint(logging.INFO, PRINT_ALWAYS,
+                     "The exporter config file has no 'metric_groups' item. "
+                     "Exporting all metric groups.")
+            config_dict['metric_groups'] = {
+                'cpc-usage-overview': {'export': True},
+                'logical-partition-usage': {'export': True},
+                'channel-usage': {'export': True},
+                'crypto-usage': {'export': True},
+                'flash-memory-usage': {'export': True},
+                'roce-usage': {'export': True},
+                'logical-partition-resource': {'export': True},
+                'dpm-system-usage-overview': {'export': True},
+                'partition-usage': {'export': True},
+                'adapter-usage': {'export': True},
+                'network-physical-adapter-port': {'export': True},
+                'partition-attached-network-interface': {'export': True},
+                'partition-resource': {'export': True},
+                'storagegroup-resource': {'export': True},
+                'storagevolume-resource': {'export': True},
+                'zcpc-environmentals-and-power': {'export': True},
+                'zcpc-processor-usage': {'export': True},
+                'environmental-power-status': {'export': True},
+                'cpc-resource': {'export': True},
+            }
+
+        metrics_filename = os.path.join(
+            os.path.dirname(__file__), 'data', 'metrics.yaml')
 
         logprint(logging.INFO, PRINT_V,
-                 f"Parsing metric definition file: {args.m}")
+                 f"Parsing metric definition file: {metrics_filename}")
         yaml_metric_content = parse_yaml_file(
-            args.m, 'metric definition file', 'metrics_schema.yaml')
+            metrics_filename, 'metric definition file', 'metrics_schema.yaml')
         # metric_groups and metrics are required in the metrics schema:
         yaml_metric_groups = yaml_metric_content['metric_groups']
         yaml_metrics = yaml_metric_content['metrics']
@@ -2211,7 +2290,7 @@ def main():
                 new_exc = ImproperExit(
                     "Metric group '{}' in metric definition file {} is "
                     "defined in 'metrics' but not in 'metric_groups'".
-                    format(mg, args.m))
+                    format(mg, metrics_filename))
                 new_exc.__cause__ = None  # pylint: disable=invalid-name
                 raise new_exc
         for mg in yaml_metric_groups:
@@ -2219,7 +2298,7 @@ def main():
                 new_exc = ImproperExit(
                     "Metric group '{}' in metric definition file {} is "
                     "defined in 'metric_groups' but not in 'metrics'".
-                    format(mg, args.m))
+                    format(mg, metrics_filename))
                 new_exc.__cause__ = None  # pylint: disable=invalid-name
                 raise new_exc
 
@@ -2231,7 +2310,7 @@ def main():
                 new_exc = ImproperExit(
                     "Metrics for metric group '{}' of type 'metric' must use "
                     "the dictionary format in metric definition file {}".
-                    format(mg, args.m))
+                    format(mg, metrics_filename))
                 new_exc.__cause__ = None  # pylint: disable=invalid-name
                 raise new_exc
 
@@ -2253,11 +2332,10 @@ def main():
 
         env = jinja2.Environment()
 
-        # hmc is required in the HMC creds schema:
-        session = create_session(yaml_creds, hmccreds_filename)
+        session = create_session(config_dict, config_filename)
 
         try:
-            with zhmc_exceptions(session, hmccreds_filename):
+            with zhmc_exceptions(session, config_filename):
                 hmc_info = get_hmc_info(session)
                 hmc_version = split_version(hmc_info['hmc-version'], 3)
                 hmc_api_version = (hmc_info['api-major-version'],
@@ -2298,18 +2376,18 @@ def main():
                              format(cpc_name, se_features_str))
 
                 context, resources, uri2resource = create_metrics_context(
-                    session, yaml_metric_groups, hmc_version, hmc_api_version,
-                    hmc_features)
+                    session, config_dict, yaml_metric_groups,
+                    hmc_version, hmc_api_version, hmc_features)
 
         except (ConnectionError, AuthError, OtherError) as exc:
             raise ImproperExit(exc)
 
         # Calculate the resource labels at the global level
         # extra_labels is optional in the metrics schema:
-        yaml_extra_labels = yaml_creds_content.get("extra_labels", [])
+        yaml_extra_labels = config_dict.get("extra_labels", [])
         extra_labels = {}
         for item in yaml_extra_labels:
-            # name is required in the HMC creds schema:
+            # name is required in the config schema:
             label_name = item['name']
             item_value = item['value']
             label_value = expand_global_label_value(
@@ -2324,9 +2402,9 @@ def main():
 
         resource_cache = ResourceCache()
         coll = ZHMCUsageCollector(
-            yaml_creds, session, context, resources, yaml_metric_groups,
-            yaml_metrics, yaml_fetch_properties, extra_labels, args.m,
-            hmccreds_filename, resource_cache, uri2resource, hmc_version,
+            config_dict, session, context, resources, yaml_metric_groups,
+            yaml_metrics, yaml_fetch_properties, extra_labels, metrics_filename,
+            config_filename, resource_cache, uri2resource, hmc_version,
             hmc_api_version, hmc_features, se_versions_by_cpc,
             se_features_by_cpc)
 
@@ -2335,7 +2413,7 @@ def main():
         REGISTRY.register(coll)  # Performs a first collection
 
         # Get the Prometheus communication parameters
-        prom_item = yaml_creds_content.get("prometheus", {})
+        prom_item = config_dict.get("prometheus", {})
         config_port = prom_item.get("port", None)
         server_cert_file = prom_item.get("server_cert_file", None)
         if server_cert_file:
@@ -2346,16 +2424,16 @@ def main():
             server_key_file = prom_item.get("server_key_file", None)
             if not server_key_file:
                 raise ImproperExit(
-                    "server_key_file not specified in HMC credentials file "
+                    "server_key_file not specified in exporter config file "
                     "when using https.")
-            hmccreds_dir = os.path.dirname(hmccreds_filename)
+            config_dir = os.path.dirname(config_filename)
             if not os.path.isabs(server_cert_file):
-                server_cert_file = os.path.join(hmccreds_dir, server_cert_file)
+                server_cert_file = os.path.join(config_dir, server_cert_file)
             if not os.path.isabs(server_key_file):
-                server_key_file = os.path.join(hmccreds_dir, server_key_file)
+                server_key_file = os.path.join(config_dir, server_key_file)
             ca_cert_file = prom_item.get("ca_cert_file", None)
             if ca_cert_file and not os.path.isabs(ca_cert_file):
-                ca_cert_file = os.path.join(hmccreds_dir, ca_cert_file)
+                ca_cert_file = os.path.join(config_dir, ca_cert_file)
         else:  # http
             server_cert_file = None
             server_key_file = None

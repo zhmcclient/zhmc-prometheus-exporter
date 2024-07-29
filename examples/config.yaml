@@ -1,0 +1,83 @@
+# Sample config file for the Z HMC Prometheus Exporter.
+
+# Version of config file format
+version: 2
+
+# HMC and its credentials
+hmc:
+  host: 9.10.11.12
+  userid: userid
+  password: password
+  # Note: The verify_cert parameter controls whether and how the HMC server
+  #       certificate is validated by the exporter. For more details,
+  #       see doc section 'HMC certificate'.
+  # verify_cert: true           # (default) Validate using default CA certs
+  # verify_cert: my_certs_file  # Validate using this CA certs file
+  # verify_cert: my_certs_dir   # Validate using this CA certs directory
+  # verify_cert: false          # Disable validation
+  verify_cert: false
+
+# Communcation with Prometheus
+prometheus:
+  port: 9291
+
+  # Note: Activating the following two parameters enables the use of HTTPS
+  # server_cert_file: server_cert.pem
+  # server_key_file: server_key.pem
+
+  # Note: Activating the following parameter enables the use of mutual TLS
+  # ca_cert_file: ca_certs.pem
+
+# Additional user-defined labels to be added to all metrics
+extra_labels:
+  # - name: hmc
+  #   value: "hmc_info['hmc-name']"
+  # - name: pod
+  #   value: "'mypod'"
+
+# Metric groups to be fetched
+metric_groups:
+
+  # Available for CPCs in classic mode
+  cpc-usage-overview:
+    export: true
+  logical-partition-usage:
+    export: true
+  channel-usage:
+    export: true
+  crypto-usage:
+    export: true
+  flash-memory-usage:
+    export: true
+  roce-usage:
+    export: true
+  logical-partition-resource:
+    export: true
+
+  # Available for CPCs in DPM mode
+  dpm-system-usage-overview:
+    export: true
+  partition-usage:
+    export: true
+  adapter-usage:
+    export: true
+  network-physical-adapter-port:
+    export: true
+  partition-attached-network-interface:
+    export: true
+  partition-resource:
+    export: true
+  storagegroup-resource:
+    export: true
+  storagevolume-resource:
+    export: true
+
+  # Available for CPCs in any mode
+  zcpc-environmentals-and-power:
+    export: true
+  zcpc-processor-usage:
+    export: true
+  environmental-power-status:
+    export: true
+  cpc-resource:
+    export: true

@@ -2,22 +2,24 @@
 
 $schema: http://json-schema.org/draft-07/schema
 title: HMC credentials schema
-description: JSON schema for the HMC credentials file
+description: JSON schema for the Z HMC Prometheus Exporter config file
 type: object
-required:
-  - metrics
+required: []
 additionalProperties: false
 properties:
-  metrics:
+  version:
+    description: "Version of the config file format"
+    type: integer
+  hmc:
     description: The HMC host and credentials
     type: object
     required:
-      - hmc
+      - host
       - userid
       - password
     additionalProperties: false
     properties:
-      hmc:
+      host:
         description: "Hostname or IP address of HMC"
         type: string
       userid:
@@ -28,6 +30,27 @@ properties:
         type: string
       verify_cert:
         description: "Controls whether and how the HMC certificate is verified. For details, see doc section 'HMC certificate'"
+        type: [boolean, string]
+  metrics:
+    description: "Deprecated: The HMC host and credentials"
+    type: object
+    required:
+      - hmc
+      - userid
+      - password
+    additionalProperties: false
+    properties:
+      hmc:
+        description: "Deprecated: Hostname or IP address of HMC"
+        type: string
+      userid:
+        description: "Deprecated: Userid used by the exporter to log on to the HMC"
+        type: string
+      password:
+        description: "Deprecated: Password of the HCM userid"
+        type: string
+      verify_cert:
+        description: "Deprecated: Controls whether and how the HMC certificate is verified. For details, see doc section 'HMC certificate'"
         type: [boolean, string]
   prometheus:
     description: Communication with Prometheus
@@ -63,3 +86,18 @@ properties:
         value:
           description: "Label value, as a Jinja2 expression using certain variables"
           type: string
+  metric_groups:
+    description: Export control for the HMC and resource metric groups
+    type: object
+    additionalProperties: false
+    patternProperties:
+      "^[a-z0-9\\-]+$":
+        description: "Key: Name of the HMC or resource metric group"
+        type: object
+        required:
+          - export
+        additionalProperties: false
+        properties:
+          export:
+            description: "Indicates whether the metric group should be exported to Prometheus"
+            type: boolean

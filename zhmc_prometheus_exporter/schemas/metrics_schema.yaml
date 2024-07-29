@@ -19,7 +19,6 @@ properties:
         type: object
         required:
           - prefix
-          - fetch
         additionalProperties: false
         properties:
           type:
@@ -33,9 +32,6 @@ properties:
           prefix:
             description: "<prefix> part of Prometheus metric name (format: zhmc_<prefix>_<metric_unit>)"
             type: string
-          fetch:
-            description: "Indicates whether the metric group should be fetched from the HMC"
-            type: boolean
           if:
             description: "Condition for fetching the metric group from the HMC, as a Python expression using certain variables"
             type: string
