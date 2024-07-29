@@ -54,6 +54,9 @@ Released: not yet
 * Removed lengthy display of URI to resource cache when ignoring labels due to
   Jinja2 error.
 
+* Dev: Removed support for editable installs, because pip 25 will disable that.
+  (issue #546)
+
 **Known issues:**
 
 * See `list of open issues`_.
