@@ -44,6 +44,9 @@ Released: not yet
 
 **Cleanup:**
 
+* Removed lengthy display of URI to resource cache when ignoring labels due to
+  Jinja2 error.
+
 **Known issues:**
 
 * See `list of open issues`_.
