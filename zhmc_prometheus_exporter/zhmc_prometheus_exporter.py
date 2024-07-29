@@ -1233,18 +1233,10 @@ def expand_metric_label_value(
     except Exception as exc:
         logprint(logging.WARNING, PRINT_ALWAYS,
                  "Ignoring label '{}' on metric with exporter name '{}' due to "
-                 "error when rendering the Jinja2 expression in the label "
+                 "error when rendering Jinja2 expression {!r} in label "
                  "value: {}: {}".
-                 format(label_name, metric_exporter_name,
+                 format(label_name, metric_exporter_name, item_value,
                         exc.__class__.__name__, exc))
-        # Additional information to debug the occasional KeyError in Jinja2
-        # expressions that access uris2resources / uri2resource
-        if 'uris2resources' in item_value or 'uri2resources' in item_value:
-            logprint(logging.WARNING, PRINT_ALWAYS,
-                     "Details: Jinja2 expression: {!r}; "
-                     "uri2resource: {!r}; resource_obj: {!r}".
-                     format(item_value, uri2resource,
-                            dict(resource_obj.properties)))
         return None
     return str(value)
 
