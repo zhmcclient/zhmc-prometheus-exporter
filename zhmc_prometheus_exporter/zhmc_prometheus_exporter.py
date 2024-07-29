@@ -1104,7 +1104,13 @@ def uri_to_resource(client, uri2resource, uri):
         m = re.match(r'(/api/storage-groups/[a-f0-9\-]+)$', uri)
         if m is not None:
             # Resource URI is for a storage group
-            stogrp = client.storage_groups.resource_object(uri)
+            console = client.consoles.console
+            stogrp = console.storage_groups.resource_object(uri)
+            # Get the CPC via 'uri2resource()' because that avoids the
+            # "Get CPC Properties" operation that is performed when getting it
+            # via the 'cpc' property on the storage group object.
+            cpc_uri = stogrp.get_property('cpc-uri')
+            cpc = uri_to_resource(client, uri2resource, cpc_uri)
             logprint(logging.INFO, PRINT_V,
                      "Adding storage group {}.{} after exporter start for "
                      "fast lookup".format(cpc.name, stogrp.name))

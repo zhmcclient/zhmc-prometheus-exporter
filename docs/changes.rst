@@ -40,6 +40,8 @@ Released: not yet
 
 * Dev: Added missing development requirement for 'filelock' package.
 
+* Fixed AttributeError when using 'storage_groups' on 'Client' object.
+
 **Enhancements:**
 
 * Docs: Added a section about the size of captured terminal output and log
