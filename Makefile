@@ -123,6 +123,7 @@ dist_included_files := \
     README.md \
     requirements.txt \
     $(wildcard $(package_dir)/schemas/*.yaml) \
+    $(wildcard $(package_dir)/data/*.yaml) \
     $(package_py_files) \
 
 doc_dir := docs
@@ -131,8 +132,7 @@ doc_build_file := $(doc_build_dir)/index.html
 doc_dependent_files := \
     $(wildcard $(doc_dir)/*.*) \
     $(wildcard $(doc_dir)/*/*.*) \
-    examples/metrics.yaml \
-    examples/hmccreds.yaml \
+    examples/config.yaml \
     $(package_py_files) \
 
 # Directory for .done files

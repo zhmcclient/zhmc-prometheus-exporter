@@ -63,41 +63,29 @@ Quickstart
   https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html.
   Installation with `setup.py install` is no longer supported by this package.
 
-* Provide an *HMC credentials file* for use by the exporter.
+* Provide a *config file* for use by the exporter.
 
-  The HMC credentials file tells the exporter which HMC to talk to for
+  The exporter config file tells the exporter which HMC to talk to for
   obtaining metrics, and which userid and password to use for logging on to
   the HMC.
 
   It also defines whether HTTP or HTTPS is used for Prometheus, and HTTPS
   related certificates and keys.
 
-  Download the :ref:`sample HMC credentials file` as ``hmccreds.yaml`` and edit
-  that copy accordingly.
+  Finally, it defines which metric groups to fetch and to provide to
+  Prometheus.
 
-  For details, see :ref:`HMC credentials file`.
+  Download the
+  `sample exporter config file <https://github.com/zhmcclient/zhmc-prometheus-exporter/blob/master/examples/config.yaml>`_
+  as ``config.yaml`` and edit that copy accordingly.
 
-* Provide a *metric definition file* for use by the exporter.
-
-  The metric definition file maps the metrics returned by the HMC to metrics
-  exported to Prometheus.
-
-  Furthermore, the metric definition file allows optimizing the access time to
-  the HMC by disabling the fetching of metrics that are not needed.
-
-  Download the :ref:`sample metric definition file` as ``metrics.yaml``. It can
-  be used as it is and will have all metrics enabled and mapped properly. You
-  only need to edit the file if you want to adjust the metric names, labels, or
-  metric descriptions, or if you want to optimize access time by disabling
-  metrics not needed.
-
-  For details, see :ref:`Metric definition file`.
+  For details, see :ref:`Exporter config file`.
 
 * Run the exporter as follows:
 
   .. code-block:: bash
 
-      $ zhmc_prometheus_exporter -c hmccreds.yaml -m metrics.yaml
+      $ zhmc_prometheus_exporter -c config.yaml
       Exporter is up and running on port 9291
 
   Depending on the number of CPCs managed by your HMC, and dependent on how many

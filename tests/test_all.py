@@ -39,17 +39,15 @@ class TestParseArgs(unittest.TestCase):
     def test_args_store(self):
         """Tests generic input."""
         args = (zhmc_prometheus_exporter.
-                parse_args(["-p", "1", "-c", "2", "-m", "3"]))
+                parse_args(["-p", "1", "-c", "2"]))
         self.assertEqual(args.p, "1")
         self.assertEqual(args.c, "2")
-        self.assertEqual(args.m, "3")
 
     def test_default_args(self):
         """Tests for all defaults."""
         args = zhmc_prometheus_exporter.parse_args([])
         self.assertEqual(args.p, None)
-        self.assertEqual(args.c, "/etc/zhmc-prometheus-exporter/hmccreds.yaml")
-        self.assertEqual(args.m, "/etc/zhmc-prometheus-exporter/metrics.yaml")
+        self.assertEqual(args.c, "/etc/zhmc-prometheus-exporter/config.yaml")
 
 
 class TestParseYaml(unittest.TestCase):
@@ -284,11 +282,17 @@ class TestCreateContext(unittest.TestCase):
 
         session = zhmcclient_mock.FakedSession(
             "fake-host", "fake-hmc", hmc_version, hmc_api_version_str)
-
+        config_dict = {
+            "metric_groups": {
+                "dpm-system-usage-overview": {"export": True},
+            }
+        }
+        yaml_metric_groups = {
+            "dpm-system-usage-overview": {"prefix": "pre"},
+        }
         context, _, _ = zhmc_prometheus_exporter.create_metrics_context(
-            session,
-            {"dpm-system-usage-overview": {"prefix": "pre", "fetch": True}},
-            hmc_version, hmc_api_version, hmc_features)
+            session, config_dict, yaml_metric_groups, hmc_version,
+            hmc_api_version, hmc_features)
         # pylint: disable=protected-access
         self.assertEqual(type(context), zhmcclient._metrics.MetricsContext)
         context.delete()
@@ -300,13 +304,24 @@ class TestCreateContext(unittest.TestCase):
         hmc_version = '2.14.1'
         hmc_api_version = (2, 37)
         hmc_features = []
-
-        cred_dict = {"hmc": "192.168.0.0", "userid": "user", "password": "pwd"}
+        config_dict = {
+            "hmc": {
+                "host": "192.168.0.0", "userid": "user", "password": "pwd"
+            },
+        }
         session = zhmc_prometheus_exporter.create_session(
-            cred_dict, "filename")
+            config_dict, "filename")
+        config_dict = {
+            "hmc": {
+                "host": "192.168.0.0", "userid": "user", "password": "pwd"
+            },
+            "metric_groups": {}
+        }
+        yaml_metric_groups = {}
         with self.assertRaises(zhmcclient.ConnectionError):
             zhmc_prometheus_exporter.create_metrics_context(
-                session, {}, hmc_version, hmc_api_version, hmc_features)
+                session, config_dict, yaml_metric_groups, hmc_version,
+                hmc_api_version, hmc_features)
 
 
 class TestCleanup(unittest.TestCase):
@@ -419,13 +434,11 @@ class TestMetrics(unittest.TestCase):
         yaml_metric_groups = {
             "dpm-system-usage-overview": {
                 "prefix": "pre",
-                "fetch": True,
             },
             "cpc-resource": {
                 "type": "resource",
                 "resource": "cpc",
                 "prefix": "foo",
-                "fetch": True,
             }
         }
         yaml_metrics = {
@@ -513,14 +526,22 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
         se_versions_by_cpc = {'cpc_1': '2.15.0'}
         se_features_by_cpc = {'cpc_1': []}
 
-        cred_dict = {"hmc": "192.168.0.0", "userid": "user", "password": "pwd"}
         session = setup_faked_session()
-        yaml_metric_groups = {"dpm-system-usage-overview": {"prefix": "pre",
-                                                            "fetch": True}}
+        config_dict = {
+            "hmc": {
+                "host": "192.168.0.0", "userid": "user", "password": "pwd"
+            },
+            "metric_groups": {
+                "dpm-system-usage-overview": {"export": True},
+            }
+        }
+        yaml_metric_groups = {
+            "dpm-system-usage-overview": {"prefix": "pre"},
+        }
         context, resources, _ = \
             zhmc_prometheus_exporter.create_metrics_context(
-                session, yaml_metric_groups, hmc_version, hmc_api_version,
-                hmc_features)
+                session, config_dict, yaml_metric_groups, hmc_version,
+                hmc_api_version, hmc_features)
         yaml_metrics = {
             "dpm-system-usage-overview": {
                 "processor-usage": {
@@ -538,18 +559,18 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
         extra_labels = {}
 
         my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
-            cred_dict, session, context, resources, yaml_metric_groups,
+            config_dict, session, context, resources, yaml_metric_groups,
             yaml_metrics, yaml_fetch_properties, extra_labels, "filename",
             "filename", None, None, hmc_version, hmc_api_version, hmc_features,
             se_versions_by_cpc, se_features_by_cpc)
-        self.assertEqual(my_zhmc_usage_collector.yaml_creds, cred_dict)
+        self.assertEqual(my_zhmc_usage_collector.config_dict, config_dict)
         self.assertEqual(my_zhmc_usage_collector.session, session)
         self.assertEqual(my_zhmc_usage_collector.context, context)
         self.assertEqual(my_zhmc_usage_collector.yaml_metric_groups,
                          yaml_metric_groups)
         self.assertEqual(my_zhmc_usage_collector.yaml_metrics, yaml_metrics)
-        self.assertEqual(my_zhmc_usage_collector.filename_metrics, "filename")
-        self.assertEqual(my_zhmc_usage_collector.filename_creds, "filename")
+        self.assertEqual(my_zhmc_usage_collector.metrics_filename, "filename")
+        self.assertEqual(my_zhmc_usage_collector.config_filename, "filename")
 
     def test_collect(self):
         """Test ZHMCUsageCollector.collect"""
@@ -560,18 +581,22 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
         se_versions_by_cpc = {'cpc_1': '2.15.0'}
         se_features_by_cpc = {'cpc_1': []}
 
-        cred_dict = {"hmc": "192.168.0.0", "userid": "user", "password": "pwd"}
         session = setup_faked_session()
-        yaml_metric_groups = {
-            "dpm-system-usage-overview": {
-                "prefix": "pre",
-                "fetch": True
+        config_dict = {
+            "hmc": {
+                "host": "192.168.0.0", "userid": "user", "password": "pwd"
+            },
+            "metric_groups": {
+                "dpm-system-usage-overview": {"export": True},
             }
+        }
+        yaml_metric_groups = {
+            "dpm-system-usage-overview": {"prefix": "pre"},
         }
         context, resources, _ = \
             zhmc_prometheus_exporter.create_metrics_context(
-                session, yaml_metric_groups,
-                hmc_version, hmc_api_version, hmc_features)
+                session, config_dict, yaml_metric_groups, hmc_version,
+                hmc_api_version, hmc_features)
         yaml_metrics = {
             "dpm-system-usage-overview": {
                 "processor-usage": {
@@ -589,7 +614,7 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
         extra_labels = {}
 
         my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
-            cred_dict, session, context, resources, yaml_metric_groups,
+            config_dict, session, context, resources, yaml_metric_groups,
             yaml_metrics, yaml_fetch_properties, extra_labels, "filename",
             "filename", None, None, hmc_version, hmc_api_version, hmc_features,
             se_versions_by_cpc, se_features_by_cpc)

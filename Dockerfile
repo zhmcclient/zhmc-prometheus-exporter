@@ -9,12 +9,9 @@
 #
 # Example docker command to run the exporter using a locally built version of this image:
 #
-#   docker run -it --rm -v $(pwd)/myconfig:/root/myconfig -p 9291:9291 zhmcexporter -c /root/myconfig/hmccreds.yaml -v
+#   docker run -it --rm -v $(pwd)/myconfig:/root/myconfig -p 9291:9291 zhmcexporter -c /root/myconfig/config.yaml -v
 
 FROM python:3.9-slim
-
-# Make the standard metric definition file available in its default location
-COPY examples/metrics.yaml /etc/zhmc-prometheus-exporter/metrics.yaml
 
 # Install this package
 ENV TMP_DIR=/tmp/zhmc-prometheus-exporter

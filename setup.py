@@ -90,7 +90,7 @@ setuptools.setup(
         'zhmc_prometheus_exporter.vendor.prometheus_client.twisted',
     ],
     package_data={
-        'zhmc_prometheus_exporter': ['schemas/*.yaml'],
+        'zhmc_prometheus_exporter': ['schemas/*.yaml', 'data/*.yaml'],
     },
     entry_points={
         'console_scripts': [
