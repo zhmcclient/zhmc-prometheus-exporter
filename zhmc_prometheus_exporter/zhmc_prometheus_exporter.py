@@ -43,6 +43,8 @@ from prometheus_client.core import GaugeMetricFamily, CounterMetricFamily, \
 
 from ._version import __version__
 
+__all__ = []
+
 DEFAULT_CREDS_FILE = '/etc/zhmc-prometheus-exporter/hmccreds.yaml'
 DEFAULT_METRICS_FILE = '/etc/zhmc-prometheus-exporter/metrics.yaml'
 DEFAULT_PORT = 9291

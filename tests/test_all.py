@@ -30,7 +30,7 @@ import zhmcclient
 import zhmcclient_mock
 import prometheus_client
 
-import zhmc_prometheus_exporter
+from zhmc_prometheus_exporter import zhmc_prometheus_exporter
 
 
 class TestParseArgs(unittest.TestCase):
@@ -46,7 +46,7 @@ class TestParseArgs(unittest.TestCase):
 
     def test_default_args(self):
         """Tests for all defaults."""
-        args = zhmc_prometheus_exporter.zhmc_prometheus_exporter.parse_args([])
+        args = zhmc_prometheus_exporter.parse_args([])
         self.assertEqual(args.p, None)
         self.assertEqual(args.c, "/etc/zhmc-prometheus-exporter/hmccreds.yaml")
         self.assertEqual(args.m, "/etc/zhmc-prometheus-exporter/metrics.yaml")
