@@ -38,6 +38,8 @@ Released: not yet
 
 * Dev: Added missing development requirement for 'filelock' package.
 
+* Fixed AttributeError when using 'storage_groups' on 'Client' object.
+
 **Enhancements:**
 
 **Cleanup:**
