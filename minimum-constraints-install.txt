@@ -34,10 +34,8 @@ wheel==0.38.1; python_version >= '3.7'
 # Direct dependencies for install (must be consistent with requirements.txt)
 
 zhmcclient==1.14.0
-
-prometheus-client==0.17.1; python_version <= '3.7'
-prometheus-client==0.19.0; python_version >= '3.8'
-
+# TODO: Use official prometheus-client version (0.21.0 ?) once released.
+# prometheus-client==0.21.0
 urllib3==1.26.19
 jsonschema==3.2.0
 six==1.14.0; python_version <= '3.9'

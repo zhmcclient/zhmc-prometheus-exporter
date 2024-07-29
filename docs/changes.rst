@@ -28,6 +28,13 @@ Released: not yet
 
 **Bug fixes:**
 
+* Used a forked version 0.20.0.post1 of the 'prometheus_client' package to pick
+  up the following fixes:
+
+  - Fixed HTTP verb tampering test failures. (issue #494)
+  - Fixed vulnerabilities in Prometheus server detected by testssl.sh.
+    (issues #508, #509)
+
 **Enhancements:**
 
 **Cleanup:**

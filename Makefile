@@ -260,7 +260,8 @@ check_reqs: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done minimum-constraint
 ifeq ($(run_check_reqs_install),true)
 	@echo "Makefile: Checking missing dependencies of this package"
 	pip-missing-reqs $(package_name) --requirements-file=requirements.txt
-	pip-missing-reqs $(package_name) --requirements-file=minimum-constraints-install.txt
+# TODO: Enable again once official prometheus-client version (0.21.0 ?) is released.
+# pip-missing-reqs $(package_name) --requirements-file=minimum-constraints-install.txt
 	@echo "Makefile: Done checking missing dependencies of this package"
 endif
 ifeq ($(PLATFORM),Windows_native)
