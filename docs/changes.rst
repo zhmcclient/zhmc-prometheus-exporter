@@ -57,6 +57,8 @@ Released: not yet
 * Dev: Removed support for editable installs, because pip 25 will disable that.
   (issue #546)
 
+* Minimized symbols when importing zhmc_prometheus_exporter.
+
 **Known issues:**
 
 * See `list of open issues`_.
