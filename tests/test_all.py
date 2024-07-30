@@ -196,7 +196,7 @@ def test_eval_condition_versions(
 
     # The code to be tested
     result = zhmc_prometheus_exporter.eval_condition(
-        condition, hmc_version, hmc_api_version, hmc_features, se_version,
+        "", condition, hmc_version, hmc_api_version, hmc_features, se_version,
         se_features, resource_obj)
 
     assert result == exp_result
@@ -222,7 +222,7 @@ def test_eval_condition_resource():
 
     # The code to be tested
     result = zhmc_prometheus_exporter.eval_condition(
-        condition, hmc_version, hmc_api_version, hmc_features, se_version,
+        "", condition, hmc_version, hmc_api_version, hmc_features, se_version,
         se_features, resource_obj)
 
     assert result == 'cpc_1'
@@ -260,8 +260,8 @@ def test_eval_condition_error(condition, warn_msg_pattern):
 
         # The code to be tested
         zhmc_prometheus_exporter.eval_condition(
-            condition, hmc_version, hmc_api_version, hmc_features, se_version,
-            se_features, resource_obj)
+            "", condition, hmc_version, hmc_api_version, hmc_features,
+            se_version, se_features, resource_obj)
 
     # Evaluation errors surface as one UserWarning
     assert len(warn_records) == 1

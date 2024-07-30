@@ -755,8 +755,8 @@ def create_metrics_context(
             resource_path = yaml_metric_groups[metric_group]['resource']
         except KeyError:
             new_exc = ImproperExit(
-                "Missing 'resource' item in resource metric group {} in "
-                "metrics file".
+                "Missing 'resource' item in resource metric group {} in the "
+                "metric definition file".
                 format(metric_group))
             new_exc.__cause__ = None  # pylint: disable=invalid-name
             raise new_exc
@@ -865,8 +865,9 @@ def create_metrics_context(
         else:
             logprint(logging.ERROR, PRINT_ALWAYS,
                      "Unknown resource item {rp!r} in resource metric group "
-                     "{mg!r} in metrics file. Is the metrics file "
-                     "newer than the exporter program?".
+                     "{mg!r} in the metric definition file. The "
+                     "metric definition file may not match the version of the "
+                     "exporter.".
                      format(rp=resource_path, mg=metric_group))
 
     # Fetch backing adapters of NICs, if needed
@@ -1228,7 +1229,7 @@ def expand_metric_label_value(
         func = env.compile_expression(item_value)
     except jinja2.TemplateSyntaxError as exc:
         logprint(logging.WARNING, PRINT_ALWAYS,
-                 "Not adding label '{}' on metric with exporter name '{}' due "
+                 "Not adding label '{}' on Prometheus metric '{}' due "
                  "to syntax error in Jinja2 expression {!r} for the label "
                  "value: {}".
                  format(label_name, metric_exporter_name, item_value, exc))
@@ -1244,7 +1245,7 @@ def expand_metric_label_value(
     # pylint: disable=broad-exception-caught,broad-except
     except Exception as exc:
         logprint(logging.WARNING, PRINT_ALWAYS,
-                 "Not adding label '{}' on metric with exporter name '{}' due "
+                 "Not adding label '{}' on Prometheus metric '{}' due "
                  "to error when rendering Jinja2 expression {!r} for the "
                  "label value: {}: {}".
                  format(label_name, metric_exporter_name, item_value,
@@ -1293,9 +1294,12 @@ def build_family_objects(
         try:
             yaml_metric_group = yaml_metric_groups[metric_group]
         except KeyError:
-            warnings.warn("Skipping metric group '{}' returned by the HMC "
-                          "that is not defined in the 'metric_groups' section "
-                          "of metric definition file {}".
+            warnings.warn("The HMC supports a new metric group {!r} that is "
+                          "not supported by metric definition file {}. Please "
+                          "make sure your metric definition file corresponds "
+                          "to the exporter version, and if it does then open "
+                          "an exporter ticket to get the new metric group "
+                          "supported.".
                           format(metric_group, metrics_filename))
             continue  # Skip this metric group
 
@@ -1306,11 +1310,14 @@ def build_family_objects(
                         object_value.resource_uri, object_value)
                 except zhmcclient.MetricsResourceNotFound:
                     # Some details have already been logged & printed
-                    warnings.warn("Skipping resource with URI '{}' of metric "
-                                  "group '{}' returned by the HMC that is not "
-                                  "found on the HMC".
-                                  format(object_value.resource_uri,
-                                         metric_group))
+                    warnings.warn("The HMC metric group {!r} contains a "
+                                  "resource with URI '{}' that is not found on "
+                                  "the HMC. Please make sure your "
+                                  "metric definition file corresponds to the "
+                                  "exporter version, and if it does then open "
+                                  "an exporter ticket for that.".
+                                  format(metric_group,
+                                         object_value.resource_uri))
                     continue  # Skip this metric
             else:
                 resource = object_value.resource
@@ -1346,10 +1353,13 @@ def build_family_objects(
                 try:
                     yaml_metric = yaml_metrics[metric_group][metric]
                 except KeyError:
-                    warnings.warn("Skipping metric '{}' of metric group '{}' "
-                                  "returned by the HMC that is not defined in "
-                                  "the 'metrics' section of metric definition "
-                                  "file {}".
+                    warnings.warn("The HMC supports a new metric {!r} in "
+                                  "metric group {!r} that is not supported "
+                                  "by metric definition file {}. Please make "
+                                  "sure your metric definition file "
+                                  "corresponds to the exporter version, and if "
+                                  "it does then open an exporter ticket to get "
+                                  "the new metric supported.".
                                   format(metric, metric_group,
                                          metrics_filename))
                     continue  # Skip this metric
@@ -1532,12 +1542,16 @@ def build_family_objects_res(
                     try:
                         metric_value = resource.properties[prop_name]
                     except KeyError:
+                        # Skip this resource metric, because the HMC/SE does
+                        # not support the corresponding property. This happens
+                        # for some condition expressionss that cannot properly
+                        # reflect the exact condition that would be needed.
                         if cpc:
                             res_str = f" for CPC '{cpc.name}'"
                         else:
                             res_str = ""
                         warnings.warn(
-                            "Skipping metric with exporter name '{}' in "
+                            "Skipping Prometheus metric '{}' in "
                             "resource metric group '{}' in metric definition "
                             "file {}, because its resource property '{}' is "
                             "not returned by the HMC{}".
@@ -1580,7 +1594,7 @@ def build_family_objects_res(
                             logging.WARNING, PRINT_ALWAYS,
                             "Not providing Prometheus metric {!r} due to error "
                             "evaluating its properties expression {!r}: {}: {}".
-                            format(exporter_name, metrics_filename, prop_expr,
+                            format(exporter_name, prop_expr,
                                    exc.__class__.__name__, exc))
                         continue
 
