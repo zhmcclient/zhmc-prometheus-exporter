@@ -17,6 +17,22 @@ Change log
 ----------
 
 
+Version 1.6.1.post1
+^^^^^^^^^^^^^^^^^^^
+
+Released: not yet
+
+**Incompatible changes:**
+
+**Deprecations:**
+
+**Bug fixes:**
+
+**Enhancements:**
+
+**Cleanup:**
+
+
 Version 1.6.1
 ^^^^^^^^^^^^^
 
