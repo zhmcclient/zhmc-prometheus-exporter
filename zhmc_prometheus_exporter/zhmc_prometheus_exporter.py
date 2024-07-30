@@ -1106,8 +1106,8 @@ def uri_to_resource(client, uri2resource, uri):
         if m is not None:
             # Resource URI is for a NIC
             partition_uri = m.group(1)
-            partition_props = client.get(partition_uri)
-            cpc_uri = partition_props.properties['parent']
+            partition_props = client.session.get(partition_uri)
+            cpc_uri = partition_props['parent']
             cpc = client.cpcs.resource_object(cpc_uri)
             partition = cpc.partitions.resource_object(partition_uri)
             nic = partition.nics.resource_object(uri)

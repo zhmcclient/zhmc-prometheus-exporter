@@ -49,6 +49,8 @@ Released: not yet
   - Fixed vulnerabilities in Prometheus server detected by testssl.sh.
     (issues #508, #509)
 
+* Fixed AttributeError when adding NICs after intial startup.
+
 **Enhancements:**
 
 * Docs: Added a section about the size of captured terminal output and log
