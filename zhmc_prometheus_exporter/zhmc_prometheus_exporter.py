@@ -29,6 +29,7 @@ from datetime import datetime
 import warnings
 import logging
 import logging.handlers
+import traceback
 import threading
 from contextlib import contextmanager
 
@@ -626,10 +627,11 @@ def eval_condition(
         # pylint: disable=eval-used
         result = eval(condition, eval_vars, None)
     except Exception as exc:  # pylint: disable=broad-exception-caught
+        tb_str = traceback.format_tb(exc.__traceback__, limit=-1)[0]
         warnings.warn("Not providing {} because its condition {!r} does not "
-                      "properly evaluate: {}: {}".
+                      "properly evaluate: {}: {}\n{}".
                       format(item_str, org_condition, exc.__class__.__name__,
-                             exc))
+                             exc, tb_str))
         return False
 
     # --- begin debug code - enable in case of issues with conditions
@@ -1037,10 +1039,11 @@ def expand_global_label_value(
         value = func(hmc_info=hmc_info)
     # pylint: disable=broad-exception-caught,broad-except
     except Exception as exc:
+        tb_str = traceback.format_tb(exc.__traceback__, limit=-1)[0]
         logprint(logging.WARNING, PRINT_ALWAYS,
                  "Not adding global label '{}' due to error when rendering "
-                 "the Jinja2 expression for the label value: {}: {}".
-                 format(label_name, exc.__class__.__name__, exc))
+                 "the Jinja2 expression for the label value: {}: {}\n{}".
+                 format(label_name, exc.__class__.__name__, exc, tb_str))
         return None
     return str(value)
 
@@ -1191,11 +1194,13 @@ def expand_group_label_value(
             adapter_port=adapter_port_func)
     # pylint: disable=broad-exception-caught,broad-except
     except Exception as exc:
+        tb_str = traceback.format_tb(exc.__traceback__, limit=-1)[0]
         logprint(logging.WARNING, PRINT_ALWAYS,
                  "Not adding label '{}' on the metrics of metric group '{}' "
                  "due to error when rendering the Jinja2 expression for the "
-                 "label value: {}: {}".
-                 format(label_name, group_name, exc.__class__.__name__, exc))
+                 "label value: {}: {}\n{}".
+                 format(label_name, group_name, exc.__class__.__name__, exc,
+                        tb_str))
         return None
     return str(value)
 
@@ -1244,12 +1249,13 @@ def expand_metric_label_value(
             adapter_port=adapter_port_func)
     # pylint: disable=broad-exception-caught,broad-except
     except Exception as exc:
+        tb_str = traceback.format_tb(exc.__traceback__, limit=-1)[0]
         logprint(logging.WARNING, PRINT_ALWAYS,
                  "Not adding label '{}' on Prometheus metric '{}' due "
                  "to error when rendering Jinja2 expression {!r} for the "
-                 "label value: {}: {}".
+                 "label value: {}: {}\n{}".
                  format(label_name, metric_exporter_name, item_value,
-                        exc.__class__.__name__, exc))
+                        exc.__class__.__name__, exc, tb_str))
         return None
     return str(value)
 
@@ -1590,12 +1596,15 @@ def build_family_objects_res(
                         # - jinja2.exceptions.UndefinedError, e.g. for missing
                         #   HMC resource properties
                         # - TypeError
+                        tb_str = traceback.format_tb(
+                            exc.__traceback__, limit=-1)[0]
                         logprint(
                             logging.WARNING, PRINT_ALWAYS,
                             "Not providing Prometheus metric {!r} due to error "
-                            "evaluating its properties expression {!r}: {}: {}".
+                            "evaluating its properties expression {!r}: "
+                            "{}: {}\n{}".
                             format(exporter_name, prop_expr,
-                                   exc.__class__.__name__, exc))
+                                   exc.__class__.__name__, exc, tb_str))
                         continue
 
                 # Skip resource properties that have a null value. An example
@@ -1780,9 +1789,10 @@ class ZHMCUsageCollector():
                     raise
                 # pylint: disable=broad-exception-caught,broad-except
                 except Exception as exc:
+                    tb_str = traceback.format_tb(exc.__traceback__, limit=-1)[0]
                     logprint(logging.ERROR, PRINT_ALWAYS,
-                             "Abandoning after exception {}: {}".
-                             format(exc.__class__.__name__, exc))
+                             "Abandoning after exception {}: {}\n{}".
+                             format(exc.__class__.__name__, exc, tb_str))
                     raise
                 break
 

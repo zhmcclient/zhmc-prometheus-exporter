@@ -56,6 +56,9 @@ Released: not yet
 
 * Docs: Improved the section about HMC certificates. (related to issue #529)
 
+* Added the original line where the exception occurred to any messages that
+  display exceptions, for easier problem determination.
+
 **Cleanup:**
 
 * Removed lengthy display of URI to resource cache when ignoring labels due to
