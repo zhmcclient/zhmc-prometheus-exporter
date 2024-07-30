@@ -541,8 +541,8 @@ def resource_str(resource_obj):
 
 
 def eval_condition(
-        condition, hmc_version, hmc_api_version, hmc_features, se_version,
-        se_features, resource_obj):
+        item_str, condition, hmc_version, hmc_api_version, hmc_features,
+        se_version, se_features, resource_obj):
     """
     Evaluate a Python expression as a condition and return a boolean indicating
     whether the condition is true.
@@ -551,6 +551,9 @@ def eval_condition(
     tuple of integers before evaluating the expression.
 
     Parameters:
+
+      item_str (string): A string that identifies that item the condition
+        is on, for use in messages.
 
       condition (string): Python expression to evaluate as a condition. The
         remaining parameters are valid variables to use in the expression.
@@ -620,9 +623,10 @@ def eval_condition(
         # pylint: disable=eval-used
         result = eval(condition, eval_vars, None)
     except Exception as exc:  # pylint: disable=broad-exception-caught
-        warnings.warn("Ignoring item because its condition {!r} does not "
+        warnings.warn("Not providing {} because its condition {!r} does not "
                       "properly evaluate: {}: {}".
-                      format(org_condition, exc.__class__.__name__, exc))
+                      format(item_str, org_condition, exc.__class__.__name__,
+                             exc))
         return False
 
     # --- begin debug code - enable in case of issues with conditions
@@ -719,6 +723,7 @@ def create_metrics_context(
         # if is optional in the metrics schema:
         if fetch and "if" in mg_dict:
             fetch = eval_condition(
+                "metric group {!r}".format(metric_group),
                 mg_dict["if"], hmc_version, hmc_api_version, hmc_features,
                 None, None, None)
         if fetch:
@@ -762,10 +767,11 @@ def create_metrics_context(
                     cpc.enable_auto_update()
                 except zhmcclient.Error as exc:
                     logprint(logging.ERROR, PRINT_ALWAYS,
-                             "Ignoring resource-based metrics for CPC {}, "
+                             "Not providing metric group {!r} for CPC {}, "
                              "because enabling auto-update for it failed "
                              "with {}: {}".
-                             format(cpc.name, exc.__class__.__name__, exc))
+                             format(metric_group, cpc.name,
+                                    exc.__class__.__name__, exc))
                     continue  # skip this CPC
                 resources[metric_group].append(cpc)
                 uri2resource[cpc.uri] = cpc
@@ -782,10 +788,10 @@ def create_metrics_context(
                         partition.enable_auto_update()
                     except zhmcclient.Error as exc:
                         logprint(logging.ERROR, PRINT_ALWAYS,
-                                 "Ignoring resource-based metrics for "
+                                 "Not providing metric group {!r} for "
                                  "partition {}.{}, because enabling "
                                  "auto-update for it failed with {}: {}".
-                                 format(cpc.name, partition.name,
+                                 format(metric_group, cpc.name, partition.name,
                                         exc.__class__.__name__, exc))
                         continue  # skip this partition
                     resources[metric_group].append(partition)
@@ -803,10 +809,10 @@ def create_metrics_context(
                         lpar.enable_auto_update()
                     except zhmcclient.Error as exc:
                         logprint(logging.ERROR, PRINT_ALWAYS,
-                                 "Ignoring resource-based metrics for "
+                                 "Not providing metric group {!r} for "
                                  "LPAR {}.{}, because enabling "
                                  "auto-update for it failed with {}: {}".
-                                 format(cpc.name, lpar.name,
+                                 format(metric_group, cpc.name, lpar.name,
                                         exc.__class__.__name__, exc))
                         continue  # skip this LPAR
                     resources[metric_group].append(lpar)
@@ -823,10 +829,11 @@ def create_metrics_context(
                     sg.enable_auto_update()
                 except zhmcclient.Error as exc:
                     logprint(logging.ERROR, PRINT_ALWAYS,
-                             "Ignoring resource-based metrics for "
+                             "Not providing metric group {!r} for "
                              "storage group {}, because enabling "
                              "auto-update for it failed with {}: {}".
-                             format(sg.name, exc.__class__.__name__, exc))
+                             format(metric_group, sg.name,
+                                    exc.__class__.__name__, exc))
                     continue  # skip this storage group
                 resources[metric_group].append(sg)
                 uri2resource[sg.uri] = sg
@@ -844,19 +851,19 @@ def create_metrics_context(
                         sv.enable_auto_update()
                     except zhmcclient.Error as exc:
                         logprint(logging.ERROR, PRINT_ALWAYS,
-                                 "Ignoring resource-based metrics for "
+                                 "Not providing metric group {!r} for "
                                  "storage volume {}.{}, because enabling "
                                  "auto-update for it failed with {}: {}".
-                                 format(sg.name, sv.name,
+                                 format(metric_group, sg.name, sv.name,
                                         exc.__class__.__name__, exc))
                         continue  # skip this storage group
                     resources[metric_group].append(sv)
                     uri2resource[sv.uri] = sv
         else:
             logprint(logging.ERROR, PRINT_ALWAYS,
-                     "Ignoring invalid 'resource' item {rp!r} in resource "
-                     "metric group {mg!r} in metrics file (Is the metrics file "
-                     "newer than the exporter program?)".
+                     "Unknown resource item {rp!r} in resource metric group "
+                     "{mg!r} in metrics file. Is the metrics file "
+                     "newer than the exporter program?".
                      format(rp=resource_path, mg=metric_group))
 
     # Fetch backing adapters of NICs, if needed
@@ -1018,8 +1025,8 @@ def expand_global_label_value(
         func = env.compile_expression(item_value)
     except jinja2.TemplateSyntaxError as exc:
         logprint(logging.WARNING, PRINT_ALWAYS,
-                 "Ignoring global label '{}' due to "
-                 "syntax error in the Jinja2 expression in its value: {}".
+                 "Not adding global label '{}' due to syntax error in the "
+                 "Jinja2 expression for the label value: {}".
                  format(label_name, exc))
         return None
     try:
@@ -1027,8 +1034,8 @@ def expand_global_label_value(
     # pylint: disable=broad-exception-caught,broad-except
     except Exception as exc:
         logprint(logging.WARNING, PRINT_ALWAYS,
-                 "Ignoring global label '{}' due to error in rendering "
-                 "the Jinja2 expression in its value: {}: {}".
+                 "Not adding global label '{}' due to error when rendering "
+                 "the Jinja2 expression for the label value: {}: {}".
                  format(label_name, exc.__class__.__name__, exc))
         return None
     return str(value)
@@ -1165,8 +1172,8 @@ def expand_group_label_value(
         func = env.compile_expression(item_value)
     except jinja2.TemplateSyntaxError as exc:
         logprint(logging.WARNING, PRINT_ALWAYS,
-                 "Ignoring label '{}' on metric group '{}' due to "
-                 "syntax error in the Jinja2 expression in the label value: "
+                 "Not adding label '{}' to metrics of metric group '{}' due to "
+                 "syntax error in the Jinja2 expression for the label value: "
                  "{}".
                  format(label_name, group_name, exc))
         return None
@@ -1181,9 +1188,9 @@ def expand_group_label_value(
     # pylint: disable=broad-exception-caught,broad-except
     except Exception as exc:
         logprint(logging.WARNING, PRINT_ALWAYS,
-                 "Ignoring label '{}' on metric group '{}' due to "
-                 "error when rendering the Jinja2 expression in the label "
-                 "value: {}: {}".
+                 "Not adding label '{}' on the metrics of metric group '{}' "
+                 "due to error when rendering the Jinja2 expression for the "
+                 "label value: {}: {}".
                  format(label_name, group_name, exc.__class__.__name__, exc))
         return None
     return str(value)
@@ -1218,10 +1225,10 @@ def expand_metric_label_value(
         func = env.compile_expression(item_value)
     except jinja2.TemplateSyntaxError as exc:
         logprint(logging.WARNING, PRINT_ALWAYS,
-                 "Ignoring label '{}' on metric with exporter name '{}' due to "
-                 "syntax error in the Jinja2 expression in the label value: "
-                 "{}".
-                 format(label_name, metric_exporter_name, exc))
+                 "Not adding label '{}' on metric with exporter name '{}' due "
+                 "to syntax error in Jinja2 expression {!r} for the label "
+                 "value: {}".
+                 format(label_name, metric_exporter_name, item_value, exc))
         return None
     try:
         value = func(
@@ -1234,9 +1241,9 @@ def expand_metric_label_value(
     # pylint: disable=broad-exception-caught,broad-except
     except Exception as exc:
         logprint(logging.WARNING, PRINT_ALWAYS,
-                 "Ignoring label '{}' on metric with exporter name '{}' due to "
-                 "error when rendering Jinja2 expression {!r} in label "
-                 "value: {}: {}".
+                 "Not adding label '{}' on metric with exporter name '{}' due "
+                 "to error when rendering Jinja2 expression {!r} for the "
+                 "label value: {}: {}".
                  format(label_name, metric_exporter_name, item_value,
                         exc.__class__.__name__, exc))
         return None
@@ -1351,14 +1358,17 @@ def build_family_objects(
                 if metric_value == -1:
                     continue
 
+                exporter_name = yaml_metric["exporter_name"]
+
                 # Skip metrics that are defined to be ignored
                 # exporter_name is required in the metrics schema:
-                if not yaml_metric["exporter_name"]:
+                if not exporter_name:
                     continue
 
                 # Skip conditional metrics that their condition not met
                 if_expr = yaml_metric.get("if", None)
                 if if_expr and not eval_condition(
+                        "Prometheus metric {!r}".format(exporter_name),
                         if_expr, hmc_version, hmc_api_version, hmc_features,
                         se_version, se_features, resource):
                     continue
@@ -1510,6 +1520,7 @@ def build_family_objects_res(
                 # Skip conditional metrics that their condition not met
                 if_expr = yaml_metric.get("if", None)
                 if if_expr and not eval_condition(
+                        "Prometheus metric {!r}".format(exporter_name),
                         if_expr, hmc_version, hmc_api_version, hmc_features,
                         se_version, se_features, resource):
                     continue
@@ -1564,9 +1575,8 @@ def build_family_objects_res(
                         # - TypeError
                         logprint(
                             logging.WARNING, PRINT_ALWAYS,
-                            "Ignoring metric with exporter name '{}' "
-                            "in metric definition file {} due to error "
-                            "evaluating properties expression {}: {}: {}".
+                            "Not providing Prometheus metric {!r} due to error "
+                            "evaluating its properties expression {!r}: {}: {}".
                             format(exporter_name, metrics_filename, prop_expr,
                                    exc.__class__.__name__, exc))
                         continue
@@ -1584,9 +1594,12 @@ def build_family_objects_res(
                 if not yaml_metric["exporter_name"]:
                     continue
 
+                exporter_name = yaml_metric["exporter_name"]
+
                 # Skip conditional metrics that their condition not met
                 if_expr = yaml_metric.get("if", None)
                 if if_expr and not eval_condition(
+                        "Prometheus metric {!r}".format(exporter_name),
                         if_expr, hmc_version, hmc_api_version, hmc_features,
                         se_version, se_features, resource):
                     continue
@@ -1822,6 +1835,7 @@ class ZHMCUsageCollector():
                     # Skip properties where fetch condition is not met
                     if_expr = prop_item.get("if", None)
                     if if_expr and not eval_condition(
+                            "metric property {!r}".format(prop_name),
                             if_expr, self.hmc_version, self.hmc_api_version,
                             self.hmc_features, None, None, None):
                         continue
@@ -1831,8 +1845,8 @@ class ZHMCUsageCollector():
                     elif fetch_class == 'logical-partition':
                         lpar_props.append(prop_name)
                     else:
-                        logprint(logging.WARNING, PRINT_ALWAYS,
-                                 "Ignoring invalid resource type {} when "
+                        logprint(logging.ERROR, PRINT_ALWAYS,
+                                 "Unknown resource type {!r} when "
                                  "fetching properties in background".
                                  format(fetch_class))
 

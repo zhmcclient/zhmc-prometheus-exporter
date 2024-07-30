@@ -66,6 +66,9 @@ Released: not yet
 
 * Minimized symbols when importing zhmc_prometheus_exporter.
 
+* Improved messages where metrics, metric groups or labels are ignored due to
+  some issue, for better clarity. (related to issue #539)
+
 **Known issues:**
 
 * See `list of open issues`_.
