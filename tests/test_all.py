@@ -28,8 +28,8 @@ import stat  # pylint: disable=wrong-import-order  # reported on Windows
 import pytest
 import zhmcclient
 import zhmcclient_mock
-import prometheus_client
 
+from zhmc_prometheus_exporter.vendor import prometheus_client
 from zhmc_prometheus_exporter import zhmc_prometheus_exporter
 
 

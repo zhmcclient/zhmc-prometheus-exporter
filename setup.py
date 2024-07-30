@@ -82,7 +82,12 @@ setuptools.setup(
     name='zhmc_prometheus_exporter',
     version=package_version,
     packages=[
-        'zhmc_prometheus_exporter'
+        'zhmc_prometheus_exporter',
+        'zhmc_prometheus_exporter.vendor',
+        'zhmc_prometheus_exporter.vendor.prometheus_client',
+        'zhmc_prometheus_exporter.vendor.prometheus_client.bridge',
+        'zhmc_prometheus_exporter.vendor.prometheus_client.openmetrics',
+        'zhmc_prometheus_exporter.vendor.prometheus_client.twisted',
     ],
     package_data={
         'zhmc_prometheus_exporter': ['schemas/*.yaml'],
