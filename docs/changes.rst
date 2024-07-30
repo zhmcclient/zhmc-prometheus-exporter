@@ -17,14 +17,10 @@ Change log
 ----------
 
 
-Version 1.6.1.dev1
-^^^^^^^^^^^^^^^^^^
+Version 1.6.1
+^^^^^^^^^^^^^
 
-Released: not yet
-
-**Incompatible changes:**
-
-**Deprecations:**
+Released: 2024-07-30
 
 **Bug fixes:**
 
@@ -40,8 +36,6 @@ Released: not yet
 
 * Fixed AttributeError when using 'storage_groups' on 'Client' object.
 
-**Enhancements:**
-
 **Cleanup:**
 
 * Removed lengthy display of URI to resource cache when ignoring labels due to
@@ -49,13 +43,6 @@ Released: not yet
 
 * Dev: Removed support for editable installs, because pip 25 will disable that.
   (issue #546)
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
-
 
 
 Version 1.6.0
