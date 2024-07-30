@@ -100,6 +100,11 @@ package_dir := $(package_name)
 package_py_files := \
     $(wildcard $(package_dir)/*.py) \
     $(wildcard $(package_dir)/*/*.py) \
+    $(wildcard $(package_dir)/*/*/*.py) \
+    $(wildcard $(package_dir)/*/*/*/*.py) \
+
+src_py_files := \
+    $(wildcard $(package_dir)/*.py) \
 
 test_dir := tests
 test_py_files := \
@@ -237,14 +242,14 @@ develop: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done
 .PHONY: check
 check: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: Performing flake8 checks with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
-	flake8 --config .flake8 $(package_py_files) $(test_py_files) setup.py $(doc_dir)/conf.py
+	flake8 --config .flake8 $(src_py_files) $(test_py_files) setup.py $(doc_dir)/conf.py
 	@echo "Makefile: Done performing flake8 checks"
 	@echo "Makefile: $@ done."
 
 .PHONY: pylint
 pylint: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: Performing pylint checks with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
-	pylint --rcfile=.pylintrc --disable=fixme $(package_py_files) $(test_py_files) setup.py $(doc_dir)/conf.py
+	pylint --rcfile=.pylintrc --disable=fixme $(src_py_files) $(test_py_files) setup.py $(doc_dir)/conf.py
 	@echo "Makefile: Done performing pylint checks"
 	@echo "Makefile: $@ done."
 

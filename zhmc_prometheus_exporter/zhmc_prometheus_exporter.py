@@ -37,10 +37,11 @@ import urllib3
 import yaml
 import jsonschema
 import zhmcclient
-from prometheus_client import start_http_server
-from prometheus_client.core import GaugeMetricFamily, CounterMetricFamily, \
-    REGISTRY
 
+from .vendor.prometheus_client import start_http_server
+from .vendor.prometheus_client.core import GaugeMetricFamily, \
+    CounterMetricFamily, REGISTRY
+from .vendor import prometheus_client_version
 from ._version import __version__
 
 __all__ = []
@@ -273,8 +274,10 @@ def print_version():
     """
     # pylint: disable=no-member
     print("zhmc_prometheus_exporter version: {}\n"
-          "zhmcclient version: {}".
-          format(__version__, zhmcclient.__version__))
+          "zhmcclient version: {}\n"
+          "prometheus_client (vendored) version: {}".
+          format(__version__, zhmcclient.__version__,
+                 prometheus_client_version))
 
 
 def help_creds():
