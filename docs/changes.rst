@@ -197,7 +197,7 @@ will also work with the prior version of the file (but not vice versa).
   file from the git commit history. (issue #442)
 
 * The safety run for all dependencies now must succeed when the test workflow
-  is run for a release (i.e. branch name 'release_...').
+  is run for a release (i.e. branch name 'release\_...').
 
 * When the HMC userid cannot log on to the HMC because the password is invalid
   or expired, or because the maximum number of sessions has been reached, the

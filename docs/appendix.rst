@@ -16,8 +16,6 @@ Appendix
 ========
 
 
-.. _`Troubleshooting`:
-
 Troubleshooting
 ---------------
 
