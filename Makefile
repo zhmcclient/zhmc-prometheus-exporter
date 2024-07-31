@@ -122,6 +122,7 @@ dist_included_files := \
     LICENSE \
     README.md \
     requirements.txt \
+    $(wildcard $(package_dir)/schemas/*.yaml) \
     $(package_py_files) \
 
 doc_dir := docs
@@ -129,9 +130,9 @@ doc_build_dir := build_docs
 doc_build_file := $(doc_build_dir)/index.html
 doc_dependent_files := \
     $(wildcard $(doc_dir)/*.*) \
-		$(wildcard $(doc_dir)/*/*.*) \
-		examples/metrics.yaml \
-		examples/hmccreds.yaml \
+    $(wildcard $(doc_dir)/*/*.*) \
+    examples/metrics.yaml \
+    examples/hmccreds.yaml \
     $(package_py_files) \
 
 # Directory for .done files
@@ -367,7 +368,7 @@ $(done_dir)/install_base_$(pymn)_$(PACKAGE_LEVEL).done: minimum-constraints.txt 
 	@echo "Makefile: Done installing base packages"
 	echo "done" >$@
 
-$(done_dir)/install_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/install_base_$(pymn)_$(PACKAGE_LEVEL).done requirements.txt minimum-constraints.txt minimum-constraints-install.txt setup.py $(package_py_files)
+$(done_dir)/install_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/install_base_$(pymn)_$(PACKAGE_LEVEL).done requirements.txt minimum-constraints.txt minimum-constraints-install.txt setup.py $(dist_included_files)
 	@echo "Makefile: Installing package and its prerequisites with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
 	-$(call RM_FUNC,$@)
 	$(PYTHON_CMD) -m pip install $(pip_level_opts) .
