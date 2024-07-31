@@ -1624,7 +1624,7 @@ fetch_properties:
         if: "hmc_version >= (2,15)"  # Actually SE 2.15.0
       - property_name: number-reserved-ifl-processors
         if: "hmc_version >= (2,15)"  # Actually SE 2.15.0
-      - property_name: absolute-ifl-capping'
+      - property_name: absolute-ifl-capping
         if: "hmc_version < (2,16)"
       - property_name: initial-ifl-processing-weight
         if: "hmc_version < (2,16)"
