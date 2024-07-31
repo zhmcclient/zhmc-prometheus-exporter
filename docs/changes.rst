@@ -30,6 +30,11 @@ Released: not yet
 
 **Bug fixes:**
 
+* Fixed a bug in the metric definition file that lead to
+  HTTP error 400,14 "'absolute-ifl-capping'' is not a valid value for the
+  corresponding query parm". Please download the fixed metric definition file
+  from the repo. (issue #564)
+
 * Addressed safety issues up to 2024-07-21.
 
 * In the Github Actions test workflow for Python 3.6 and 3.7, changed
