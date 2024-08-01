@@ -17,16 +17,12 @@ Change log
 ----------
 
 
-Version 1.7.0.dev1
-^^^^^^^^^^^^^^^^^^
+Version 1.7.0
+^^^^^^^^^^^^^
 
-This version contains all fixes up to version 1.6.x.
+This version contains all fixes up to version 1.6.1.
 
-Released: not yet
-
-**Incompatible changes:**
-
-**Deprecations:**
+Released: 2024-08-01
 
 **Bug fixes:**
 
@@ -78,12 +74,6 @@ Released: not yet
 
 * Improved messages where metrics, metric groups or labels are ignored due to
   some issue, for better clarity. (related to issue #539)
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 1.6.0
