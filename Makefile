@@ -139,7 +139,10 @@ doc_dependent_files := \
 done_dir := done
 
 # Packages whose dependencies are checked using pip-missing-reqs
-check_reqs_packages := pip_check_reqs pipdeptree build pytest coverage coveralls flake8 pylint twine safety sphinx
+check_reqs_packages := pip_check_reqs pipdeptree build pytest coverage coveralls flake8 ruff pylint twine safety sphinx
+
+# Ruff config file
+ruff_rc_file := .ruff.toml
 
 # Safety policy file
 safety_install_policy_file := .safety-policy-install.yml
@@ -174,6 +177,7 @@ help:
 	@echo "  develop    - Install prerequisites for development"
 	@echo "  check_reqs - Perform missing dependency checks"
 	@echo "  check      - Perform flake8 checks"
+	@echo "  ruff       - Perform ruff checks (an alternate lint tool)"
 	@echo "  pylint     - Perform pylint checks"
 	@echo "  safety     - Run safety for install and all"
 	@echo "  test       - Perform unit tests (adds to coverage results)"
@@ -239,6 +243,13 @@ check: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: Done performing flake8 checks"
 	@echo "Makefile: $@ done."
 
+.PHONY: ruff
+ruff: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done
+	@echo "Makefile: Performing ruff checks with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
+	ruff check --unsafe-fixes --config $(ruff_rc_file) $(src_py_files) $(test_py_files) setup.py $(doc_dir)/conf.py
+	@echo "Makefile: Done performing ruff checks"
+	@echo "Makefile: $@ done."
+
 .PHONY: pylint
 pylint: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: Performing pylint checks with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
@@ -298,7 +309,7 @@ builddoc: _check_version $(doc_build_file)
 	@echo "Makefile: $@ done."
 
 .PHONY: all
-all: install develop check_reqs check pylint test build builddoc check_reqs
+all: install develop check_reqs check ruff pylint test build builddoc check_reqs
 	@echo "Makefile: $@ done."
 
 .PHONY: all
@@ -335,6 +346,7 @@ clean:
 	-$(call RM_R_FUNC,tmp_*)
 	-$(call RM_FUNC,.coverage AUTHORS ChangeLog)
 	-$(call RMDIR_R_FUNC,__pycache__)
+	-$(call RMDIR_R_FUNC,.ruff_cache)
 	-$(call RMDIR_FUNC,build $(package_name).egg-info .pytest_cache)
 	@echo "Makefile: $@ done."
 
