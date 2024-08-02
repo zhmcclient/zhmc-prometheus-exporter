@@ -36,9 +36,14 @@ Released: not yet
   definition file is now part of the Python distribution archive and there
   is no need anymore for users to edit it. (related to issue #418)
 
+* Dropped support for Python 3.6 and 3.7. The minimum Python version is now
+  3.8. (issue #570)
+
 **Deprecations:**
 
 **Bug fixes:**
+
+* Increased minimum version of stomp.py to 8.1.1 to pick up fixes.
 
 **Enhancements:**
 
