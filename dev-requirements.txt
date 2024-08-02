@@ -31,6 +31,9 @@ typer>=0.12.0
 typer-cli>=0.12.0
 typer-slim>=0.12.0
 
+# Bandit checker
+bandit>=1.7.8
+
 # Unit test (imports into testcases):
 pytest>=6.2.5
 importlib-metadata>=4.8.3
