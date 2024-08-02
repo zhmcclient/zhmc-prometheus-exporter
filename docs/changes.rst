@@ -45,6 +45,9 @@ Released: not yet
 
 **Enhancements:**
 
+* Added support for running the 'ruff' checker via "make ruff" and added that
+  to the test workflow. (issue #522)
+
 **Cleanup:**
 
 **Known issues:**
