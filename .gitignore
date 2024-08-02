@@ -21,6 +21,9 @@ __pycache__/
 /htmlcov/
 /.coverage
 
+# Generated version file
+/zhmc_prometheus_exporter/_version_scm.py
+
 # Make build_doc
 /build_docs/
 

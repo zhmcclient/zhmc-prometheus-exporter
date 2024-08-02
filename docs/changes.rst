@@ -62,6 +62,10 @@ Released: not yet
   build to copy just the installed Python packages. This reduced the image file
   size with Docker on Ubuntu from 256 MB to 73 MB.
 
+* Dev: Migrated from setup.py to pyproject.toml with setuptools as build backend.
+  This provides for automatic determination of the package version without
+  having to edit a version file. (issue #520)
+
 **Cleanup:**
 
 **Known issues:**

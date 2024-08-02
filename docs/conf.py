@@ -11,28 +11,12 @@
 Config file for Sphinx.
 """
 
-import os
+import setuptools_scm
 
 
 def setup(app):
     """Setup for the module"""
     app.add_css_file('my_theme.css')
-
-
-def get_version(version_file):
-    """
-    Execute the specified version file and return the value of the __version__
-    global variable that is set in the version file.
-
-    Note: Make sure the version file does not depend on any packages in the
-    requirements list of this package (otherwise it cannot be executed in
-    a fresh Python environment).
-    """
-    with open(version_file, encoding='utf-8') as fp:
-        version_source = fp.read()
-    _globals = {}
-    exec(version_source, _globals)  # nosec: B102 pylint: disable=exec-used
-    return _globals['__version__']
 
 
 # -- Path setup --------------------------------------------------------------
@@ -50,14 +34,12 @@ project = 'IBM Z HMC Prometheus Exporter'
 copyright = '2018, IBM Corp'  # pylint: disable=redefined-builtin
 author = 'Jakob Naucke'
 
-# The short X.Y version.
-# Note: We use the full version in both cases (e.g. 'M.N.U' or 'M.N.U.dev0').
-version = get_version(
-    os.path.join('..', 'zhmc_prometheus_exporter', '_version.py'))
-
 # The full version, including alpha/beta/rc tags
-release = version
+release = setuptools_scm.get_version(root='..', relative_to=__file__)
 
+# The short M.N.U version, displayed in the docs.
+# We also use the full version for that.
+version = release
 
 # -- General configuration ---------------------------------------------------
 
