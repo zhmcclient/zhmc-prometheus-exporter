@@ -46,7 +46,7 @@ Supported environments
 ----------------------
 
 * Operating systems: Linux, macOS, Windows
-* Python versions: 3.6 and higher
+* Python versions: 3.8 and higher
 * HMC versions: 2.11.1 and higher
 
 Quickstart
