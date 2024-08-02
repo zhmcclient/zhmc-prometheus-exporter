@@ -48,6 +48,10 @@ Released: not yet
 * Added support for running the 'ruff' checker via "make ruff" and added that
   to the test workflow. (issue #522)
 
+* Added support for running the 'bandit' checker with a new make target
+  'bandit', and added that to the GitHub Actions test workflow.
+  Adjusted the code in order to pass the bandit check. (issue #523)
+
 **Cleanup:**
 
 **Known issues:**

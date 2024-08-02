@@ -629,7 +629,7 @@ def eval_condition(
 
     try:
         # pylint: disable=eval-used
-        result = eval(condition, eval_vars, None)
+        result = eval(condition, eval_vars, None)  # nosec: B307
     except Exception as exc:  # pylint: disable=broad-exception-caught
         tb_str = traceback.format_tb(exc.__traceback__, limit=-1)[0]
         warnings.warn(
@@ -1281,7 +1281,7 @@ def build_family_objects(
       family_name:
         GaugeMetricFamily object
     """
-    env = jinja2.Environment()
+    env = jinja2.Environment(autoescape=True)
     client = zhmcclient.Client(session)
 
     family_objects = {}
@@ -1447,7 +1447,7 @@ def build_family_objects_res(
       family_name:
         GaugeMetricFamily object
     """
-    env = jinja2.Environment()
+    env = jinja2.Environment(autoescape=True)
     client = zhmcclient.Client(session)
 
     family_objects = {}
@@ -2297,7 +2297,7 @@ def main():
                  f"read: {RETRY_TIMEOUT_CONFIG.read_timeout} sec / "
                  f"{RETRY_TIMEOUT_CONFIG.read_retries} retries.")
 
-        env = jinja2.Environment()
+        env = jinja2.Environment(autoescape=True)
 
         session = create_session(config_dict, config_filename)
 

@@ -139,7 +139,7 @@ doc_dependent_files := \
 done_dir := done
 
 # Packages whose dependencies are checked using pip-missing-reqs
-check_reqs_packages := pip_check_reqs pipdeptree build pytest coverage coveralls flake8 ruff pylint twine safety sphinx
+check_reqs_packages := pip_check_reqs pipdeptree build pytest coverage coveralls flake8 ruff pylint twine safety bandit sphinx
 
 # Ruff config file
 ruff_rc_file := .ruff.toml
@@ -147,6 +147,9 @@ ruff_rc_file := .ruff.toml
 # Safety policy file
 safety_install_policy_file := .safety-policy-install.yml
 safety_all_policy_file := .safety-policy-all.yml
+
+# Bandit config file
+bandit_rc_file := .bandit.toml
 
 ifdef TESTCASES
   pytest_opts := $(TESTOPTS) -k "$(TESTCASES)"
@@ -180,6 +183,7 @@ help:
 	@echo "  ruff       - Perform ruff checks (an alternate lint tool)"
 	@echo "  pylint     - Perform pylint checks"
 	@echo "  safety     - Run safety for install and all"
+	@echo "  bandit     - Run bandit checker"
 	@echo "  test       - Perform unit tests (adds to coverage results)"
 	@echo "  build      - Build the distribution files in $(dist_dir)"
 	@echo "  builddoc   - Build the documentation in $(doc_build_dir)"
@@ -261,6 +265,10 @@ pylint: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done
 safety: $(done_dir)/safety_all_$(pymn)_$(PACKAGE_LEVEL).done $(done_dir)/safety_install_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: $@ done."
 
+.PHONY: bandit
+bandit: $(done_dir)/bandit_$(pymn)_$(PACKAGE_LEVEL).done
+	@echo "Makefile: $@ done."
+
 .PHONY: check_reqs
 check_reqs: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done minimum-constraints.txt minimum-constraints-install.txt requirements.txt
 	@echo "Makefile: Checking missing dependencies of this package"
@@ -292,6 +300,13 @@ $(done_dir)/safety_install_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/develop_$(
 	echo "done" >$@
 	@echo "Makefile: Done running Safety for install packages"
 
+$(done_dir)/bandit_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done Makefile $(bandit_rc_file) $(src_py_files)
+	@echo "Makefile: Running Bandit"
+	-$(call RM_FUNC,$@)
+	bandit -c $(bandit_rc_file) -l -r $(package_dir) -x $(package_dir)/vendor
+	echo "done" >$@
+	@echo "Makefile: Done running Bandit"
+
 .PHONY: test
 test: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done $(pytest_cov_files)
 	@echo "Makefile: Performing unit tests and coverage with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
@@ -309,7 +324,7 @@ builddoc: _check_version $(doc_build_file)
 	@echo "Makefile: $@ done."
 
 .PHONY: all
-all: install develop check_reqs check ruff pylint test build builddoc check_reqs
+all: install develop check_reqs check ruff pylint test build builddoc check_reqs safety bandit
 	@echo "Makefile: $@ done."
 
 .PHONY: all
