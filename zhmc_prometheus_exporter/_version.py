@@ -1,4 +1,4 @@
-# Copyright 2020 IBM Corp. All Rights Reserved.
+# Copyright 2020,2024 IBM Corp. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,16 +13,25 @@
 # limitations under the License.
 
 """
-Definition of the package version, and check for supported Python versions.
+Definition of the package version.
 """
 
-__all__ = ['__version__']
+from ._version_scm import version, version_tuple
 
-#: The full version of this package including any development levels, as a
-#: :term:`string`.
-#:
-#: Possible formats for this version string are:
-#:
-#: * "M.N.P.dev1": A not yet released version M.N.P
-#: * "M.N.P": A released version M.N.P
-__version__ = '2.0.0.dev1'
+__all__ = ['__version__', '__version_tuple__']
+
+# The full version of this package including any development levels, as a
+# string.
+#
+# Possible formats for this version string are:
+# * "M.N.Pa1.dev7+g1234567": A not yet released version M.N.P
+# * "M.N.P": A released version M.N.P
+__version__ = version
+
+# The full version of this package including any development levels, as a
+# tuple of version items, converted to integer where possible.
+#
+# Possible formats for this version tuple are:
+# * (M, N, P, 'a1', 'dev7', 'g1234567'): A not yet released version M.N.P
+# * (M, N, P): A released version M.N.P
+__version_tuple__ = version_tuple

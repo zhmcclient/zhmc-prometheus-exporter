@@ -212,19 +212,7 @@ local clone of the zhmc-prometheus-exporter Git repo.
         git pull
         git checkout -b release_${MNU}
 
-4.  Edit the version file:
-
-    .. code-block:: sh
-
-        vi zhmc_prometheus_exporter/_version.py
-
-    and set the ``__version__`` variable to the version that is being released:
-
-    .. code-block:: python
-
-        __version__ = 'M.N.U'
-
-5.  Edit the change log:
+4.  Edit the change log:
 
     .. code-block:: sh
 
@@ -242,20 +230,20 @@ local clone of the zhmc-prometheus-exporter Git repo.
       add text for any known issues you want users to know about.
     * Remove all empty list items.
 
-6.  Update the authors:
+5.  Update the authors:
 
     .. code-block:: sh
 
         make authors
 
-7.  Commit your changes and push the topic branch to the remote repo:
+6.  Commit your changes and push the topic branch to the remote repo:
 
     .. code-block:: sh
 
         git commit -asm "Release ${MNU}"
         git push --set-upstream origin release_${MNU}
 
-8.  On GitHub, create a Pull Request for branch ``release_M.N.U``.
+7.  On GitHub, create a Pull Request for branch ``release_M.N.U``.
 
     Important: When creating Pull Requests, GitHub by default targets the
     ``master`` branch. When releasing based on a stable branch, you need to
@@ -270,19 +258,19 @@ local clone of the zhmc-prometheus-exporter Git repo.
     tests for all defined environments, since it discovers by the branch name
     that this is a PR for a release.
 
-9.  On GitHub, once the checks for that Pull Request have succeeded, merge the
+8.  On GitHub, once the checks for that Pull Request have succeeded, merge the
     Pull Request (no review is needed). This automatically deletes the branch
     on GitHub.
 
     If the PR did not succeed, fix the issues.
 
-10. On GitHub, close milestone ``M.N.U``.
+9.  On GitHub, close milestone ``M.N.U``.
 
     Verify that the milestone has no open items anymore. If it does have open
     items, investigate why and fix. If the milestone does not have open items
     anymore, close the milestone.
 
-11. Publish the package
+10. Publish the package
 
     .. code-block:: sh
 
@@ -298,7 +286,7 @@ local clone of the zhmc-prometheus-exporter Git repo.
     Github, and finally creates a new stable branch on Github if the master
     branch was released.
 
-12. Verify the publishing
+11. Verify the publishing
 
     Wait for the "publish" workflow for the new release to have completed:
     https://github.com/zhmcclient/zhmc-prometheus-exporter/actions/workflows/publish.yml
@@ -386,18 +374,17 @@ local clone of the zhmc-prometheus-exporter Git repo.
         git pull
         git checkout -b start_${MNU}
 
-3.  Edit the version file:
+3.  Add an initial Git tag for the new version
+
+    Note: An initial tag is necessary because the automatic version calculation
+    done by setuptools-scm uses the most recent tag in the commit history and
+    increases the least significant part of the version by one, without
+    providing any controls to change that behavior.
 
     .. code-block:: sh
 
-        vi zhmc_prometheus_exporter/_version.py
-
-    and update the version to a draft version of the version that is being
-    started:
-
-    .. code-block:: python
-
-        __version__ = 'M.N.U.dev1'
+        git tag ${MNU}a0
+        git push --tags
 
 4.  Edit the change log:
 
