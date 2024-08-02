@@ -38,6 +38,3 @@ PyYAML>=5.3.1,!=5.4.0,!=5.4.1,!=6.0.0; python_version >= '3.12'
 # pyrsistent 0.15.0 fixes import errors on Python>=3.10, but only 0.18.1 has
 #   Python 3.10 support (accordong to the change log).
 pyrsistent>=0.18.1
-
-# Pick up fixes
-stomp.py>=8.1.1

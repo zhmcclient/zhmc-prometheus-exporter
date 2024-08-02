@@ -58,8 +58,7 @@ def main():
     args = parse_args()
 
     password = getpass.getpass(
-        prompt="Password for user {} on HMC {}: ".
-        format(args.userid, args.host))
+        prompt=f"Password for user {args.userid} on HMC {args.host}: ")
     session = zhmcclient.Session(
         host=args.host, userid=args.userid, password=password,
         verify_cert=not args.no_verify)

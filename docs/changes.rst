@@ -43,8 +43,6 @@ Released: not yet
 
 **Bug fixes:**
 
-* Increased minimum version of stomp.py to 8.1.1 to pick up fixes.
-
 **Enhancements:**
 
 **Cleanup:**
