@@ -177,27 +177,25 @@ def zhmc_exceptions(session, config_filename):
         yield
     except zhmcclient.ConnectionError as exc:
         new_exc = ConnectionError(
-            "Connection error using IP address {} defined in exporter config "
-            "file {}: {}".format(session.host, config_filename, exc))
+            f"Connection error using IP address {session.host} defined in "
+            f"exporter config file {config_filename}: {exc}")
         new_exc.__cause__ = None
         raise new_exc  # ConnectionError
     except zhmcclient.ClientAuthError as exc:
         new_exc = AuthError(
-            "Client authentication error for the HMC at {h} using "
-            "userid '{u}' defined in exporter config file {f}: {m}".
-            format(h=session.host, u=session.userid, f=config_filename,
-                   m=exc))
+            f"Client authentication error for the HMC at {session.host} using "
+            f"userid '{session.userid}' defined in exporter config file "
+            f"{config_filename}: {exc}")
         new_exc.__cause__ = None
         raise new_exc  # AuthError
     except zhmcclient.ServerAuthError as exc:
         http_exc = exc.details  # zhmcclient.HTTPError
         new_exc = AuthError(
-            "Authentication error returned from the HMC at {h} using "
-            "userid '{u}' defined in exporter config file {f}: {m} "
-            "(HMC operation {hm} {hu}, HTTP status {hs}.{hr})".
-            format(h=session.host, u=session.userid, f=config_filename,
-                   m=exc, hm=http_exc.request_method, hu=http_exc.request_uri,
-                   hs=http_exc.http_status, hr=http_exc.reason))
+            f"Authentication error returned from the HMC at {session.host} "
+            f"using userid '{session.userid}' defined in exporter config file "
+            f"{config_filename}: {exc} "
+            f"(HMC operation {http_exc.request_method} {http_exc.request_uri}, "
+            f"HTTP status {http_exc.http_status}.{http_exc.reason})")
         new_exc.__cause__ = None
         raise new_exc  # AuthError
     except OSError as exc:
@@ -221,7 +219,7 @@ def parse_args(args):
                         default=DEFAULT_CONFIG_FILE,
                         help="path name of exporter config file. "
                         "Use --help-config for details. "
-                        "Default: {}".format(DEFAULT_CONFIG_FILE))
+                        f"Default: {DEFAULT_CONFIG_FILE}")
     parser.add_argument("-p", metavar="PORT",
                         default=None,
                         help="port for exporting. Default: prometheus.port in "
@@ -266,11 +264,9 @@ def print_version():
     Print the version of this program and the zhmcclient library.
     """
     # pylint: disable=no-member
-    print("zhmc_prometheus_exporter version: {}\n"
-          "zhmcclient version: {}\n"
-          "prometheus_client (vendored) version: {}".
-          format(__version__, zhmcclient.__version__,
-                 prometheus_client_version))
+    print(f"zhmc_prometheus_exporter version: {__version__}\n"
+          f"zhmcclient version: {zhmcclient.__version__}\n"
+          f"prometheus_client (vendored) version: {prometheus_client_version}")
 
 
 def help_config():
@@ -408,20 +404,17 @@ def parse_yaml_file(yamlfile, name, schemafilename=None):
             yaml_obj = yaml.safe_load(fp)
     except FileNotFoundError as exc:
         new_exc = ImproperExit(
-            "Cannot find {} {}: {}".
-            format(name, yamlfile, exc))
+            f"Cannot find {name} {yamlfile}: {exc}")
         new_exc.__cause__ = None  # pylint: disable=invalid-name
         raise new_exc
     except PermissionError as exc:
         new_exc = ImproperExit(
-            "Permission error reading {} {}: {}".
-            format(name, yamlfile, exc))
+            f"Permission error reading {name} {yamlfile}: {exc}")
         new_exc.__cause__ = None  # pylint: disable=invalid-name
         raise new_exc
     except yaml.YAMLError as exc:
         new_exc = ImproperExit(
-            "YAML error reading {} {}: {}".
-            format(name, yamlfile, exc))
+            f"YAML error reading {name} {yamlfile}: {exc}")
         new_exc.__cause__ = None  # pylint: disable=invalid-name
         raise new_exc
 
@@ -434,20 +427,19 @@ def parse_yaml_file(yamlfile, name, schemafilename=None):
                 schema = yaml.safe_load(fp)
         except FileNotFoundError as exc:
             new_exc = ImproperExit(
-                "Internal error: Cannot find schema file {}: {}".
-                format(schemafile, exc))
+                f"Internal error: Cannot find schema file {schemafile}: {exc}")
             new_exc.__cause__ = None  # pylint: disable=invalid-name
             raise new_exc
         except PermissionError as exc:
             new_exc = ImproperExit(
-                "Internal error: Permission error reading schema file {}: {}".
-                format(schemafile, exc))
+                "Internal error: Permission error reading schema file "
+                f"{schemafile}: {exc}")
             new_exc.__cause__ = None  # pylint: disable=invalid-name
             raise new_exc
         except yaml.YAMLError as exc:
             new_exc = ImproperExit(
-                "Internal error: YAML error reading schema file {}: {}".
-                format(schemafile, exc))
+                "Internal error: YAML error reading schema file "
+                f"{schemafile}: {exc}")
             new_exc.__cause__ = None  # pylint: disable=invalid-name
             raise new_exc
 
@@ -455,15 +447,15 @@ def parse_yaml_file(yamlfile, name, schemafilename=None):
             jsonschema.validate(yaml_obj, schema)
         except jsonschema.exceptions.SchemaError as exc:
             new_exc = ImproperExit(
-                "Internal error: Invalid JSON schema file {}: {}".
-                format(schemafile, exc))
+                f"Internal error: Invalid JSON schema file {schemafile}: "
+                f"{exc}")
             new_exc.__cause__ = None
             raise new_exc
         except jsonschema.exceptions.ValidationError as exc:
             element_str = json_path_str(exc.absolute_path)
             new_exc = ImproperExit(
-                "Validation of {} {} failed on {}: {}".
-                format(name, yamlfile, element_str, exc.message))
+                f"Validation of {name} {yamlfile} failed on {element_str}: "
+                f"{exc.message}")
             new_exc.__cause__ = None
             raise new_exc
 
@@ -536,7 +528,7 @@ def version_str(version_tuple):
 
 
 MNU_PATTERN = r'\d+(?:\.\d+(?:\.\d+)?)?'  # M.N.U
-COND_PATTERN = '^(.*?)("{mnu}"|\'{mnu}\')(.*)$'.format(mnu=MNU_PATTERN)
+COND_PATTERN = f'^(.*?)("{MNU_PATTERN}"|\'{MNU_PATTERN}\')(.*)$'
 COND_PATTERN = re.compile(COND_PATTERN)
 
 
@@ -640,14 +632,14 @@ def eval_condition(
         result = eval(condition, eval_vars, None)
     except Exception as exc:  # pylint: disable=broad-exception-caught
         tb_str = traceback.format_tb(exc.__traceback__, limit=-1)[0]
-        warnings.warn("Not providing {} because its condition {!r} does not "
-                      "properly evaluate: {}: {}\n{}".
-                      format(item_str, org_condition, exc.__class__.__name__,
-                             exc, tb_str))
+        warnings.warn(
+            f"Not providing {item_str} because its condition "
+            f"{org_condition!r} does not properly evaluate: "
+            f"{exc.__class__.__name__}: {exc}\n{tb_str}")
         return False
 
     # --- begin debug code - enable in case of issues with conditions
-    # print("Debug: Result of 'if' condition: {r!r}".format(r=result))
+    # print(f"Debug: Result of 'if' condition: {result!r}")
     # --- end debug code
 
     return result
@@ -672,9 +664,9 @@ def create_session(config_dict, config_filename):
     hmc_dict = config_dict["hmc"]
 
     logprint(logging.INFO, PRINT_V,
-             "HMC host: {}".format(hmc_dict["host"]))
+             f"HMC host: {hmc_dict['host']}")
     logprint(logging.INFO, PRINT_V,
-             "HMC userid: {}".format(hmc_dict["userid"]))
+             f"HMC userid: {hmc_dict['userid']}")
 
     verify_cert = hmc_dict.get("verify_cert", True)
     if isinstance(verify_cert, str):
@@ -742,7 +734,7 @@ def create_metrics_context(
         # if is optional in the metrics schema:
         if export and "if" in mg_dict:
             export = eval_condition(
-                "metric group {!r}".format(metric_group),
+                f"metric group {metric_group!r}",
                 mg_dict["if"], hmc_version, hmc_api_version, hmc_features,
                 None, None, None)
         if export:
@@ -766,14 +758,13 @@ def create_metrics_context(
     for metric_group in exported_res_metric_groups:
         logprint(logging.INFO, PRINT_V,
                  "Retrieving resources from the HMC for resource metric "
-                 "group {}".format(metric_group))
+                 f"group {metric_group}")
         try:
             resource_path = yaml_metric_groups[metric_group]['resource']
         except KeyError:
             new_exc = ImproperExit(
-                "Missing 'resource' item in resource metric group {} in the "
-                "metric definition file".
-                format(metric_group))
+                "Missing 'resource' item in resource metric group "
+                f"{metric_group} in the metric definition file")
             new_exc.__cause__ = None  # pylint: disable=invalid-name
             raise new_exc
         if resource_path == 'cpc':
@@ -786,11 +777,10 @@ def create_metrics_context(
                     cpc.enable_auto_update()
                 except zhmcclient.Error as exc:
                     logprint(logging.ERROR, PRINT_ALWAYS,
-                             "Not providing metric group {!r} for CPC {}, "
-                             "because enabling auto-update for it failed "
-                             "with {}: {}".
-                             format(metric_group, cpc.name,
-                                    exc.__class__.__name__, exc))
+                             f"Not providing metric group {metric_group!r} "
+                             f"for CPC {cpc.name}, because enabling "
+                             "auto-update for it failed with "
+                             f"{exc.__class__.__name__}: {exc}")
                     continue  # skip this CPC
                 resources[metric_group].append(cpc)
                 uri2resource[cpc.uri] = cpc
@@ -801,17 +791,16 @@ def create_metrics_context(
                 partitions = cpc.partitions.list()
                 for partition in partitions:
                     logprint(logging.INFO, PRINT_V,
-                             "Enabling auto-update for partition {}.{}".
-                             format(cpc.name, partition.name))
+                             "Enabling auto-update for partition "
+                             f"{cpc.name}.{partition.name}")
                     try:
                         partition.enable_auto_update()
                     except zhmcclient.Error as exc:
                         logprint(logging.ERROR, PRINT_ALWAYS,
-                                 "Not providing metric group {!r} for "
-                                 "partition {}.{}, because enabling "
-                                 "auto-update for it failed with {}: {}".
-                                 format(metric_group, cpc.name, partition.name,
-                                        exc.__class__.__name__, exc))
+                                 f"Not providing metric group {metric_group!r} "
+                                 f"for partition {cpc.name}.{partition.name}, "
+                                 "because enabling auto-update for it failed "
+                                 f"with {exc.__class__.__name__}: {exc}")
                         continue  # skip this partition
                     resources[metric_group].append(partition)
                     uri2resource[partition.uri] = partition
@@ -822,17 +811,16 @@ def create_metrics_context(
                 lpars = cpc.lpars.list()
                 for lpar in lpars:
                     logprint(logging.INFO, PRINT_V,
-                             "Enabling auto-update for LPAR {}.{}".
-                             format(cpc.name, lpar.name))
+                             "Enabling auto-update for LPAR "
+                             f"{cpc.name}.{lpar.name}")
                     try:
                         lpar.enable_auto_update()
                     except zhmcclient.Error as exc:
                         logprint(logging.ERROR, PRINT_ALWAYS,
-                                 "Not providing metric group {!r} for "
-                                 "LPAR {}.{}, because enabling "
-                                 "auto-update for it failed with {}: {}".
-                                 format(metric_group, cpc.name, lpar.name,
-                                        exc.__class__.__name__, exc))
+                                 f"Not providing metric group {metric_group!r} "
+                                 f"for LPAR {cpc.name}.{lpar.name}, because "
+                                 "enabling auto-update for it failed with "
+                                 f"{exc.__class__.__name__}: {exc}")
                         continue  # skip this LPAR
                     resources[metric_group].append(lpar)
                     uri2resource[lpar.uri] = lpar
@@ -842,17 +830,15 @@ def create_metrics_context(
             storage_groups = console.storage_groups.list()
             for sg in storage_groups:
                 logprint(logging.INFO, PRINT_V,
-                         "Enabling auto-update for storage group {}".
-                         format(sg.name))
+                         f"Enabling auto-update for storage group {sg.name}")
                 try:
                     sg.enable_auto_update()
                 except zhmcclient.Error as exc:
                     logprint(logging.ERROR, PRINT_ALWAYS,
-                             "Not providing metric group {!r} for "
-                             "storage group {}, because enabling "
-                             "auto-update for it failed with {}: {}".
-                             format(metric_group, sg.name,
-                                    exc.__class__.__name__, exc))
+                             f"Not providing metric group {metric_group!r} for "
+                             f"storage group {sg.name}, because enabling "
+                             "auto-update for it failed with "
+                             f"{exc.__class__.__name__}: {exc}")
                     continue  # skip this storage group
                 resources[metric_group].append(sg)
                 uri2resource[sg.uri] = sg
@@ -864,27 +850,25 @@ def create_metrics_context(
                 storage_volumes = sg.storage_volumes.list()
                 for sv in storage_volumes:
                     logprint(logging.INFO, PRINT_V,
-                             "Enabling auto-update for storage volume {}.{}".
-                             format(sg.name, sv.name))
+                             "Enabling auto-update for storage volume "
+                             f"{sg.name}.{sv.name}")
                     try:
                         sv.enable_auto_update()
                     except zhmcclient.Error as exc:
                         logprint(logging.ERROR, PRINT_ALWAYS,
-                                 "Not providing metric group {!r} for "
-                                 "storage volume {}.{}, because enabling "
-                                 "auto-update for it failed with {}: {}".
-                                 format(metric_group, sg.name, sv.name,
-                                        exc.__class__.__name__, exc))
+                                 f"Not providing metric group {metric_group!r} "
+                                 f"for storage volume {sg.name}.{sv.name}, "
+                                 "because enabling auto-update for it failed "
+                                 f"with {exc.__class__.__name__}: {exc}")
                         continue  # skip this storage group
                     resources[metric_group].append(sv)
                     uri2resource[sv.uri] = sv
         else:
             logprint(logging.ERROR, PRINT_ALWAYS,
-                     "Unknown resource item {rp!r} in resource metric group "
-                     "{mg!r} in the metric definition file. The "
-                     "metric definition file may not match the version of the "
-                     "exporter.".
-                     format(rp=resource_path, mg=metric_group))
+                     f"Unknown resource item {resource_path!r} in resource "
+                     f"metric group {metric_group!r} in the metric definition "
+                     "file. The metric definition file may not match the "
+                     "version of the exporter.")
 
     # Fetch backing adapters of NICs, if needed
     if 'partition-attached-network-interface' in exported_hmc_metric_groups:
@@ -896,8 +880,8 @@ def create_metrics_context(
                 for nic in nics:
 
                     logprint(logging.INFO, PRINT_V,
-                             "Getting backing adapter port for NIC {}.{}.{}".
-                             format(cpc.name, partition.name, nic.name))
+                             "Getting backing adapter port for NIC "
+                             f"{cpc.name}.{partition.name}.{nic.name}")
                     adapter_name, port_index = get_backing_adapter_info(nic)
 
                     # Store the adapter port data as dynamic attributes on the
@@ -1003,24 +987,21 @@ class ResourceCache:
             except zhmcclient.MetricsResourceNotFound as exc:
                 mgd = object_value.metric_group_definition
                 logprint(logging.WARNING, PRINT_ALWAYS,
-                         "Did not find resource {} specified in "
-                         "metric object value for metric group '{}'".
-                         format(uri, mgd.name))
+                         f"Did not find resource {uri} specified in metric "
+                         f"object value for metric group '{mgd.name}'")
                 for mgr in exc.managers:
                     res_class = mgr.class_name
                     logprint(logging.WARNING, PRINT_ALWAYS,
-                             "Details: List of {} resources found:".
-                             format(res_class))
+                             f"Details: List of {res_class} resources found:")
                     for res in mgr.list():
                         logprint(logging.WARNING, PRINT_ALWAYS,
-                                 "Details: Resource found: {} ({})".
-                                 format(res.uri, res.name))
+                                 f"Details: Resource found: {res.uri} "
+                                 f"({res.name})")
                 logprint(logging.WARNING, PRINT_ALWAYS,
                          "Details: Current resource cache:")
                 for res in self._resources.values():
                     logprint(logging.WARNING, PRINT_ALWAYS,
-                             "Details: Resource cache: {} ({})".
-                             format(res.uri, res.name))
+                             f"Details: Resource cache: {res.uri} ({res.name})")
                 raise
             self._resources[uri] = _resource
         return _resource
@@ -1045,9 +1026,8 @@ def expand_global_label_value(
         func = env.compile_expression(item_value)
     except jinja2.TemplateSyntaxError as exc:
         logprint(logging.WARNING, PRINT_ALWAYS,
-                 "Not adding global label '{}' due to syntax error in the "
-                 "Jinja2 expression for the label value: {}".
-                 format(label_name, exc))
+                 f"Not adding global label '{label_name}' due to syntax error "
+                 f"in the Jinja2 expression for the label value: {exc}")
         return None
     try:
         value = func(hmc_info=hmc_info)
@@ -1055,9 +1035,9 @@ def expand_global_label_value(
     except Exception as exc:
         tb_str = traceback.format_tb(exc.__traceback__, limit=-1)[0]
         logprint(logging.WARNING, PRINT_ALWAYS,
-                 "Not adding global label '{}' due to error when rendering "
-                 "the Jinja2 expression for the label value: {}: {}\n{}".
-                 format(label_name, exc.__class__.__name__, exc, tb_str))
+                 f"Not adding global label '{label_name}' due to error when "
+                 "rendering the Jinja2 expression for the label value: "
+                 f"{exc.__class__.__name__}: {exc}\n{tb_str}")
         return None
     return str(value)
 
@@ -1126,8 +1106,8 @@ def uri_to_resource(client, uri2resource, uri):
             partition = cpc.partitions.resource_object(partition_uri)
             nic = partition.nics.resource_object(uri)
             logprint(logging.INFO, PRINT_V,
-                     "Adding NIC {}.{}.{} after exporter start for fast "
-                     "lookup".format(cpc.name, partition.name, nic.name))
+                     f"Adding NIC {cpc.name}.{partition.name}.{nic.name} "
+                     "after exporter start for fast lookup")
             uri2resource[uri] = nic
             return nic
 
@@ -1142,8 +1122,8 @@ def uri_to_resource(client, uri2resource, uri):
             cpc_uri = stogrp.get_property('cpc-uri')
             cpc = uri_to_resource(client, uri2resource, cpc_uri)
             logprint(logging.INFO, PRINT_V,
-                     "Adding storage group {}.{} after exporter start for "
-                     "fast lookup".format(cpc.name, stogrp.name))
+                     f"Adding storage group {cpc.name}.{stogrp.name} "
+                     "after exporter start for fast lookup")
             uri2resource[uri] = stogrp
             return stogrp
 
@@ -1152,14 +1132,14 @@ def uri_to_resource(client, uri2resource, uri):
             # Resource URI is for a CPC
             cpc = client.cpcs.resource_object(uri)
             logprint(logging.INFO, PRINT_V,
-                     "Adding CPC {} after exporter start for fast lookup".
-                     format(cpc.name))
+                     f"Adding CPC {cpc.name} after exporter start for "
+                     "fast lookup")
             uri2resource[uri] = cpc
             return cpc
 
         raise OtherError(
-            "Resource type for URI {u} is not supported for dynamic addition "
-            "of resources after start of exporter".format(u=uri))
+            f"Resource type for URI {uri} is not supported for dynamic "
+            "addition of resources after start of exporter")
 
     return resource
 
@@ -1193,10 +1173,9 @@ def expand_group_label_value(
         func = env.compile_expression(item_value)
     except jinja2.TemplateSyntaxError as exc:
         logprint(logging.WARNING, PRINT_ALWAYS,
-                 "Not adding label '{}' to metrics of metric group '{}' due to "
-                 "syntax error in the Jinja2 expression for the label value: "
-                 "{}".
-                 format(label_name, group_name, exc))
+                 f"Not adding label '{label_name}' to metrics of metric "
+                 f"group '{group_name}' due to syntax error in the Jinja2 "
+                 f"expression for the label value: {exc}")
         return None
     try:
         value = func(
@@ -1210,11 +1189,10 @@ def expand_group_label_value(
     except Exception as exc:
         tb_str = traceback.format_tb(exc.__traceback__, limit=-1)[0]
         logprint(logging.WARNING, PRINT_ALWAYS,
-                 "Not adding label '{}' on the metrics of metric group '{}' "
-                 "due to error when rendering the Jinja2 expression for the "
-                 "label value: {}: {}\n{}".
-                 format(label_name, group_name, exc.__class__.__name__, exc,
-                        tb_str))
+                 f"Not adding label '{label_name}' on the metrics of metric "
+                 f"group '{group_name}' due to error when rendering the Jinja2 "
+                 "expression for the label value: "
+                 f"{exc.__class__.__name__}: {exc}\n{tb_str}")
         return None
     return str(value)
 
@@ -1248,10 +1226,9 @@ def expand_metric_label_value(
         func = env.compile_expression(item_value)
     except jinja2.TemplateSyntaxError as exc:
         logprint(logging.WARNING, PRINT_ALWAYS,
-                 "Not adding label '{}' on Prometheus metric '{}' due "
-                 "to syntax error in Jinja2 expression {!r} for the label "
-                 "value: {}".
-                 format(label_name, metric_exporter_name, item_value, exc))
+                 f"Not adding label '{label_name}' on Prometheus metric "
+                 f"'{metric_exporter_name}' due to syntax error in Jinja2 "
+                 f"expression {item_value!r} for the label value: {exc}")
         return None
     try:
         value = func(
@@ -1265,11 +1242,10 @@ def expand_metric_label_value(
     except Exception as exc:
         tb_str = traceback.format_tb(exc.__traceback__, limit=-1)[0]
         logprint(logging.WARNING, PRINT_ALWAYS,
-                 "Not adding label '{}' on Prometheus metric '{}' due "
-                 "to error when rendering Jinja2 expression {!r} for the "
-                 "label value: {}: {}\n{}".
-                 format(label_name, metric_exporter_name, item_value,
-                        exc.__class__.__name__, exc, tb_str))
+                 f"Not adding label '{label_name}' on Prometheus metric "
+                 f"'{metric_exporter_name}' due to error when rendering "
+                 f"Jinja2 expression {item_value!r} for the label value: "
+                 f"{exc.__class__.__name__}: {exc}\n{tb_str}")
         return None
     return str(value)
 
@@ -1314,13 +1290,12 @@ def build_family_objects(
         try:
             yaml_metric_group = yaml_metric_groups[metric_group]
         except KeyError:
-            warnings.warn("The HMC supports a new metric group {!r} that is "
-                          "not supported by metric definition file {}. Please "
-                          "make sure your metric definition file corresponds "
-                          "to the exporter version, and if it does then open "
-                          "an exporter ticket to get the new metric group "
-                          "supported.".
-                          format(metric_group, metrics_filename))
+            warnings.warn(
+                f"The HMC supports a new metric group {metric_group!r} that is "
+                f"not supported by metric definition file {metrics_filename}. "
+                "Please make sure your metric definition file corresponds to "
+                "the exporter version, and if it does then open an exporter "
+                "ticket to get the new metric group supported.")
             continue  # Skip this metric group
 
         for object_value in metric_group_value.object_values:
@@ -1330,14 +1305,13 @@ def build_family_objects(
                         object_value.resource_uri, object_value)
                 except zhmcclient.MetricsResourceNotFound:
                     # Some details have already been logged & printed
-                    warnings.warn("The HMC metric group {!r} contains a "
-                                  "resource with URI '{}' that is not found on "
-                                  "the HMC. Please make sure your "
-                                  "metric definition file corresponds to the "
-                                  "exporter version, and if it does then open "
-                                  "an exporter ticket for that.".
-                                  format(metric_group,
-                                         object_value.resource_uri))
+                    warnings.warn(
+                        f"The HMC metric group {metric_group!r} contains a "
+                        f"resource with URI '{object_value.resource_uri}' "
+                        "that is not found on the HMC. Please make sure your "
+                        "metric definition file corresponds to the exporter "
+                        "version, and if it does then open an exporter ticket "
+                        "for that.")
                     continue  # Skip this metric
             else:
                 resource = object_value.resource
@@ -1373,15 +1347,14 @@ def build_family_objects(
                 try:
                     yaml_metric = yaml_metrics[metric_group][metric]
                 except KeyError:
-                    warnings.warn("The HMC supports a new metric {!r} in "
-                                  "metric group {!r} that is not supported "
-                                  "by metric definition file {}. Please make "
-                                  "sure your metric definition file "
-                                  "corresponds to the exporter version, and if "
-                                  "it does then open an exporter ticket to get "
-                                  "the new metric supported.".
-                                  format(metric, metric_group,
-                                         metrics_filename))
+                    warnings.warn(
+                        f"The HMC supports a new metric {metric!r} in "
+                        f"metric group {metric_group!r} that is not supported "
+                        f"by metric definition file {metrics_filename}. "
+                        "Please make sure your metric definition file "
+                        "corresponds to the exporter version, and if it does "
+                        "then open an exporter ticket to get the new metric "
+                        "supported.")
                     continue  # Skip this metric
 
                 metric_value = metric_values[metric]
@@ -1401,7 +1374,7 @@ def build_family_objects(
                 # Skip conditional metrics that their condition not met
                 if_expr = yaml_metric.get("if", None)
                 if if_expr and not eval_condition(
-                        "Prometheus metric {!r}".format(exporter_name),
+                        f"Prometheus metric {exporter_name!r}",
                         if_expr, hmc_version, hmc_api_version, hmc_features,
                         se_version, se_features, resource):
                     continue
@@ -1494,8 +1467,8 @@ def build_family_objects_res(
                     # the name is not yet known locally.
                     res_str = f"with URI {resource.uri}"
                 logprint(logging.INFO, PRINT_VV,
-                         "Resource no longer exists on HMC: {} {}".
-                         format(resource.manager.class_name, res_str))
+                         "Resource no longer exists on HMC: "
+                         f"{resource.manager.class_name} {res_str}")
                 # Remove the resource from the list so it no longer show up
                 # in Prometheus data.
                 del res_list[i]
@@ -1553,7 +1526,7 @@ def build_family_objects_res(
                 # Skip conditional metrics that their condition not met
                 if_expr = yaml_metric.get("if", None)
                 if if_expr and not eval_condition(
-                        "Prometheus metric {!r}".format(exporter_name),
+                        f"Prometheus metric {exporter_name!r}",
                         if_expr, hmc_version, hmc_api_version, hmc_features,
                         se_version, se_features, resource):
                     continue
@@ -1571,21 +1544,20 @@ def build_family_objects_res(
                         else:
                             res_str = ""
                         warnings.warn(
-                            "Skipping Prometheus metric '{}' in "
-                            "resource metric group '{}' in metric definition "
-                            "file {}, because its resource property '{}' is "
-                            "not returned by the HMC{}".
-                            format(exporter_name, metric_group,
-                                   metrics_filename, prop_name, res_str))
+                            f"Skipping Prometheus metric '{exporter_name}' in "
+                            f"resource metric group '{metric_group}' in metric "
+                            f"definition file {metrics_filename}, because its "
+                            f"resource property '{prop_name}' is not returned "
+                            f"by the HMC{res_str}")
                         continue
                 else:
                     prop_expr = yaml_metric.get('properties_expression', None)
                     if not prop_expr:
                         new_exc = ImproperExit(
-                            "Metric definition for exporter name '{}' in "
-                            "metric definition file {} has neither "
-                            "'property_name' nor 'properties_expression'".
-                            format(exporter_name, metrics_filename))
+                            "Metric definition for exporter name "
+                            f"'{exporter_name}' in metric definition file "
+                            f"{metrics_filename} has neither 'property_name' "
+                            "nor 'properties_expression'")
                         new_exc.__cause__ = None  # pylint: disable=invalid-name
                         raise new_exc
 
@@ -1594,11 +1566,11 @@ def build_family_objects_res(
                             prop_expr, undefined_to_none=False)
                     except jinja2.exceptions.TemplateError as exc:
                         new_exc = ImproperExit(
-                            "Error compiling properties expression {!r} "
-                            "defined for exporter name '{}' "
-                            "in metric definition file {}: {}: {}".
-                            format(prop_expr, exporter_name, metrics_filename,
-                                   exc.__class__.__name__, exc))
+                            "Error compiling properties expression "
+                            f"{prop_expr!r} defined for exporter name "
+                            f"'{exporter_name}' in metric definition file "
+                            f"{metrics_filename}: "
+                            f"{exc.__class__.__name__}: {exc}")
                         new_exc.__cause__ = None  # pylint: disable=invalid-name
                         raise new_exc
 
@@ -1614,11 +1586,10 @@ def build_family_objects_res(
                             exc.__traceback__, limit=-1)[0]
                         logprint(
                             logging.WARNING, PRINT_ALWAYS,
-                            "Not providing Prometheus metric {!r} due to error "
-                            "evaluating its properties expression {!r}: "
-                            "{}: {}\n{}".
-                            format(exporter_name, prop_expr,
-                                   exc.__class__.__name__, exc, tb_str))
+                            "Not providing Prometheus metric "
+                            f"{exporter_name!r} due to error evaluating its "
+                            f"properties expression {prop_expr!r}: "
+                            f"{exc.__class__.__name__}: {exc}\n{tb_str}")
                         continue
 
                 # Skip resource properties that have a null value. An example
@@ -1639,7 +1610,7 @@ def build_family_objects_res(
                 # Skip conditional metrics that their condition not met
                 if_expr = yaml_metric.get("if", None)
                 if if_expr and not eval_condition(
-                        "Prometheus metric {!r}".format(exporter_name),
+                        f"Prometheus metric {exporter_name!r}",
                         if_expr, hmc_version, hmc_api_version, hmc_features,
                         se_version, se_features, resource):
                     continue
@@ -1650,13 +1621,14 @@ def build_family_objects_res(
                     try:
                         metric_value = valuemap[metric_value]
                     except KeyError:
+                        res_str = resource_str(resource)
                         warnings.warn(
-                            "Skipping property '{}' of resource metric group "
-                            "'{}' in metric definition file {}, because its "
+                            f"Skipping property '{prop_name}' of resource "
+                            f"metric group '{metric_group}' in metric "
+                            f"definition file {metrics_filename}, because its "
                             "valuemap does not define a mapping for "
-                            "value {!r} returned for {}".
-                            format(prop_name, metric_group, metrics_filename,
-                                   metric_value, resource_str(resource)))
+                            f"value {metric_value!r} returned for "
+                            f"{res_str}")
                         continue
 
                 # Transform HMC percentages (value 100 means 100% = 1) to
@@ -1768,14 +1740,13 @@ class ZHMCUsageCollector():
                         # 400.13: Logon: Max sessions reached for user
                         # 400.45: Logon: Password expired
                         logprint(logging.ERROR, PRINT_ALWAYS,
-                                 "Abandoning after HTTP status {}.{}: {}".
-                                 format(exc.http_status, exc.reason, exc))
+                                 "Abandoning after HTTP status "
+                                 f"{exc.http_status}.{exc.reason}: {exc}")
                         raise
                     if exc.http_status == 404 and exc.reason == 1:
                         logprint(logging.WARNING, PRINT_ALWAYS,
                                  "Recreating the metrics context after HTTP "
-                                 "status {}.{}".
-                                 format(exc.http_status, exc.reason))
+                                 f"status {exc.http_status}.{exc.reason}")
                         self.context, _, _ = create_metrics_context(
                             self.session, self.config_dict,
                             self.yaml_metric_groups,
@@ -1783,8 +1754,8 @@ class ZHMCUsageCollector():
                             self.hmc_features)
                         continue
                     logprint(logging.WARNING, PRINT_ALWAYS,
-                             "Retrying after HTTP status {}.{}: {}".
-                             format(exc.http_status, exc.reason, exc))
+                             "Retrying after HTTP status "
+                             f"{exc.http_status}.{exc.reason}: {exc}")
                     time.sleep(RETRY_SLEEP_TIME)
                     continue
                 except zhmcclient.ConnectionError as exc:
@@ -1794,20 +1765,20 @@ class ZHMCUsageCollector():
                     continue
                 except zhmcclient.ServerAuthError as exc:
                     logprint(logging.ERROR, PRINT_ALWAYS,
-                             "Abandoning after server authentication error: {}".
-                             format(exc))
+                             "Abandoning after server authentication error: "
+                             f"{exc}")
                     raise
                 except zhmcclient.ClientAuthError as exc:
                     logprint(logging.ERROR, PRINT_ALWAYS,
-                             "Abandoning after client authentication error: {}".
-                             format(exc))
+                             "Abandoning after client authentication error: "
+                             f"{exc}")
                     raise
                 # pylint: disable=broad-exception-caught,broad-except
                 except Exception as exc:
                     tb_str = traceback.format_tb(exc.__traceback__, limit=-1)[0]
                     logprint(logging.ERROR, PRINT_ALWAYS,
-                             "Abandoning after exception {}: {}\n{}".
-                             format(exc.__class__.__name__, exc, tb_str))
+                             "Abandoning after exception "
+                             f"{exc.__class__.__name__}: {exc}\n{tb_str}")
                     raise
                 break
 
@@ -1843,8 +1814,8 @@ class ZHMCUsageCollector():
         interval_str = f"{self.export_interval:.1f} sec" if \
             self.export_interval else "None"
         logprint(logging.INFO, None,
-                 "Done collecting metrics after {:.1f} sec (export interval: "
-                 "{})".format(duration, interval_str))
+                 f"Done collecting metrics after {duration:.1f} sec "
+                 f"(export interval: {interval_str})")
 
     def run_fetch_thread(self, session):
         """
@@ -1877,7 +1848,7 @@ class ZHMCUsageCollector():
                     # Skip properties where fetch condition is not met
                     if_expr = prop_item.get("if", None)
                     if if_expr and not eval_condition(
-                            "metric property {!r}".format(prop_name),
+                            f"metric property {prop_name!r}",
                             if_expr, self.hmc_version, self.hmc_api_version,
                             self.hmc_features, None, None, None):
                         continue
@@ -1888,9 +1859,8 @@ class ZHMCUsageCollector():
                         lpar_props.append(prop_name)
                     else:
                         logprint(logging.ERROR, PRINT_ALWAYS,
-                                 "Unknown resource type {!r} when "
-                                 "fetching properties in background".
-                                 format(fetch_class))
+                                 f"Unknown resource type {fetch_class!r} when "
+                                 "fetching properties in background")
 
             # Fetch the properties.
             # The zhmcclient methods used for that are supported for all HMC
@@ -1909,8 +1879,8 @@ class ZHMCUsageCollector():
             end_dt = datetime.now()
             duration = (end_dt - start_dt).total_seconds()
             logprint(logging.INFO, None,
-                     "Done fetching properties in background after {:.1f} sec".
-                     format(duration))
+                     "Done fetching properties in background after "
+                     f"{duration:.1f} sec")
 
             # Adjust the fetch sleep time based on the exporter interval.
             # This assumes that the export to Prometheus happens on a fairly
@@ -1933,11 +1903,10 @@ class ZHMCUsageCollector():
                     direction_str = None
                 if direction_str:
                     logprint(logging.INFO, PRINT_ALWAYS,
-                             "{} sleep time for fetching properties in "
-                             "background from {} sec to {} sec to adjust to "
-                             "export interval of {:.1f} sec".
-                             format(direction_str, old_sleep_time, sleep_time,
-                                    self.export_interval))
+                             f"{direction_str} sleep time for fetching "
+                             f"properties in background from {old_sleep_time} "
+                             f"sec to {sleep_time} sec to adjust to export "
+                             f"interval of {self.export_interval:.1f} sec")
 
             # Update properties of our local resource objects from result
             for uri, updated_res in updated_resources.items():
@@ -2033,8 +2002,9 @@ def setup_logging(log_dest, log_complevels, syslog_facility):
             address = SYSLOG_ADDRESS[system]
         except KeyError:
             address = SYSLOG_ADDRESS['other']
-        dest_str = ("the System Log at address {a!r} with syslog facility "
-                    "{slf!r}".format(a=address, slf=syslog_facility))
+        dest_str = (
+            f"the System Log at address {address!r} with syslog facility "
+            f"{syslog_facility!r}")
         logprint(None, PRINT_V, f"Logging to {dest_str}")
         try:
             facility = logging.handlers.SysLogHandler.facility_names[
@@ -2043,9 +2013,8 @@ def setup_logging(log_dest, log_complevels, syslog_facility):
             valid_slfs = ', '.join(
                 logging.handlers.SysLogHandler.facility_names.keys())
             raise EarlyExit(
-                "This system ({sys}) does not support syslog facility {slf}. "
-                "Supported are: {slfs}.".
-                format(sys=system, slf=syslog_facility, slfs=valid_slfs))
+                f"This system ({system}) does not support syslog facility "
+                f"{syslog_facility}. Supported are: {valid_slfs}.")
         # The following does not raise any exception if the syslog address
         # cannot be opened. In that case, the first attempt to log something
         # will fail.
@@ -2058,8 +2027,8 @@ def setup_logging(log_dest, log_complevels, syslog_facility):
             handler = logging.FileHandler(log_dest)
         except OSError as exc:
             raise EarlyExit(
-                "Cannot log to file {fn}: {exc}: {msg}".
-                format(fn=log_dest, exc=exc.__class__.__name__, msg=exc))
+                f"Cannot log to file {log_dest}: {exc.__class__.__name__}: "
+                f"{exc}")
 
     if not handler and log_complevels:
         raise EarlyExit(
@@ -2078,10 +2047,9 @@ def setup_logging(log_dest, log_complevels, syslog_facility):
             """
             _, exc, _ = sys.exc_info()
             f_record = self.format(record)
-            print("Error: Logging to {d} failed with: {exc}: {msg}. Formatted "
-                  "log record: {r!r}".
-                  format(d=dest_str, exc=exc.__class__.__name__, msg=exc,
-                         r=f_record),
+            print(f"Error: Logging to {dest_str} failed with: "
+                  f"{exc.__class__.__name__}: {exc}. Formatted log record: "
+                  f"{f_record!r}",
                   file=sys.stderr)
             sys.exit(1)
 
@@ -2097,10 +2065,10 @@ def setup_logging(log_dest, log_complevels, syslog_facility):
                 comp = complevel
                 level = DEFAULT_LOG_LEVEL
             if level not in LOG_LEVELS:
+                allowed = ', '.join(VALID_LOG_LEVELS)
                 raise EarlyExit(
-                    "Invalid log level {level!r} in --log-comp option. "
-                    "Allowed are: {allowed}".
-                    format(level=level, allowed=', '.join(VALID_LOG_LEVELS)))
+                    f"Invalid log level {level!r} in --log-comp option. "
+                    f"Allowed are: {allowed}")
             if comp == 'all':
                 for logger_name in LOGGER_NAMES.values():
                     logger_level_dict[logger_name] = level
@@ -2108,19 +2076,17 @@ def setup_logging(log_dest, log_complevels, syslog_facility):
                 try:
                     logger_name = LOGGER_NAMES[comp]
                 except KeyError:
+                    allowed = ', '.join(VALID_LOG_COMPONENTS)
                     raise EarlyExit(
-                        "Invalid component {comp!r} in --log-comp option. "
-                        "Allowed are: {allowed}".
-                        format(comp=comp,
-                               allowed=', '.join(VALID_LOG_COMPONENTS)))
+                        f"Invalid component {comp!r} in --log-comp option. "
+                        f"Allowed are: {allowed}")
                 logger_level_dict[logger_name] = level
 
         complevels = ', '.join(
             [f"{name}={level}"
              for name, level in logger_level_dict.items()])
         logprint(None, PRINT_V,
-                 "Logging components: {complevels}".
-                 format(complevels=complevels))
+                 f"Logging components: {complevels}")
 
         if isinstance(handler, logging.handlers.SysLogHandler):
             # Most syslog implementations fail when the message is longer
@@ -2222,8 +2188,8 @@ def main():
         if 'version' in config_dict and config_dict['version'] != 2:
             new_exc = ImproperExit(
                 "The exporter config file must have the version 2 format, "
-                "but it specifies the version {} format.".
-                format(config_dict['version']))
+                f"but it specifies the version {config_dict['version']} "
+                "format.")
             new_exc.__cause__ = None  # pylint: disable=invalid-name
             raise new_exc
 
@@ -2288,17 +2254,17 @@ def main():
         for mg in yaml_metrics:
             if mg not in yaml_metric_groups:
                 new_exc = ImproperExit(
-                    "Metric group '{}' in metric definition file {} is "
-                    "defined in 'metrics' but not in 'metric_groups'".
-                    format(mg, metrics_filename))
+                    f"Metric group '{mg}' in metric definition file "
+                    f"{metrics_filename} is defined in 'metrics' but not in "
+                    "'metric_groups'")
                 new_exc.__cause__ = None  # pylint: disable=invalid-name
                 raise new_exc
         for mg in yaml_metric_groups:
             if mg not in yaml_metrics:
                 new_exc = ImproperExit(
-                    "Metric group '{}' in metric definition file {} is "
-                    "defined in 'metric_groups' but not in 'metrics'".
-                    format(mg, metrics_filename))
+                    f"Metric group '{mg}' in metric definition file "
+                    f"{metrics_filename} is defined in 'metric_groups' but "
+                    "not in 'metrics'")
                 new_exc.__cause__ = None  # pylint: disable=invalid-name
                 raise new_exc
 
@@ -2308,9 +2274,9 @@ def main():
             mg_type = yaml_mg.get('type', 'metric')
             if mg_type == 'metric' and not isinstance(yaml_m, dict):
                 new_exc = ImproperExit(
-                    "Metrics for metric group '{}' of type 'metric' must use "
-                    "the dictionary format in metric definition file {}".
-                    format(mg, metrics_filename))
+                    f"Metrics for metric group '{mg}' of type 'metric' must "
+                    "use the dictionary format in metric definition file "
+                    f"{metrics_filename}")
                 new_exc.__cause__ = None  # pylint: disable=invalid-name
                 raise new_exc
 
@@ -2322,13 +2288,14 @@ def main():
 
         logprint(logging.INFO, PRINT_V,
                  "Initial sleep time for fetching properties in background: "
-                 "{} sec".format(INITIAL_FETCH_SLEEP_TIME))
+                 f"{INITIAL_FETCH_SLEEP_TIME} sec")
 
         logprint(logging.INFO, PRINT_V,
                  "Timeout/retry configuration: "
-                 "connect: {r.connect_timeout} sec / {r.connect_retries} "
-                 "retries, read: {r.read_timeout} sec / {r.read_retries} "
-                 "retries.".format(r=RETRY_TIMEOUT_CONFIG))
+                 f"connect: {RETRY_TIMEOUT_CONFIG.connect_timeout} sec / "
+                 f"{RETRY_TIMEOUT_CONFIG.connect_retries} retries, "
+                 f"read: {RETRY_TIMEOUT_CONFIG.read_timeout} sec / "
+                 f"{RETRY_TIMEOUT_CONFIG.read_retries} retries.")
 
         env = jinja2.Environment()
 
@@ -2353,11 +2320,9 @@ def main():
                     se_features_by_cpc[cpc_name] = cpc.list_api_features()
 
                 logprint(logging.INFO, PRINT_V,
-                         "HMC version: {}".
-                         format(version_str(hmc_version)))
+                         f"HMC version: {version_str(hmc_version)}")
                 logprint(logging.INFO, PRINT_V,
-                         "HMC API version: {}".
-                         format(version_str(hmc_api_version)))
+                         f"HMC API version: {version_str(hmc_api_version)}")
                 hmc_features_str = ', '.join(hmc_features) or 'None'
                 logprint(logging.INFO, PRINT_V,
                          f"HMC features: {hmc_features_str}")
@@ -2365,15 +2330,14 @@ def main():
                     cpc_name = cpc.name
                     se_version_str = version_str(se_versions_by_cpc[cpc_name])
                     logprint(logging.INFO, PRINT_V,
-                             "SE version of CPC {}: {}".
-                             format(cpc_name, se_version_str))
+                             f"SE version of CPC {cpc_name}: {se_version_str}")
                 for cpc in cpc_list:
                     cpc_name = cpc.name
                     se_features_str = ', '.join(se_features_by_cpc[cpc_name]) \
                         or 'None'
                     logprint(logging.INFO, PRINT_V,
-                             "SE features of CPC {}: {}".
-                             format(cpc_name, se_features_str))
+                             f"SE features of CPC {cpc_name}: "
+                             f"{se_features_str}")
 
                 context, resources, uri2resource = create_metrics_context(
                     session, config_dict, yaml_metric_groups,
@@ -2450,8 +2414,8 @@ def main():
                      f"Server private key file: {server_key_file}")
             if ca_cert_file:
                 logprint(logging.INFO, PRINT_V,
-                         "Mutual TLS: Enabled with CA certificates file: {}".
-                         format(ca_cert_file))
+                         "Mutual TLS: Enabled with CA certificates file: "
+                         f"{ca_cert_file}")
             else:
                 logprint(logging.INFO, PRINT_V,
                          "Mutual TLS: Disabled")
@@ -2473,15 +2437,15 @@ def main():
                 # We catch Exception for now in order to investigate the
                 # issue that with ssl.SSLEOFError being raised occasionally.
                 raise ImproperExit(
-                    "Cannot start HTTPS server: {}: {}".
-                    format(exc.__class__.__name__, exc))
+                    f"Cannot start HTTPS server: {exc.__class__.__name__}: "
+                    f"{exc}")
         else:
             try:
                 start_http_server(port=port)
             except OSError as exc:
                 raise ImproperExit(
-                    "Cannot start HTTP server: {}: {}".
-                    format(exc.__class__.__name__, exc))
+                    f"Cannot start HTTP server: {exc.__class__.__name__}: "
+                    f"{exc}")
 
         logprint(logging.INFO, PRINT_V,
                  "Starting thread for fetching properties in background "
