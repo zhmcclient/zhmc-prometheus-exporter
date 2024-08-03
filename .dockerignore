@@ -3,6 +3,7 @@
 
 # Make targets
 /*.done
+/done/*.done
 
 # Git stuff not needed in Dockerfile
 /.git
@@ -28,3 +29,4 @@ __pycache__/
 # Other
 *.swp
 .DS_Store
+/try/
