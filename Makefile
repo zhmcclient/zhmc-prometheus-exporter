@@ -392,6 +392,7 @@ clean:
 	-$(call RMDIR_R_FUNC,__pycache__)
 	-$(call RMDIR_R_FUNC,.ruff_cache)
 	-$(call RMDIR_FUNC,build $(package_name).egg-info .pytest_cache)
+	docker image prune --force
 	@echo "Makefile: $@ done."
 
 .PHONY: clobber
@@ -452,10 +453,10 @@ $(bdist_file) $(sdist_file): _check_version $(done_dir)/develop_$(pymn)_$(PACKAG
 	$(PYTHON_CMD) -m build --outdir $(dist_dir)
 	@echo 'Done: Created distribution archives: $@'
 
-$(done_dir)/docker_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done Dockerfile .dockerignore MANIFEST.in $(dist_included_files)
+$(done_dir)/docker_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done Dockerfile .dockerignore $(bdist_file)
 	@echo "Makefile: Building Docker image $(docker_registry):latest"
 	-$(call RM_FUNC,$@)
-	docker build -t $(docker_registry):latest .
+	docker build --tag $(docker_registry):$(package_version) --build-arg bdist_file=$(bdist_file) --build-arg package_version=$(package_version) --build-arg build_date="$(shell date -Iseconds)" --build-arg git_commit="$(shell git rev-parse HEAD)" .
 	docker image list --filter reference=$(docker_registry)
 	@echo "Makefile: Done building Docker image"
 	echo "done" >$@
