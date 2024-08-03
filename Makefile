@@ -427,5 +427,6 @@ $(done_dir)/docker_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/develop_$(pymn)_$(
 	@echo "Makefile: Building Docker image $(docker_registry):latest"
 	-$(call RM_FUNC,$@)
 	docker build -t $(docker_registry):latest .
+	docker image list --filter reference=$(docker_registry)
 	@echo "Makefile: Done building Docker image"
 	echo "done" >$@
