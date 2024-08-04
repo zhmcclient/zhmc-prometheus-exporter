@@ -31,7 +31,7 @@ def get_version(version_file):
     with open(version_file, encoding='utf-8') as fp:
         version_source = fp.read()
     _globals = {}
-    exec(version_source, _globals)  # pylint: disable=exec-used
+    exec(version_source, _globals)  # nosec: B102 pylint: disable=exec-used
     return _globals['__version__']
 
 
