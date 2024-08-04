@@ -97,14 +97,13 @@ python_version := $(shell $(PYTHON_CMD) -c "import sys; sys.stdout.write('{}.{}'
 pymn := $(shell $(PYTHON_CMD) -c "import sys; sys.stdout.write('py{}{}'.format(sys.version_info[0], sys.version_info[1]))")
 
 package_dir := $(package_name)
+
+# Python files in the package, including any vendored packages.
 package_py_files := \
     $(wildcard $(package_dir)/*.py) \
     $(wildcard $(package_dir)/*/*.py) \
     $(wildcard $(package_dir)/*/*/*.py) \
     $(wildcard $(package_dir)/*/*/*/*.py) \
-
-src_py_files := \
-    $(wildcard $(package_dir)/*.py) \
 
 test_dir := tests
 test_py_files := \
@@ -134,6 +133,13 @@ doc_dependent_files := \
     examples/metrics.yaml \
     examples/hmccreds.yaml \
     $(package_py_files) \
+
+# Source files for checks (with PyLint and Flake8, etc.)
+check_py_files := \
+    $(wildcard $(package_dir)/*.py) \
+    $(test_py_files) \
+    $(doc_dir)/conf.py \
+    setup.py \
 
 # Directory for .done files
 done_dir := done
@@ -241,17 +247,11 @@ develop: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: $@ done."
 
 .PHONY: check
-check: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done
-	@echo "Makefile: Performing flake8 checks with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
-	flake8 --config .flake8 $(src_py_files) $(test_py_files) setup.py $(doc_dir)/conf.py
-	@echo "Makefile: Done performing flake8 checks"
+check: $(done_dir)/flake8_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: $@ done."
 
 .PHONY: pylint
-pylint: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done
-	@echo "Makefile: Performing pylint checks with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
-	pylint --rcfile=.pylintrc --disable=fixme $(src_py_files) $(test_py_files) setup.py $(doc_dir)/conf.py
-	@echo "Makefile: Done performing pylint checks"
+pylint: $(done_dir)/pylint_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: $@ done."
 
 .PHONY: safety
@@ -259,8 +259,55 @@ safety: $(done_dir)/safety_all_$(pymn)_$(PACKAGE_LEVEL).done $(done_dir)/safety_
 	@echo "Makefile: $@ done."
 
 .PHONY: check_reqs
-check_reqs: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done minimum-constraints.txt minimum-constraints-install.txt requirements.txt
+check_reqs: $(done_dir)/check_reqs_$(pymn)_$(PACKAGE_LEVEL).done
+	@echo "Makefile: $@ done."
+
+$(done_dir)/flake8_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done
+	@echo "Makefile: Performing flake8 checks with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
+	-$(call RM_FUNC,$@)
+	flake8 --config .flake8 $(check_py_files)
+	echo "done" >$@
+	@echo "Makefile: Done performing flake8 checks"
+
+$(done_dir)/pylint_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done
+	@echo "Makefile: Performing pylint checks with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
+	-$(call RM_FUNC,$@)
+	pylint --rcfile=.pylintrc --disable=fixme $(check_py_files)
+	echo "done" >$@
+	@echo "Makefile: Done performing pylint checks"
+
+$(done_dir)/safety_all_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done $(safety_all_policy_file) minimum-constraints.txt minimum-constraints-install.txt
+	-$(call RM_FUNC,$@)
+ifeq ($(python_version),3.6)
+	@echo "Makefile: Warning: Skipping Safety for all packages on Python $(python_version)" >&2
+else
+	@echo "Makefile: Running Safety for all packages"
+	bash -c "safety check --policy-file $(safety_all_policy_file) -r minimum-constraints.txt --full-report || test '$(RUN_TYPE)' != 'release' || exit 1"
+	@echo "Makefile: Done running Safety for all packages"
+endif
+	echo "done" >$@
+
+$(done_dir)/safety_install_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done $(safety_install_policy_file) minimum-constraints-install.txt
+	-$(call RM_FUNC,$@)
+ifeq ($(python_version),3.6)
+	@echo "Makefile: Warning: Skipping Safety for install packages on Python $(python_version)" >&2
+else
+	@echo "Makefile: Running Safety for install packages"
+	safety check --policy-file $(safety_install_policy_file) -r minimum-constraints-install.txt --full-report
+	@echo "Makefile: Done running Safety for install packages"
+endif
+	echo "done" >$@
+
+$(done_dir)/bandit_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done $(bandit_rc_file) $(check_py_files)
+	@echo "Makefile: Running Bandit"
+	-$(call RM_FUNC,$@)
+	bandit -c $(bandit_rc_file) -l $(check_py_files)
+	echo "done" >$@
+	@echo "Makefile: Done running Bandit"
+
+$(done_dir)/check_reqs_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done minimum-constraints.txt minimum-constraints-install.txt requirements.txt
 	@echo "Makefile: Checking missing dependencies of this package"
+	-$(call RM_FUNC,$@)
 	pip-missing-reqs $(package_name) --requirements-file=requirements.txt
 # TODO: Enable again once official prometheus-client version (0.21.0 ?) is released.
 # pip-missing-reqs $(package_name) --requirements-file=minimum-constraints-install.txt
@@ -273,29 +320,7 @@ else
 	@rc=0; for pkg in $(check_reqs_packages); do dir=$$($(PYTHON_CMD) -c "import $${pkg} as m,os; dm=os.path.dirname(m.__file__); d=dm if not dm.endswith('site-packages') else m.__file__; print(d)"); cmd="pip-missing-reqs $${dir} --requirements-file=minimum-constraints.txt"; echo $${cmd}; $${cmd}; rc=$$(expr $${rc} + $${?}); done; exit $${rc}
 	@echo "Makefile: Done checking missing dependencies of some development packages in our minimum versions"
 endif
-	@echo "Makefile: $@ done."
-
-$(done_dir)/safety_all_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done Makefile $(safety_all_policy_file) minimum-constraints.txt minimum-constraints-install.txt
-ifeq ($(python_version),3.6)
-	@echo "Makefile: Warning: Skipping Safety for all packages on Python $(python_version)" >&2
-else
-	@echo "Makefile: Running Safety for all packages"
-	-$(call RM_FUNC,$@)
-	bash -c "safety check --policy-file $(safety_all_policy_file) -r minimum-constraints.txt --full-report || test '$(RUN_TYPE)' != 'release' || exit 1"
 	echo "done" >$@
-	@echo "Makefile: Done running Safety for all packages"
-endif
-
-$(done_dir)/safety_install_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done Makefile $(safety_install_policy_file) minimum-constraints-install.txt
-ifeq ($(python_version),3.6)
-	@echo "Makefile: Warning: Skipping Safety for all packages on Python $(python_version)" >&2
-else
-	@echo "Makefile: Running Safety for install packages"
-	-$(call RM_FUNC,$@)
-	safety check --policy-file $(safety_install_policy_file) -r minimum-constraints-install.txt --full-report
-	echo "done" >$@
-	@echo "Makefile: Done running Safety for install packages"
-endif
 
 .PHONY: test
 test: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done $(pytest_cov_files)
@@ -414,13 +439,13 @@ endif
 # regenerate MANIFEST. Otherwise, changes in MANIFEST.in will not be used.
 # Note: Deleting build is a safeguard against picking up partial build products
 # which can lead to incorrect hashbangs in scripts in wheel archives.
-$(bdist_file) $(sdist_file): _check_version $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done Makefile MANIFEST.in $(dist_included_files)
+$(bdist_file) $(sdist_file): _check_version $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done MANIFEST.in $(dist_included_files)
 	-$(call RM_FUNC,MANIFEST)
 	-$(call RMDIR_FUNC,build $(package_name).egg-info .eggs)
 	$(PYTHON_CMD) -m build --outdir $(dist_dir)
 	@echo 'Done: Created distribution archives: $@'
 
-$(done_dir)/docker_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done Dockerfile .dockerignore Makefile MANIFEST.in $(dist_included_files)
+$(done_dir)/docker_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done Dockerfile .dockerignore MANIFEST.in $(dist_included_files)
 	@echo "Makefile: Building Docker image $(docker_registry):latest"
 	-$(call RM_FUNC,$@)
 	docker build -t $(docker_registry):latest .
