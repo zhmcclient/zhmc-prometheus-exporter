@@ -232,6 +232,9 @@ env:
 	@echo "Makefile: Environment variables as seen by make:"
 	$(ENV)
 
+.PHONY: _always
+_always:
+
 .PHONY: _check_version
 _check_version:
 ifeq (,$(package_version))
@@ -347,14 +350,18 @@ docker: _check_version $(done_dir)/docker_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: $@ done."
 
 .PHONY: authors
-authors: _check_version
-	echo "# Authors of this project" >AUTHORS.md
-	echo "" >>AUTHORS.md
-	echo "Sorted list of authors derived from git commit history:" >>AUTHORS.md
-	echo '```' >>AUTHORS.md
-	git shortlog --summary --email | cut -f 2 | sort >>AUTHORS.md
-	echo '```' >>AUTHORS.md
-	@echo '$@ done.'
+authors: AUTHORS.md
+	@echo "Makefile: $@ done."
+
+# Make sure the AUTHORS.md file is up to date but has the old date when it did not change to prevent redoing dependent targets
+AUTHORS.md: _always
+	echo "# Authors of this project" >AUTHORS.md.tmp
+	echo "" >>AUTHORS.md.tmp
+	echo "Sorted list of authors derived from git commit history:" >>AUTHORS.md.tmp
+	echo '```' >>AUTHORS.md.tmp
+	git shortlog --summary --email | cut -f 2 | sort >>AUTHORS.md.tmp
+	echo '```' >>AUTHORS.md.tmp
+	sh -c "if ! diff -q AUTHORS.md.tmp AUTHORS.md; then mv AUTHORS.md.tmp AUTHORS.md; else rm AUTHORS.md.tmp; fi"
 
 .PHONY: upload
 upload: _check_version $(bdist_file) $(sdist_file)
@@ -374,7 +381,7 @@ clean:
 	-$(call RM_R_FUNC,*.pyc)
 	-$(call RM_R_FUNC,*.tmp)
 	-$(call RM_R_FUNC,tmp_*)
-	-$(call RM_FUNC,.coverage AUTHORS ChangeLog)
+	-$(call RM_FUNC,.coverage MANIFEST MANIFEST.in AUTHORS ChangeLog)
 	-$(call RMDIR_R_FUNC,__pycache__)
 	-$(call RMDIR_FUNC,build $(package_name).egg-info .pytest_cache)
 	@echo "Makefile: $@ done."
