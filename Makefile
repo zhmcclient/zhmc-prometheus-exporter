@@ -165,8 +165,8 @@ else
   pytest_opts := $(TESTOPTS)
 endif
 
-pytest_cov_opts := --cov $(package_name) --cov-config .coveragerc --cov-append --cov-report=html:htmlcov
-pytest_cov_files := .coveragerc
+pytest_cov_rc_file := .coveragerc
+pytest_cov_opts := --cov $(package_name) --cov-config $(pytest_cov_rc_file) --cov-append --cov-report=html
 
 ifeq ($(PACKAGE_LEVEL),minimum)
   pip_level_opts := -c minimum-constraints.txt
@@ -326,7 +326,7 @@ endif
 	echo "done" >$@
 
 .PHONY: test
-test: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done $(pytest_cov_files)
+test: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done $(pytest_cov_rc_file)
 	@echo "Makefile: Performing unit tests and coverage with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
 	@echo "Makefile: Note that the warning about an unknown metric is part of the tests"
 	pytest $(pytest_cov_opts) -s $(test_dir) $(pytest_opts)

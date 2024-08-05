@@ -28,6 +28,8 @@ Released: not yet
 
 **Bug fixes:**
 
+* Test: Fixed coverage reporting (locally and on coveralls.io).
+
 **Enhancements:**
 
 **Cleanup:**
