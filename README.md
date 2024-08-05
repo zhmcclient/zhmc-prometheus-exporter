@@ -50,11 +50,6 @@ collection again once the HMC come back up.
   Finally, it defines which metric groups to fetch and to provide to
   Prometheus.
 
-  Download the :ref:`sample exporter config file` as ``config.yaml`` and edit
-  that copy accordingly.
-
-  For details, see :ref:`Exporter config file`.
-
   Download the
   [sample exporter config file](https://github.com/zhmcclient/zhmc-prometheus-exporter/blob/master/examples/config.yaml)
   as `config.yaml` and edit that copy accordingly.
