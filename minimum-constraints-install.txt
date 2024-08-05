@@ -19,7 +19,7 @@ wheel==0.38.1
 
 # Direct dependencies for install (must be consistent with requirements.txt)
 
-zhmcclient==1.14.0
+zhmcclient==1.17.0
 # TODO: Use official prometheus-client version (0.21.0 ?) once released.
 # prometheus-client==0.21.0
 urllib3==1.26.19
@@ -48,6 +48,6 @@ immutable-views==0.6.0
 MarkupSafe==2.0.0
 pytz==2019.1
 requests==2.32.2
-stomp.py==4.1.23
+stomp-py==8.1.1
 typing-extensions==4.7.1
 zipp==0.5.2  # Used in some combinations of Python version and package level
