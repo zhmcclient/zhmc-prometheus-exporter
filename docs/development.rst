@@ -472,7 +472,7 @@ archive (a more minimal version of the repository) with:
 
   $ make build
 
-You will find the files ``zhmc_prometheus_exporter-VERSION_NUMBER-py2.py3-none-any.whl``
+You will find the files ``zhmc_prometheus_exporter-VERSION_NUMBER-py3-none-any.whl``
 and ``zhmc_prometheus_exporter-VERSION_NUMBER.tar.gz`` in the ``dist`` folder,
 the former being the binary and the latter being the source distribution archive.
 
@@ -480,7 +480,7 @@ The binary distribution archive could be installed with:
 
 .. code-block:: bash
 
-  $ pip install zhmc_prometheus_exporter-VERSION_NUMBER-py2.py3-none-any.whl
+  $ pip install zhmc_prometheus_exporter-VERSION_NUMBER-py3-none-any.whl
 
 The source distribution archive could be installed with:
 
