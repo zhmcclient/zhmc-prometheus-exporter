@@ -1,7 +1,27 @@
+# Config file for Python "coverage" package.
+#
+# For documentation, see:
+# http://coverage.readthedocs.org/en/latest/config.html
+
 [run]
+
+# Controls whether branch coverage is measured, vs. just statement coverage.
+# TODO: Once statement coverage gets better, enable branch coverage.
+branch = False
 
 # If True, stores relative file paths in data file (needed for Github Actions).
 # Using this parameter requires coverage>=5.0
 relative_files = True
 
-omit = zhmc_prometheus_exporter/test.py
+# The following files are omitted in the coverage.
+omit =
+    zhmc_prometheus_exporter/vendor/*
+
+[report]
+
+# Controls whether lines without coverage are shown in the report.
+show_missing = True
+
+[html]
+
+directory = htmlcov
