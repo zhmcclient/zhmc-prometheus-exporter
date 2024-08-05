@@ -6,7 +6,7 @@
 [![Test coverage (master)](https://coveralls.io/repos/github/zhmcclient/zhmc-prometheus-exporter/badge.svg?branch=master)](https://coveralls.io/github/zhmcclient/zhmc-prometheus-exporter?branch=master)
 
 The **IBM Z HMC Prometheus Exporter** is a
-[Prometheus exporter](https://prometheus.io/docs/instrumenting/exporters
+[Prometheus exporter](https://prometheus.io/docs/instrumenting/exporters)
 written in Python that retrieves metrics from the
 [IBM Z](https://www.ibm.com/it-infrastructure/z) Hardware Management Console
 (HMC) and exports them to the [Prometheus](https://prometheus.io)
