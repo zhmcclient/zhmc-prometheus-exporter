@@ -43,6 +43,8 @@ Released: not yet
 
 **Bug fixes:**
 
+* Test: Fixed coverage reporting (locally and on coveralls.io).
+
 **Enhancements:**
 
 * Added support for running the 'ruff' checker via "make ruff" and added that
