@@ -26,11 +26,13 @@ urllib3==1.26.19
 jsonschema==3.2.0
 six==1.16.0
 Jinja2==3.1.4
-# PyYAML is also used by dparse
-PyYAML==5.3.1
+ruamel.yaml==0.18.6
 
 
 # Indirect dependencies for install that are needed for some reason (must be consistent with requirements.txt)
+
+# PyYAML is used by zhmcclient 1.17
+PyYAML==5.3.1
 
 pyrsistent==0.18.1
 

@@ -35,7 +35,7 @@ from contextlib import contextmanager
 
 import jinja2
 import urllib3
-import yaml
+from ruamel.yaml import YAML, YAMLError
 import jsonschema
 import zhmcclient
 
@@ -254,6 +254,9 @@ def parse_args(args):
     parser.add_argument("--version", action='store_true',
                         help="show versions of exporter and zhmcclient library "
                         "and exit")
+    parser.add_argument("--upgrade-config", action='store_true',
+                        help="upgrade the exporter config file to the current "
+                        "version of the exporter and exit")
     parser.add_argument("--help-config", action='store_true',
                         help="show help for exporter config file and exit")
     return parser.parse_args(args)
@@ -399,9 +402,10 @@ def parse_yaml_file(yamlfile, name, schemafilename=None):
         ImproperExit
     """
 
+    yaml = YAML(typ='rt')
     try:
         with open(yamlfile, encoding='utf-8') as fp:
-            yaml_obj = yaml.safe_load(fp)
+            yaml_obj = yaml.load(fp)
     except FileNotFoundError as exc:
         new_exc = ImproperExit(
             f"Cannot find {name} {yamlfile}: {exc}")
@@ -412,7 +416,7 @@ def parse_yaml_file(yamlfile, name, schemafilename=None):
             f"Permission error reading {name} {yamlfile}: {exc}")
         new_exc.__cause__ = None  # pylint: disable=invalid-name
         raise new_exc
-    except yaml.YAMLError as exc:
+    except YAMLError as exc:
         new_exc = ImproperExit(
             f"YAML error reading {name} {yamlfile}: {exc}")
         new_exc.__cause__ = None  # pylint: disable=invalid-name
@@ -420,11 +424,12 @@ def parse_yaml_file(yamlfile, name, schemafilename=None):
 
     if schemafilename:
 
+        yaml = YAML(typ='safe')
         schemafile = os.path.join(
             os.path.dirname(__file__), 'schemas', schemafilename)
         try:
             with open(schemafile, encoding='utf-8') as fp:
-                schema = yaml.safe_load(fp)
+                schema = yaml.load(fp)
         except FileNotFoundError as exc:
             new_exc = ImproperExit(
                 f"Internal error: Cannot find schema file {schemafile}: {exc}")
@@ -436,7 +441,7 @@ def parse_yaml_file(yamlfile, name, schemafilename=None):
                 f"{schemafile}: {exc}")
             new_exc.__cause__ = None  # pylint: disable=invalid-name
             raise new_exc
-        except yaml.YAMLError as exc:
+        except YAMLError as exc:
             new_exc = ImproperExit(
                 "Internal error: YAML error reading schema file "
                 f"{schemafile}: {exc}")
@@ -460,6 +465,149 @@ def parse_yaml_file(yamlfile, name, schemafilename=None):
             raise new_exc
 
     return yaml_obj
+
+
+def write_yaml_file(yaml_obj, yamlfile, name):
+    """
+    Write a YAML object into a YAML file, overwriting any existing file.
+
+    Raises:
+        ImproperExit
+    """
+    yaml = YAML(typ='rt')
+    try:
+        with open(yamlfile, encoding='utf-8', mode='w') as fp:
+            yaml.dump(yaml_obj, fp)
+    except FileNotFoundError as exc:
+        new_exc = ImproperExit(
+            f"Cannot find {name} {yamlfile}: {exc}")
+        new_exc.__cause__ = None  # pylint: disable=invalid-name
+        raise new_exc
+    except PermissionError as exc:
+        new_exc = ImproperExit(
+            f"Permission error writing {name} {yamlfile}: {exc}")
+        new_exc.__cause__ = None  # pylint: disable=invalid-name
+        raise new_exc
+    except YAMLError as exc:
+        new_exc = ImproperExit(
+            f"YAML error writing {name} {yamlfile}: {exc}")
+        new_exc.__cause__ = None  # pylint: disable=invalid-name
+        raise new_exc
+
+
+def upgrade_config_dict(config_dict, config_filename, upgrade_config=False):
+    """
+    Upgrade the config dict to the current exporter version.
+    """
+
+    if 'metrics' not in config_dict and 'hmc' not in config_dict:
+        new_exc = ImproperExit(
+            "The exporter config file must specify either the new 'hmc' "
+            "item or the old 'metrics' item, but it specifies none.")
+        new_exc.__cause__ = None  # pylint: disable=invalid-name
+        raise new_exc
+
+    if 'metrics' in config_dict and 'hmc' in config_dict:
+        new_exc = ImproperExit(
+            "The exporter config file must specify either the new 'hmc' "
+            "item or the old 'metrics' item, but it specifies both.")
+        new_exc.__cause__ = None  # pylint: disable=invalid-name
+        raise new_exc
+
+    if 'version' in config_dict and config_dict['version'] != 2:
+        new_exc = ImproperExit(
+            "The exporter config file must have the version 2 format, "
+            f"but it specifies the version {config_dict['version']} "
+            "format.")
+        new_exc.__cause__ = None  # pylint: disable=invalid-name
+        raise new_exc
+
+    if 'metrics' in config_dict and 'hmc' not in config_dict:
+        # Exporter config file has version 1
+
+        if upgrade_config:
+            logprint(logging.WARNING, PRINT_ALWAYS,
+                     f"The exporter config file {config_filename} has the "
+                     "old version 1 format and is now upgraded.")
+        else:
+            logprint(logging.WARNING, PRINT_ALWAYS,
+                     f"The exporter config file {config_filename} has the "
+                     "old version 1 format and is now internally upgraded "
+                     "without persisting the changes to the file. Please "
+                     "upgrade the file using the '--upgrade-config' option.")
+
+        # Convert old format to new format
+        config_dict.insert(0, key='version', value=2)
+
+        old_creds = config_dict['metrics']
+        hmc_item = {
+            'host': old_creds['hmc'],
+            'userid': old_creds['userid'],
+            'password': old_creds['password'],
+            'verify_cert': old_creds.get('verify_cert', True),
+        }
+        config_dict.insert(1, key='hmc', value=hmc_item)
+        del config_dict['metrics']
+
+        if 'metric_groups' not in config_dict:
+            logprint(logging.INFO, PRINT_ALWAYS,
+                     "Adding a 'metric_groups' item to the exporter "
+                     "configuration that enables all metric groups.")
+            config_dict['metric_groups'] = {
+                'cpc-usage-overview': {'export': True},
+                'logical-partition-usage': {'export': True},
+                'channel-usage': {'export': True},
+                'crypto-usage': {'export': True},
+                'flash-memory-usage': {'export': True},
+                'roce-usage': {'export': True},
+                'logical-partition-resource': {'export': True},
+                'dpm-system-usage-overview': {'export': True},
+                'partition-usage': {'export': True},
+                'adapter-usage': {'export': True},
+                'network-physical-adapter-port': {'export': True},
+                'partition-attached-network-interface': {'export': True},
+                'partition-resource': {'export': True},
+                'storagegroup-resource': {'export': True},
+                'storagevolume-resource': {'export': True},
+                'zcpc-environmentals-and-power': {'export': True},
+                'zcpc-processor-usage': {'export': True},
+                'environmental-power-status': {'export': True},
+                'cpc-resource': {'export': True},
+            }
+    else:
+        # Exporter config file has current version
+        if upgrade_config:
+            logprint(logging.WARNING, PRINT_ALWAYS,
+                     f"The exporter config file {config_filename} has the "
+                     "current version and is not being changed.")
+
+
+def upgrade_config_file(config_filename):
+    """
+    Parse the exporter config file.
+
+    Backlevel formats are dynamically upgraded to the current format (without
+    changing the file).
+    """
+
+    config_dict = parse_yaml_file(
+        config_filename, 'exporter config file', 'config_schema.yaml')
+    upgrade_config_dict(config_dict, config_filename, upgrade_config=True)
+    write_yaml_file(config_dict, config_filename, 'exporter config file')
+
+
+def parse_config_file(config_filename):
+    """
+    Parse the exporter config file.
+
+    Backlevel formats are internally upgraded to the current format (without
+    changing the file).
+    """
+
+    config_dict = parse_yaml_file(
+        config_filename, 'exporter config file', 'config_schema.yaml')
+    upgrade_config_dict(config_dict, config_filename)
+    return config_dict
 
 
 def json_path_str(path_list):
@@ -2139,11 +2287,17 @@ def main():
 
     try:
         args = parse_args(sys.argv[1:])
+        config_filename = args.c
         if args.version:
             print_version()
             sys.exit(0)
         if args.help_config:
             help_config()
+            sys.exit(0)
+        if args.upgrade_config:
+            logprint(logging.INFO, PRINT_V,
+                     f"Upgrading exporter config file: {config_filename}")
+            upgrade_config_file(config_filename)
             sys.exit(0)
 
         VERBOSE_LEVEL = args.verbose
@@ -2165,77 +2319,9 @@ def main():
         logprint(logging.INFO, PRINT_ALWAYS,
                  f"Verbosity level: {VERBOSE_LEVEL}")
 
-        config_filename = args.c
         logprint(logging.INFO, PRINT_V,
                  f"Parsing exporter config file: {config_filename}")
-        config_dict = parse_yaml_file(
-            config_filename, 'exporter config file', 'config_schema.yaml')
-
-        if 'metrics' not in config_dict and 'hmc' not in config_dict:
-            new_exc = ImproperExit(
-                "The exporter config file must specify either the new 'hmc' "
-                "item or the old 'metrics' item, but it specifies none.")
-            new_exc.__cause__ = None  # pylint: disable=invalid-name
-            raise new_exc
-
-        if 'metrics' in config_dict and 'hmc' in config_dict:
-            new_exc = ImproperExit(
-                "The exporter config file must specify either the new 'hmc' "
-                "item or the old 'metrics' item, but it specifies both.")
-            new_exc.__cause__ = None  # pylint: disable=invalid-name
-            raise new_exc
-
-        if 'version' in config_dict and config_dict['version'] != 2:
-            new_exc = ImproperExit(
-                "The exporter config file must have the version 2 format, "
-                f"but it specifies the version {config_dict['version']} "
-                "format.")
-            new_exc.__cause__ = None  # pylint: disable=invalid-name
-            raise new_exc
-
-        if 'metrics' in config_dict and 'hmc' not in config_dict:
-            logprint(logging.WARNING, PRINT_ALWAYS,
-                     "DEPRECATED: The exporter config file has the old version "
-                     "1 format. Please migrate to the new version 2 format "
-                     "(use --help-config). The version 1 format is deprecated "
-                     "and support for it will be removed in a future release.")
-
-            # Convert old format to new format
-            config_dict['version'] = 2
-            old_creds = config_dict['metrics']
-            config_dict['hmc'] = {
-                'host': old_creds['hmc'],
-                'userid': old_creds['userid'],
-                'password': old_creds['password'],
-                'verify_cert': old_creds.get('verify_cert', True),
-            }
-            del config_dict['metrics']
-
-        if 'metric_groups' not in config_dict:
-            logprint(logging.INFO, PRINT_ALWAYS,
-                     "The exporter config file has no 'metric_groups' item. "
-                     "Exporting all metric groups.")
-            config_dict['metric_groups'] = {
-                'cpc-usage-overview': {'export': True},
-                'logical-partition-usage': {'export': True},
-                'channel-usage': {'export': True},
-                'crypto-usage': {'export': True},
-                'flash-memory-usage': {'export': True},
-                'roce-usage': {'export': True},
-                'logical-partition-resource': {'export': True},
-                'dpm-system-usage-overview': {'export': True},
-                'partition-usage': {'export': True},
-                'adapter-usage': {'export': True},
-                'network-physical-adapter-port': {'export': True},
-                'partition-attached-network-interface': {'export': True},
-                'partition-resource': {'export': True},
-                'storagegroup-resource': {'export': True},
-                'storagevolume-resource': {'export': True},
-                'zcpc-environmentals-and-power': {'export': True},
-                'zcpc-processor-usage': {'export': True},
-                'environmental-power-status': {'export': True},
-                'cpc-resource': {'export': True},
-            }
+        config_dict = parse_config_file(config_filename)
 
         metrics_filename = os.path.join(
             os.path.dirname(__file__), 'data', 'metrics.yaml')

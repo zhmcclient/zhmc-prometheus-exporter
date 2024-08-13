@@ -21,7 +21,12 @@ zhmcclient>=1.17.0
 urllib3>=1.26.19
 jsonschema>=3.2.0
 Jinja2>=3.1.4
+ruamel.yaml>=0.18.6
 
+
+# Indirect dependencies for install that are needed for some reason (must be consistent with minimum-constraints-install.txt)
+
+# PyYAML is used by zhmcclient 1.17
 # PyYAML 5.3.x has wheel archives for Python 2.7, 3.5 - 3.9
 # PyYAML 5.4.x has wheel archives for Python 2.7, 3.6 - 3.9
 # PyYAML 6.0.0 has wheel archives for Python 3.6 - 3.11
@@ -30,9 +35,6 @@ Jinja2>=3.1.4
 #   released, see https://github.com/yaml/pyyaml/issues/724.
 PyYAML>=5.3.1,!=5.4.0,!=5.4.1; python_version <= '3.11'
 PyYAML>=5.3.1,!=5.4.0,!=5.4.1,!=6.0.0; python_version >= '3.12'
-
-
-# Indirect dependencies for install that are needed for some reason (must be consistent with minimum-constraints-install.txt)
 
 # pyrsistent is used by jsonschema 3.x (no longer by jsonschema 4.x)
 # pyrsistent 0.15.0 fixes import errors on Python>=3.10, but only 0.18.1 has

@@ -111,6 +111,9 @@ The ``zhmc_prometheus_exporter`` command supports the following arguments:
 
       --version             show versions of exporter and zhmcclient library and exit
 
+      --upgrade-config      upgrade the exporter config file to the current version of the exporter
+                            and exit
+
       --help-config         show help for exporter config file and exit
 
 
@@ -928,85 +931,15 @@ Migration of exporter config file to version 2 format
 The exporter versions 1.x supported the version 1 format for the exporter config
 file and referred to it as the "HMC credentials file". If you have been using
 an exporter version 1.x, you should migrate your "HMC credentials file" to
-the version 2 format. The version 1 format is deprecated and support for it
-will be removed in a future version of the exporter.
+the version 2 format. The version 1 format is still supported but it is
+internally upgraded to the current version when using the exporter, without
+persisting the changes to the file.
 
-Migration to the version 2 format is done as follows:
+The '--upgrade-config'  command line option can be used to upgrade the
+exporter config file to the current version. When doing that, YAML comments
+are preserved, except when they are preceding or following any items that are
+removed as part of the upgrade (e.g. the 'metrics' item in a version 1 file).
 
-* Add a 'version' item:
-
-  .. code-block:: yaml
-
-      version: 2
-
-* Change the old 'metrics' item to the new 'hmc' item:
-
-  'metrics' item from version 1 format:
-
-  .. code-block:: yaml
-
-      metrics:
-        hmc: 9.10.11.12
-        userid: userid
-        password: password
-        verify_cert: true
-
-  'hmc' item from version 2 format:
-
-  .. code-block:: yaml
-
-      hmc:                     # changed
-        host: 9.10.11.12       # changed
-        userid: userid
-        password: password
-        verify_cert: true
-
-* Add a 'metric_groups' item to specify which metric groups to export:
-
-  .. code-block:: yaml
-
-      metric_groups:
-        # Available for CPCs in classic mode
-        cpc-usage-overview:
-          export: true
-        logical-partition-usage:
-          export: true
-        channel-usage:
-          export: true
-        crypto-usage:
-          export: true
-        flash-memory-usage:
-          export: true
-        roce-usage:
-          export: true
-        logical-partition-resource:
-          export: true
-        # Available for CPCs in DPM mode
-        dpm-system-usage-overview:
-          export: true
-        partition-usage:
-          export: true
-        adapter-usage:
-          export: true
-        network-physical-adapter-port:
-          export: true
-        partition-attached-network-interface:
-          export: true
-        partition-resource:
-          export: true
-        storagegroup-resource:
-          export: true
-        storagevolume-resource:
-          export: true
-        # Available for CPCs in any mode
-        zcpc-environmentals-and-power:
-          export: true
-        zcpc-processor-usage:
-          export: true
-        environmental-power-status:
-          export: true
-        cpc-resource:
-          export: true
 
 Sample exporter config file
 ---------------------------

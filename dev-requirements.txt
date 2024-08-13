@@ -21,7 +21,7 @@ safety>=3.0.1
 safety-schemas>=0.0.2
 # TODO: Change to dparse 0.6.4 once released
 dparse>=0.6.4b0
-ruamel.yaml>=0.17.21
+# ruamel.yaml is used by safety and is covered in requirements.txt
 click>=8.0.2
 Authlib>=1.2.0
 marshmallow>=3.15.0
@@ -33,6 +33,7 @@ psutil>=6.0.0
 
 # Bandit checker
 bandit>=1.7.8
+# PyYAML is used by bandit and is covered in requirements.txt
 
 # Unit test (imports into testcases):
 pytest>=6.2.5
