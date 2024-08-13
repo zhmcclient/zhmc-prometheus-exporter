@@ -1,0 +1,3 @@
+Removed the '-m' option for specifying a metric definition file. The metric
+definition file is now part of the Python distribution archive and there
+is no need anymore for users to edit it.

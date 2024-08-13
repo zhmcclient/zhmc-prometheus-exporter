@@ -13,6 +13,9 @@ build>=1.0.0
 virtualenv>=20.25.0
 pyproject-hooks>=1.1.0
 
+# Change log
+towncrier>=22.8.0
+
 # Safety CI by pyup.io
 safety>=3.0.1
 safety-schemas>=0.0.2

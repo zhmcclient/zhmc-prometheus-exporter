@@ -159,7 +159,7 @@ check_py_files := \
 done_dir := done
 
 # Packages whose dependencies are checked using pip-missing-reqs
-check_reqs_packages := pip_check_reqs pipdeptree build pytest coverage coveralls flake8 ruff pylint twine safety bandit sphinx
+check_reqs_packages := pip_check_reqs pipdeptree build pytest coverage coveralls flake8 ruff pylint twine safety bandit sphinx towncrier
 
 # Ruff config file
 ruff_rc_file := .ruff.toml

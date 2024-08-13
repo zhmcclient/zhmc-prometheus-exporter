@@ -16,67 +16,13 @@
 Change log
 ----------
 
+.. ============================================================================
+..
+.. Do not add change records here directly, but create fragment files instead!
+..
+.. ============================================================================
 
-Version 2.0.0.dev1
-^^^^^^^^^^^^^^^^^^
-
-This version contains all fixes up to version 1.7.x.
-
-Released: not yet
-
-**Incompatible changes:**
-
-* Changed the format of the exporter config file (previously referred to as
-  "HMC credentials file") to add controls for enabling or disabling the export
-  of the metric groups, and to clean up some naming idiosyncrasies on that
-  opportunity. The old format is now deprecated and support for it will be
-  removed in a future release. (issue #418)
-
-* Removed the '-m' option for specifying a metric definition file. The metric
-  definition file is now part of the Python distribution archive and there
-  is no need anymore for users to edit it. (related to issue #418)
-
-* Dropped support for Python 3.6 and 3.7. The minimum Python version is now
-  3.8. (issue #570)
-
-**Deprecations:**
-
-**Bug fixes:**
-
-* Addressed safety issues up to 2024-08-13.
-
-* Test: Fixed coverage reporting (locally and on coveralls.io).
-
-**Enhancements:**
-
-* Added support for running the 'ruff' checker via "make ruff" and added that
-  to the test workflow. (issue #522)
-
-* Added support for running the 'bandit' checker with a new make target
-  'bandit', and added that to the GitHub Actions test workflow.
-  Adjusted the code in order to pass the bandit check. (issue #523)
-
-* Improved build of the Docker image: It now uses the package version as the
-  image tag, sets OCI metadata as labels, and reduces the image size by using
-  the python:3.12-alpine base image, building from the Python distribution
-  archive instead of copying the repo, uninstalling pip, setuptools and
-  wheel since they are not needed to run the exporter, and using a multi-staged
-  build to copy just the installed Python packages. This reduced the image file
-  size with Docker on Ubuntu from 256 MB to 73 MB.
-
-* Dev: Migrated from setup.py to pyproject.toml with setuptools as build backend.
-  This provides for automatic determination of the package version without
-  having to edit a version file. (issue #520)
-
-**Cleanup:**
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
-
-
+.. towncrier start
 Version 1.7.0
 ^^^^^^^^^^^^^
 
