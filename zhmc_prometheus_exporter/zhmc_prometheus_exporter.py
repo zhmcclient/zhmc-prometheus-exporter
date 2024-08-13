@@ -155,6 +155,11 @@ class ImproperExit(Exception):
     pass
 
 
+class InvalidMetricDefinitionFile(ImproperExit):
+    """Terminating because of invalid metric definition file"""
+    pass
+
+
 class EarlyExit(Exception):
     """Terminating before the server was started"""
     pass
@@ -762,7 +767,7 @@ def create_metrics_context(
         try:
             resource_path = yaml_metric_groups[metric_group]['resource']
         except KeyError:
-            new_exc = ImproperExit(
+            new_exc = InvalidMetricDefinitionFile(
                 "Missing 'resource' item in resource metric group "
                 f"{metric_group} in the metric definition file")
             new_exc.__cause__ = None  # pylint: disable=invalid-name
@@ -864,11 +869,12 @@ def create_metrics_context(
                     resources[metric_group].append(sv)
                     uri2resource[sv.uri] = sv
         else:
-            logprint(logging.ERROR, PRINT_ALWAYS,
-                     f"Unknown resource item {resource_path!r} in resource "
-                     f"metric group {metric_group!r} in the metric definition "
-                     "file. The metric definition file may not match the "
-                     "version of the exporter.")
+            new_exc = InvalidMetricDefinitionFile(
+                f"Unknown resource item {resource_path!r} in resource "
+                f"metric group {metric_group!r} in the metric definition "
+                "file.")
+            new_exc.__cause__ = None  # pylint: disable=invalid-name
+            raise new_exc
 
     # Fetch backing adapters of NICs, if needed
     if 'partition-attached-network-interface' in exported_hmc_metric_groups:
@@ -1079,7 +1085,7 @@ def uri_to_resource(client, uri2resource, uri):
     after the start of the exporter.
 
     The following URIs are supported (these are all that are
-    currently used by uri2resource and related functions in the default
+    currently used by uri2resource and related functions in the
     metric definition file):
 
       * nic - used in nic metric group (to get back to original NIC object that
@@ -1265,7 +1271,7 @@ def cpc_from_resource(resource):
 
 
 def build_family_objects(
-        metrics_object, yaml_metric_groups, yaml_metrics, metrics_filename,
+        metrics_object, yaml_metric_groups, yaml_metrics,
         extra_labels, hmc_version, hmc_api_version, hmc_features,
         se_versions_by_cpc, se_features_by_cpc, session, resource_cache=None,
         uri2resource=None):
@@ -1292,10 +1298,8 @@ def build_family_objects(
         except KeyError:
             warnings.warn(
                 f"The HMC supports a new metric group {metric_group!r} that is "
-                f"not supported by metric definition file {metrics_filename}. "
-                "Please make sure your metric definition file corresponds to "
-                "the exporter version, and if it does then open an exporter "
-                "ticket to get the new metric group supported.")
+                "not yet supported by this version of the exporter. Please "
+                "open an exporter issue to get the new metric group supported.")
             continue  # Skip this metric group
 
         for object_value in metric_group_value.object_values:
@@ -1308,10 +1312,8 @@ def build_family_objects(
                     warnings.warn(
                         f"The HMC metric group {metric_group!r} contains a "
                         f"resource with URI '{object_value.resource_uri}' "
-                        "that is not found on the HMC. Please make sure your "
-                        "metric definition file corresponds to the exporter "
-                        "version, and if it does then open an exporter ticket "
-                        "for that.")
+                        "that is not found on the HMC. Please open an exporter "
+                        "issue for that.")
                     continue  # Skip this metric
             else:
                 resource = object_value.resource
@@ -1349,11 +1351,9 @@ def build_family_objects(
                 except KeyError:
                     warnings.warn(
                         f"The HMC supports a new metric {metric!r} in "
-                        f"metric group {metric_group!r} that is not supported "
-                        f"by metric definition file {metrics_filename}. "
-                        "Please make sure your metric definition file "
-                        "corresponds to the exporter version, and if it does "
-                        "then open an exporter ticket to get the new metric "
+                        f"metric group {metric_group!r} that is not yet "
+                        "supported by this version of the exporter. Please "
+                        "open an exporter issue to get the new metric "
                         "supported.")
                     continue  # Skip this metric
 
@@ -1430,7 +1430,7 @@ def build_family_objects(
 
 
 def build_family_objects_res(
-        resources, yaml_metric_groups, yaml_metrics, metrics_filename,
+        resources, yaml_metric_groups, yaml_metrics,
         extra_labels, hmc_version, hmc_api_version, hmc_features,
         se_versions_by_cpc, se_features_by_cpc, session, resource_cache=None,
         uri2resource=None):
@@ -1545,19 +1545,18 @@ def build_family_objects_res(
                             res_str = ""
                         warnings.warn(
                             f"Skipping Prometheus metric '{exporter_name}' in "
-                            f"resource metric group '{metric_group}' in metric "
-                            f"definition file {metrics_filename}, because its "
-                            f"resource property '{prop_name}' is not returned "
-                            f"by the HMC{res_str}")
+                            f"resource metric group '{metric_group}' in the "
+                            f"metric definition file, because its resource "
+                            f"property '{prop_name}' is not returned by the "
+                            f"HMC{res_str}")
                         continue
                 else:
                     prop_expr = yaml_metric.get('properties_expression', None)
                     if not prop_expr:
-                        new_exc = ImproperExit(
-                            "Metric definition for exporter name "
-                            f"'{exporter_name}' in metric definition file "
-                            f"{metrics_filename} has neither 'property_name' "
-                            "nor 'properties_expression'")
+                        new_exc = InvalidMetricDefinitionFile(
+                            f"Exporter name '{exporter_name}' in the "
+                            "metric definition file has neither "
+                            "'property_name' nor 'properties_expression'")
                         new_exc.__cause__ = None  # pylint: disable=invalid-name
                         raise new_exc
 
@@ -1565,11 +1564,10 @@ def build_family_objects_res(
                         func = env.compile_expression(
                             prop_expr, undefined_to_none=False)
                     except jinja2.exceptions.TemplateError as exc:
-                        new_exc = ImproperExit(
+                        new_exc = InvalidMetricDefinitionFile(
                             "Error compiling properties expression "
                             f"{prop_expr!r} defined for exporter name "
-                            f"'{exporter_name}' in metric definition file "
-                            f"{metrics_filename}: "
+                            f"'{exporter_name}' in the metric definition file: "
                             f"{exc.__class__.__name__}: {exc}")
                         new_exc.__cause__ = None  # pylint: disable=invalid-name
                         raise new_exc
@@ -1624,11 +1622,10 @@ def build_family_objects_res(
                         res_str = resource_str(resource)
                         warnings.warn(
                             f"Skipping property '{prop_name}' of resource "
-                            f"metric group '{metric_group}' in metric "
-                            f"definition file {metrics_filename}, because its "
-                            "valuemap does not define a mapping for "
-                            f"value {metric_value!r} returned for "
-                            f"{res_str}")
+                            f"metric group '{metric_group}' in the "
+                            "metric definition file, because its valuemap does "
+                            f"not define a mapping for value {metric_value!r} "
+                            f"returned for {res_str}")
                         continue
 
                 # Transform HMC percentages (value 100 means 100% = 1) to
@@ -1785,8 +1782,7 @@ class ZHMCUsageCollector():
         logprint(logging.DEBUG, None,
                  "Building family objects for HMC metrics")
         family_objects = build_family_objects(
-            metrics_object, self.yaml_metric_groups,
-            self.yaml_metrics, self.metrics_filename,
+            metrics_object, self.yaml_metric_groups, self.yaml_metrics,
             self.extra_labels, self.hmc_version, self.hmc_api_version,
             self.hmc_features, self.se_versions_by_cpc, self.se_features_by_cpc,
             self.session, self.resource_cache, self.uri2resource)
@@ -1794,8 +1790,7 @@ class ZHMCUsageCollector():
         logprint(logging.DEBUG, None,
                  "Building family objects for resource metrics")
         family_objects.update(build_family_objects_res(
-            self.resources, self.yaml_metric_groups,
-            self.yaml_metrics, self.metrics_filename,
+            self.resources, self.yaml_metric_groups, self.yaml_metrics,
             self.extra_labels, self.hmc_version, self.hmc_api_version,
             self.hmc_features, self.se_versions_by_cpc, self.se_features_by_cpc,
             self.session, self.resource_cache, self.uri2resource))
@@ -2253,18 +2248,16 @@ def main():
         # Check that the metric_groups and metrics items are consistent
         for mg in yaml_metrics:
             if mg not in yaml_metric_groups:
-                new_exc = ImproperExit(
-                    f"Metric group '{mg}' in metric definition file "
-                    f"{metrics_filename} is defined in 'metrics' but not in "
-                    "'metric_groups'")
+                new_exc = InvalidMetricDefinitionFile(
+                    f"Metric group '{mg}' in the metric definition file "
+                    "is defined in 'metrics' but not in 'metric_groups'")
                 new_exc.__cause__ = None  # pylint: disable=invalid-name
                 raise new_exc
         for mg in yaml_metric_groups:
             if mg not in yaml_metrics:
-                new_exc = ImproperExit(
-                    f"Metric group '{mg}' in metric definition file "
-                    f"{metrics_filename} is defined in 'metric_groups' but "
-                    "not in 'metrics'")
+                new_exc = InvalidMetricDefinitionFile(
+                    f"Metric group '{mg}' in the metric definition file "
+                    "is defined in 'metric_groups' but not in 'metrics'")
                 new_exc.__cause__ = None  # pylint: disable=invalid-name
                 raise new_exc
 
@@ -2273,10 +2266,9 @@ def main():
             yaml_mg = yaml_metric_groups[mg]
             mg_type = yaml_mg.get('type', 'metric')
             if mg_type == 'metric' and not isinstance(yaml_m, dict):
-                new_exc = ImproperExit(
+                new_exc = InvalidMetricDefinitionFile(
                     f"Metrics for metric group '{mg}' of type 'metric' must "
-                    "use the dictionary format in metric definition file "
-                    f"{metrics_filename}")
+                    "use the dictionary format in the metric definition file")
                 new_exc.__cause__ = None  # pylint: disable=invalid-name
                 raise new_exc
 
@@ -2467,6 +2459,11 @@ def main():
     except EarlyExit as exc:
         logprint(logging.ERROR, PRINT_ALWAYS,
                  f"Error: {exc}")
+        exit_rc(1)
+    except InvalidMetricDefinitionFile as exc:
+        logprint(logging.ERROR, PRINT_ALWAYS,
+                 f"Error: Invalid metric definition file: {exc}")
+        cleanup(session, context, resources, coll)
         exit_rc(1)
     except ImproperExit as exc:
         logprint(logging.ERROR, PRINT_ALWAYS,
