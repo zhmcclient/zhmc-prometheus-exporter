@@ -1,0 +1,1 @@
+Dropped support for Python 3.6 and 3.7. The minimum Python version is now 3.8.
