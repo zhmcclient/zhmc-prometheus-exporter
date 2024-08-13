@@ -38,7 +38,7 @@ pyrsistent==0.18.1
 # All other indirect dependencies for install that are not in requirements.txt
 
 attrs==19.2.0
-certifi==2023.07.22
+certifi==2024.07.04
 charset-normalizer==2.0.4
 decorator==4.0.11
 docopt==0.6.2
@@ -50,4 +50,4 @@ pytz==2019.1
 requests==2.32.2
 stomp-py==8.1.1
 typing-extensions==4.7.1
-zipp==0.5.2  # Used in some combinations of Python version and package level
+zipp==3.19.1  # Used in some combinations of Python version and package level
