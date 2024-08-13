@@ -468,7 +468,7 @@ class TestMetrics(unittest.TestCase):
         metrics_object = zhmc_prometheus_exporter.retrieve_metrics(context)
 
         families = zhmc_prometheus_exporter.build_family_objects(
-            metrics_object, yaml_metric_groups, yaml_metrics, 'file',
+            metrics_object, yaml_metric_groups, yaml_metrics,
             extra_labels, hmc_version, hmc_api_version, hmc_features,
             se_versions_by_cpc, se_features_by_cpc, session)
 
@@ -490,7 +490,7 @@ class TestMetrics(unittest.TestCase):
         self.assertEqual(set(family._labelnames), {"label1", "resource"})
 
         families = zhmc_prometheus_exporter.build_family_objects_res(
-            resources, yaml_metric_groups, yaml_metrics, 'file',
+            resources, yaml_metric_groups, yaml_metrics,
             extra_labels, hmc_version, hmc_api_version, hmc_features,
             se_versions_by_cpc, se_features_by_cpc, session)
 

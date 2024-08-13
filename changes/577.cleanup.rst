@@ -1,0 +1,2 @@
+Because the metrics file is now part of the package, adjusted any error messages
+dealing with the metrics file accordingly.
