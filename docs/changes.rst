@@ -17,30 +17,16 @@ Change log
 ----------
 
 
-Version 1.7.1.dev1
-^^^^^^^^^^^^^^^^^^
+Version 1.7.1
+^^^^^^^^^^^^^
 
-Released: not yet
-
-**Incompatible changes:**
-
-**Deprecations:**
+Released: 2024-08-14
 
 **Bug fixes:**
 
 * Addressed safety issues up to 2024-08-13.
 
 * Test: Fixed coverage reporting (locally and on coveralls.io).
-
-**Enhancements:**
-
-**Cleanup:**
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 1.7.0
