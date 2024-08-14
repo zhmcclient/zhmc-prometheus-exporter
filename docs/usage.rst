@@ -853,11 +853,11 @@ The exporter config file is in YAML format and has the following structure:
 
     version: 2
 
-    hmc:
-      host: {hmc-ip-address}
-      userid: {hmc-userid}
-      password: {hmc-password}
-      verify_cert: {hmc-verify-cert}
+    hmcs:
+      - host: {hmc-ip-address}
+        userid: {hmc-userid}
+        password: {hmc-password}
+        verify_cert: {hmc-verify-cert}
 
     prometheus:  # optional
       port: {prom-port}
