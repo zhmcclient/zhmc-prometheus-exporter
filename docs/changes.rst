@@ -32,6 +32,12 @@ Released: not yet
 
 * Test: Fixed coverage reporting (locally and on coveralls.io).
 
+* Fixed a bug where resources that ceased their existence while the exporter
+  was running were removed from the internal data structures such that in some
+  cases the wrong resource was removed from the internal data structures,
+  either leading to an immediate IndexError, or to follow-on errors lateron.
+  (issue #605)
+
 **Enhancements:**
 
 **Cleanup:**

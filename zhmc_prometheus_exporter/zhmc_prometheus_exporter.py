@@ -1466,11 +1466,10 @@ def build_family_objects_res(
     family_objects = {}
     for metric_group, res_list in resources.items():
 
+        ceased_res_indexes = []  # Indexes into res_list
+
         yaml_metric_group = yaml_metric_groups[metric_group]
-        for i, resource in enumerate(list(res_list)):
-            # Note: We use list() because resources that no longer exist will
-            # be removed from the original list, so this provides a stable
-            # iteration when items are removed from the original list.
+        for i, resource in enumerate(res_list):
 
             if resource.ceased_existence:
                 try:
@@ -1482,14 +1481,10 @@ def build_family_objects_res(
                 logprint(logging.INFO, PRINT_VV,
                          "Resource no longer exists on HMC: {} {}".
                          format(resource.manager.class_name, res_str))
-                # Remove the resource from the list so it no longer show up
-                # in Prometheus data.
-                del res_list[i]
-                # Remove the resource from the resource cache. This does not
-                # influence what is shown in Prometheus data, but it is simply
-                # a cleanup.
-                if resource_cache:
-                    resource_cache.remove(resource.uri)
+
+                # Remember the resource to be removed
+                ceased_res_indexes.append(i)
+
                 continue
 
             cpc = cpc_from_resource(resource)
@@ -1690,6 +1685,22 @@ def build_family_objects_res(
 
                 # Add the metric value to the Family object
                 family_object.add_metric(list(labels.values()), metric_value)
+
+        # Remove the ceased resources from our data structures.
+        # Note: Deleting items from a list by index requires going backwards.
+        for i in reversed(ceased_res_indexes):
+
+            res_uri = res_list[i].uri
+
+            # Remove the resource from the resource list in 'resources' so it
+            # no longer shows up in the exported Prometheus data.
+            del res_list[i]
+
+            # Remove the resource from the resource cache. This does not
+            # influence what is shown in Prometheus data, but it is simply
+            # a cleanup.
+            if resource_cache:
+                resource_cache.remove(res_uri)
 
     return family_objects
 
