@@ -301,19 +301,19 @@ https://zhmc-prometheus-exporter.readthedocs.io/.
 # Version of config file format
 version: 2
 
-# HMC and its credentials
-hmc:
-  host: 9.10.11.12
-  userid: userid
-  password: password
-  # Note: The verify_cert parameter controls whether and how the HMC server
-  #       certificate is validated by the exporter. For more details,
-  #       see doc section 'HMC certificate'.
-  # verify_cert: true           # (default) Validate using default CA certs
-  # verify_cert: my_certs_file  # Validate using this CA certs file
-  # verify_cert: my_certs_dir   # Validate using this CA certs directory
-  # verify_cert: false          # Disable validation
-  verify_cert: false
+# Redundant HMCs and their credentials
+hmcs:
+  - host: 9.10.11.12
+    userid: userid
+    password: password
+    # Note: The verify_cert parameter controls whether and how the HMC server
+    #       certificate is validated by the exporter. For more details,
+    #       see doc section 'HMC certificate'.
+    # verify_cert: true           # (default) Validate using default CA certs
+    # verify_cert: my_certs_file  # Validate using this CA certs file
+    # verify_cert: my_certs_dir   # Validate using this CA certs directory
+    # verify_cert: false          # Disable validation
+    verify_cert: false
 
 # Communication with Prometheus
 prometheus:
@@ -505,16 +505,16 @@ def upgrade_config_dict(config_dict, config_filename, upgrade_config=False):
     Upgrade the config dict to the current exporter version.
     """
 
-    if 'metrics' not in config_dict and 'hmc' not in config_dict:
+    if 'metrics' not in config_dict and 'hmcs' not in config_dict:
         new_exc = ImproperExit(
-            "The exporter config file must specify either the new 'hmc' "
+            "The exporter config file must specify either the new 'hmcs' "
             "item or the old 'metrics' item, but it specifies none.")
         new_exc.__cause__ = None  # pylint: disable=invalid-name
         raise new_exc
 
-    if 'metrics' in config_dict and 'hmc' in config_dict:
+    if 'metrics' in config_dict and 'hmcs' in config_dict:
         new_exc = ImproperExit(
-            "The exporter config file must specify either the new 'hmc' "
+            "The exporter config file must specify either the new 'hmcs' "
             "item or the old 'metrics' item, but it specifies both.")
         new_exc.__cause__ = None  # pylint: disable=invalid-name
         raise new_exc
@@ -527,7 +527,7 @@ def upgrade_config_dict(config_dict, config_filename, upgrade_config=False):
         new_exc.__cause__ = None  # pylint: disable=invalid-name
         raise new_exc
 
-    if 'metrics' in config_dict and 'hmc' not in config_dict:
+    if 'metrics' in config_dict and 'hmcs' not in config_dict:
         # Exporter config file has version 1
 
         if upgrade_config:
@@ -551,7 +551,7 @@ def upgrade_config_dict(config_dict, config_filename, upgrade_config=False):
             'password': old_creds['password'],
             'verify_cert': old_creds.get('verify_cert', True),
         }
-        config_dict.insert(1, key='hmc', value=hmc_item)
+        config_dict.insert(1, key='hmcs', value=[hmc_item])
         del config_dict['metrics']
 
         if 'metric_groups' not in config_dict:
@@ -814,7 +814,12 @@ def create_session(config_dict, config_filename):
     # These warnings do not concern us
     urllib3.disable_warnings()
 
-    hmc_dict = config_dict["hmc"]
+    hmcs = config_dict["hmcs"]
+    if not hmcs:
+        raise ImproperExit(
+            "The 'hmcs' item in the exporter config file does not specify "
+            "any HMCs.")
+    hmc_dict = hmcs[0]
 
     logprint(logging.INFO, PRINT_V,
              f"HMC host: {hmc_dict['host']}")

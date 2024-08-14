@@ -84,8 +84,8 @@ TESTCASES_UPGRADE_CONFIG_FILE = [
   password: mypassword
 """,
         f"""version: 2
-hmc:
-  host: 9.10.11.12
+hmcs:
+- host: 9.10.11.12
   userid: myuser
   password: mypassword
   verify_cert: true
@@ -112,8 +112,8 @@ extra_labels:
   value: HMC1
 """,
         f"""version: 2
-hmc:
-  host: 9.10.11.12
+hmcs:
+- host: 9.10.11.12
   userid: myuser
   password: mypassword
   verify_cert: false
@@ -145,8 +145,8 @@ extra_labels:
 """,
         f"""# exporter config file
 version: 2
-hmc:
-  host: 9.10.11.12
+hmcs:
+- host: 9.10.11.12
   userid: myuser
   password: mypassword
   verify_cert: false
@@ -167,8 +167,8 @@ extra_labels:
     (
         "Version 2 config file without metric_groups",
         """version: 2
-hmc:
-  host: 9.10.11.12
+hmcs:
+- host: 9.10.11.12
   userid: myuser
   password: mypassword
   verify_cert: false
@@ -177,8 +177,8 @@ extra_labels:
   value: HMC1
 """,
         """version: 2
-hmc:
-  host: 9.10.11.12
+hmcs:
+- host: 9.10.11.12
   userid: myuser
   password: mypassword
   verify_cert: false
@@ -196,14 +196,14 @@ extra_labels:
     (
         "Version 2 config file without verify_cert",
         """version: 2
-hmc:
-  host: 9.10.11.12
+hmcs:
+- host: 9.10.11.12
   userid: myuser
   password: mypassword
 """,
         """version: 2
-hmc:
-  host: 9.10.11.12
+hmcs:
+- host: 9.10.11.12
   userid: myuser
   password: mypassword
 """,
@@ -217,15 +217,15 @@ hmc:
     (
         "Version 2 config file with metric_groups",
         f"""version: 2
-hmc:
-  host: 9.10.11.12
+hmcs:
+- host: 9.10.11.12
   userid: myuser
   password: mypassword
 {DEFAULT_METRIC_GROUPS}
 """,
         f"""version: 2
-hmc:
-  host: 9.10.11.12
+hmcs:
+- host: 9.10.11.12
   userid: myuser
   password: mypassword
 {DEFAULT_METRIC_GROUPS}
@@ -246,19 +246,19 @@ hmc:
         None,
         [],
         zhmc_prometheus_exporter.ImproperExit,
-        r"^The exporter config file must specify either the new 'hmc' item "
+        r"^The exporter config file must specify either the new 'hmcs' item "
         r"or the old 'metrics' item, but it specifies none\.$"
     ),
 
     (
-        "Invalid version 1 config file with both 'metrics' and 'hmc' items",
+        "Invalid version 1 config file with both 'metrics' and 'hmcs' items",
         """metrics:
   hmc: 9.10.11.12
   userid: myuser
   password: mypassword
   verify_cert: false
-hmc:
-  host: 9.10.11.12
+hmcs:
+- host: 9.10.11.12
   userid: myuser
   password: mypassword
   verify_cert: false
@@ -266,15 +266,15 @@ hmc:
         None,
         [],
         zhmc_prometheus_exporter.ImproperExit,
-        r"^The exporter config file must specify either the new 'hmc' item "
+        r"^The exporter config file must specify either the new 'hmcs' item "
         r"or the old 'metrics' item, but it specifies both\.$"
     ),
 
     (
         "Config file with unknown version",
         """version: 3
-hmc:
-  host: 9.10.11.12
+hmcs:
+- host: 9.10.11.12
   userid: myuser
   password: mypassword
   verify_cert: false

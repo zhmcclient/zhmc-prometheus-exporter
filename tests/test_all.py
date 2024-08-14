@@ -305,16 +305,16 @@ class TestCreateContext(unittest.TestCase):
         hmc_api_version = (2, 37)
         hmc_features = []
         config_dict = {
-            "hmc": {
-                "host": "192.168.0.0", "userid": "user", "password": "pwd"
-            },
+            "hmcs": [
+                {"host": "192.168.0.0", "userid": "user", "password": "pwd"}
+            ],
         }
         session = zhmc_prometheus_exporter.create_session(
             config_dict, "filename")
         config_dict = {
-            "hmc": {
-                "host": "192.168.0.0", "userid": "user", "password": "pwd"
-            },
+            "hmcs": [
+                {"host": "192.168.0.0", "userid": "user", "password": "pwd"}
+            ],
             "metric_groups": {}
         }
         yaml_metric_groups = {}
@@ -528,9 +528,9 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
 
         session = setup_faked_session()
         config_dict = {
-            "hmc": {
-                "host": "192.168.0.0", "userid": "user", "password": "pwd"
-            },
+            "hmcs": [
+                {"host": "192.168.0.0", "userid": "user", "password": "pwd"}
+            ],
             "metric_groups": {
                 "dpm-system-usage-overview": {"export": True},
             }
@@ -583,9 +583,9 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
 
         session = setup_faked_session()
         config_dict = {
-            "hmc": {
-                "host": "192.168.0.0", "userid": "user", "password": "pwd"
-            },
+            "hmcs": [
+                {"host": "192.168.0.0", "userid": "user", "password": "pwd"}
+            ],
             "metric_groups": {
                 "dpm-system-usage-overview": {"export": True},
             }

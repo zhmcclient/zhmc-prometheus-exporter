@@ -10,27 +10,30 @@ properties:
   version:
     description: "Version of the config file format"
     type: integer
-  hmc:
-    description: The HMC host and credentials
-    type: object
-    required:
-      - host
-      - userid
-      - password
-    additionalProperties: false
-    properties:
-      host:
-        description: "Hostname or IP address of HMC"
-        type: string
-      userid:
-        description: "Userid used by the exporter to log on to the HMC"
-        type: string
-      password:
-        description: "Password of the HCM userid"
-        type: string
-      verify_cert:
-        description: "Controls whether and how the HMC certificate is verified. For details, see doc section 'HMC certificate'"
-        type: [boolean, string]
+  hmcs:
+    description: The set of redundant HMCs
+    type: array
+    default: []
+    items:
+      type: object
+      required:
+        - host
+        - userid
+        - password
+      additionalProperties: false
+      properties:
+        host:
+          description: "Hostname or IP address of HMC"
+          type: string
+        userid:
+          description: "Userid used by the exporter to log on to the HMC"
+          type: string
+        password:
+          description: "Password of the HCM userid"
+          type: string
+        verify_cert:
+          description: "Controls whether and how the HMC certificate is verified. For details, see doc section 'HMC certificate'"
+          type: [boolean, string]
   metrics:
     description: "Deprecated: The HMC host and credentials"
     type: object
