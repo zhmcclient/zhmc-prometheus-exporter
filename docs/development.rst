@@ -376,8 +376,7 @@ local clone of the zhmc-prometheus-exporter Git repo.
 11. On GitHub, close milestone ``M.N.U``.
 
     Verify that the milestone has no open items anymore. If it does have open
-    items, investigate why and fix. If the milestone does not have open items
-    anymore, close the milestone.
+    items, investigate why and fix (probably step 1 was not performed).
 
 12. Publish the package
 
