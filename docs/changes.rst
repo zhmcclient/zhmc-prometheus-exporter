@@ -28,7 +28,7 @@ Released: not yet
 
 **Bug fixes:**
 
-* Addressed safety issues up to 2024-08-13.
+* Addressed safety issues up to 2024-08-18.
 
 * Test: Fixed coverage reporting (locally and on coveralls.io).
 
