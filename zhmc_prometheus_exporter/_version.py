@@ -16,7 +16,12 @@
 Definition of the package version.
 """
 
-from ._version_scm import version, version_tuple
+# In the RTD docs build, _version_scm.py does not exist:
+try:
+    from ._version_scm import version, version_tuple
+except ImportError:
+    version = "unknown"
+    version_tuple = tuple("unknown")
 
 __all__ = ['__version__', '__version_tuple__']
 
