@@ -17,14 +17,10 @@ Change log
 ----------
 
 
-Version 1.7.1.dev1
-^^^^^^^^^^^^^^^^^^
+Version 1.7.1
+^^^^^^^^^^^^^
 
-Released: not yet
-
-**Incompatible changes:**
-
-**Deprecations:**
+Released: 2024-08-19
 
 **Bug fixes:**
 
@@ -37,16 +33,6 @@ Released: not yet
   cases the wrong resource was removed from the internal data structures,
   either leading to an immediate IndexError, or to follow-on errors lateron.
   (issue #605)
-
-**Enhancements:**
-
-**Cleanup:**
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/zhmcclient/zhmc-prometheus-exporter/issues
 
 
 Version 1.7.0
