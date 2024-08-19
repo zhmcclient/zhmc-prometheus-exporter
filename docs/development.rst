@@ -482,31 +482,19 @@ local clone of the zhmc-prometheus-exporter Git repo.
         git pull
         git checkout -b start_${MNU}
 
-3.  Add an initial Git tag for the new version
-
-    Note: An initial tag is necessary because the automatic version calculation
-    done by setuptools-scm uses the most recent tag in the commit history and
-    increases the least significant part of the version by one, without
-    providing any controls to change that behavior.
-
-    .. code-block:: sh
-
-        git tag ${MNU}a0
-        git push --tags
-
-4.  Commit your changes and push them to the remote repo:
+3.  Commit your changes and push them to the remote repo:
 
     .. code-block:: sh
 
         git commit -asm "Start ${MNU}"
         git push --set-upstream origin start_${MNU}
 
-5.  On GitHub, create a milestone for the new version ``M.N.U``.
+4.  On GitHub, create a milestone for the new version ``M.N.U``.
 
     You can create a milestone in GitHub via Issues -> Milestones -> New
     Milestone.
 
-6.  On GitHub, create a Pull Request for branch ``start_M.N.U``.
+5.  On GitHub, create a Pull Request for branch ``start_M.N.U``.
 
     Important: When creating Pull Requests, GitHub by default targets the
     ``master`` branch. When starting a version based on a stable branch, you
@@ -516,7 +504,7 @@ local clone of the zhmc-prometheus-exporter Git repo.
 
     Set the milestone of that PR to the new version ``M.N.U``.
 
-7.  On GitHub, go through all open issues and pull requests that still have
+6.  On GitHub, go through all open issues and pull requests that still have
     milestones for previous releases set, and either set them to the new
     milestone, or to have no milestone.
 
@@ -524,11 +512,16 @@ local clone of the zhmc-prometheus-exporter Git repo.
     should not be any such issues or pull requests anymore. So this step here
     is just an additional safeguard.
 
-8.  On GitHub, once the checks for the Pull Request for branch ``start_M.N.U``
+7.  On GitHub, once the checks for the Pull Request for branch ``start_M.N.U``
     have succeeded, merge the Pull Request (no review is needed). This
     automatically deletes the branch on GitHub.
 
-9.  Update and clean up the local repo:
+8.  Add release start tag and clean up the local repo:
+
+    Note: An initial tag is necessary because the automatic version calculation
+    done by setuptools-scm uses the most recent tag in the commit history and
+    increases the least significant part of the version by one, without
+    providing any controls to change that behavior.
 
     .. code-block:: sh
 
@@ -536,6 +529,8 @@ local clone of the zhmc-prometheus-exporter Git repo.
         git pull
         git branch -D start_${MNU}
         git branch -D -r origin/start_${MNU}
+        git tag -f ${MNU}a0
+        git push -f --tags
 
 Building the distribution archives
 ----------------------------------
