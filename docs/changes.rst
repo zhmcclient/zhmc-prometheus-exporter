@@ -34,6 +34,10 @@ Released: 2024-08-19
   either leading to an immediate IndexError, or to follow-on errors lateron.
   (issue #605)
 
+* Test: Fixed the issue that coveralls was not found in the test workflow on MacOS
+  with Python 3.9-3.11, by running it without login shell. Added Python 3.11 on
+  MacOS to the normal tests.
+
 
 Version 1.7.0
 ^^^^^^^^^^^^^
