@@ -38,6 +38,7 @@ Released: 2024-08-19
   with Python 3.9-3.11, by running it without login shell. Added Python 3.11 on
   MacOS to the normal tests.
 
+* Dev: Fixed new issue 'too-many-positional-arguments' reported by Pylint 3.3.0.
 
 Version 1.7.0
 ^^^^^^^^^^^^^
