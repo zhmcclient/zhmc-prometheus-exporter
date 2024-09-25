@@ -213,7 +213,7 @@ help:
 	@echo "  build      - Build the distribution files in $(dist_dir)"
 	@echo "  builddoc   - Build the documentation in $(doc_build_dir)"
 	@echo "  all        - Do all of the above"
-	@echo "  docker     - Build local Docker image in registry $(docker_registry)"
+	@echo "  docker     - Build local Docker image in registry $(docker_registry) and run it to show version"
 	@echo "  authors    - Generate AUTHORS.md file from git log"
 	@echo "  upload     - Upload the package to Pypi"
 	@echo "  clean      - Remove any temporary files"
@@ -455,6 +455,7 @@ $(done_dir)/docker_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/develop_$(pymn)_$(
 	@echo "Makefile: Building Docker image $(docker_registry):latest"
 	-$(call RM_FUNC,$@)
 	docker build --tag $(docker_registry):$(subst +,.,$(package_version)) --build-arg bdist_file=$(bdist_file) --build-arg package_version=$(subst +,.,$(package_version)) --build-arg build_date="$(shell date -Iseconds)" --build-arg git_commit="$(shell git rev-parse HEAD)" .
+	docker run --rm $(docker_registry):$(subst +,.,$(package_version)) --version
 	docker image list --filter reference=$(docker_registry)
 	@echo "Makefile: Done building Docker image"
 	echo "done" >$@
