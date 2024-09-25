@@ -21,14 +21,21 @@ RUN apt-get update \
 
 # Install the zhmc-prometheus-exporter package
 COPY ${bdist_file} /tmp/${bdist_file}
-RUN pip install --user /tmp/${bdist_file} \
-  && rm -f /tmp/${bdist_file} \
+RUN pip install --user /tmp/${bdist_file}
+
+# Show the installed Python packages
+RUN echo "Installed Python packages:" \
   && pip list
 
-# Uninstall Python packages not needed for running the package
-RUN python -m pip uninstall -y pip setuptools wheel
+# Display files in 'rpds' Python package (verifying that it can be imported)
+RUN echo "Files in rpds Python package:" \
+  && python -c "import rpds, os, sys; rpds_dir=os.path.dirname(rpds.__file__); print(rpds_dir); sys.stdout.flush(); os.system(f'ls -al {rpds_dir}')"
 
-FROM python:3.12-alpine
+# The Python 'rpds' package (used by 'jsonschema') has a shared library that is
+# built during its installation, and thus depends on system APIs of the OS used
+# in the builder container. Therefore, the OS used in the final container needs
+# to be compatible with the builder OS. We use the same OS image to make sure.
+FROM python:3.12-slim
 
 # Version of the zhmc-prometheus-exporter package
 ARG package_version
