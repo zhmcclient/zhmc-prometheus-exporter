@@ -40,6 +40,10 @@ Released: 2024-08-19
 
 * Dev: Fixed new issue 'too-many-positional-arguments' reported by Pylint 3.3.0.
 
+* Test: Added new indirect dependencies for package installation to the
+  minimum-constraints.txt file to make sure the package is tested with defined
+  minimum versions. (related to issue #623)
+
 Version 1.7.0
 ^^^^^^^^^^^^^
 
