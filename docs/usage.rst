@@ -32,10 +32,7 @@ Running in a Docker container
 -----------------------------
 
 If you want to run the exporter in a Docker container you can create the
-container as follows, using the ``Dockerfile`` provided in the Git repository.
-
-Note that the provided ``Dockerfile`` can also be used as a starting point if
-you want to embed the exporter in your own Docker/OCI image.
+container as follows, using the Dockerfile provided in the Git repository.
 
 * Clone the Git repository of the exporter and switch to the clone's root
   directory:
@@ -51,8 +48,8 @@ you want to embed the exporter in your own Docker/OCI image.
 
       $ make docker
 
-  This builds a container image named 'zhmcexporter:latest' in your local Docker
-  environment.
+  This builds a container image named 'zhmc_prometheus_exporter:latest' in your
+  local Docker environment.
 
   The exporter config file is not included in the image, and needs to be
   provided when running the image.
@@ -61,7 +58,7 @@ you want to embed the exporter in your own Docker/OCI image.
 
   .. code-block:: bash
 
-      $ docker run -it --rm -v $(pwd)/myconfig:/root/myconfig -p 9291:9291 zhmcexporter -c /root/myconfig/config.yaml -v
+      $ docker run --rm -v $(pwd)/myconfig:/root/myconfig -p 9291:9291 zhmc_prometheus_exporter -c /root/myconfig/config.yaml -v
 
   In this command, the exporter config file is provided on the local system
   as ``./myconfig/config.yaml``. The ``-v`` option of 'docker run' mounts the
