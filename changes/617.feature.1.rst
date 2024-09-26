@@ -1,0 +1,3 @@
+Dev: Encapsulated the releasing of a version to PyPI into new 'release_branch'
+and 'release_publish' make targets. See the development documentation for
+details.

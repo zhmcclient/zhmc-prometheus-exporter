@@ -87,11 +87,6 @@ sphinxcontrib-websupport==1.2.4
 autodocsumm==0.2.12
 Babel==2.11.0
 
-# Twine (no imports, invoked via twine script):
-# readme-renderer (used by twine, uses Pygments)
-twine==3.0.0
-readme-renderer==25.0
-
 # Package dependency management tools (not used by any make rules)
 pipdeptree==2.2.0
 pip-check-reqs==2.4.3; python_version == '3.8'
