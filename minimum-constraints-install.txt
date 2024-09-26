@@ -14,7 +14,7 @@ pip==23.3
 setuptools==70.0.0
 # Note on not specifying 'setuptools-scm[toml]': Extras cannot be in constraints files
 setuptools-scm==8.1.0
-wheel==0.38.1
+wheel==0.41.3
 
 
 # Direct dependencies for install (must be consistent with requirements.txt)
@@ -31,10 +31,10 @@ ruamel.yaml==0.18.6
 
 # Indirect dependencies for install that are needed for some reason (must be consistent with requirements.txt)
 
-# PyYAML is used by zhmcclient 1.17
-PyYAML==5.3.1
+# PyYAML is also used by zhmcclient 1.17, yamlloader
+PyYAML==6.0.2
 
-pyrsistent==0.18.1
+pyrsistent==0.20.0
 
 
 # All other indirect dependencies for install that are not in requirements.txt

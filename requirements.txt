@@ -26,17 +26,14 @@ ruamel.yaml>=0.18.6
 
 # Indirect dependencies for install that are needed for some reason (must be consistent with minimum-constraints-install.txt)
 
-# PyYAML is used by zhmcclient 1.17
-# PyYAML 5.3.x has wheel archives for Python 2.7, 3.5 - 3.9
-# PyYAML 5.4.x has wheel archives for Python 2.7, 3.6 - 3.9
-# PyYAML 6.0.0 has wheel archives for Python 3.6 - 3.11
-# PyYAML 6.0.1 has wheel archives for Python 3.6 - 3.12
+# PyYAML is also used by zhmcclient 1.17, yamlloader
+# PyYAML 6.0 has wheel archives for Python 3.6 - 3.11
 # PyYAML versions without wheel archives fail install since Cython 3 was
 #   released, see https://github.com/yaml/pyyaml/issues/724.
-PyYAML>=5.3.1,!=5.4.0,!=5.4.1; python_version <= '3.11'
-PyYAML>=5.3.1,!=5.4.0,!=5.4.1,!=6.0.0; python_version >= '3.12'
+# PyYAML 6.0.2 provides wheel archives for Python 3.13 on Windows
+PyYAML>=6.0.2
+
 
 # pyrsistent is used by jsonschema 3.x (no longer by jsonschema 4.x)
-# pyrsistent 0.15.0 fixes import errors on Python>=3.10, but only 0.18.1 has
-#   Python 3.10 support (accordong to the change log).
-pyrsistent>=0.18.1
+# pyrsistent 0.20.0 has official support for Python 3.12
+pyrsistent>=0.20.0
