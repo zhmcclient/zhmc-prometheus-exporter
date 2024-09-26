@@ -103,7 +103,9 @@ package_name := zhmc_prometheus_exporter
 # version indicator by 1.
 package_version := $(shell $(PYTHON_CMD) -m setuptools_scm)
 
-docker_registry := zhmcexporter
+# Docker image
+docker_image_name := zhmc_prometheus_exporter
+docker_image_tag := latest
 
 python_version := $(shell $(PYTHON_CMD) -c "import sys; sys.stdout.write('{}.{}'.format(sys.version_info[0], sys.version_info[1]))")
 pymn := $(shell $(PYTHON_CMD) -c "import sys; sys.stdout.write('py{}{}'.format(sys.version_info[0], sys.version_info[1]))")
@@ -217,7 +219,7 @@ help:
 	@echo "  release_publish - Publish to PyPI when releasing a version (requires VERSION and optionally BRANCH to be set)"
 	@echo "  start_branch - Create a start branch when starting a new version (requires VERSION and optionally BRANCH to be set)"
 	@echo "  start_tag - Create a start tag when starting a new version (requires VERSION and optionally BRANCH to be set)"
-	@echo "  docker     - Build local Docker image in registry $(docker_registry) and run it to show version"
+	@echo "  docker     - Build local Docker image $(docker_image_name):$(docker_image_tag)"
 	@echo "  authors    - Generate AUTHORS.md file from git log"
 	@echo "  clean      - Remove any temporary files"
 	@echo "  clobber    - Remove any build products"
@@ -459,7 +461,7 @@ start_tag:
 	@echo "Done: Pushed the release start tag and cleaned up the release start branch."
 	@echo "Makefile: $@ done."
 
-.PHONY: all
+.PHONY: docker
 docker: $(done_dir)/docker_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: $@ done."
 
@@ -532,10 +534,10 @@ $(bdist_file) $(version_file): $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: Done building the wheel distribution archive: $(bdist_file)"
 
 $(done_dir)/docker_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done Dockerfile .dockerignore $(bdist_file)
-	@echo "Makefile: Building Docker image $(docker_registry):latest"
+	@echo "Makefile: Building Docker image $(docker_image_name):$(docker_image_tag)"
 	-$(call RM_FUNC,$@)
-	docker build --tag $(docker_registry):$(subst +,.,$(package_version)) --build-arg bdist_file=$(bdist_file) --build-arg package_version=$(subst +,.,$(package_version)) --build-arg build_date="$(shell date -Iseconds)" --build-arg git_commit="$(shell git rev-parse HEAD)" .
-	docker run --rm $(docker_registry):$(subst +,.,$(package_version)) --version
-	docker image list --filter reference=$(docker_registry)
+	docker build --tag $(docker_image_name):$(docker_image_tag) --build-arg bdist_file=$(bdist_file) --build-arg package_version=$(subst +,.,$(package_version)) --build-arg build_date="$(shell date -Iseconds)" --build-arg git_commit="$(shell git rev-parse HEAD)" .
+	docker run --rm $(docker_image_name):$(docker_image_tag) --version
+	docker image list --filter reference=$(docker_image_name)
 	@echo "Makefile: Done building Docker image"
 	echo "done" >$@
