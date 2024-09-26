@@ -227,7 +227,8 @@ This section shows the steps for releasing a version to `PyPI`_.
 It covers all variants of versions that can be released:
 
 * Releasing a new major version (Mnew.0.0) based on the master branch
-* Releasing a new minor version (M.Nnew.0) based on the master branch
+* Releasing a new minor version (M.Nnew.0) based on the master branch or based
+  on an earlier stable branch
 * Releasing a new update version (M.N.Unew) based on the stable branch of its
   minor version
 
@@ -251,51 +252,7 @@ local clone of the zhmc-prometheus-exporter Git repo.
     milestones to a future version, and proceed with the release process. You
     may need to create the milestone for the future version.
 
-2.  Set shell variables for the version that is being released and the branch
-    it is based on:
-
-    * ``MNU`` - Full version M.N.U that is being released (or pre-release ``M.N.Ub/c/rcP``)
-    * ``MN`` - Major and minor version M.N of that full version
-    * ``BRANCH`` - Name of the branch the version that is being released is
-      based on
-
-    When releasing a new major version (e.g. ``1.0.0``) based on the master
-    branch:
-
-    .. code-block:: sh
-
-        MNU=1.0.0
-        MN=1.0
-        BRANCH=master
-
-    When releasing a new minor version (e.g. ``0.9.0``) based on the master
-    branch:
-
-    .. code-block:: sh
-
-        MNU=0.9.0
-        MN=0.9
-        BRANCH=master
-
-    When releasing a new update version (e.g. ``0.8.1``) based on the stable
-    branch of its minor version:
-
-    .. code-block:: sh
-
-        MNU=0.8.1
-        MN=0.8
-        BRANCH=stable_${MN}
-
-    When releasing a alpha, beta or release candidate pre-version (e.g. ``1.0.0b1``) based on the master
-    branch:
-
-    .. code-block:: sh
-
-        MNU=1.0.0b1
-        MN=1.0
-        BRANCH=master
-
-3.  Run the Safety tool:
+2.  Run the Safety tool:
 
     .. code-block:: sh
 
@@ -306,53 +263,41 @@ local clone of the zhmc-prometheus-exporter Git repo.
 
     Roll back the PR into any maintained stable branches.
 
-4.  Check for any
+3.  Check for any
     `dependabot alerts <https://github.com/zhmcclient/zhmc-prometheus-exporter/security/dependabot>`_.
 
     If there are any dependabot alerts, fix them in a separate branch/PR.
 
     Roll back the PR into any maintained stable branches.
 
-5.  Create a topic branch for the version that is being released:
+4.  Create and push the release branch (replace M,N,U accordingly):
 
     .. code-block:: sh
 
-        git checkout ${BRANCH}
-        git pull
-        git checkout -b release_${MNU}
+        VERSION=M.N.U make release_branch
 
-6.  Update the change log:
-
-    First make a dry-run to print the change log as it would be:
-
-    .. code-block:: sh
-
-        towncrier build --draft
-
-    If you are satisfied with the change log, update the change log:
+    This uses the default branch determined from ``VERSION``: For ``M.N.0``,
+    the ``master`` branch is used, otherwise the ``stable_M.N`` branch is used.
+    That covers for all cases except if you want to release a new minor version
+    based on an earlier stable branch. In that case, you need to specify that
+    branch:
 
     .. code-block:: sh
 
-        towncrier build --yes
+        VERSION=M.N.0 BRANCH=stable_M.N make release_branch
 
-    This will update the change log file ``docs/changes.rst`` with the
-    information from the change fragment files in the ``changes`` directory, and
-    will delete these change fragment files.
+    This includes the following steps:
 
-7.  Update the authors:
+    * create the release branch (``release_M.N.U``), if not yet existing
+    * make sure the AUTHORS.md file is up to date
+    * update the change log from the change fragment files, and delete those
+    * commit the changes to the release branch
+    * push the release branch
 
-    .. code-block:: sh
+    If this command fails, the fix can be committed to the release branch
+    and the command above can be retried.
 
-        make authors
-
-8.  Commit your changes and push the topic branch to the remote repo:
-
-    .. code-block:: sh
-
-        git commit -asm "Release ${MNU}"
-        git push --set-upstream origin release_${MNU}
-
-9.  On GitHub, create a Pull Request for branch ``release_M.N.U``.
+5.  On GitHub, create a Pull Request for branch ``release_M.N.U``.
 
     Important: When creating Pull Requests, GitHub by default targets the
     ``master`` branch. When releasing based on a stable branch, you need to
@@ -367,34 +312,40 @@ local clone of the zhmc-prometheus-exporter Git repo.
     tests for all defined environments, since it discovers by the branch name
     that this is a PR for a release.
 
-10. On GitHub, once the checks for that Pull Request have succeeded, merge the
+6.  On GitHub, once the checks for that Pull Request have succeeded, merge the
     Pull Request (no review is needed). This automatically deletes the branch
     on GitHub.
 
     If the PR did not succeed, fix the issues.
 
-11. On GitHub, close milestone ``M.N.U``.
+7.  On GitHub, close milestone ``M.N.U``.
 
     Verify that the milestone has no open items anymore. If it does have open
     items, investigate why and fix (probably step 1 was not performed).
 
-12. Publish the package
+8.  Publish the package (replace M,N,U accordingly):
 
     .. code-block:: sh
 
-        git checkout ${BRANCH}
-        git pull
-        git branch -D release_${MNU}
-        git branch -D -r origin/release_${MNU}
-        git tag -f ${MNU}
-        git push -f --tags
+        VERSION=M.N.U make release_publish
 
-    Pushing the new tag will cause the "publish" workflow to run. That workflow
+    or (see step 4):
+
+    .. code-block:: sh
+
+        VERSION=M.N.0 BRANCH=stable_M.N make release_publish
+
+    This includes the following steps:
+
+    * create and push the release tag
+    * clean up the release branch
+
+    Pushing the release tag will cause the "publish" workflow to run. That workflow
     builds the package, publishes it on PyPI, creates a release for it on
-    Github, and finally creates a new stable branch on Github if the master
+    GitHub, and finally creates a new stable branch on GitHub if the master
     branch was released.
 
-13. Verify the publishing
+9.  Verify the publishing
 
     Wait for the "publish" workflow for the new release to have completed:
     https://github.com/zhmcclient/zhmc-prometheus-exporter/actions/workflows/publish.yml
@@ -438,63 +389,34 @@ has the remote name ``origin`` in your local clone.
 Any commands in the following steps are executed in the main directory of your
 local clone of the zhmc-prometheus-exporter Git repo.
 
-1.  Set shell variables for the version that is being started and the branch it
-    is based on:
+1.  Create and push the start branch (replace M,N,U accordingly):
 
-    * ``MNU`` - Full version M.N.U that is being started
-    * ``MN`` - Major and minor version M.N of that full version
-    * ``BRANCH`` -  Name of the branch the version that is being started is
-      based on
+    .. code-block:: sh
 
-    When starting a new major version (e.g. ``1.0.0``) based on the master
+        VERSION=M.N.U make start_branch
+
+    This uses the default branch determined from ``VERSION``: For ``M.N.0``,
+    the ``master`` branch is used, otherwise the ``stable_M.N`` branch is used.
+    That covers for all cases except if you want to start a new minor version
+    based on an earlier stable branch. In that case, you need to specify that
     branch:
 
     .. code-block:: sh
 
-        MNU=1.0.0
-        MN=1.0
-        BRANCH=master
+        VERSION=M.N.0 BRANCH=stable_M.N make start_branch
 
-    When starting a new minor version (e.g. ``0.9.0``) based on the master
-    branch:
+    This includes the following steps:
 
-    .. code-block:: sh
+    * create the start branch (``start_M.N.U``), if not yet existing
+    * create a dummy change
+    * commit and push the start branch (``start_M.N.U``)
 
-        MNU=0.9.0
-        MN=0.9
-        BRANCH=master
-
-    When starting a new minor version (e.g. ``0.8.1``) based on the stable
-    branch of its minor version:
-
-    .. code-block:: sh
-
-        MNU=0.8.1
-        MN=0.8
-        BRANCH=stable_${MN}
-
-2.  Create a topic branch for the version that is being started:
-
-    .. code-block:: sh
-
-        git fetch origin
-        git checkout ${BRANCH}
-        git pull
-        git checkout -b start_${MNU}
-
-3.  Commit your changes and push them to the remote repo:
-
-    .. code-block:: sh
-
-        git commit -asm "Start ${MNU}"
-        git push --set-upstream origin start_${MNU}
-
-4.  On GitHub, create a milestone for the new version ``M.N.U``.
+2.  On GitHub, create a milestone for the new version ``M.N.U``.
 
     You can create a milestone in GitHub via Issues -> Milestones -> New
     Milestone.
 
-5.  On GitHub, create a Pull Request for branch ``start_M.N.U``.
+3.  On GitHub, create a Pull Request for branch ``start_M.N.U``.
 
     Important: When creating Pull Requests, GitHub by default targets the
     ``master`` branch. When starting a version based on a stable branch, you
@@ -504,7 +426,7 @@ local clone of the zhmc-prometheus-exporter Git repo.
 
     Set the milestone of that PR to the new version ``M.N.U``.
 
-6.  On GitHub, go through all open issues and pull requests that still have
+4.  On GitHub, go through all open issues and pull requests that still have
     milestones for previous releases set, and either set them to the new
     milestone, or to have no milestone.
 
@@ -512,25 +434,27 @@ local clone of the zhmc-prometheus-exporter Git repo.
     should not be any such issues or pull requests anymore. So this step here
     is just an additional safeguard.
 
-7.  On GitHub, once the checks for the Pull Request for branch ``start_M.N.U``
+5.  On GitHub, once the checks for the Pull Request for branch ``start_M.N.U``
     have succeeded, merge the Pull Request (no review is needed). This
     automatically deletes the branch on GitHub.
 
-8.  Add release start tag and clean up the local repo:
-
-    Note: An initial tag is necessary because the automatic version calculation
-    done by setuptools-scm uses the most recent tag in the commit history and
-    increases the least significant part of the version by one, without
-    providing any controls to change that behavior.
+6.  Update and clean up the local repo (replace M,N,U accordingly):
 
     .. code-block:: sh
 
-        git checkout ${BRANCH}
-        git pull
-        git branch -D start_${MNU}
-        git branch -D -r origin/start_${MNU}
-        git tag -f ${MNU}a0
-        git push -f --tags
+        VERSION=M.N.U make start_tag
+
+    or (see step 1):
+
+    .. code-block:: sh
+
+        VERSION=M.N.0 BRANCH=stable_M.N make start_tag
+
+    This includes the following steps:
+
+    * checkout and pull the branch that was started (``master`` or ``stable_M.N``)
+    * delete the start branch (``start_M.N.U``) locally and remotely
+    * create and push the start tag (``M.N.Ua0``)
 
 Building the distribution archives
 ----------------------------------
