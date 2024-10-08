@@ -1,0 +1,1 @@
+Increased minimum version of zhmcclient to 1.18.0 to pick up fixes.
