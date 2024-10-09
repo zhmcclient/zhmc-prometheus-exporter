@@ -166,18 +166,13 @@ jobs:
     - name: Display the distribution directory
       run: |
         ls -l dist
-    # - name: Publish distribution to TestPyPI
-    #   uses: pypa/gh-action-pypi-publish@release/v1
-    #   with:
-    #     packages_dir: dist
-    #     password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-    #     repository_url: https://test.pypi.org/legacy/
     - name: Publish distribution to PyPI
       if: startsWith(github.ref, 'refs/tags')
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        packages_dir: dist
-        password: ${{ secrets.PYPI_API_TOKEN }}
+        packages-dir: dist
+        # Pypi has a trusted publisher defined, so we do not need a password:
+        # https://pypi.org/manage/project/zhmc_prometheus_exporter/settings/publishing/
 
     #-------- Creation of Github release
     - name: Determine whether release on Github exists for the pushed tag
