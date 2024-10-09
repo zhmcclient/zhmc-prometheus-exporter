@@ -479,7 +479,7 @@ AUTHORS.md: _always
 	sh -c "ls -l log.tmp"
 	sh -c "cat log.tmp >>AUTHORS.md.tmp"
 	echo '```' >>AUTHORS.md.tmp
-	sh -c "if ! grep -q '[^[:space:]]' log.tmp; then echo 'Warning - git shortlog does not display any authors - leaving AUTHORS.md file unchanged'; else if ! diff -q AUTHORS.md.tmp AUTHORS.md; then echo 'Updating AUTHORS.md:'; diff AUTHORS.md.tmp AUTHORS.md; mv AUTHORS.md.tmp AUTHORS.md; else echo 'AUTHORS.md was already up to date'; fi; fi"
+	sh -c "if ! grep -q '[^[:space:]]' log.tmp; then echo 'Warning - git shortlog does not display any authors - leaving AUTHORS.md file unchanged'; else if ! diff -q AUTHORS.md.tmp AUTHORS.md; then echo 'Updating AUTHORS.md as follows:'; diff AUTHORS.md.tmp AUTHORS.md; mv AUTHORS.md.tmp AUTHORS.md; else echo 'AUTHORS.md was already up to date'; fi; fi"
 	sh -c "rm -f log.tmp AUTHORS.md.tmp"
 
 .PHONY: clean
