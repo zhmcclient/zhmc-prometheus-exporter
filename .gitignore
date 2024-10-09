@@ -29,5 +29,6 @@ __pycache__/
 
 # Other
 *.swp
+*.tmp
 .DS_Store
 /try/
