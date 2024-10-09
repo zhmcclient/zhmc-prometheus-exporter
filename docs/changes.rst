@@ -81,6 +81,8 @@ Released: 2024-10-09
 
 * Fixed incorrect check for start branch in 'make start_tag'. (`#638 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/638>`_)
 
+* Fixed incorrect check for release branch in 'make release_publish'.
+
 **Enhancements:**
 
 * Improved build of the Docker image: It now uses the package version as the
