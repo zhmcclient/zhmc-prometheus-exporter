@@ -162,16 +162,19 @@ jobs:
 
     - name: Downgrade Git version to 2.46.1
       run: |
+        echo "Info for git package:"
+        sudo apt show git
         echo "git version:"
         git --version
         which git
-        sudo add-apt-repository -y ppa:git-core/ppa
+        echo "Adding git-core repository:"
+        # sudo add-apt-repository -y ppa:git-core/ppa
+        echo "Updating package list:"
         sudo apt-get update
-        echo "Installed packages:"
-        sudo apt list --installed
-        echo "Downgrading git:"
-        sudo apt show git
+        echo "Downgrading git package:"
         sudo apt-get install -y git=1:2.46.1
+        echo "Info for git package:"
+        sudo apt show git
         echo "git version:"
         git --version
         which git
