@@ -1,9 +1,0 @@
-Changed the format of the exporter config file (previously referred to as
-"HMC credentials file") to add controls for enabling or disabling the export
-of the metric groups, and to clean up some naming idiosyncrasies on that
-opportunity. The old config file format is still supported and is automatically
-upgraded internally (or the file itself, see the support for the
-'--upgrade-config' option). As part of that config file upgrade, all metric
-groups are enabled by default. If you had edited the metric definition file
-in exporter version 1.x to disable some metric groups, you need to do that
-again in the upgraded exporter config file.

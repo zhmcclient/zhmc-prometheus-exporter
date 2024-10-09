@@ -1,2 +1,0 @@
-Changed the name of the Docker container image for the exporter from
-'zhmcexporter' to 'zhmc_prometheus_exporter' to match the command name.

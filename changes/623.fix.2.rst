@@ -1,3 +1,0 @@
-Test: Added new indirect dependencies for package installation to the
-minimum-constraints.txt file to make sure the package is tested with defined
-minimum versions.
