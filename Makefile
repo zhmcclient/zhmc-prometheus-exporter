@@ -477,7 +477,7 @@ AUTHORS.md: _always
 	echo '```' >>AUTHORS.md.tmp
 	git shortlog --summary --email | cut -f 2 | sort >>AUTHORS.md.tmp
 	echo '```' >>AUTHORS.md.tmp
-	sh -c "if ! diff -q AUTHORS.md.tmp AUTHORS.md; then mv AUTHORS.md.tmp AUTHORS.md; else rm AUTHORS.md.tmp; fi"
+	sh -c "if ! diff -q AUTHORS.md.tmp AUTHORS.md; then echo 'Updating AUTHORS.md:'; diff AUTHORS.md.tmp AUTHORS.md; mv AUTHORS.md.tmp AUTHORS.md; else echo 'AUTHORS.md is up to date'; rm AUTHORS.md.tmp; fi"
 
 .PHONY: clean
 clean:
