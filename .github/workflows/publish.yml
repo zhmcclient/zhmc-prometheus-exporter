@@ -169,11 +169,11 @@ jobs:
     - name: Display Python packages
       run: |
         pip list
-    - name: Display package version
-      run: |
-        python -m setuptools_scm
 
     #-------- Publishing of package
+    - name: Display package version
+      run: |
+        SETUPTOOLS_SCM_DEBUG=1 python -m setuptools_scm
     - name: Build the distribution
       run: |
         make build
