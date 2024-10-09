@@ -26,10 +26,6 @@ security:
     #     reason: {text}    # optional: Reason for ignoring it. Will be reported in the Safety reports
     #     expires: {date}   # optional: Date when this ignore will expire
     ignore-vulnerabilities:
-        39611:
-            reason: Fixed PyYAML versions 5.4 to 6.0.0 do not work with Cython 3, and the full_load method or FullLoader is not used
-        67599:
-            reason: There is no fixed pip version
         70612:
             reason: Disputed issue in Jinja2 version 3.1.3 - No known fix
 
