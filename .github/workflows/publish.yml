@@ -162,6 +162,12 @@ jobs:
         make develop
 
     #-------- Publishing of package
+    - name: Display git log
+      run: |
+        git log HEAD~..HEAD
+    - name: Display git status
+      run: |
+        git status
     - name: Build the distribution
       run: |
         make build
