@@ -26,8 +26,6 @@ security:
     #     reason: {text}    # optional: Reason for ignoring it. Will be reported in the Safety reports
     #     expires: {date}   # optional: Date when this ignore will expire
     ignore-vulnerabilities:
-        51457:
-            reason: Py package is no longer being fixed (latest version 1.11.0)
 
     # Continue with exit code 0 when vulnerabilities are found.
     continue-on-vulnerability-error: False
