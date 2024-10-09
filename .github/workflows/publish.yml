@@ -160,7 +160,7 @@ jobs:
       run: |
         git shortlog --summary --email
 
-    - name: Downgrade Git version to 2.46.1
+    - name: Downgrade Git version
       run: |
         echo "Info for git package:"
         sudo apt show git
@@ -174,7 +174,7 @@ jobs:
         echo "Updating package list:"
         sudo apt-get update
         echo "Downgrading git package:"
-        sudo apt-get install -y git=1:2.46.1
+        sudo apt-get install -y git=1:2.34.1
         echo "Info for git package:"
         sudo apt show git
         echo "git version:"
