@@ -153,6 +153,12 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
+    - name: Display git log
+      run: |
+        git log -1 --decorate
+    - name: Display git status
+      run: |
+        git status
     - name: Set up Python 3.10
       uses: actions/setup-python@v5
       with:
@@ -160,14 +166,14 @@ jobs:
     - name: Development setup
       run: |
         make develop
+    - name: Display Python packages
+      run: |
+        pip list
+    - name: Display package version
+      run: |
+        python -m setuptools_scm
 
     #-------- Publishing of package
-    - name: Display git log
-      run: |
-        git log HEAD~..HEAD
-    - name: Display git status
-      run: |
-        git status
     - name: Build the distribution
       run: |
         make build
