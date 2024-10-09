@@ -167,6 +167,8 @@ jobs:
         echo "Installed packages:"
         sudo apt list --installed
         echo "Downgrading git:"
+        sudo apt show git
+        sudo apt-show-versions git
         sudo apt-get install -y git=2.46.1
     - name: Verify Git version
       run: git --version
