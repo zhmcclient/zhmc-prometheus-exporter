@@ -183,6 +183,12 @@ jobs:
         pip list
 
     #-------- Publishing of package
+    - name: Display git status
+      run: |
+        git status
+    - name: Display git describe
+      run: |
+        git describe --dirty --tags --long --match "*[0-9]*"
     - name: Display package version
       run: |
         SETUPTOOLS_SCM_DEBUG=1 python -m setuptools_scm
