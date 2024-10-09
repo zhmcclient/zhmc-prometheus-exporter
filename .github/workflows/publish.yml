@@ -162,15 +162,19 @@ jobs:
     # - name: Verify Git version
     #   run: git --version
 
-    - name: Display git log
+    - name: Debug - Display git authors
+      run: |
+        git shortlog --summary --email
+    - name: Debug - Display git log
       run: |
         git log -1 --decorate
-    - name: Display git status
+    - name: Debug - Display git status
       run: |
         git status
-    - name: Display git describe
+    - name: Debug - Display git describe
       run: |
         git describe --dirty --tags --long --match "*[0-9]*"
+
     - name: Set up Python 3.10
       uses: actions/setup-python@v5
       with:
@@ -183,15 +187,17 @@ jobs:
         pip list
 
     #-------- Publishing of package
-    - name: Display git status
+
+    - name: Debug - Display git status
       run: |
         git status
-    - name: Display git describe
+    - name: Debug - Display git describe
       run: |
         git describe --dirty --tags --long --match "*[0-9]*"
-    - name: Display package version
+    - name: Debug - Display package version
       run: |
-        SETUPTOOLS_SCM_DEBUG=1 python -m setuptools_scm
+        python -m setuptools_scm
+
     - name: Build the distribution
       run: |
         make build
