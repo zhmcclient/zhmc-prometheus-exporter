@@ -36,7 +36,7 @@ bandit>=1.7.8
 # PyYAML is used by bandit and is covered in requirements.txt
 
 # Unit test (imports into testcases):
-pytest>=6.2.5
+pytest>=8.0.0
 importlib-metadata>=4.8.3
 colorama>=0.4.6
 
