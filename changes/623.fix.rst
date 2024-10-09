@@ -1,2 +1,0 @@
-Fixed the build of the docker image which failed with an ImportError
-on the rpds package. Added test for running the docker image.

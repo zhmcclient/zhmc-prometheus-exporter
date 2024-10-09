@@ -1,6 +1,0 @@
-Support for upgrading a config file (= HMC credentials file) from exporter
-version 1.x to the current version. By default, the exporter configuration is
-upgraded internally without persisting the changes. A new '--upgrade-config'
-command line option can be used to upgrade the exporter config file. This
-required using the 'ruamel.yaml' Python package, in order to preserve comments
-in the exporter config file.

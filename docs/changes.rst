@@ -23,6 +23,133 @@ Change log
 .. ============================================================================
 
 .. towncrier start
+Version 2.0.0
+^^^^^^^^^^^^^
+
+Released: 2024-10-09
+
+**Incompatible changes:**
+
+* Removed the '-m' option for specifying a metric definition file. The metric
+  definition file is now part of the Python distribution archive and there
+  is no need anymore for users to edit it. (`#418 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/418>`_)
+
+* Changed the format of the exporter config file (previously referred to as
+  "HMC credentials file") to add controls for enabling or disabling the export
+  of the metric groups, and to clean up some naming idiosyncrasies on that
+  opportunity. The old config file format is still supported and is automatically
+  upgraded internally (or the file itself, see the support for the
+  '--upgrade-config' option). As part of that config file upgrade, all metric
+  groups are enabled by default. If you had edited the metric definition file
+  in exporter version 1.x to disable some metric groups, you need to do that
+  again in the upgraded exporter config file. (`#418 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/418>`_)
+
+* Dropped support for Python 3.6 and 3.7. The minimum Python version is now 3.8. (`#570 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/570>`_)
+
+* Changed the name of the Docker container image for the exporter from
+  'zhmcexporter' to 'zhmc_prometheus_exporter' to match the command name. (`#633 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/633>`_)
+
+**Bug fixes:**
+
+* Addressed safety issues up to 2024-08-18.
+
+* Test: Fixed coverage reporting (locally and on coveralls.io).
+
+* Dev: Fixed several dependencies in Makefile.
+
+* Dev: Fixed step that creates the release start tag when starting a new version.
+
+* Test: Fixed the issue that coveralls was not found in the test workflow on MacOS
+  with Python 3.9-3.11, by running it without login shell. Added Python 3.11 on
+  MacOS to the normal tests.
+
+* Dev: Fixed new issue 'too-many-positional-arguments' reported by Pylint 3.3.0.
+
+* Fixed a bug where resources that ceased their existence while the exporter
+  was running were removed from the internal data structures such that in some
+  cases the wrong resource was removed from the internal data structures,
+  either leading to an immediate IndexError, or to follow-on errors lateron. (`#609 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/609>`_)
+
+* Fixed the build of the docker image which failed with an ImportError
+  on the rpds package. Added test for running the docker image. (`#623 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/623>`_)
+
+* Test: Added new indirect dependencies for package installation to the
+  minimum-constraints.txt file to make sure the package is tested with defined
+  minimum versions. (`#623 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/623>`_)
+
+* Increased minimum version of zhmcclient to 1.18.0 to pick up fixes. (`#635 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/635>`_)
+
+* Fixed incorrect check for start branch in 'make start_tag'. (`#638 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/638>`_)
+
+**Enhancements:**
+
+* Improved build of the Docker image: It now uses the package version as the
+  image tag, sets OCI metadata as labels, and reduces the image size by using
+  the python:3.12-alpine base image, building from the Python distribution
+  archive instead of copying the repo, uninstalling pip, setuptools and
+  wheel since they are not needed to run the exporter, and using a multi-staged
+  build to copy just the installed Python packages. This reduced the image file
+  size with Docker on Ubuntu from 256 MB to 73 MB.
+
+* Support for and test of Python 3.13.0-rc.1. Needed to increase the minimum
+  versions of PyYAML to 6.0.2 and pyrsistent to 0.20.0. (`#517 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/517>`_)
+
+* Dev: Migrated from setup.py to pyproject.toml with setuptools as build backend.
+  This provides for automatic determination of the package version without
+  having to edit a version file. (`#520 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/520>`_)
+
+* Added support for running the 'ruff' checker via "make ruff" and added that
+  to the test workflow. (`#522 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/522>`_)
+
+* Added support for running the 'bandit' checker with a new make target
+  'bandit', and added that to the GitHub Actions test workflow.
+  Adjusted the code in order to pass the bandit check. (`#523 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/523>`_)
+
+* Test: Added tests for Python 3.13 (final version). (`#525 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/525>`_)
+
+* Support for upgrading a config file (= HMC credentials file) from exporter
+  version 1.x to the current version. By default, the exporter configuration is
+  upgraded internally without persisting the changes. A new '--upgrade-config'
+  command line option can be used to upgrade the exporter config file. This
+  required using the 'ruamel.yaml' Python package, in order to preserve comments
+  in the exporter config file. (`#571 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/571>`_)
+
+* Dev: Encapsulated the starting of a new version into new 'start_branch' and
+  'start_tag' make targets. See the development documentation for details. (`#617 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/617>`_)
+
+* Dev: Encapsulated the releasing of a version to PyPI into new 'release_branch'
+  and 'release_publish' make targets. See the development documentation for
+  details. (`#617 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/617>`_)
+
+**Cleanup:**
+
+* Dev: Relaxed the conditions when safety issues are tolerated:
+  Issues in development dependencies are now tolerated in normal and scheduled
+  test workflow runs (but not in local make runs and release test workflow runs).
+  Issues in installation dependencies are now tolerated in normal test workflow
+  runs (but not in local make runs and scheduled/release test workflow runs).
+
+* Dev: Added to the release instructions to roll back fixes for safety issues
+  into any maintained stable branches.
+
+* Dev: Added to the release instructions to check and fix dependabot issues,
+  and to roll back any fixes into any maintained stable branches.
+
+* Dev: Removed dependency to unmaintained py package.
+
+* Dev: Removed ignore entries in safety profiles that meanwhile became
+  unnecessary due to increasing versions.
+
+* Dev: Started using the trusted publisher concept of Pypi in order to avoid
+  dealing with Pypi access tokens.
+
+* Because the metrics file is now part of the package, adjusted any error messages
+  dealing with the metrics file accordingly. (`#577 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/577>`_)
+
+* Dev: Dropped the 'make upload' target, because the release to PyPI has
+  been migrated to using a publish workflow. (`#617 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/617>`_)
+
+
 Version 1.7.0
 ^^^^^^^^^^^^^
 
