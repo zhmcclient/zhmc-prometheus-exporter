@@ -1,2 +1,0 @@
-Support for and test of Python 3.13.0-rc.1. Needed to increase the minimum
-versions of PyYAML to 6.0.2 and pyrsistent to 0.20.0.
