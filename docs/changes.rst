@@ -23,6 +23,31 @@ Change log
 .. ============================================================================
 
 .. towncrier start
+Version 2.0.1
+^^^^^^^^^^^^^
+
+Released: 2025-01-12
+
+**Bug fixes:**
+
+* Addressed safety issues up to 2025-01-12.
+
+* Dev: Fixes for starting and releasing a version.
+
+* Dev: In the make commands to create/update AUTHORS.md, added a reftag to the
+  'git shortlog' command to fix the issue that without a terminal (e.g. in GitHub
+  Actions), the command did not display any authors.
+
+* Dev: Disabled the trusted publisher concept of Pypi for the time being, to
+  avoid the subsequent access errors in the publish workflow that are not yet
+  understood.
+
+**Cleanup:**
+
+* Accommodated rollout of Ubuntu 24.04 on GitHub Actions by using ubuntu-22.04
+  as the OS image for Python 3.8 based test runs.
+
+
 Version 2.0.0
 ^^^^^^^^^^^^^
 
