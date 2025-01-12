@@ -17,7 +17,7 @@ wheel==0.38.1
 
 # Direct dependencies for install (must be consistent with requirements.txt)
 
-zhmcclient==1.14.0
+zhmcclient==1.18.2
 # TODO: Use official prometheus-client version (0.21.0 ?) once released.
 # prometheus-client==0.21.0
 urllib3==1.26.19
