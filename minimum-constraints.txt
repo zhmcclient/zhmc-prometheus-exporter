@@ -108,6 +108,7 @@ contextlib2==0.6.0
 filelock==3.12.2
 gitdb==4.0.8
 html5lib==1.0.1
+id==1.5.0
 imagesize==1.3.0
 iniconfig==1.1.1  # used by pytest since its 6.0.0
 keyring==18.0.0
