@@ -30,6 +30,8 @@ Released: not yet
 
 * Addressed safety issues up to 2025-01-29.
 
+* Upgraded zhmcclient to 1.18.2 to address a security issue.
+
 **Enhancements:**
 
 **Cleanup:**
