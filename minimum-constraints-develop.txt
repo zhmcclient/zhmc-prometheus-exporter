@@ -114,7 +114,6 @@ more-itertools==8.0.0
 pkginfo==1.4.2
 pyparsing==2.4.5
 requests-toolbelt==0.8.0
-rfc3986==1.4.0  # used by twine since its 3.2.0
 smmap==3.0.1
 snowballstemmer==2.0.0
 stevedore==5.2.0
@@ -123,4 +122,4 @@ tomli==1.1.0
 tqdm==4.66.3
 typing==3.6.1
 webencodings==0.5.1
-rich==12.0.0  # used by twine 4.0
+rich==12.0.0
