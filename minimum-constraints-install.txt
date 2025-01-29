@@ -23,7 +23,7 @@ zhmcclient==1.14.0
 urllib3==1.26.19
 jsonschema==3.2.0
 six==1.16.0
-Jinja2==3.1.4
+Jinja2==3.1.5
 # PyYAML is also used by dparse
 PyYAML==5.3.1
 

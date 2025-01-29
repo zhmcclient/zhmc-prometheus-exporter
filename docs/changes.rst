@@ -28,6 +28,8 @@ Released: not yet
 
 **Bug fixes:**
 
+* Addressed safety issues up to 2025-01-29.
+
 **Enhancements:**
 
 **Cleanup:**
