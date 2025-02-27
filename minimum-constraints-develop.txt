@@ -112,6 +112,7 @@ iniconfig==1.1.1  # used by pytest since its 6.0.0
 keyring==18.0.0
 levenshtein==0.25.1
 more-itertools==8.0.0
+nltk==3.9
 pkginfo==1.4.2
 pyparsing==2.4.5
 requests-toolbelt==0.8.0
