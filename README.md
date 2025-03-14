@@ -32,11 +32,18 @@ collection again once the HMC come back up.
 
 # Quickstart
 
-- Install the exporter and all of its Python dependencies as follows:
+- If not yet available, install the "pipx" command as described in
+  https://pipx.pypa.io/stable/installation/.
+
+- Without having any virtual Python environment active, install the exporter
+  as follows:
 
   ``` bash
-  $ pip install zhmc-prometheus-exporter
+  $ pipx install zhmc-prometheus-exporter
   ```
+
+  That makes the `zhmc_prometheus_exporter` command available in the PATH,
+  without having to activate any virtual Python environment.
 
 - Provide a *config file* for use by the exporter.
 

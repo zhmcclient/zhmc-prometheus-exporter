@@ -27,9 +27,9 @@ Installation using pipx
 The recommended way to install the exporter is by using pipx.
 
 Pipx creates a `virtual Python environment`_ under the covers, installs the
-Python package into that environment and makes the `zhmc_prometheus_exporter`
+Python package into that environment and makes the ``zhmc_prometheus_exporter``
 command available in a directory that is in the PATH.
-The `zhmc_prometheus_exporter` command will be available that way, regardless
+The ``zhmc_prometheus_exporter`` command will be available that way, regardless
 of whether or not you have a virtual Python environment active (that you may
 need for other purposes).
 
@@ -70,7 +70,7 @@ Installation into a virtual Python environment
 In some cases it may be useful to install the exporter into your own
 `virtual Python environment`_. That avoids the dependency to pipx, but it
 requires you to activate the virtual environment every time you want to use the
-`zhmc` command.
+``zhmc_prometheus_exporter`` command.
 
 There is a number of ways how virtual Python environments can be created. This
 documentation describes the use of "virtualenv":
