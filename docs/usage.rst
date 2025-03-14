@@ -15,18 +15,120 @@
 Usage
 =====
 
-This section describes how to use the exporter beyond the quick introduction
-in :ref:`Quickstart`.
+This section describes how to install and use the exporter beyond the quick
+introduction in :ref:`Quickstart`.
 
-Running on a system
--------------------
+.. _virtual Python environment: http://docs.python-guide.org/en/latest/dev/virtualenvs/
+.. _Pypi: http://pypi.python.org/
 
-If you want to run the exporter on some system (e.g. on your workstation for
-trying it out), it is recommended to use a virtual Python environment.
+Installation using pipx
+-----------------------
 
-With the virtual Python environment active, follow the steps in
-:ref:`Quickstart` to install, establish the required files, and to run the
-exporter.
+The recommended way to install the exporter is by using pipx.
+
+Pipx creates a `virtual Python environment`_ under the covers, installs the
+Python package into that environment and makes the `zhmc_prometheus_exporter`
+command available in a directory that is in the PATH.
+The `zhmc_prometheus_exporter` command will be available that way, regardless
+of whether or not you have a virtual Python environment active (that you may
+need for other purposes).
+
+1.  Prerequisite: Install pipx as an OS-level package
+
+    Follow the steps at https://pipx.pypa.io/stable/installation/ to install
+    pipx as an OS-level package to your local system.
+
+2.  Install the exporter using pipx
+
+    To install the latest released version of the exporter:
+
+    .. code-block:: bash
+
+        $ pipx install zhmc-prometheus-exporter
+
+    To install a specific released version of the exporter, e.g. 1.7.1:
+
+    .. code-block:: bash
+
+        $ pipx install zhmc-prometheus-exporter==1.7.1
+
+    To install a specific development branch of the exporter, e.g. master:
+
+    .. code-block:: bash
+
+        $ pipx install git+https://github.com/zhmcclient/zhmc-prometheus-exporter.git@master
+
+    To install the exporter with a non-default Python version, e.g. 3.10:
+
+    .. code-block:: bash
+
+        $ pipx install zhmc-prometheus-exporter --python python3.10
+
+Installation into a virtual Python environment
+----------------------------------------------
+
+In some cases it may be useful to install the exporter into your own
+`virtual Python environment`_. That avoids the dependency to pipx, but it
+requires you to activate the virtual environment every time you want to use the
+`zhmc` command.
+
+There is a number of ways how virtual Python environments can be created. This
+documentation describes the use of "virtualenv":
+
+1.  Prerequisite: Install virtualenv into system Python:
+
+    .. code-block:: bash
+
+        $ pip install virtualenv
+
+2.  Create and activate a virtual Python environment:
+
+    .. code-block:: bash
+
+        $ virtualenv ~/.virtualenvs/zhmcpe
+        $ source ~/.virtualenvs/zhmcpe/bin/activate
+
+3.  Install the exporter into the virtual Python environment:
+
+    To install the latest released version of the exporter so that it uses your
+    default Python version:
+
+    .. code-block:: bash
+
+        (zhmcpe) $ pip install zhmc-prometheus-exporter
+
+    To install a specific released version of the exporter, e.g. 1.7.1:
+
+    .. code-block:: bash
+
+        (zhmcpe) $ pip install zhmc-prometheus-exporter==1.7.1
+
+    To install a specific development branch of the exporter, e.g. master:
+
+    .. code-block:: bash
+
+        (zhmcpe) $ pip install git+https://github.com/zhmcclient/zhmc-prometheus-exporter.git@master
+
+Installation into a system Python
+---------------------------------
+
+Your system Python version(s) are installed using OS-level packages for all the
+Python functionality.
+
+Adding packages to your system Python using Python packages from `Pypi`_ may
+create issues. This is why recent versions of pip raise a warning when
+attempting to install into the system Python. Even if you install a Python
+package from Pypi into your user's space, this may create issues.
+
+The main issue is that the more Python packages you install into the system
+Python, the more likely there will be incompatible Python package dependencies.
+
+Another issue is when you replace OS-level packages with Python packages.
+
+In order to avoid these issues, you should install the exporter into the system
+Python only in cases where the system has a well-defined scope and you have
+full control over the set of OS-level and Python-level packages, for example
+when building a Docker container.
 
 Running in a Docker container
 -----------------------------
