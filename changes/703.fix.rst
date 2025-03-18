@@ -1,0 +1,2 @@
+Docs: Fixed 'hmc' in example config file to be 'hmcs' and explained that at this
+point, only the first HMC in the list is used.
