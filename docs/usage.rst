@@ -976,6 +976,9 @@ The exporter config file is in YAML format and has the following structure:
 
 Where:
 
+* ``hmcs`` is a list of HMCs. At this point, only the first item in the list
+  is used.
+
 * ``{hmc-ip-address}`` is the IP address of the HMC.
 
 * ``{hmc-userid}`` is the userid on the HMC to be used for logging on.
