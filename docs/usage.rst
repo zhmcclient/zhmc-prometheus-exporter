@@ -672,6 +672,10 @@ zhmc_processor_smt_thread0_usage_ratio                  C+D   G     Usage ratio 
 zhmc_processor_smt_thread1_usage_ratio                  C+D   G     Usage ratio of thread 1 of the processor when in SMT mode
 zhmc_partition_description                              C+D   G     Description of the partition (in 'value' label)
 zhmc_partition_processor_usage_ratio                    C+D   G     Usage ratio across all processors of the partition
+zhmc_partition_partition_number                         C     G     Partition number as a hex string, empty string if LPAR is inactive (in 'value' label)
+zhmc_partition_last_used_load_parameter                 C     G     Last used load parameter, empty string if not set (in 'value' label)
+zhmc_partition_last_used_load_address                   C     G     Last used load address as a hex string, 00000 if not available (in 'value' label)
+zhmc_partition_sysplex_name                             C     G     Sysplex name for z/OS and CFCC, empty string otherwise (in 'value' label)
 zhmc_partition_cp_processor_usage_ratio                 C     G     Usage ratio across all CP processors of the partition
 zhmc_partition_ifl_processor_usage_ratio                C     G     Usage ratio across all IFL processors of the partition
 zhmc_partition_icf_processor_usage_ratio                C     G     Usage ratio across all ICF processors of the partition
