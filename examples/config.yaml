@@ -36,6 +36,10 @@ extra_labels:
   # - name: pod
   #   value: "'mypod'"
 
+# List of CPCs to export data for. Optional, default is all managed CPCs
+cpcs:
+  # - {cpc-name}
+
 # Metric groups to be fetched
 metric_groups:
 

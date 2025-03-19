@@ -89,6 +89,13 @@ properties:
         value:
           description: "Label value, as a Jinja2 expression using certain variables"
           type: string
+  cpcs:
+    description: "List of CPCs for which metrics should be exported. Optional, defaults to all managed CPCs."
+    type: [array, "null"]
+    default: null
+    items:
+      description: "CPC name"
+      type: string
   metric_groups:
     description: Export control for the HMC and resource metric groups
     type: object
