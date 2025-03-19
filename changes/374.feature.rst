@@ -1,0 +1,5 @@
+Added the following metrics for the 'logical-partition-resource' metric group:
+zhmc_partition_partition_number,
+zhmc_partition_last_used_load_parameter,
+zhmc_partition_last_used_load_address,
+zhmc_partition_sysplex_name.

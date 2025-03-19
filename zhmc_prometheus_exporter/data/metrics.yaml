@@ -379,6 +379,32 @@ metrics:
       labels:
         - name: value
           value: "resource_obj.properties['description']"
+    - properties_expression: "0"
+      exporter_name: partition_number
+      exporter_desc: Partition number as a hex string, empty string if LPAR is inactive
+      labels:
+        - name: value
+          value: "resource_obj.properties['partition-number']"
+    - properties_expression: "0"
+      if: "'last-used-load-parameter' in resource_obj.properties"  # Added in HMC 2.14.0
+      exporter_name: last_used_load_parameter
+      exporter_desc: Last used load parameter, empty string if not set
+      labels:
+        - name: value
+          value: "resource_obj.properties['last-used-load-parameter']"
+    - properties_expression: "0"
+      if: "'last-used-load-address' in resource_obj.properties"  # Added in HMC 2.14.0
+      exporter_name: last_used_load_address
+      exporter_desc: Last used load address as a hex string, 00000 if not available
+      labels:
+        - name: value
+          value: "resource_obj.properties['last-used-load-address']"
+    - properties_expression: "0"
+      exporter_name: sysplex_name
+      exporter_desc: Sysplex name for z/OS and CFCC, empty string otherwise
+      labels:
+        - name: value
+          value: "resource_obj.properties['sysplex-name'] or ''"  # HMC returns None for otherwise
     - property_name: defined-capacity
       exporter_name: defined_capacity_msu_per_hour
       exporter_desc: Defined capacity expressed in terms of Millions of Service Units (MSU)s per hour
