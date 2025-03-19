@@ -1148,19 +1148,23 @@ class ResourceCache:
                 logprint(logging.WARNING, PRINT_ALWAYS,
                          f"Did not find resource {uri} specified in metric "
                          f"object value for metric group '{mgd.name}'")
-                for mgr in exc.managers:
-                    res_class = mgr.class_name
-                    logprint(logging.WARNING, PRINT_ALWAYS,
-                             f"Details: List of {res_class} resources found:")
-                    for res in mgr.list():
+                DISPLAY_CACHE = False
+                if DISPLAY_CACHE:
+                    for mgr in exc.managers:
+                        res_class = mgr.class_name
                         logprint(logging.WARNING, PRINT_ALWAYS,
-                                 f"Details: Resource found: {res.uri} "
-                                 f"({res.name})")
-                logprint(logging.WARNING, PRINT_ALWAYS,
-                         "Details: Current resource cache:")
-                for res in self._resources.values():
+                                 f"Details: List of {res_class} resources "
+                                 "found:")
+                        for res in mgr.list():
+                            logprint(logging.WARNING, PRINT_ALWAYS,
+                                     f"Details: Resource found: {res.uri} "
+                                     f"({res.name})")
                     logprint(logging.WARNING, PRINT_ALWAYS,
-                             f"Details: Resource cache: {res.uri} ({res.name})")
+                             "Details: Current resource cache:")
+                    for res in self._resources.values():
+                        logprint(logging.WARNING, PRINT_ALWAYS,
+                                 f"Details: Resource cache: {res.uri} "
+                                 f"({res.name})")
                 raise
             self._resources[uri] = _resource
         return _resource
