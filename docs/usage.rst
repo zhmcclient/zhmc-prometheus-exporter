@@ -973,6 +973,10 @@ The exporter config file is in YAML format and has the following structure:
       - name: {extra-label-name}
         value: {extra-label-value}
 
+    cpcs:  # optional, defaults to all managed CPCs
+      # List of CPCs to export data for:
+      - {cpc-name}
+
     metric_groups:
       # Dict of HMC and resource metric groups
       {hmc-metric-group}:
@@ -1021,6 +1025,16 @@ Where:
 
 * ``{extra-label-value}`` is the label value. The string value is used directly
   without any further interpretation.
+
+* ``cpcs`` (optional) is a list of CPCs for which metrics should be exported.
+  If not specified or null, metrics for all CPCs managed by the HMC are
+  exported. Note that this list applies to all metrics in context of a CPC,
+  including for example partition or adapter metrics. Note that the metric
+  data returned from the HMC does not allow filtering by CPC, so the filtering
+  is performed by the exporter. This causes resources from the other CPCs to be
+  fetched in the startup phase of the exporter.
+
+* ``{cpc-name}`` is the name of a CPC.
 
 * ``{hmc-metric-group}`` is the name of the metric group on the HMC or the
   resource metric group.

@@ -333,6 +333,10 @@ extra_labels:
   # - name: pod
   #   value: "'mypod'"
 
+# List of CPCs to export data for. Optional, default is all managed CPCs
+cpcs:
+  # - {cpc-name}
+
 # Metric groups to be fetched
 metric_groups:
 
@@ -864,7 +868,7 @@ def get_hmc_info(session):
 
 def create_metrics_context(
         session, config_dict, yaml_metric_groups, hmc_version,
-        hmc_api_version, hmc_features):
+        hmc_api_version, hmc_features, cpc_list):
     """
     Creating a context is mandatory for reading metrics from the Z HMC.
     Takes the session, the metric_groups dictionary from the metrics YAML file
@@ -927,8 +931,7 @@ def create_metrics_context(
             raise new_exc
         if resource_path == 'cpc':
             resources[metric_group] = []
-            cpcs = client.cpcs.list()
-            for cpc in cpcs:
+            for cpc in cpc_list:
                 logprint(logging.INFO, PRINT_V,
                          f"Enabling auto-update for CPC {cpc.name}")
                 try:
@@ -944,8 +947,7 @@ def create_metrics_context(
                 uri2resource[cpc.uri] = cpc
         elif resource_path == 'cpc.partition':
             resources[metric_group] = []
-            cpcs = client.cpcs.list()
-            for cpc in cpcs:
+            for cpc in cpc_list:
                 partitions = cpc.partitions.list()
                 for partition in partitions:
                     logprint(logging.INFO, PRINT_V,
@@ -964,8 +966,7 @@ def create_metrics_context(
                     uri2resource[partition.uri] = partition
         elif resource_path == 'cpc.logical-partition':
             resources[metric_group] = []
-            cpcs = client.cpcs.list()
-            for cpc in cpcs:
+            for cpc in cpc_list:
                 lpars = cpc.lpars.list()
                 for lpar in lpars:
                     logprint(logging.INFO, PRINT_V,
@@ -1031,8 +1032,7 @@ def create_metrics_context(
 
     # Fetch backing adapters of NICs, if needed
     if 'partition-attached-network-interface' in exported_hmc_metric_groups:
-        cpcs = client.cpcs.list()
-        for cpc in cpcs:
+        for cpc in cpc_list:
             partitions = cpc.partitions.list()
             for partition in partitions:
                 nics = partition.nics.list()
@@ -1429,7 +1429,7 @@ def cpc_from_resource(resource):
 
 def build_family_objects(
         metrics_object, yaml_metric_groups, yaml_metrics,
-        extra_labels, hmc_version, hmc_api_version, hmc_features,
+        extra_labels, cpc_list, hmc_version, hmc_api_version, hmc_features,
         se_versions_by_cpc, se_features_by_cpc, session, resource_cache=None,
         uri2resource=None):
     """
@@ -1446,6 +1446,7 @@ def build_family_objects(
     """
     env = jinja2.Environment(autoescape=True)
     client = zhmcclient.Client(session)
+    cpc_names = [cpc.name for cpc in cpc_list]
 
     family_objects = {}
     for metric_group_value in metrics_object.metric_group_values:
@@ -1478,6 +1479,8 @@ def build_family_objects(
 
             cpc = cpc_from_resource(resource)
             if cpc:
+                if cpc.name not in cpc_names:
+                    continue  # skip this CPC
                 # This resource is a CPC or part of a CPC
                 se_version = se_versions_by_cpc[cpc.name]
                 se_features = se_features_by_cpc[cpc.name]
@@ -1588,7 +1591,7 @@ def build_family_objects(
 
 def build_family_objects_res(
         resources, yaml_metric_groups, yaml_metrics,
-        extra_labels, hmc_version, hmc_api_version, hmc_features,
+        extra_labels, cpc_list, hmc_version, hmc_api_version, hmc_features,
         se_versions_by_cpc, se_features_by_cpc, session, resource_cache=None,
         uri2resource=None):
     """
@@ -1606,6 +1609,7 @@ def build_family_objects_res(
     """
     env = jinja2.Environment(autoescape=True)
     client = zhmcclient.Client(session)
+    cpc_names = [cpc.name for cpc in cpc_list]
 
     family_objects = {}
     for metric_group, res_list in resources.items():
@@ -1633,6 +1637,8 @@ def build_family_objects_res(
 
             cpc = cpc_from_resource(resource)
             if cpc:
+                if cpc.name not in cpc_names:
+                    continue  # skip this CPC
                 # This resource is a CPC or part of a CPC
                 se_version = se_versions_by_cpc[cpc.name]
                 se_features = se_features_by_cpc[cpc.name]
@@ -1851,7 +1857,7 @@ class ZHMCUsageCollector():
 
     def __init__(self, config_dict, session, context, resources,
                  yaml_metric_groups, yaml_metrics, yaml_fetch_properties,
-                 extra_labels, metrics_filename, config_filename,
+                 extra_labels, cpc_list, metrics_filename, config_filename,
                  resource_cache, uri2resource, hmc_version, hmc_api_version,
                  hmc_features, se_versions_by_cpc, se_features_by_cpc):
         self.config_dict = config_dict
@@ -1862,6 +1868,7 @@ class ZHMCUsageCollector():
         self.yaml_metrics = yaml_metrics
         self.yaml_fetch_properties = yaml_fetch_properties
         self.extra_labels = extra_labels
+        self.cpc_list = cpc_list
         self.metrics_filename = metrics_filename
         self.config_filename = config_filename
         self.resource_cache = resource_cache
@@ -1916,7 +1923,7 @@ class ZHMCUsageCollector():
                             self.session, self.config_dict,
                             self.yaml_metric_groups,
                             self.hmc_version, self.hmc_api_version,
-                            self.hmc_features)
+                            self.hmc_features, self.cpc_list)
                         continue
                     logprint(logging.WARNING, PRINT_ALWAYS,
                              "Retrying after HTTP status "
@@ -1951,17 +1958,19 @@ class ZHMCUsageCollector():
                  "Building family objects for HMC metrics")
         family_objects = build_family_objects(
             metrics_object, self.yaml_metric_groups, self.yaml_metrics,
-            self.extra_labels, self.hmc_version, self.hmc_api_version,
-            self.hmc_features, self.se_versions_by_cpc, self.se_features_by_cpc,
-            self.session, self.resource_cache, self.uri2resource)
+            self.extra_labels, self.cpc_list, self.hmc_version,
+            self.hmc_api_version, self.hmc_features, self.se_versions_by_cpc,
+            self.se_features_by_cpc, self.session, self.resource_cache,
+            self.uri2resource)
 
         logprint(logging.DEBUG, None,
                  "Building family objects for resource metrics")
         family_objects.update(build_family_objects_res(
             self.resources, self.yaml_metric_groups, self.yaml_metrics,
-            self.extra_labels, self.hmc_version, self.hmc_api_version,
-            self.hmc_features, self.se_versions_by_cpc, self.se_features_by_cpc,
-            self.session, self.resource_cache, self.uri2resource))
+            self.extra_labels, self.cpc_list, self.hmc_version,
+            self.hmc_api_version, self.hmc_features, self.se_versions_by_cpc,
+            self.se_features_by_cpc, self.session, self.resource_cache,
+            self.uri2resource))
 
         logprint(logging.DEBUG, None,
                  "Returning family objects")
@@ -2036,7 +2045,7 @@ class ZHMCUsageCollector():
             for lpar in console.list_permitted_lpars(
                     additional_properties=lpar_props):
                 updated_resources[lpar.uri] = lpar
-            for cpc in client.cpcs.list():
+            for cpc in self.cpc_list:
                 cpc.pull_properties(cpc_props)
                 updated_resources[cpc.uri] = cpc
             end_dt = datetime.now()
@@ -2395,6 +2404,11 @@ def main():
                  f"read: {RETRY_TIMEOUT_CONFIG.read_timeout} sec / "
                  f"{RETRY_TIMEOUT_CONFIG.read_retries} retries.")
 
+        yaml_cpcs = config_dict.get("cpcs", None)
+        if yaml_cpcs == []:
+            raise ImproperExit(
+                "The config file specified to export no CPCs.")
+
         env = jinja2.Environment(autoescape=True)
 
         session = create_session(config_dict, config_filename)
@@ -2407,7 +2421,24 @@ def main():
                                    hmc_info['api-minor-version'])
                 client = zhmcclient.Client(session)
                 hmc_features = client.consoles.console.list_api_features()
+
+                # Determine list of CPCs to export, as specified in 'cpcs'.
+                # 'cpcs' is optional and defaults to all managed CPCs.
                 cpc_list = client.cpcs.list()
+                cpc_names = [cpc.name for cpc in cpc_list]
+                if not cpc_list:
+                    raise ImproperExit(
+                        "This HMC does not manage any CPCs.")
+                if yaml_cpcs is not None:
+                    ne_cpc_names = [cn for cn in yaml_cpcs
+                                    if cn not in cpc_names]
+                    if ne_cpc_names:
+                        raise ImproperExit(
+                            "The config file specified non-existing CPCs: "
+                            f"{', '.join(ne_cpc_names)}")
+                    cpc_list = [cpc for cpc in cpc_list
+                                if cpc.name in yaml_cpcs]
+                    cpc_names = [cpc.name for cpc in cpc_list]
 
                 se_versions_by_cpc = {}
                 se_features_by_cpc = {}
@@ -2424,6 +2455,10 @@ def main():
                 hmc_features_str = ', '.join(hmc_features) or 'None'
                 logprint(logging.INFO, PRINT_V,
                          f"HMC features: {hmc_features_str}")
+
+                logprint(logging.INFO, PRINT_V,
+                         f"Exporting data for CPCs: {', '.join(cpc_names)}")
+
                 for cpc in cpc_list:
                     cpc_name = cpc.name
                     se_version_str = version_str(se_versions_by_cpc[cpc_name])
@@ -2439,7 +2474,7 @@ def main():
 
                 context, resources, uri2resource = create_metrics_context(
                     session, config_dict, yaml_metric_groups,
-                    hmc_version, hmc_api_version, hmc_features)
+                    hmc_version, hmc_api_version, hmc_features, cpc_list)
 
         except (ConnectionError, AuthError, OtherError) as exc:
             raise ImproperExit(exc)
@@ -2465,7 +2500,8 @@ def main():
         resource_cache = ResourceCache()
         coll = ZHMCUsageCollector(
             config_dict, session, context, resources, yaml_metric_groups,
-            yaml_metrics, yaml_fetch_properties, extra_labels, metrics_filename,
+            yaml_metrics, yaml_fetch_properties, extra_labels, cpc_list,
+            metrics_filename,
             config_filename, resource_cache, uri2resource, hmc_version,
             hmc_api_version, hmc_features, se_versions_by_cpc,
             se_features_by_cpc)

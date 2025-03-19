@@ -282,6 +282,7 @@ class TestCreateContext(unittest.TestCase):
 
         session = zhmcclient_mock.FakedSession(
             "fake-host", "fake-hmc", hmc_version, hmc_api_version_str)
+        client = zhmcclient.Client(session)
         config_dict = {
             "metric_groups": {
                 "dpm-system-usage-overview": {"export": True},
@@ -290,9 +291,11 @@ class TestCreateContext(unittest.TestCase):
         yaml_metric_groups = {
             "dpm-system-usage-overview": {"prefix": "pre"},
         }
+        cpc_list = client.cpcs.list()
+
         context, _, _ = zhmc_prometheus_exporter.create_metrics_context(
             session, config_dict, yaml_metric_groups, hmc_version,
-            hmc_api_version, hmc_features)
+            hmc_api_version, hmc_features, cpc_list)
         # pylint: disable=protected-access
         self.assertEqual(type(context), zhmcclient._metrics.MetricsContext)
         context.delete()
@@ -318,10 +321,12 @@ class TestCreateContext(unittest.TestCase):
             "metric_groups": {}
         }
         yaml_metric_groups = {}
+        cpc_list = []
+
         with self.assertRaises(zhmcclient.ConnectionError):
             zhmc_prometheus_exporter.create_metrics_context(
                 session, config_dict, yaml_metric_groups, hmc_version,
-                hmc_api_version, hmc_features)
+                hmc_api_version, hmc_features, cpc_list)
 
 
 class TestCleanup(unittest.TestCase):
@@ -465,11 +470,13 @@ class TestMetrics(unittest.TestCase):
         se_features_by_cpc = {'cpc_1': []}
 
         session, context, resources = setup_metrics_context()
+        client = zhmcclient.Client(session)
+        cpc_list = client.cpcs.list()
         metrics_object = zhmc_prometheus_exporter.retrieve_metrics(context)
 
         families = zhmc_prometheus_exporter.build_family_objects(
             metrics_object, yaml_metric_groups, yaml_metrics,
-            extra_labels, hmc_version, hmc_api_version, hmc_features,
+            extra_labels, cpc_list, hmc_version, hmc_api_version, hmc_features,
             se_versions_by_cpc, se_features_by_cpc, session)
 
         assert len(families) == 1
@@ -491,7 +498,7 @@ class TestMetrics(unittest.TestCase):
 
         families = zhmc_prometheus_exporter.build_family_objects_res(
             resources, yaml_metric_groups, yaml_metrics,
-            extra_labels, hmc_version, hmc_api_version, hmc_features,
+            extra_labels, cpc_list, hmc_version, hmc_api_version, hmc_features,
             se_versions_by_cpc, se_features_by_cpc, session)
 
         assert len(families) == 1
@@ -527,6 +534,7 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
         se_features_by_cpc = {'cpc_1': []}
 
         session = setup_faked_session()
+        client = zhmcclient.Client(session)
         config_dict = {
             "hmcs": [
                 {"host": "192.168.0.0", "userid": "user", "password": "pwd"}
@@ -538,10 +546,12 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
         yaml_metric_groups = {
             "dpm-system-usage-overview": {"prefix": "pre"},
         }
+        cpc_list = client.cpcs.list()
+
         context, resources, _ = \
             zhmc_prometheus_exporter.create_metrics_context(
                 session, config_dict, yaml_metric_groups, hmc_version,
-                hmc_api_version, hmc_features)
+                hmc_api_version, hmc_features, cpc_list)
         yaml_metrics = {
             "dpm-system-usage-overview": {
                 "processor-usage": {
@@ -560,9 +570,9 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
 
         my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
             config_dict, session, context, resources, yaml_metric_groups,
-            yaml_metrics, yaml_fetch_properties, extra_labels, "filename",
-            "filename", None, None, hmc_version, hmc_api_version, hmc_features,
-            se_versions_by_cpc, se_features_by_cpc)
+            yaml_metrics, yaml_fetch_properties, extra_labels, cpc_list,
+            "filename", "filename", None, None, hmc_version, hmc_api_version,
+            hmc_features, se_versions_by_cpc, se_features_by_cpc)
         self.assertEqual(my_zhmc_usage_collector.config_dict, config_dict)
         self.assertEqual(my_zhmc_usage_collector.session, session)
         self.assertEqual(my_zhmc_usage_collector.context, context)
@@ -582,6 +592,7 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
         se_features_by_cpc = {'cpc_1': []}
 
         session = setup_faked_session()
+        client = zhmcclient.Client(session)
         config_dict = {
             "hmcs": [
                 {"host": "192.168.0.0", "userid": "user", "password": "pwd"}
@@ -593,10 +604,12 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
         yaml_metric_groups = {
             "dpm-system-usage-overview": {"prefix": "pre"},
         }
+        cpc_list = client.cpcs.list()
+
         context, resources, _ = \
             zhmc_prometheus_exporter.create_metrics_context(
                 session, config_dict, yaml_metric_groups, hmc_version,
-                hmc_api_version, hmc_features)
+                hmc_api_version, hmc_features, cpc_list)
         yaml_metrics = {
             "dpm-system-usage-overview": {
                 "processor-usage": {
@@ -615,9 +628,9 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
 
         my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
             config_dict, session, context, resources, yaml_metric_groups,
-            yaml_metrics, yaml_fetch_properties, extra_labels, "filename",
-            "filename", None, None, hmc_version, hmc_api_version, hmc_features,
-            se_versions_by_cpc, se_features_by_cpc)
+            yaml_metrics, yaml_fetch_properties, extra_labels, cpc_list,
+            "filename", "filename", None, None, hmc_version, hmc_api_version,
+            hmc_features, se_versions_by_cpc, se_features_by_cpc)
         collected = list(my_zhmc_usage_collector.collect())
         self.assertEqual(len(collected), 1)
         self.assertEqual(type(collected[0]),

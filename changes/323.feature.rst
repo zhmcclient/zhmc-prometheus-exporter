@@ -1,0 +1,3 @@
+Added an optional 'cpcs' item in the config file that allows to specify a list
+of CPCs for which data should be exported. By default, all CPCs managed by the
+HMC are exported, like before this change.
