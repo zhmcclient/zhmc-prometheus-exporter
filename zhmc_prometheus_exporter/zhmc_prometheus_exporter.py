@@ -2435,7 +2435,8 @@ def main():
                     if ne_cpc_names:
                         raise ImproperExit(
                             "The config file specified non-existing CPCs: "
-                            f"{', '.join(ne_cpc_names)}")
+                            f"{', '.join(ne_cpc_names)} - existing CPCs "
+                            f"are: {', '.join(cpc_names)}")
                     cpc_list = [cpc for cpc in cpc_list
                                 if cpc.name in yaml_cpcs]
                     cpc_names = [cpc.name for cpc in cpc_list]
