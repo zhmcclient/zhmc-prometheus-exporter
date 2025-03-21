@@ -373,6 +373,8 @@ metric_groups:
     export: true
   storagevolume-resource:
     export: true
+  adapter-resource:
+    export: true
 
   # Available for CPCs in any mode
   zcpc-environmentals-and-power:
@@ -578,6 +580,7 @@ def upgrade_config_dict(config_dict, config_filename, upgrade_config=False):
                 'partition-resource': {'export': True},
                 'storagegroup-resource': {'export': True},
                 'storagevolume-resource': {'export': True},
+                'adapter-resource': {'export': True},
                 'zcpc-environmentals-and-power': {'export': True},
                 'zcpc-processor-usage': {'export': True},
                 'environmental-power-status': {'export': True},
@@ -1022,6 +1025,25 @@ def create_metrics_context(
                         continue  # skip this storage group
                     resources[metric_group].append(sv)
                     uri2resource[sv.uri] = sv
+        elif resource_path == 'cpc.adapter':
+            resources[metric_group] = []
+            for cpc in cpc_list:
+                adapters = cpc.adapters.list()
+                for adapter in adapters:
+                    logprint(logging.INFO, PRINT_V,
+                             "Enabling auto-update for adapter "
+                             f"{cpc.name}.{adapter.name}")
+                    try:
+                        adapter.enable_auto_update()
+                    except zhmcclient.Error as exc:
+                        logprint(logging.ERROR, PRINT_ALWAYS,
+                                 f"Not providing metric group {metric_group!r} "
+                                 f"for adapter {cpc.name}.{adapter.name}, "
+                                 "because enabling auto-update for it failed "
+                                 f"with {exc.__class__.__name__}: {exc}")
+                        continue  # skip this partition
+                    resources[metric_group].append(adapter)
+                    uri2resource[adapter.uri] = adapter
         else:
             new_exc = InvalidMetricDefinitionFile(
                 f"Unknown resource item {resource_path!r} in resource "

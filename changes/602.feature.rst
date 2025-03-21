@@ -1,0 +1,4 @@
+Added metric group 'adapter-resource'. It provides the adapter properties
+'status' and 'physical-channel-status' as metrics. To get the new metrics,
+add an entry for metric group 'adapter-resource' to your exporter config file,
+as shown in the example config file.
