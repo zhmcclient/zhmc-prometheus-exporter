@@ -339,7 +339,8 @@ $(done_dir)/check_reqs_$(pymn)_$(PACKAGE_LEVEL).done: $(done_dir)/develop_$(pymn
 	@echo "Makefile: Checking missing dependencies of this package"
 	-$(call RM_FUNC,$@)
 	pip-missing-reqs $(package_name) --requirements-file=requirements.txt
-	pip-missing-reqs $(package_name) --requirements-file=minimum-constraints-install.txt
+# TODO-ZHMC: Re-enable once zhmcclient 1.20.0 is released
+# pip-missing-reqs $(package_name) --requirements-file=minimum-constraints-install.txt
 	@echo "Makefile: Done checking missing dependencies of this package"
 ifeq ($(PLATFORM),Windows_native)
 # Reason for skipping on Windows is https://github.com/r1chardj0n3s/pip-check-reqs/issues/67
