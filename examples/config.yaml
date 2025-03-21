@@ -76,6 +76,8 @@ metric_groups:
     export: true
   storagevolume-resource:
     export: true
+  adapter-resource:
+    export: true
 
   # Available for CPCs in any mode
   zcpc-environmentals-and-power:

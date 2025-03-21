@@ -55,6 +55,8 @@ DEFAULT_METRIC_GROUPS = """metric_groups:
     export: true
   storagevolume-resource:
     export: true
+  adapter-resource:
+    export: true
   zcpc-environmentals-and-power:
     export: true
   zcpc-processor-usage:

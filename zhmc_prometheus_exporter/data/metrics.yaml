@@ -153,6 +153,17 @@ metric_groups:
       - name: storagevolume
         value: "resource_obj.name"
 
+  adapter-resource:
+    type: resource
+    resource: cpc.adapter
+    prefix: adapter
+    if: "hmc_version>='2.13.1'"
+    labels:
+      - name: cpc
+        value: "resource_obj.manager.parent.name"
+      - name: adapter
+        value: "resource_obj.name"
+
   # Available for CPCs in any mode
 
   zcpc-environmentals-and-power:
@@ -1122,6 +1133,20 @@ metrics:
       if: "'cylinders' in resource_obj.properties"  # Only for FC-type storage groups
       exporter_name: cylinders
       exporter_desc: "Size of ECKD volume in cylinders (0 for ECKD alias volumes)"
+
+  adapter-resource:  # can be in dictionary or list format
+    - properties_expression: "{'active': 0, 'not-active': 1, 'not-detected': 2, 'exceptions': 3, 'service': 4}.get(properties['status'], 99)"
+      exporter_name: status_int
+      exporter_desc: "Adapter status as integer (0=active, 1=not-active, 2=not-detected, 3=exceptions, 4=service, 99=unsupported value)"
+      labels:
+        - name: value
+          value: "resource_obj.properties['status']"
+    - properties_expression: "{'operating': 0, 'no-power': 1, 'service': 2, 'stopped': 3, 'not-defined': 4, 'definition-error': 5, 'suspended': 6, 'check-stopped': 7, 'wrap-block': 8, 'permanent-error': 9, 'loss-of-signal': 10, 'loss-of-synchronization': 11, 'not-operational-link': 12, 'sequence-time-out': 13, 'sequence-not-permitted': 14, 'terminal-condition': 15, 'offline-signal-received': 16, 'fabric-login-sequence-failure': 17, 'port-login-sequence-failure': 18, 'state-change-registration-failure': 19, 'invalid-attachment-failure': 20, 'test-mode': 21, 'bit-error-threshold-exceeded': 22, 'ifcc-threshold-exceeded': 23, 'io-supressed': 24}.get(properties['physical-channel-status'], 99)"
+      exporter_name: physical_channel_status_int
+      exporter_desc: "Usage of volume as integer (0=operating, 1=no-power, 2=service, 3=stopped, 4=not-defined, 5=definition-error, 6=suspended, 7=check-stopped, 8=wrap-block, 9=permanent-error, 10=loss-of-signal, 11=loss-of-synchronization, 12=not-operational-link, 13=sequence-time-out, 14=sequence-not-permitted, 15=terminal-condition, 16=offline-signal-received, 17=fabric-login-sequence-failure, 18=port-login-sequence-failure, 19=state-change-registration-failure, 20=invalid-attachment-failure, 21=test-mode, 22=bit-error-threshold-exceeded, 23=ifcc-threshold-exceeded, 24=io-supressed, 99=unsupported value)"
+      labels:
+        - name: value
+          value: "resource_obj.properties['physical-channel-status']"
 
   # Available for CPCs in any mode
 
