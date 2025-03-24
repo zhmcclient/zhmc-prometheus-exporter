@@ -19,8 +19,7 @@ wheel==0.41.3
 
 # Direct dependencies for install (must be consistent with requirements.txt)
 
-# TODO-ZHMC: Re-enable once zhmcclient 1.20.0 is released
-# zhmcclient==1.20.0
+zhmcclient==1.20.0
 
 # TODO: Use official prometheus-client version (0.21.0 ?) once released.
 # prometheus-client==0.21.0

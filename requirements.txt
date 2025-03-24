@@ -6,9 +6,8 @@
 
 # Direct dependencies for install (must be consistent with minimum-constraints-install.txt)
 
-# TODO-ZHMC: Re-enable once zhmcclient 1.20.0 is released
-zhmcclient @ git+https://github.com/zhmcclient/python-zhmcclient.git@master
-# zhmcclient>=1.20.0
+# zhmcclient @ git+https://github.com/zhmcclient/python-zhmcclient.git@master
+zhmcclient>=1.20.0
 
 # prometheus-client 0.19.0 added support for HTTPS/mTLS
 # prometheus-client 0.20.0 improved HTTPS/mTLS support
