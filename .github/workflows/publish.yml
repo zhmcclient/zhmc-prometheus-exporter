@@ -16,6 +16,14 @@ jobs:
     name: Build and publish to PyPI
     if: startsWith(github.ref, 'refs/tags')
     runs-on: ubuntu-latest
+    # This workflow uses Pypi trusted publishing, see https://docs.pypi.org/trusted-publishers/
+    # Requirements:
+    # - On the Pypi project, the GitHub repo must be defined as a trusted publisher
+    # - On the GitHub repo, an environment 'pypi' must exist
+    environment: pypi  # For Pypi trusted publishing
+    permissions:
+      id-token: write  # For Pypi trusted publishing
+      contents: write  # For creating GitHub release
     steps:
 
     #-------- Info gathering and checks
@@ -176,7 +184,7 @@ jobs:
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         packages-dir: dist
-        password: ${{ secrets.PYPI_API_TOKEN }}
+        # Pypi trusted publishing allows to have no password
 
     #-------- Creation of Github release
     - name: Determine whether release on Github exists for the pushed tag
