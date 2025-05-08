@@ -967,6 +967,29 @@ def create_metrics_context(
                         continue  # skip this partition
                     resources[metric_group].append(partition)
                     uri2resource[partition.uri] = partition
+        elif resource_path == 'cpc.partition.nic':
+            resources[metric_group] = []
+            cpcs = client.cpcs.list()
+            for cpc in cpcs:
+                partitions = cpc.partitions.list()
+                for partition in partitions:
+                    nics = partition.nics.list()
+                    for nic in nics:
+                        logprint(logging.INFO, PRINT_V,
+                                 "Enabling auto-update for NIC {}.{}.{}".
+                                 format(cpc.name, partition.name, nic.name))
+                        try:
+                            nic.enable_auto_update()
+                        except zhmcclient.Error as exc:
+                            logprint(logging.ERROR, PRINT_ALWAYS,
+                                     "Ignoring resource-based metrics for "
+                                     "NIC {}.{}.{}, because enabling "
+                                     "auto-update for it failed with {}: {}".
+                                     format(cpc.name, partition.name, nic.name,
+                                            exc.__class__.__name__, exc))
+                            continue  # skip this partition
+                        resources[metric_group].append(nic)
+                        uri2resource[nic.uri] = nic
         elif resource_path == 'cpc.logical-partition':
             resources[metric_group] = []
             for cpc in cpc_list:
