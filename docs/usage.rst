@@ -15,159 +15,6 @@
 Usage
 =====
 
-This section describes how to install and use the exporter beyond the quick
-introduction in :ref:`Quickstart`.
-
-.. _virtual Python environment: http://docs.python-guide.org/en/latest/dev/virtualenvs/
-.. _Pypi: http://pypi.python.org/
-
-Installation using pipx
------------------------
-
-The recommended way to install the exporter is by using pipx.
-
-Pipx creates a `virtual Python environment`_ under the covers, installs the
-Python package into that environment and makes the ``zhmc_prometheus_exporter``
-command available in a directory that is in the PATH.
-The ``zhmc_prometheus_exporter`` command will be available that way, regardless
-of whether or not you have a virtual Python environment active (that you may
-need for other purposes).
-
-1.  Prerequisite: Install pipx as an OS-level package
-
-    Follow the steps at https://pipx.pypa.io/stable/installation/ to install
-    pipx as an OS-level package to your local system.
-
-2.  Install the exporter using pipx
-
-    To install the latest released version of the exporter:
-
-    .. code-block:: bash
-
-        $ pipx install zhmc-prometheus-exporter
-
-    To install a specific released version of the exporter, e.g. 1.7.1:
-
-    .. code-block:: bash
-
-        $ pipx install zhmc-prometheus-exporter==1.7.1
-
-    To install a specific development branch of the exporter, e.g. master:
-
-    .. code-block:: bash
-
-        $ pipx install git+https://github.com/zhmcclient/zhmc-prometheus-exporter.git@master
-
-    To install the exporter with a non-default Python version, e.g. 3.10:
-
-    .. code-block:: bash
-
-        $ pipx install zhmc-prometheus-exporter --python python3.10
-
-Installation into a virtual Python environment
-----------------------------------------------
-
-In some cases it may be useful to install the exporter into your own
-`virtual Python environment`_. That avoids the dependency to pipx, but it
-requires you to activate the virtual environment every time you want to use the
-``zhmc_prometheus_exporter`` command.
-
-There is a number of ways how virtual Python environments can be created. This
-documentation describes the use of "virtualenv":
-
-1.  Prerequisite: Install virtualenv into system Python:
-
-    .. code-block:: bash
-
-        $ pip install virtualenv
-
-2.  Create and activate a virtual Python environment:
-
-    .. code-block:: bash
-
-        $ virtualenv ~/.virtualenvs/zhmcpe
-        $ source ~/.virtualenvs/zhmcpe/bin/activate
-
-3.  Install the exporter into the virtual Python environment:
-
-    To install the latest released version of the exporter so that it uses your
-    default Python version:
-
-    .. code-block:: bash
-
-        (zhmcpe) $ pip install zhmc-prometheus-exporter
-
-    To install a specific released version of the exporter, e.g. 1.7.1:
-
-    .. code-block:: bash
-
-        (zhmcpe) $ pip install zhmc-prometheus-exporter==1.7.1
-
-    To install a specific development branch of the exporter, e.g. master:
-
-    .. code-block:: bash
-
-        (zhmcpe) $ pip install git+https://github.com/zhmcclient/zhmc-prometheus-exporter.git@master
-
-Installation into a system Python
----------------------------------
-
-Your system Python version(s) are installed using OS-level packages for all the
-Python functionality.
-
-Adding packages to your system Python using Python packages from `Pypi`_ may
-create issues. This is why recent versions of pip raise a warning when
-attempting to install into the system Python. Even if you install a Python
-package from Pypi into your user's space, this may create issues.
-
-The main issue is that the more Python packages you install into the system
-Python, the more likely there will be incompatible Python package dependencies.
-
-Another issue is when you replace OS-level packages with Python packages.
-
-In order to avoid these issues, you should install the exporter into the system
-Python only in cases where the system has a well-defined scope and you have
-full control over the set of OS-level and Python-level packages, for example
-when building a Docker container.
-
-Running in a Docker container
------------------------------
-
-If you want to run the exporter in a Docker container you can create the
-container as follows, using the Dockerfile provided in the Git repository.
-
-* Clone the Git repository of the exporter and switch to the clone's root
-  directory:
-
-  .. code-block:: bash
-
-      $ git clone https://github.com/zhmcclient/zhmc-prometheus-exporter
-      $ cd zhmc-prometheus-exporter
-
-* Build a local Docker image as follows:
-
-  .. code-block:: bash
-
-      $ make docker
-
-  This builds a container image named 'zhmc_prometheus_exporter:latest' in your
-  local Docker environment.
-
-  The exporter config file is not included in the image, and needs to be
-  provided when running the image.
-
-* Run the local Docker image as follows:
-
-  .. code-block:: bash
-
-      $ docker run --rm -v $(pwd)/myconfig:/root/myconfig -p 9291:9291 zhmc_prometheus_exporter -c /root/myconfig/config.yaml -v
-
-  In this command, the exporter config file is provided on the local system
-  as ``./myconfig/config.yaml``. The ``-v`` option of 'docker run' mounts the
-  ``./myconfig`` directory to ``/root/myconfig`` in the container's file system.
-  The ``-c`` option of the exporter references the exporter config file as it
-  appears in the container's file system.
-
 zhmc_prometheus_exporter command
 --------------------------------
 
@@ -216,6 +63,45 @@ The ``zhmc_prometheus_exporter`` command supports the following arguments:
       --help-config         show help for exporter config file and exit
 
 
+Running in a Docker container
+-----------------------------
+
+If you want to run the exporter in a Docker container you can create the
+container as follows, using the Dockerfile provided in the Git repository.
+
+* Clone the Git repository of the exporter and switch to the clone's root
+  directory:
+
+  .. code-block:: bash
+
+      $ git clone https://github.com/zhmcclient/zhmc-prometheus-exporter
+      $ cd zhmc-prometheus-exporter
+
+* Build a local Docker image as follows:
+
+  .. code-block:: bash
+
+      $ make docker
+
+  This builds a container image named 'zhmc_prometheus_exporter:latest' in your
+  local Docker environment.
+
+  The exporter config file is not included in the image, and needs to be
+  provided when running the image.
+
+* Run the local Docker image as follows:
+
+  .. code-block:: bash
+
+      $ docker run --rm -v $(pwd)/myconfig:/root/myconfig -p 9291:9291 zhmc_prometheus_exporter -c /root/myconfig/config.yaml -v
+
+  In this command, the exporter config file is provided on the local system
+  as ``./myconfig/config.yaml``. The ``-v`` option of 'docker run' mounts the
+  ``./myconfig`` directory to ``/root/myconfig`` in the container's file system.
+  The ``-c`` option of the exporter references the exporter config file as it
+  appears in the container's file system.
+
+
 Size of log files and terminal output
 -------------------------------------
 
@@ -245,87 +131,8 @@ not be growing according to the above, please open an
 and provide the captured terminal output or the log file that is growing.
 
 
-Setting up the HMC
-------------------
-
-Usage of this package requires that the HMC in question is prepared
-accordingly:
-
-* The Web Services API must be enabled on the HMC.
-
-  You can do that in the HMC GUI by selecting "HMC Management" in the left pane,
-  then opening the "Configure API Settings" icon on the pain pane,
-  then selecting the "Web Services" tab on the page that comes up, and
-  finally enabling the Web Services API on that page.
-
-  The above is on a z16 HMC, it may be different on older HMCs.
-
-  If you cannot find this icon, then your userid does not have permission
-  for the respective task on the HMC. In that case, there should be some
-  other HMC admin you can go to to get the Web Services API enabled.
-
-* The HMC should be configured with a CA-verifiable server certificate because
-  since version 0.7.0, the zhmc exporter will reject self-signed certificates
-  by default. See :ref:`HMC certificate` for details.
-
-
-Setting up firewalls or proxies
--------------------------------
-
-If you have to configure firewalls or proxies between the system where you
-run the ``zhmc_prometheus_exporter`` command and the HMC, the following ports
-need to be opened:
-
-* 6794 (TCP) - for the HMC API HTTP server
-* 61612 (TCP) - for the HMC API message broker via JMS over STOMP
-
-For details, see sections "Connecting to the API HTTP server" and
-"Connecting to the API message broker" in the :term:`HMC API` book.
-
-
-HMC userid requirements
------------------------
-
-This section describes the requirements on the HMC userid that is used by
-the ``zhmc_prometheus_exporter`` command.
-
-To return all metrics supported by the command, the HMC userid must have the
-following permissions:
-
-* The HMC userid must have the following flag enabled:
-
-  - "Allow access to Web Services management interfaces" flag of the user in
-    the HMC GUI, or "allow-management-interfaces" property of the user at the
-    WS-API.
-
-* Object access permission to the objects for which metrics should be returned.
-
-  If the userid does not have object access permission to a particular object,
-  the exporter will behave as if the object did not exist, i.e. it will
-  successfully return metrics for objects with access permission, and ignore
-  any others.
-
-  The exporter can return metrics for the following types of objects. To
-  return metrics for all existing objects, the userid must have object access
-  permission to all of the following objects:
-
-  - CPCs
-  - On CPCs in DPM mode:
-    - Adapters
-    - Partitions
-    - NICs
-  - On CPCs in classic mode:
-    - LPARs
-
-* Task permission for the "Manage Secure Execution Keys" task.
-
-  This is used by the exporter during the 'Get CPC Properties' operation, but
-  it does not utilize the CPC properties returned that way (room for future
-  optimization).
-
-
-HMC certificate
----------------
+Using HMC certificates
+----------------------
 
 By default, the HMC is configured with a self-signed certificate. That is the
 X.509 certificate presented by the HMC as the server certificate during SSL/TLS
@@ -407,7 +214,8 @@ The exporter is an HTTP or HTTPS server that is regularly contacted by Prometheu
 for collecting metrics using HTTP GET.
 
 The parameters for the communication with Prometheus are defined in the
-exporter config file in the ``prometheus`` section, as in the following example:
+:ref:`exporter config file` in the ``prometheus`` section, as in the following
+example:
 
 .. code-block:: yaml
 
@@ -823,8 +631,8 @@ Labels on exported metrics
 --------------------------
 
 The metrics exported to Prometheus are tagged with labels defined in the
-exporter config file (at the global level) or in the metric definition file
-(at the level of HMC metric groups and HMC metrics).
+:ref:`exporter config file` (at the global level) or in the metric definition
+file (at the level of HMC metric groups and HMC metrics).
 
 This section describes what kinds of labels can be defined in these files.
 
@@ -943,12 +751,15 @@ the HMC.
 
 It also specifies how Prometheus should communicate with the exporter.
 
-In addition, it allows specifying additional labels to be used in all
+It allows specifying additional labels to be used in all
 metrics exported to Prometheus. This can be used for defining labels that
 identify the environment managed by the HMC, in cases where metrics from
 multiple instances of exporters and HMCs come together.
 
 Finally, it specifies which metric groups to export.
+
+Format of exporter config file
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The exporter config file is in YAML format and has the following structure:
 
@@ -1044,9 +855,8 @@ Where:
   exported, the ``if`` property in the corresponding metric group in the
   metric definition file, if specified, also needs to evaluate to True.
 
-
 Migration of exporter config file to version 2 format
------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The exporter versions 1.x supported the version 1 format for the exporter config
 file and referred to it as the "HMC credentials file". If you have been using
@@ -1060,9 +870,8 @@ exporter config file to the current version. When doing that, YAML comments
 are preserved, except when they are preceding or following any items that are
 removed as part of the upgrade (e.g. the 'metrics' item in a version 1 file).
 
-
 Sample exporter config file
----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The following is a sample exporter config file (``config.yaml``).
 
@@ -1071,6 +880,7 @@ The file can be downloaded from the Git repo as
 
 .. literalinclude:: ../examples/config.yaml
   :language: yaml
+
 
 Metric definition file
 ----------------------
@@ -1242,7 +1052,7 @@ Examples:
 
 
 Logging to the System Log
-^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When logging to the System Log, the syslog address used by the exporter
 depends on the operating system as follows:

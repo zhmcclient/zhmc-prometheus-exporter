@@ -39,11 +39,12 @@ Example:
 .. code-block:: bash
 
     $ zhmc_prometheus_exporter
-    Error: Cannot find exporter config file ...
+    Error: Cannot find exporter config file /etc/zhmc-prometheus-exporter/config.yaml: ...
 
 The exporter config file does not exist.
 
-You need to create an exporter config file as described in :ref:`Quickstart`.
+You need to create an exporter config file as described in
+:ref:`Exporter config file`.
 
 YAML syntax error in exporter config file
 -----------------------------------------
@@ -58,10 +59,9 @@ Example:
 The exporter config file breaks the syntax rules of the YAML specification.
 
 Compare your exporter config file with the sample exporter config file from the
-``examples`` folder, see :ref:`Quickstart` for more information.
+``examples`` folder, see :ref:`Exporter config file` for more information.
 You can also check the `YAML specification`_.
 
-.. _Quickstart: ./intro.rst#quickstart
 .. _YAML specification: http://yaml.org/spec/1.2/spec.html
 
 YAML validation error in exporter config file
@@ -77,7 +77,7 @@ Example:
 There are additional elements in the exporter config file, or required elements
 are missing, or other validation rules are violated.
 Compare your exporter config file with the sample exporter config file from the
-``examples`` folder, see :ref:`Quickstart` for more information.
+``examples`` folder, see :ref:`Exporter config file` for more information.
 
 Timeout
 -------

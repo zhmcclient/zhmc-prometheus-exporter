@@ -21,6 +21,7 @@ IBM Z HMC Prometheus Exporter
    :caption: Contents:
 
    intro.rst
+   installation.rst
    usage.rst
    errors.rst
    development.rst
