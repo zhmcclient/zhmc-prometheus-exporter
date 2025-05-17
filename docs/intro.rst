@@ -42,6 +42,7 @@ Prometheus.
 .. _Prometheus exporter: https://prometheus.io/docs/instrumenting/exporters/
 .. _Prometheus: https://prometheus.io
 
+
 Supported environments
 ----------------------
 
@@ -49,55 +50,6 @@ Supported environments
 * Python versions: 3.8 and higher
 * HMC versions: 2.11.1 and higher
 
-Quickstart
-----------
-
-* If not yet available, install the "pipx" command as described in
-  https://pipx.pypa.io/stable/installation/.
-
-* Without having any virtual Python environment active, install the exporter
-  as follows:
-
-  .. code-block:: bash
-
-      $ pipx install zhmc-prometheus-exporter
-
-  That makes the ``zhmc_prometheus_exporter`` command available in the PATH,
-  without having to activate any virtual Python environment.
-
-* Provide a *config file* for use by the exporter.
-
-  The exporter config file tells the exporter which HMC to talk to for
-  obtaining metrics, and which userid and password to use for logging on to
-  the HMC.
-
-  It also defines whether HTTP or HTTPS is used for Prometheus, and HTTPS
-  related certificates and keys.
-
-  Finally, it defines which metric groups to fetch and to provide to
-  Prometheus.
-
-  Download the
-  `sample exporter config file <https://github.com/zhmcclient/zhmc-prometheus-exporter/blob/master/examples/config.yaml>`_
-  as ``config.yaml`` and edit that copy accordingly.
-
-  For details, see :ref:`Exporter config file`.
-
-* Run the exporter as follows:
-
-  .. code-block:: bash
-
-      $ zhmc_prometheus_exporter -c config.yaml
-      Exporter is up and running on port 9291
-
-  Depending on the number of CPCs managed by your HMC, and dependent on how many
-  metrics are enabled, it will take some time until the exporter reports to be
-  up and running. You can see what it does in the mean time by using the ``-v``
-  option. Subsequent requests to the exporter will be sub-second.
-
-* Direct your web browser at http://localhost:9291 (or https://localhost:9291
-  when using HTTPS) to see the exported Prometheus metrics. Refreshing the
-  browser will update the metrics.
 
 Reporting issues
 ----------------

@@ -64,8 +64,6 @@ For further discussion of good and bad practices regarding commits, see:
 .. _How to Get Your Change Into the Linux Kernel: https://www.kernel.org/doc/Documentation/SubmittingPatches
 
 
-.. _`Making a change`:
-
 Making a change
 ---------------
 
