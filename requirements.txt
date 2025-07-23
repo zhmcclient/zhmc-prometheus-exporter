@@ -18,7 +18,8 @@ zhmcclient>=1.20.0
 # TODO: Use official prometheus-client version (0.21.0 ?) with these PRs once released.
 # prometheus-client>=0.21.0
 
-urllib3>=1.26.19
+urllib3>=2.2.3; python_version == '3.8'
+urllib3>=2.5.0; python_version >= '3.9'
 jsonschema>=4.18.0
 Jinja2>=3.1.6
 ruamel.yaml>=0.18.6
