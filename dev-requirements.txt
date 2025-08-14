@@ -40,7 +40,10 @@ bandit>=1.7.8
 
 # Unit test (imports into testcases):
 pytest>=8.0.0
-importlib-metadata>=4.8.3
+# For versions of importlib-metadata that are in Python, see https://pypi.org/project/importlib-metadata/
+# importlib-metadata 8.5.0 is the last version supporting Python 3.8
+importlib-metadata>=8.5.0; python_version == '3.8'
+importlib-metadata>=8.7.0; python_version >= '3.9'
 colorama>=0.4.6
 
 # packaging is used by pytest, pip-check-reqs, sphinx
