@@ -50,7 +50,7 @@ packaging>=21.0
 # coveralls 3.3.0 pins coverage to <7.0, causing pip backtracking to happen. Pinning
 # it to <7.0 in this file saves the time for backtracking, but requires to
 # occasionally check for new versions of coveralls without pinning.
-coverage>=5.0,<7.0
+coverage>=7.10,<7.11
 pytest-cov>=2.7.0
 coveralls>=3.3.0
 
