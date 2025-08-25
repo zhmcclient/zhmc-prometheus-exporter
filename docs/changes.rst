@@ -23,6 +23,34 @@ Change log
 .. ============================================================================
 
 .. towncrier start
+Version 2.0.2
+^^^^^^^^^^^^^
+
+Released: 2025-08-25
+
+**Bug fixes:**
+
+* Fixed missing package dependencies for development.
+
+* Addressed safety issues up to 2025-07-23.
+
+* Dev: Fixed issue where the package version used for distribution archive file
+  names were generated inconsistently between setuptools_scm (used in Makefile)
+  and the 'build' module, by using no build isolation ('--no-isolation' option
+  of the 'build' module) and increasing the minimum version of 'setuptools-scm'
+  to 9.2.0, which fixes a number of version related issues.
+
+* Docs: Fixed 'hmc' in example config file to be 'hmcs' and explained that at this
+  point, only the first HMC in the list is used. (`#703 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/703>`_)
+
+* Dev: Made order of names in AUTHORS.md reliable. (`#737 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/737>`_)
+
+**Enhancements:**
+
+* Dev: Started using the trusted publisher concept of Pypi in order to avoid
+  dealing with Pypi access tokens. (`#718 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/718>`_)
+
+
 Version 2.0.1
 ^^^^^^^^^^^^^
 
