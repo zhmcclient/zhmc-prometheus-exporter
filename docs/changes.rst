@@ -23,6 +23,89 @@ Change log
 .. ============================================================================
 
 .. towncrier start
+Version 2.1.0
+^^^^^^^^^^^^^
+
+Released: 2025-08-25
+
+**Bug fixes:**
+
+* Fixed missing package dependencies for development.
+
+* Addressed safety issues up to 2025-07-23.
+
+* Dev: Fixes for starting and releasing a version.
+
+* Dev: In the make commands to create/update AUTHORS.md, added a reftag to the
+  'git shortlog' command to fix the issue that without a terminal (e.g. in GitHub
+  Actions), the command did not display any authors.
+
+* Dev: Disabled the trusted publisher concept of Pypi for the time being, to
+  avoid the subsequent access errors in the publish workflow that are not yet
+  understood.
+
+* Increased minimum version of zhmcclient to 1.20.0 to pick up fixes and
+  improvements.
+
+* Dev: Fixed towncrier change log check in release_branch make target.
+
+* Dev: Fixed issue where the package version used for distribution archive file
+  names were generated inconsistently between setuptools_scm (used in Makefile)
+  and the 'build' module, by using no build isolation ('--no-isolation' option
+  of the 'build' module) and increasing the minimum version of 'setuptools-scm'
+  to 9.2.0, which fixes a number of version related issues.
+
+* Dev: Added handling of HTTP error 422 when creating a new stable branch in
+  the GitHub Actions publish workflow.
+
+* Docs: Fixed 'hmc' in example config file to be 'hmcs' and explained that at this
+  point, only the first HMC in the list is used. (`#703 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/703>`_)
+
+* Dev: 'install' is no longer a dependency of 'develop', because none of the
+  targets that need 'develop' need the package to be installed. Added Makefile as
+  a dependent on rules that produce files. (`#735 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/735>`_)
+
+* Dev: Made order of names in AUTHORS.md reliable. (`#737 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/737>`_)
+
+**Enhancements:**
+
+* Dev: Added checking by Mend Renovate.
+
+* Added check for incorrectly named towncrier change fragment files.
+
+* Added an optional 'cpcs' item in the config file that allows to specify a list
+  of CPCs for which data should be exported. By default, all CPCs managed by the
+  HMC are exported, like before this change. (`#323 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/323>`_)
+
+* Added the following metrics for the 'logical-partition-resource' metric group:
+  zhmc_partition_partition_number,
+  zhmc_partition_last_used_load_parameter,
+  zhmc_partition_last_used_load_address,
+  zhmc_partition_sysplex_name. (`#374 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/374>`_)
+
+* Added metric group 'adapter-resource'. It provides the adapter properties
+  'status' and 'physical-channel-status' as metrics. To get the new metrics,
+  add an entry for metric group 'adapter-resource' to your exporter config file,
+  as shown in the example config file. (`#602 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/602>`_)
+
+* Increased minimum version of zhmcclient to 1.20.0 to pick up fixes and
+  new functionalities. (`#714 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/714>`_)
+
+* Dev: Started using the trusted publisher concept of Pypi in order to avoid
+  dealing with Pypi access tokens. (`#718 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/718>`_)
+
+* Dev: Added doclinkcheck to GitHub Actions test workflow, ignoring errors. (`#731 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/731>`_)
+
+* Dev: Added commit message checker to test workflow. (`#732 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/732>`_)
+
+**Cleanup:**
+
+* Consolidated the names and emails of the authors shown in AUTHORS.md.
+
+* Accommodated rollout of Ubuntu 24.04 on GitHub Actions by using ubuntu-22.04
+  as the OS image for Python 3.8 based test runs.
+
+
 Version 2.0.0
 ^^^^^^^^^^^^^
 

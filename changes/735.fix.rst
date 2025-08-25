@@ -1,3 +1,0 @@
-Dev: 'install' is no longer a dependency of 'develop', because none of the
-targets that need 'develop' need the package to be installed. Added Makefile as
-a dependent on rules that produce files.
