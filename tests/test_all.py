@@ -289,7 +289,10 @@ class TestCreateContext(unittest.TestCase):
             }
         }
         yaml_metric_groups = {
-            "dpm-system-usage-overview": {"prefix": "pre"},
+            "dpm-system-usage-overview": {
+                "type": "metric",
+                "prefix": "pre",
+            },
         }
         cpc_list = client.cpcs.list()
 
@@ -438,6 +441,7 @@ class TestMetrics(unittest.TestCase):
 
         yaml_metric_groups = {
             "dpm-system-usage-overview": {
+                "type": "metric",
                 "prefix": "pre",
             },
             "cpc-resource": {
@@ -544,7 +548,10 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
             }
         }
         yaml_metric_groups = {
-            "dpm-system-usage-overview": {"prefix": "pre"},
+            "dpm-system-usage-overview": {
+                "type": "metric",
+                "prefix": "pre",
+            },
         }
         cpc_list = client.cpcs.list()
 
@@ -602,7 +609,10 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
             }
         }
         yaml_metric_groups = {
-            "dpm-system-usage-overview": {"prefix": "pre"},
+            "dpm-system-usage-overview": {
+                "type": "metric",
+                "prefix": "pre",
+            },
         }
         cpc_list = client.cpcs.list()
 

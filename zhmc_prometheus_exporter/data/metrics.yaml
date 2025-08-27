@@ -7,12 +7,14 @@ metric_groups:
   # Available for CPCs in classic mode
 
   cpc-usage-overview:
+    type: metric
     prefix: cpc
     labels:
       - name: cpc
         value: "resource_obj.name"
 
   logical-partition-usage:
+    type: metric
     prefix: partition
     labels:
       - name: cpc
@@ -21,6 +23,7 @@ metric_groups:
         value: "resource_obj.name"
 
   channel-usage:
+    type: metric
     prefix: channel
     labels:
       - name: cpc
@@ -29,6 +32,7 @@ metric_groups:
         value: "metric_values['channel-name']"  # format: 'CSS.CHPID'
 
   crypto-usage:
+    type: metric
     prefix: crypto_adapter
     if: "hmc_version>='2.12.0'"
     labels:
@@ -38,6 +42,7 @@ metric_groups:
         value: "metric_values['channel-id']"
 
   flash-memory-usage:
+    type: metric
     prefix: flash_memory_adapter
     if: "hmc_version>='2.12.0'"
     labels:
@@ -47,6 +52,7 @@ metric_groups:
         value: "metric_values['channel-id']"
 
   roce-usage:
+    type: metric
     prefix: roce_adapter
     if: "hmc_version>='2.12.1'"
     labels:
@@ -68,6 +74,7 @@ metric_groups:
   # Available for CPCs in DPM mode
 
   dpm-system-usage-overview:
+    type: metric
     prefix: cpc
     if: "hmc_version>='2.13.1'"
     labels:
@@ -75,6 +82,7 @@ metric_groups:
         value: "resource_obj.name"
 
   partition-usage:
+    type: metric
     prefix: partition
     if: "hmc_version>='2.13.1'"
     labels:
@@ -84,6 +92,7 @@ metric_groups:
         value: "resource_obj.name"
 
   adapter-usage:
+    type: metric
     prefix: adapter
     if: "hmc_version>='2.13.1'"
     labels:
@@ -93,6 +102,7 @@ metric_groups:
         value: "resource_obj.name"
 
   network-physical-adapter-port:
+    type: metric
     prefix: port
     if: "hmc_version>='2.13.1'"
     labels:
@@ -104,6 +114,7 @@ metric_groups:
         value: "metric_values['network-port-id']"
 
   partition-attached-network-interface:
+    type: metric
     prefix: nic
     if: "hmc_version>='2.13.1'"
     labels:
@@ -167,12 +178,14 @@ metric_groups:
   # Available for CPCs in any mode
 
   zcpc-environmentals-and-power:
+    type: metric
     prefix: cpc
     labels:
       - name: cpc
         value: "resource_obj.name"
 
   zcpc-processor-usage:
+    type: metric
     prefix: processor
     labels:
       - name: cpc
@@ -183,6 +196,7 @@ metric_groups:
         value: "metric_values['processor-type']"
 
   environmental-power-status:
+    type: metric
     prefix: cpc
     if: "hmc_version>='2.15.0'"
     labels:

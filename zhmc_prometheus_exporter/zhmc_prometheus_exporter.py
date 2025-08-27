@@ -892,7 +892,7 @@ def create_metrics_context(
     exported_res_metric_groups = []
     for metric_group in yaml_metric_groups:
         mg_dict = yaml_metric_groups[metric_group]
-        mg_type = mg_dict.get("type", 'hmc')
+        mg_type = mg_dict["type"]
         # Not all metric groups may be specified:
         config_mg_item = config_mg_dict.get(metric_group, {})
         export = config_mg_item.get("export", False)
@@ -903,12 +903,11 @@ def create_metrics_context(
                 mg_dict["if"], hmc_version, hmc_api_version, hmc_features,
                 None, None, None)
         if export:
-            if mg_type == 'hmc':
+            if mg_type == 'metric':
                 exported_hmc_metric_groups.append(metric_group)
             else:
                 assert mg_type == 'resource'  # ensured by enum
                 exported_res_metric_groups.append(metric_group)
-
     client = zhmcclient.Client(session)
 
     logprint(logging.INFO, PRINT_V,
