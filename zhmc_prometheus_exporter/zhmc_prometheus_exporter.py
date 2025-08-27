@@ -21,8 +21,6 @@ IBM Z HMC Prometheus Exporter
 import argparse
 import sys
 import os
-import types
-import platform
 import re
 import time
 from datetime import datetime
@@ -31,7 +29,6 @@ import logging
 import logging.handlers
 import traceback
 import threading
-from contextlib import contextmanager
 
 import jinja2
 import urllib3
@@ -39,6 +36,14 @@ from ruamel.yaml import YAML, YAMLError
 import jsonschema
 import zhmcclient
 
+from ._exceptions import AuthError, OtherError, ProperExit, ImproperExit, \
+    InvalidMetricDefinitionFile, EarlyExit, zhmc_exceptions
+from ._exceptions import ConnectionError  # pylint: disable=redefined-builtin
+from ._logging import PRINT_ALWAYS, PRINT_V, PRINT_VV, logprint, \
+    VALID_LOG_DESTINATIONS, VALID_LOG_LEVELS, VALID_LOG_COMPONENTS, \
+    DEFAULT_LOG_LEVEL, DEFAULT_LOG_COMP, DEFAULT_SYSLOG_FACILITY, \
+    VALID_SYSLOG_FACILITIES, setup_logging
+from ._resource_cache import ResourceCache
 from .vendor.prometheus_client import start_http_server
 from .vendor.prometheus_client.core import GaugeMetricFamily, \
     CounterMetricFamily, REGISTRY
@@ -49,56 +54,6 @@ __all__ = []
 
 DEFAULT_CONFIG_FILE = '/etc/zhmc-prometheus-exporter/config.yaml'
 DEFAULT_PORT = 9291
-
-EXPORTER_LOGGER_NAME = 'zhmcexporter'
-
-# Logger names by log component
-LOGGER_NAMES = {
-    'exporter': EXPORTER_LOGGER_NAME,
-    'hmc': zhmcclient.HMC_LOGGER_NAME,
-    'jms': zhmcclient.JMS_LOGGER_NAME,
-}
-VALID_LOG_COMPONENTS = list(LOGGER_NAMES.keys()) + ['all']
-
-# Log levels by their CLI names
-LOG_LEVELS = {
-    'error': logging.ERROR,
-    'warning': logging.WARNING,
-    'info': logging.INFO,
-    'debug': logging.DEBUG,
-    'off': logging.NOTSET,
-}
-VALID_LOG_LEVELS = list(LOG_LEVELS.keys())
-
-# Defaults for --log-comp option.
-DEFAULT_LOG_LEVEL = 'warning'
-DEFAULT_LOG_COMP = 'all=warning'
-
-# Values for printing messages dependent on verbosity level in command line
-PRINT_ALWAYS = 0
-PRINT_V = 1
-PRINT_VV = 2
-
-VALID_LOG_DESTINATIONS = ['stderr', 'syslog', 'FILE']
-
-# Syslog facilities
-VALID_SYSLOG_FACILITIES = [
-    'user', 'local0', 'local1', 'local2', 'local3', 'local4', 'local5',
-    'local6', 'local7'
-]
-DEFAULT_SYSLOG_FACILITY = 'user'
-
-# Values to use for the 'address' parameter when creating a SysLogHandler.
-# Key: Operating system type, as returned by platform.system(). For CygWin,
-# the returned value is 'CYGWIN_NT-6.1', which is special-cased to 'CYGWIN_NT'.
-# Value: Value for the 'address' parameter.
-SYSLOG_ADDRESS = {
-    'Linux': '/dev/log',
-    'Darwin': '/var/run/syslog',  # macOS / OS-X
-    'Windows': ('localhost', 514),
-    'CYGWIN_NT': '/dev/log',  # Requires syslog-ng pkg
-    'other': ('localhost', 514),  # used if no key matches
-}
 
 # Sleep time and hysteresis in property fetch thread
 INITIAL_FETCH_SLEEP_TIME = 30
@@ -120,98 +75,6 @@ RETRY_TIMEOUT_CONFIG = zhmcclient.RetryTimeoutConfig(
     status_timeout=zhmcclient.DEFAULT_STATUS_TIMEOUT,
     name_uri_cache_timetolive=zhmcclient.DEFAULT_NAME_URI_CACHE_TIMETOLIVE,
 )
-
-
-class YAMLInfoNotFoundError(Exception):
-    """A custom error that is raised when something that was expected in a
-    YAML cannot be found.
-    """
-    pass
-
-
-class ConnectionError(Exception):
-    # pylint: disable=redefined-builtin
-    """Unwrapped from zhmcclient"""
-    pass
-
-
-class AuthError(Exception):
-    """Unwrapped from zhmcclient"""
-    pass
-
-
-class OtherError(Exception):
-    """Other exceptions raised by zhmcclient"""
-    pass
-
-
-class ProperExit(Exception):
-    """Terminating while the server was running"""
-    pass
-
-
-class ImproperExit(Exception):
-    """Terminating because something went wrong"""
-    pass
-
-
-class InvalidMetricDefinitionFile(ImproperExit):
-    """Terminating because of invalid metric definition file"""
-    pass
-
-
-class EarlyExit(Exception):
-    """Terminating before the server was started"""
-    pass
-
-
-@contextmanager
-def zhmc_exceptions(session, config_filename):
-    # pylint: disable=invalid-name
-    """
-    Context manager that handles zhmcclient exceptions by raising the
-    appropriate exporter exceptions.
-
-    Example::
-
-        with zhmc_exceptions(session, config_filename):
-            client = zhmcclient.Client(session)
-            version_info = client.version_info()
-    """
-    try:
-        yield
-    except zhmcclient.ConnectionError as exc:
-        new_exc = ConnectionError(
-            f"Connection error using IP address {session.host} defined in "
-            f"exporter config file {config_filename}: {exc}")
-        new_exc.__cause__ = None
-        raise new_exc  # ConnectionError
-    except zhmcclient.ClientAuthError as exc:
-        new_exc = AuthError(
-            f"Client authentication error for the HMC at {session.host} using "
-            f"userid '{session.userid}' defined in exporter config file "
-            f"{config_filename}: {exc}")
-        new_exc.__cause__ = None
-        raise new_exc  # AuthError
-    except zhmcclient.ServerAuthError as exc:
-        http_exc = exc.details  # zhmcclient.HTTPError
-        new_exc = AuthError(
-            f"Authentication error returned from the HMC at {session.host} "
-            f"using userid '{session.userid}' defined in exporter config file "
-            f"{config_filename}: {exc} "
-            f"(HMC operation {http_exc.request_method} {http_exc.request_uri}, "
-            f"HTTP status {http_exc.http_status}.{http_exc.reason})")
-        new_exc.__cause__ = None
-        raise new_exc  # AuthError
-    except OSError as exc:
-        new_exc = OtherError(str(exc))
-        new_exc.__cause__ = None
-        raise new_exc  # OtherError
-    except zhmcclient.Error as exc:
-        new_exc = OtherError(
-            f"Error returned from HMC at {session.host}: {exc}")
-        new_exc.__cause__ = None
-        raise new_exc  # OtherError
 
 
 def parse_args(args):
@@ -1140,65 +1003,6 @@ def retrieve_metrics(context):
     retrieved_metrics = context.get_metrics()
     metrics_object = zhmcclient.MetricsResponse(context, retrieved_metrics)
     return metrics_object
-
-
-class ResourceCache:
-    # pylint: disable=too-few-public-methods
-    """
-    Cache for zhmcclient resource objects to avoid having to look them up
-    repeatedly.
-    """
-
-    def __init__(self):
-        self._resources = {}  # dict URI -> Resource object
-
-    def resource(self, uri, object_value):
-        """
-        Return the zhmcclient resource object for the URI, updating the cache
-        if not present.
-        """
-        try:
-            _resource = self._resources[uri]
-        except KeyError:
-            logprint(logging.INFO, PRINT_VV,
-                     f"Finding resource for {uri}")
-            try:
-                _resource = object_value.resource  # Takes time to find on HMC
-            except zhmcclient.MetricsResourceNotFound as exc:
-                mgd = object_value.metric_group_definition
-                logprint(logging.WARNING, PRINT_ALWAYS,
-                         f"Did not find resource {uri} specified in metric "
-                         f"object value for metric group '{mgd.name}'")
-                DISPLAY_CACHE = False
-                if DISPLAY_CACHE:
-                    for mgr in exc.managers:
-                        res_class = mgr.class_name
-                        logprint(logging.WARNING, PRINT_ALWAYS,
-                                 f"Details: List of {res_class} resources "
-                                 "found:")
-                        for res in mgr.list():
-                            logprint(logging.WARNING, PRINT_ALWAYS,
-                                     f"Details: Resource found: {res.uri} "
-                                     f"({res.name})")
-                    logprint(logging.WARNING, PRINT_ALWAYS,
-                             "Details: Current resource cache:")
-                    for res in self._resources.values():
-                        logprint(logging.WARNING, PRINT_ALWAYS,
-                                 f"Details: Resource cache: {res.uri} "
-                                 f"({res.name})")
-                raise
-            self._resources[uri] = _resource
-        return _resource
-
-    def remove(self, uri):
-        """
-        Remove the resource with a specified URI from the cache, if present.
-        If not present, nothing happens.
-        """
-        try:
-            del self._resources[uri]
-        except KeyError:
-            pass
 
 
 def expand_global_label_value(
@@ -2142,189 +1946,10 @@ class ZHMCUsageCollector():
             self.fetch_thread.join()
 
 
-# Global variable with the verbosity level from the command line
-VERBOSE_LEVEL = 0
-
-# Global variable indicating that logging is enabled
-LOGGING_ENABLED = False
-
-
-def logprint(log_level, print_level, message):
-    """
-    Log a message at the specified log level, and print the message at
-    the specified verbosity level
-
-    Parameters:
-        log_level (int): Python logging level at which the message should be
-          logged (logging.DEBUG, etc.), or None for no logging.
-        print_level (int): Verbosity level at which the message should be
-          printed (1, 2), or None for no printing.
-        message (string): The message.
-    """
-    if print_level is not None and VERBOSE_LEVEL >= print_level:
-        print(message)
-    if log_level is not None and LOGGING_ENABLED:
-        logger = logging.getLogger(EXPORTER_LOGGER_NAME)
-        # Note: This method never raises an exception. Errors during logging
-        # are handled by calling handler.handleError().
-        logger.log(log_level, message)
-
-
-def setup_logging(log_dest, log_complevels, syslog_facility):
-    """
-    Set up Python logging as specified in the command line.
-
-    Raises:
-        EarlyExit
-    """
-    global LOGGING_ENABLED  # pylint: disable=global-statement
-
-    if log_dest is None:
-        logprint(None, PRINT_V, "Logging is disabled")
-        handler = None
-        dest_str = None
-    elif log_dest == 'stderr':
-        dest_str = "the Standard Error stream"
-        logprint(None, PRINT_V, f"Logging to {dest_str}")
-        handler = logging.StreamHandler(stream=sys.stderr)
-    elif log_dest == 'syslog':
-        system = platform.system()
-        if system.startswith('CYGWIN_NT'):
-            # Value is 'CYGWIN_NT-6.1'; strip off trailing version:
-            system = 'CYGWIN_NT'
-        try:
-            address = SYSLOG_ADDRESS[system]
-        except KeyError:
-            address = SYSLOG_ADDRESS['other']
-        dest_str = (
-            f"the System Log at address {address!r} with syslog facility "
-            f"{syslog_facility!r}")
-        logprint(None, PRINT_V, f"Logging to {dest_str}")
-        try:
-            facility = logging.handlers.SysLogHandler.facility_names[
-                syslog_facility]
-        except KeyError:
-            valid_slfs = ', '.join(
-                logging.handlers.SysLogHandler.facility_names.keys())
-            raise EarlyExit(
-                f"This system ({system}) does not support syslog facility "
-                f"{syslog_facility}. Supported are: {valid_slfs}.")
-        # The following does not raise any exception if the syslog address
-        # cannot be opened. In that case, the first attempt to log something
-        # will fail.
-        handler = logging.handlers.SysLogHandler(
-            address=address, facility=facility)
-    else:
-        dest_str = f"file {log_dest}"
-        logprint(None, PRINT_V, f"Logging to {dest_str}")
-        try:
-            handler = logging.FileHandler(log_dest)
-        except OSError as exc:
-            raise EarlyExit(
-                f"Cannot log to file {log_dest}: {exc.__class__.__name__}: "
-                f"{exc}")
-
-    if not handler and log_complevels:
-        raise EarlyExit(
-            "--log-comp option cannot be used when logging is disabled; "
-            "use --log option to enable logging.")
-
-    if handler:
-
-        def handleError(self, record):
-            """
-            Replacement for built-in method on logging.Handler class.
-
-            This is needed because the SysLogHandler class does not raise
-            an exception when creating the handler object, but only when
-            logging something to it.
-            """
-            _, exc, _ = sys.exc_info()
-            f_record = self.format(record)
-            print(f"Error: Logging to {dest_str} failed with: "
-                  f"{exc.__class__.__name__}: {exc}. Formatted log record: "
-                  f"{f_record!r}",
-                  file=sys.stderr)
-            sys.exit(1)
-
-        handler.handleError = types.MethodType(handleError, handler)
-
-        logger_level_dict = {}  # key: logger_name, value: level
-        if not log_complevels:
-            log_complevels = [DEFAULT_LOG_COMP]
-        for complevel in log_complevels:
-            if '=' in complevel:
-                comp, level = complevel.split('=', 2)
-            else:
-                comp = complevel
-                level = DEFAULT_LOG_LEVEL
-            if level not in LOG_LEVELS:
-                allowed = ', '.join(VALID_LOG_LEVELS)
-                raise EarlyExit(
-                    f"Invalid log level {level!r} in --log-comp option. "
-                    f"Allowed are: {allowed}")
-            if comp == 'all':
-                for logger_name in LOGGER_NAMES.values():
-                    logger_level_dict[logger_name] = level
-            else:
-                try:
-                    logger_name = LOGGER_NAMES[comp]
-                except KeyError:
-                    allowed = ', '.join(VALID_LOG_COMPONENTS)
-                    raise EarlyExit(
-                        f"Invalid component {comp!r} in --log-comp option. "
-                        f"Allowed are: {allowed}")
-                logger_level_dict[logger_name] = level
-
-        complevels = ', '.join(
-            [f"{name}={level}"
-             for name, level in logger_level_dict.items()])
-        logprint(None, PRINT_V,
-                 f"Logging components: {complevels}")
-
-        if isinstance(handler, logging.handlers.SysLogHandler):
-            # Most syslog implementations fail when the message is longer
-            # than a limit. We use a hard coded limit for now:
-            # * 2048 is the typical maximum length of a syslog message,
-            #   including its headers
-            # * 41 is the max length of the syslog message parts before MESSAGE
-            # * 47 is the max length of the Python format string before message
-            # Example syslog message:
-            #   <34>1 2003-10-11T22:14:15.003Z localhost MESSAGE
-            # where MESSAGE is the formatted Python log message.
-            max_msg = f'.{2048 - 41 - 47}'
-        else:
-            max_msg = ''
-        fs = ('%(asctime)s %(threadName)s %(levelname)s %(name)s: '
-              '%(message){m}s'.format(m=max_msg))
-
-        # Set the formatter to always log times in UTC. Since the %z
-        # formatting string does not get adjusted for that, set the timezone
-        # offset always to '+0000'.
-        dfs = '%Y-%m-%d %H:%M:%S+0000'
-        logging.Formatter.converter = time.gmtime  # log times in UTC
-
-        handler.setFormatter(logging.Formatter(fmt=fs, datefmt=dfs))
-        for logger_name in LOGGER_NAMES.values():
-            logger = logging.getLogger(logger_name)
-            if logger_name in logger_level_dict:
-                level = logger_level_dict[logger_name]
-                level_int = LOG_LEVELS[level]
-                if level_int != logging.NOTSET:
-                    logger.addHandler(handler)
-                logger.setLevel(level_int)
-            else:
-                logger.setLevel(logging.NOTSET)
-
-        LOGGING_ENABLED = True
-
-
 def main():
     """Puts the exporter together."""
     # If the session and context keys are not created, their destruction
     # should not be attempted.
-
-    global VERBOSE_LEVEL  # pylint: disable=global-statement
 
     session = None
     context = None
@@ -2346,9 +1971,8 @@ def main():
             upgrade_config_file(config_filename)
             sys.exit(0)
 
-        VERBOSE_LEVEL = args.verbose
-
-        setup_logging(args.log_dest, args.log_complevels, args.syslog_facility)
+        setup_logging(args.log_dest, args.log_complevels, args.syslog_facility,
+                      args.verbose)
 
         logprint(logging.INFO, None,
                  "---------------- "
@@ -2363,7 +1987,7 @@ def main():
                  f"zhmcclient version: {zhmcclient.__version__}")
 
         logprint(logging.INFO, PRINT_ALWAYS,
-                 f"Verbosity level: {VERBOSE_LEVEL}")
+                 f"Verbosity level: {args.verbose}")
 
         logprint(logging.INFO, PRINT_V,
                  f"Parsing exporter config file: {config_filename}")
