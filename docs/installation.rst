@@ -327,6 +327,11 @@ accordingly:
   successfully return metrics for objects with access permission, and ignore
   any others.
 
+  However, the parent objects of accessible objects of enabled metric groups
+  also must be accessible for the user. This boils down to access permissions
+  for the parent CPC, when metric groups for LPARs, partitions or adapters
+  are enabled for export.
+
   The exporter can return metrics for the following types of objects. To
   return metrics for all existing objects, the userid must have object access
   permission to all of the following objects:

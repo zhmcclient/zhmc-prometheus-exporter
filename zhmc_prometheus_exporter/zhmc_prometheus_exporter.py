@@ -656,11 +656,9 @@ def eval_condition(
     return result
 
 
-# Metrics context creation & deletion and retrieval derived from
-# github.com/zhmcclient/python-zhmcclient/examples/metrics.py
 def create_session(config_dict, config_filename):
     """
-    To create a context, a session must be created first.
+    Create a zhmcclient session to the HMC.
 
     Parameters:
       config_dict (dict): Content of the exporter config file.
@@ -742,27 +740,23 @@ def get_hmc_info(session):
     return hmc_info
 
 
-def create_metrics_context(
-        session, config_dict, yaml_metric_groups, hmc_version,
-        hmc_api_version, hmc_features, cpc_list):
+def exported_metric_groups(
+        config_dict, yaml_metric_groups, hmc_version, hmc_api_version,
+        hmc_features):
     """
-    Creating a context is mandatory for reading metrics from the Z HMC.
-    Takes the session, the metric_groups dictionary from the metrics YAML file
-    for fetch/do not fetch information, and the name of the YAML file for error
-    output.
+    Return the names of the metric-based and resource-based metric groups that
+    are enabled for export, as defined in the exporter config file.
 
-    Returns a tuple(context, resources, uri2resource), where:
-      * context is the metric context
-      * resources is a dict(key: metric group name, value: list of
-        auto-enabled resource objects for the metric group).
-      * uri2resource is a dict(key: resource URI, value: auto-enabled resource
-        object for the URI).
+    Returns:
 
-    Raises: zhmccclient exceptions
+      tuple(metric_mg_names, resource_mg_names): Names of the metric groups
+      that are enabled for export, with:
+      - metric_mg_names (list of str): Metric-based metric groups
+      - resource_mg_names (list of str): Resource-based metric groups
     """
     config_mg_dict = config_dict["metric_groups"]
-    exported_hmc_metric_groups = []
-    exported_res_metric_groups = []
+    metric_mg_names = []
+    resource_mg_names = []
     for metric_group in yaml_metric_groups:
         mg_dict = yaml_metric_groups[metric_group]
         mg_type = mg_dict["type"]
@@ -777,173 +771,47 @@ def create_metrics_context(
                 None, None, None)
         if export:
             if mg_type == 'metric':
-                exported_hmc_metric_groups.append(metric_group)
+                metric_mg_names.append(metric_group)
             else:
                 assert mg_type == 'resource'  # ensured by enum
-                exported_res_metric_groups.append(metric_group)
-    client = zhmcclient.Client(session)
+                resource_mg_names.append(metric_group)
+    return metric_mg_names, resource_mg_names
+
+
+def create_metrics_context(client, metric_mg_names):
+    """
+    Creating a context is mandatory for reading metrics from the Z HMC.
+    Takes the session, the metric_groups dictionary from the metrics YAML file
+    for fetch/do not fetch information, and the name of the YAML file for error
+    output.
+
+    If the list of metric groups is empty, no metrics context is created, and
+    None is returned. This is because when an empty list of metric groups is
+    specified to the HMC, it assumes a default set of metric groups.
+
+    Parameters:
+      client (zhmcclient.Client): Client for communicating with the HMC
+      metric_mg_names (list of str): Names of metric-based metric groups.
+        May be an empty list.
+
+    Returns:
+      context (zhmcclient.MetricContext): The metric context, or None if the
+        List of metric groups was empty.
+
+    Raises:
+      zhmccclient exceptions
+    """
+    if not metric_mg_names:
+        logprint(logging.INFO, PRINT_V,
+                 "No metrics context needs to be created on the HMC")
+        return None
 
     logprint(logging.INFO, PRINT_V,
-             "Creating a metrics context on the HMC for HMC metric "
-             "groups: {}".format(', '.join(exported_hmc_metric_groups)))
+             "Creating a metrics context on the HMC")
     context = client.metrics_contexts.create(
         {"anticipated-frequency-seconds": 15,
-         "metric-groups": exported_hmc_metric_groups})
-
-    resources = {}
-    uri2resource = {}
-    for metric_group in exported_res_metric_groups:
-        logprint(logging.INFO, PRINT_V,
-                 "Retrieving resources from the HMC for resource metric "
-                 f"group {metric_group}")
-        try:
-            resource_path = yaml_metric_groups[metric_group]['resource']
-        except KeyError:
-            new_exc = InvalidMetricDefinitionFile(
-                "Missing 'resource' item in resource metric group "
-                f"{metric_group} in the metric definition file")
-            new_exc.__cause__ = None  # pylint: disable=invalid-name
-            raise new_exc
-        if resource_path == 'cpc':
-            resources[metric_group] = []
-            for cpc in cpc_list:
-                logprint(logging.INFO, PRINT_V,
-                         f"Enabling auto-update for CPC {cpc.name}")
-                try:
-                    cpc.enable_auto_update()
-                except zhmcclient.Error as exc:
-                    logprint(logging.ERROR, PRINT_ALWAYS,
-                             f"Not providing metric group {metric_group!r} "
-                             f"for CPC {cpc.name}, because enabling "
-                             "auto-update for it failed with "
-                             f"{exc.__class__.__name__}: {exc}")
-                    continue  # skip this CPC
-                resources[metric_group].append(cpc)
-                uri2resource[cpc.uri] = cpc
-        elif resource_path == 'cpc.partition':
-            resources[metric_group] = []
-            for cpc in cpc_list:
-                partitions = cpc.partitions.list()
-                for partition in partitions:
-                    logprint(logging.INFO, PRINT_V,
-                             "Enabling auto-update for partition "
-                             f"{cpc.name}.{partition.name}")
-                    try:
-                        partition.enable_auto_update()
-                    except zhmcclient.Error as exc:
-                        logprint(logging.ERROR, PRINT_ALWAYS,
-                                 f"Not providing metric group {metric_group!r} "
-                                 f"for partition {cpc.name}.{partition.name}, "
-                                 "because enabling auto-update for it failed "
-                                 f"with {exc.__class__.__name__}: {exc}")
-                        continue  # skip this partition
-                    resources[metric_group].append(partition)
-                    uri2resource[partition.uri] = partition
-        elif resource_path == 'cpc.logical-partition':
-            resources[metric_group] = []
-            for cpc in cpc_list:
-                lpars = cpc.lpars.list()
-                for lpar in lpars:
-                    logprint(logging.INFO, PRINT_V,
-                             "Enabling auto-update for LPAR "
-                             f"{cpc.name}.{lpar.name}")
-                    try:
-                        lpar.enable_auto_update()
-                    except zhmcclient.Error as exc:
-                        logprint(logging.ERROR, PRINT_ALWAYS,
-                                 f"Not providing metric group {metric_group!r} "
-                                 f"for LPAR {cpc.name}.{lpar.name}, because "
-                                 "enabling auto-update for it failed with "
-                                 f"{exc.__class__.__name__}: {exc}")
-                        continue  # skip this LPAR
-                    resources[metric_group].append(lpar)
-                    uri2resource[lpar.uri] = lpar
-        elif resource_path == 'console.storagegroup':
-            resources[metric_group] = []
-            console = client.consoles.console
-            storage_groups = console.storage_groups.list()
-            for sg in storage_groups:
-                logprint(logging.INFO, PRINT_V,
-                         f"Enabling auto-update for storage group {sg.name}")
-                try:
-                    sg.enable_auto_update()
-                except zhmcclient.Error as exc:
-                    logprint(logging.ERROR, PRINT_ALWAYS,
-                             f"Not providing metric group {metric_group!r} for "
-                             f"storage group {sg.name}, because enabling "
-                             "auto-update for it failed with "
-                             f"{exc.__class__.__name__}: {exc}")
-                    continue  # skip this storage group
-                resources[metric_group].append(sg)
-                uri2resource[sg.uri] = sg
-        elif resource_path == 'console.storagevolume':
-            resources[metric_group] = []
-            console = client.consoles.console
-            storage_groups = console.storage_groups.list()
-            for sg in storage_groups:
-                storage_volumes = sg.storage_volumes.list()
-                for sv in storage_volumes:
-                    logprint(logging.INFO, PRINT_V,
-                             "Enabling auto-update for storage volume "
-                             f"{sg.name}.{sv.name}")
-                    try:
-                        sv.enable_auto_update()
-                    except zhmcclient.Error as exc:
-                        logprint(logging.ERROR, PRINT_ALWAYS,
-                                 f"Not providing metric group {metric_group!r} "
-                                 f"for storage volume {sg.name}.{sv.name}, "
-                                 "because enabling auto-update for it failed "
-                                 f"with {exc.__class__.__name__}: {exc}")
-                        continue  # skip this storage group
-                    resources[metric_group].append(sv)
-                    uri2resource[sv.uri] = sv
-        elif resource_path == 'cpc.adapter':
-            resources[metric_group] = []
-            for cpc in cpc_list:
-                adapters = cpc.adapters.list()
-                for adapter in adapters:
-                    logprint(logging.INFO, PRINT_V,
-                             "Enabling auto-update for adapter "
-                             f"{cpc.name}.{adapter.name}")
-                    try:
-                        adapter.enable_auto_update()
-                    except zhmcclient.Error as exc:
-                        logprint(logging.ERROR, PRINT_ALWAYS,
-                                 f"Not providing metric group {metric_group!r} "
-                                 f"for adapter {cpc.name}.{adapter.name}, "
-                                 "because enabling auto-update for it failed "
-                                 f"with {exc.__class__.__name__}: {exc}")
-                        continue  # skip this partition
-                    resources[metric_group].append(adapter)
-                    uri2resource[adapter.uri] = adapter
-        else:
-            new_exc = InvalidMetricDefinitionFile(
-                f"Unknown resource item {resource_path!r} in resource "
-                f"metric group {metric_group!r} in the metric definition "
-                "file.")
-            new_exc.__cause__ = None  # pylint: disable=invalid-name
-            raise new_exc
-
-    # Fetch backing adapters of NICs, if needed
-    if 'partition-attached-network-interface' in exported_hmc_metric_groups:
-        for cpc in cpc_list:
-            partitions = cpc.partitions.list()
-            for partition in partitions:
-                nics = partition.nics.list()
-                for nic in nics:
-
-                    logprint(logging.INFO, PRINT_V,
-                             "Getting backing adapter port for NIC "
-                             f"{cpc.name}.{partition.name}.{nic.name}")
-                    adapter_name, port_index = get_backing_adapter_info(nic)
-
-                    # Store the adapter port data as dynamic attributes on the
-                    # Nic object in the uri2resource dict.
-                    nic.adapter_name = adapter_name
-                    nic.port_index = port_index
-                    uri2resource[nic.uri] = nic
-
-    return context, resources, uri2resource
+         "metric-groups": metric_mg_names})
+    return context
 
 
 def cleanup(session, context, resources, coll):
@@ -1005,10 +873,15 @@ def cleanup(session, context, resources, coll):
 def retrieve_metrics(context):
     """
     Retrieve metrics from the Z HMC.
-    Takes the metrics context.
-    Returns a zhmcclient.MetricsResponse object.
 
-    Raises: zhmccclient exceptions
+    Parameters:
+      context (zhmcclient.MetricsContext): HMC metric context. Must not be None.
+
+    Returns:
+      zhmcclient.MetricsResponse: The metrics.
+
+    Raises:
+      zhmccclient exceptions
     """
     retrieved_metrics = context.get_metrics()
     metrics_object = zhmcclient.MetricsResponse(context, retrieved_metrics)
@@ -1040,131 +913,29 @@ def expand_global_label_value(
     return str(value)
 
 
-def get_backing_adapter_info(nic):
-    """
-    Return backing adapter and port of the specified NIC.
-
-    Returns:
-      tuple(adapter_name, port_index)
-    """
-
-    session = nic.manager.session
-
-    # Handle vswitch-based NIC (OSA, HS)
-    try:
-        vswitch_uri = nic.get_property('virtual-switch-uri')
-    except KeyError:
-        pass
-    else:
-        vswitch_props = session.get(vswitch_uri)
-        adapter_uri = vswitch_props['backing-adapter-uri']
-        adapter_props = session.get(adapter_uri)
-        return adapter_props['name'], vswitch_props['port']
-
-    # Handle adapter-based NIC (RoCE, CNA)
-    port_uri = nic.get_property('network-adapter-port-uri')
-    port_props = session.get(port_uri)
-    adapter_uri = port_props['parent']
-    adapter_props = session.get(adapter_uri)
-    return adapter_props['name'], port_props['index']
-
-
-def uri_to_resource(client, uri2resource, uri):
-    """
-    Look up a zhmcclient resource object from a URI, using the uri2resoure
-    dict. If the URI is not in the dict, determine the resource object from
-    the URI and add it to the dict. This supports the addition of resources
-    after the start of the exporter.
-
-    The following URIs are supported (these are all that are
-    currently used by uri2resource and related functions in the
-    metric definition file):
-
-      * nic - used in nic metric group (to get back to original NIC object that
-        has adapter_name/port as additonal attributes)
-      * storage groups - used in partition metric group
-      * cpc - used in storage-group and storage-volume metric groups
-    """
-
-    try:
-        resource = uri2resource[uri]
-    except KeyError:
-        # The uri2resource dict was created at startup time of the
-        # exporter and was filled with all resources (of types the exporter
-        # supports) that existed at that time. The KeyError means that
-        # a new resource came into existence since then.
-
-        m = re.match(r'(/api/partitions/[a-f0-9\-]+)/nics/[a-f0-9\-]+$', uri)
-        if m is not None:
-            # Resource URI is for a NIC
-            partition_uri = m.group(1)
-            partition_props = client.session.get(partition_uri)
-            cpc_uri = partition_props['parent']
-            cpc = client.cpcs.resource_object(cpc_uri)
-            partition = cpc.partitions.resource_object(partition_uri)
-            nic = partition.nics.resource_object(uri)
-            logprint(logging.INFO, PRINT_V,
-                     f"Adding NIC {cpc.name}.{partition.name}.{nic.name} "
-                     "after exporter start for fast lookup")
-            uri2resource[uri] = nic
-            return nic
-
-        m = re.match(r'(/api/storage-groups/[a-f0-9\-]+)$', uri)
-        if m is not None:
-            # Resource URI is for a storage group
-            console = client.consoles.console
-            stogrp = console.storage_groups.resource_object(uri)
-            # Get the CPC via 'uri2resource()' because that avoids the
-            # "Get CPC Properties" operation that is performed when getting it
-            # via the 'cpc' property on the storage group object.
-            cpc_uri = stogrp.get_property('cpc-uri')
-            cpc = uri_to_resource(client, uri2resource, cpc_uri)
-            logprint(logging.INFO, PRINT_V,
-                     f"Adding storage group {cpc.name}.{stogrp.name} "
-                     "after exporter start for fast lookup")
-            uri2resource[uri] = stogrp
-            return stogrp
-
-        m = re.match(r'(/api/cpcs/[a-f0-9\-]+)$', uri)
-        if m is not None:
-            # Resource URI is for a CPC
-            cpc = client.cpcs.resource_object(uri)
-            logprint(logging.INFO, PRINT_V,
-                     f"Adding CPC {cpc.name} after exporter start for "
-                     "fast lookup")
-            uri2resource[uri] = cpc
-            return cpc
-
-        raise OtherError(
-            f"Resource type for URI {uri} is not supported for dynamic "
-            "addition of resources after start of exporter")
-
-    return resource
-
-
 def expand_group_label_value(
-        env, label_name, group_name, item_value, client, resource_obj,
-        uri2resource, metric_values=None):
+        env, label_name, group_name, item_value, resource_obj,
+        resource_cache, metric_values=None):
     """
     Expand a Jinja2 expression on a label value, for a metric group label.
     """
 
     def uri2resource_func(uri):
-        return uri_to_resource(client, uri2resource, uri)
+        return resource_cache.lookup(uri)
 
     def uris2resources_func(uris):
-        return [uri_to_resource(client, uri2resource, uri) for uri in uris]
+        return [resource_cache.lookup(uri) for uri in uris]
 
     def adapter_name_func(nic):
         # Get the original Nic object that has the dynamic attributes with the
         # adapter info
-        nic_org = uri_to_resource(client, uri2resource, nic.uri)
+        nic_org = resource_cache.lookup(nic.uri)
         return nic_org.adapter_name
 
     def adapter_port_func(nic):
         # Get the original Nic object that has the dynamic attributes with the
         # adapter info
-        nic_org = uri_to_resource(client, uri2resource, nic.uri)
+        nic_org = resource_cache.lookup(nic.uri)
         return str(nic_org.port_index)
 
     try:
@@ -1196,28 +967,28 @@ def expand_group_label_value(
 
 
 def expand_metric_label_value(
-        env, label_name, metric_exporter_name, item_value, client,
-        resource_obj, uri2resource, metric_values=None):
+        env, label_name, metric_exporter_name, item_value, resource_obj,
+        resource_cache, metric_values=None):
     """
     Expand a Jinja2 expression on a label value, for a metric label.
     """
 
     def uri2resource_func(uri):
-        return uri_to_resource(client, uri2resource, uri)
+        return resource_cache.lookup(uri)
 
     def uris2resources_func(uris):
-        return [uri_to_resource(client, uri2resource, uri) for uri in uris]
+        return [resource_cache.lookup(uri) for uri in uris]
 
     def adapter_name_func(nic):
         # Get the original Nic object that has the dynamic attributes with the
         # adapter info
-        nic_org = uri_to_resource(client, uri2resource, nic.uri)
+        nic_org = resource_cache.lookup(nic.uri)
         return nic_org.adapter_name
 
     def adapter_port_func(nic):
         # Get the original Nic object that has the dynamic attributes with the
         # adapter info
-        nic_org = uri_to_resource(client, uri2resource, nic.uri)
+        nic_org = resource_cache.lookup(nic.uri)
         return str(nic_org.port_index)
 
     try:
@@ -1248,30 +1019,12 @@ def expand_metric_label_value(
     return str(value)
 
 
-def cpc_from_resource(resource):
-    """
-    From a given zhmcclient resource object, try to navigate to its CPC
-    and return the zhmcclient.Cpc object.
-    If the resource is not a CPC or part of a CPC, return None.
-    """
-    cpc = resource
-    while True:
-        if cpc is None or cpc.manager.class_name == 'cpc':
-            break
-        cpc = cpc.manager.parent
-    return cpc
-
-
 def build_family_objects(
-        metrics_object, yaml_metric_groups, yaml_metrics,
-        extra_labels, cpc_list, hmc_version, hmc_api_version, hmc_features,
-        se_versions_by_cpc, se_features_by_cpc, session, resource_cache=None,
-        uri2resource=None):
+        resource_cache, metrics_object, yaml_metric_groups, yaml_metrics,
+        extra_labels, hmc_version, hmc_api_version, hmc_features,
+        se_versions_by_cpc, se_features_by_cpc):
     """
     Go through all retrieved metrics and build the Prometheus Family objects.
-
-    Note: resource_cache and uri2resource will be omitted in tests, and is
-    therefore optional.
 
     Returns a dictionary of Prometheus Family objects with the following
     structure:
@@ -1280,12 +1033,11 @@ def build_family_objects(
         GaugeMetricFamily object
     """
     env = jinja2.Environment(autoescape=True)
-    client = zhmcclient.Client(session)
-    cpc_names = [cpc.name for cpc in cpc_list]
 
     family_objects = {}
     for metric_group_value in metrics_object.metric_group_values:
         metric_group = metric_group_value.name
+
         try:
             yaml_metric_group = yaml_metric_groups[metric_group]
         except KeyError:
@@ -1296,31 +1048,33 @@ def build_family_objects(
             continue  # Skip this metric group
 
         for object_value in metric_group_value.object_values:
-            if resource_cache:
-                try:
-                    resource = resource_cache.resource(
-                        object_value.resource_uri, object_value)
-                except zhmcclient.MetricsResourceNotFound:
-                    # Some details have already been logged & printed
-                    warnings.warn(
-                        f"The HMC metric group {metric_group!r} contains a "
-                        f"resource with URI '{object_value.resource_uri}' "
-                        "that is not found on the HMC. Please open an exporter "
-                        "issue for that.")
-                    continue  # Skip this metric
-            else:
-                resource = object_value.resource
+
+            try:
+                resource = resource_cache.lookup(object_value.resource_uri)
+            except zhmcclient.NotFound:
+                # Some details have already been logged & printed
+                warnings.warn(
+                    f"The HMC metric group {metric_group!r} contains a "
+                    f"resource with URI '{object_value.resource_uri}' "
+                    "that is not found on the HMC. Please open an exporter "
+                    "issue for that.")
+                continue  # Skip this metric
+
+            # The metric service does not support filtering by CPC, so we have
+            # to filter here.
+            if not resource_cache.is_for_target_cpc(resource):
+                continue  # Skip this metric
+
             metric_values = object_value.metrics
 
-            cpc = cpc_from_resource(resource)
+            cpc = resource_cache.cpc_from_resource(resource)
             if cpc:
-                if cpc.name not in cpc_names:
-                    continue  # skip this CPC
-                # This resource is a CPC or part of a CPC
+                # This resource has a CPC (itself, parent, associated)
                 se_version = se_versions_by_cpc[cpc.name]
                 se_features = se_features_by_cpc[cpc.name]
             else:
-                # This resource is an HMC or part of an HMC
+                # This resource does not have a CPC. This should not happen
+                # for the resource classes supported right now.
                 se_version = None
                 se_features = []
 
@@ -1334,8 +1088,8 @@ def build_family_objects(
                 label_name = item['name']
                 item_value = item['value']
                 label_value = expand_group_label_value(
-                    env, label_name, metric_group, item_value, client,
-                    resource, uri2resource, metric_values)
+                    env, label_name, metric_group, item_value, resource,
+                    resource_cache, metric_values)
                 if label_value is not None:
                     mg_labels[label_name] = label_value
 
@@ -1390,8 +1144,7 @@ def build_family_objects(
                     item_value = item['value']
                     label_value = expand_metric_label_value(
                         env, label_name, yaml_metric["exporter_name"],
-                        item_value, client, resource, uri2resource,
-                        metric_values)
+                        item_value, resource, resource_cache, metric_values)
                     if label_value is not None:
                         labels[label_name] = label_value
 
@@ -1425,16 +1178,12 @@ def build_family_objects(
 
 
 def build_family_objects_res(
-        resources, yaml_metric_groups, yaml_metrics,
-        extra_labels, cpc_list, hmc_version, hmc_api_version, hmc_features,
-        se_versions_by_cpc, se_features_by_cpc, session, resource_cache=None,
-        uri2resource=None):
+        resource_cache, yaml_metric_groups, yaml_metrics, extra_labels,
+        hmc_version, hmc_api_version, hmc_features, se_versions_by_cpc,
+        se_features_by_cpc):
     """
     Go through all auto-updated resources and build the Prometheus Family
     objects for them.
-
-    Note: resource_cache and uri2resource will be omitted in tests, and is
-    therefore optional.
 
     Returns a dictionary of Prometheus Family objects with the following
     structure:
@@ -1443,11 +1192,10 @@ def build_family_objects_res(
         GaugeMetricFamily object
     """
     env = jinja2.Environment(autoescape=True)
-    client = zhmcclient.Client(session)
-    cpc_names = [cpc.name for cpc in cpc_list]
 
     family_objects = {}
-    for metric_group, res_list in resources.items():
+    for metric_group, res_list in \
+            resource_cache.resource_based_resources.items():
 
         ceased_res_indexes = []  # Indexes into res_list
 
@@ -1470,15 +1218,14 @@ def build_family_objects_res(
 
                 continue
 
-            cpc = cpc_from_resource(resource)
+            cpc = resource_cache.cpc_from_resource(resource)
             if cpc:
-                if cpc.name not in cpc_names:
-                    continue  # skip this CPC
-                # This resource is a CPC or part of a CPC
+                # This resource has a CPC (itself, parent, associated)
                 se_version = se_versions_by_cpc[cpc.name]
                 se_features = se_features_by_cpc[cpc.name]
             else:
-                # This resource is an HMC or part of an HMC
+                # This resource does not have a CPC. This should not happen
+                # for the resource classes supported right now.
                 se_version = None
                 se_features = []
 
@@ -1492,8 +1239,8 @@ def build_family_objects_res(
                 label_name = item['name']
                 item_value = item['value']
                 label_value = expand_group_label_value(
-                    env, label_name, metric_group, item_value, client,
-                    resource, uri2resource)
+                    env, label_name, metric_group, item_value, resource,
+                    resource_cache)
                 if label_value is not None:
                     mg_labels[label_name] = label_value
 
@@ -1636,8 +1383,8 @@ def build_family_objects_res(
                     label_name = item['name']
                     item_value = item['value']
                     label_value = expand_metric_label_value(
-                        env, label_name, exporter_name, item_value, client,
-                        resource, uri2resource)
+                        env, label_name, exporter_name, item_value, resource,
+                        resource_cache)
                     if label_value is not None:
                         labels[label_name] = label_value
 
@@ -1690,24 +1437,23 @@ class ZHMCUsageCollector():
     # pylint: disable=too-few-public-methods,too-many-instance-attributes
     """Collects the usage for exporting."""
 
-    def __init__(self, config_dict, session, context, resources,
-                 yaml_metric_groups, yaml_metrics, yaml_fetch_properties,
-                 extra_labels, cpc_list, metrics_filename, config_filename,
-                 resource_cache, uri2resource, hmc_version, hmc_api_version,
+    def __init__(self, config_dict, client, context, yaml_metric_groups,
+                 yaml_metrics, yaml_fetch_properties, extra_labels,
+                 all_cpc_list, target_cpc_list, metrics_filename,
+                 config_filename, resource_cache, hmc_version, hmc_api_version,
                  hmc_features, se_versions_by_cpc, se_features_by_cpc):
         self.config_dict = config_dict
-        self.session = session
+        self.client = client
         self.context = context
-        self.resources = resources
         self.yaml_metric_groups = yaml_metric_groups
         self.yaml_metrics = yaml_metrics
         self.yaml_fetch_properties = yaml_fetch_properties
         self.extra_labels = extra_labels
-        self.cpc_list = cpc_list
+        self.all_cpc_list = all_cpc_list
+        self.target_cpc_list = target_cpc_list
         self.metrics_filename = metrics_filename
         self.config_filename = config_filename
         self.resource_cache = resource_cache
-        self.uri2resource = uri2resource
         self.hmc_version = hmc_version
         self.hmc_api_version = hmc_api_version
         self.hmc_features = hmc_features
@@ -1717,6 +1463,9 @@ class ZHMCUsageCollector():
         self.fetch_event = None
         self.last_export_dt = None
         self.export_interval = None
+        self.exported_metric_mg_names, _ = exported_metric_groups(
+            config_dict, yaml_metric_groups, hmc_version, hmc_api_version,
+            hmc_features)
 
     def collect(self):
         """
@@ -1735,77 +1484,77 @@ class ZHMCUsageCollector():
 
         start_dt = datetime.now()
 
-        with zhmc_exceptions(self.session, self.config_filename):
+        family_objects = {}
 
-            while True:
-                logprint(logging.DEBUG, None,
-                         "Fetching metrics from HMC")
-                try:
-                    metrics_object = retrieve_metrics(self.context)
-                except zhmcclient.HTTPError as exc:
-                    if exc.http_status == 400 and exc.reason in (13, 45):
-                        # 400.13: Logon: Max sessions reached for user
-                        # 400.45: Logon: Password expired
-                        logprint(logging.ERROR, PRINT_ALWAYS,
-                                 "Abandoning after HTTP status "
-                                 f"{exc.http_status}.{exc.reason}: {exc}")
-                        raise
-                    if exc.http_status == 404 and exc.reason == 1:
+        if self.context:
+            with zhmc_exceptions(self.client.session, self.config_filename):
+
+                while True:
+                    logprint(logging.DEBUG, None,
+                             "Fetching metrics from HMC")
+                    try:
+                        metrics_object = retrieve_metrics(self.context)
+                    except zhmcclient.HTTPError as exc:
+                        if exc.http_status == 400 and exc.reason in (13, 45):
+                            # 400.13: Logon: Max sessions reached for user
+                            # 400.45: Logon: Password expired
+                            logprint(logging.ERROR, PRINT_ALWAYS,
+                                     "Abandoning after HTTP status "
+                                     f"{exc.http_status}.{exc.reason}: {exc}")
+                            raise
+                        if exc.http_status == 404 and exc.reason == 1:
+                            logprint(logging.WARNING, PRINT_ALWAYS,
+                                     "Recreating the metrics context after "
+                                     "HTTP status "
+                                     f"{exc.http_status}.{exc.reason}")
+                            self.context = create_metrics_context(
+                                self.client, self.exported_metric_mg_names)
+                            continue
                         logprint(logging.WARNING, PRINT_ALWAYS,
-                                 "Recreating the metrics context after HTTP "
-                                 f"status {exc.http_status}.{exc.reason}")
-                        self.context, _, _ = create_metrics_context(
-                            self.session, self.config_dict,
-                            self.yaml_metric_groups,
-                            self.hmc_version, self.hmc_api_version,
-                            self.hmc_features, self.cpc_list)
+                                 "Retrying after HTTP status "
+                                 f"{exc.http_status}.{exc.reason}: {exc}")
+                        time.sleep(RETRY_SLEEP_TIME)
                         continue
-                    logprint(logging.WARNING, PRINT_ALWAYS,
-                             "Retrying after HTTP status "
-                             f"{exc.http_status}.{exc.reason}: {exc}")
-                    time.sleep(RETRY_SLEEP_TIME)
-                    continue
-                except zhmcclient.ConnectionError as exc:
-                    logprint(logging.WARNING, PRINT_ALWAYS,
-                             f"Retrying after connection error: {exc}")
-                    time.sleep(RETRY_SLEEP_TIME)
-                    continue
-                except zhmcclient.ServerAuthError as exc:
-                    logprint(logging.ERROR, PRINT_ALWAYS,
-                             "Abandoning after server authentication error: "
-                             f"{exc}")
-                    raise
-                except zhmcclient.ClientAuthError as exc:
-                    logprint(logging.ERROR, PRINT_ALWAYS,
-                             "Abandoning after client authentication error: "
-                             f"{exc}")
-                    raise
-                # pylint: disable=broad-exception-caught,broad-except
-                except Exception as exc:
-                    tb_str = traceback.format_tb(exc.__traceback__, limit=-1)[0]
-                    logprint(logging.ERROR, PRINT_ALWAYS,
-                             "Abandoning after exception "
-                             f"{exc.__class__.__name__}: {exc}\n{tb_str}")
-                    raise
-                break
+                    except zhmcclient.ConnectionError as exc:
+                        logprint(logging.WARNING, PRINT_ALWAYS,
+                                 f"Retrying after connection error: {exc}")
+                        time.sleep(RETRY_SLEEP_TIME)
+                        continue
+                    except zhmcclient.ServerAuthError as exc:
+                        logprint(logging.ERROR, PRINT_ALWAYS,
+                                 "Abandoning after server authentication "
+                                 f"error: {exc}")
+                        raise
+                    except zhmcclient.ClientAuthError as exc:
+                        logprint(logging.ERROR, PRINT_ALWAYS,
+                                 "Abandoning after client authentication "
+                                 f"error: {exc}")
+                        raise
+                    # pylint: disable=broad-exception-caught,broad-except
+                    except Exception as exc:
+                        tb_str = traceback.format_tb(
+                            exc.__traceback__, limit=-1)[0]
+                        logprint(logging.ERROR, PRINT_ALWAYS,
+                                 "Abandoning after exception "
+                                 f"{exc.__class__.__name__}: {exc}\n{tb_str}")
+                        raise
+                    break
 
-        logprint(logging.DEBUG, None,
-                 "Building family objects for HMC metrics")
-        family_objects = build_family_objects(
-            metrics_object, self.yaml_metric_groups, self.yaml_metrics,
-            self.extra_labels, self.cpc_list, self.hmc_version,
-            self.hmc_api_version, self.hmc_features, self.se_versions_by_cpc,
-            self.se_features_by_cpc, self.session, self.resource_cache,
-            self.uri2resource)
+            logprint(logging.DEBUG, None,
+                     "Building family objects for HMC metrics")
+            family_objects.update(build_family_objects(
+                self.resource_cache, metrics_object, self.yaml_metric_groups,
+                self.yaml_metrics, self.extra_labels, self.hmc_version,
+                self.hmc_api_version, self.hmc_features,
+                self.se_versions_by_cpc, self.se_features_by_cpc))
 
         logprint(logging.DEBUG, None,
                  "Building family objects for resource metrics")
         family_objects.update(build_family_objects_res(
-            self.resources, self.yaml_metric_groups, self.yaml_metrics,
-            self.extra_labels, self.cpc_list, self.hmc_version,
-            self.hmc_api_version, self.hmc_features, self.se_versions_by_cpc,
-            self.se_features_by_cpc, self.session, self.resource_cache,
-            self.uri2resource))
+            self.resource_cache, self.yaml_metric_groups, self.yaml_metrics,
+            self.extra_labels, self.hmc_version, self.hmc_api_version,
+            self.hmc_features, self.se_versions_by_cpc,
+            self.se_features_by_cpc))
 
         logprint(logging.DEBUG, None,
                  "Returning family objects")
@@ -1873,16 +1622,30 @@ class ZHMCUsageCollector():
             # The zhmcclient methods used for that are supported for all HMC
             # versions, but they run faster starting with HMC API version 4.10
             # (2.16.0 GA 1.5).
+
             logprint(logging.INFO, None,
                      "Fetching properties in background")
             start_dt = datetime.now()
+
             updated_resources = {}  # Resource object by URI
-            for lpar in console.list_permitted_lpars(
-                    additional_properties=lpar_props):
-                updated_resources[lpar.uri] = lpar
-            for cpc in self.cpc_list:
-                cpc.pull_properties(cpc_props)
-                updated_resources[cpc.uri] = cpc
+
+            if self.resource_cache.is_auto_update('logical-partition'):
+                cpc_names = [cpc.name for cpc in self.target_cpc_list]
+                filter_args = {
+                    # cpc-name supports regex matching
+                    "cpc-name": f"{'|'.join(cpc_names)}"
+                }
+                lpars = console.list_permitted_lpars(
+                    filter_args=filter_args,
+                    additional_properties=lpar_props)
+                for lpar in lpars:
+                    updated_resources[lpar.uri] = lpar
+
+            if self.resource_cache.is_auto_update('cpc'):
+                for cpc in self.target_cpc_list:
+                    cpc.pull_properties(cpc_props)
+                    updated_resources[cpc.uri] = cpc
+
             end_dt = datetime.now()
             duration = (end_dt - start_dt).total_seconds()
             logprint(logging.INFO, None,
@@ -1917,24 +1680,8 @@ class ZHMCUsageCollector():
 
             # Update properties of our local resource objects from result
             for uri, updated_res in updated_resources.items():
-                try:
-                    res = self.uri2resource[uri]
-                except KeyError:
-                    continue
+                res = self.resource_cache.lookup(uri)
                 res.update_properties_local(updated_res.properties)
-            for fetch_item in self.yaml_fetch_properties.values():
-                for metric_group in fetch_item["metric-groups"]:
-                    try:
-                        resources = self.resources[metric_group]
-                    except KeyError:
-                        # The metric group is not enabled for export
-                        continue
-                    for res in resources:
-                        try:
-                            updated_res = updated_resources[res.uri]
-                        except KeyError:
-                            continue
-                        res.update_properties_local(updated_res.properties)
 
     def start_fetch_thread(self, session):
         """
@@ -1958,9 +1705,9 @@ class ZHMCUsageCollector():
 
 def main():
     """Puts the exporter together."""
+
     # If the session and context keys are not created, their destruction
     # should not be attempted.
-
     session = None
     context = None
     resources = None
@@ -2061,6 +1808,8 @@ def main():
         env = jinja2.Environment(autoescape=True)
 
         session = create_session(config_dict, config_filename)
+        client = zhmcclient.Client(session)
+        console = client.consoles.console
 
         try:
             with zhmc_exceptions(session, config_filename):
@@ -2068,31 +1817,30 @@ def main():
                 hmc_version = split_version(hmc_info['hmc-version'], 3)
                 hmc_api_version = (hmc_info['api-major-version'],
                                    hmc_info['api-minor-version'])
-                client = zhmcclient.Client(session)
-                hmc_features = client.consoles.console.list_api_features()
+                hmc_features = console.list_api_features()
 
                 # Determine list of CPCs to export, as specified in 'cpcs'.
                 # 'cpcs' is optional and defaults to all managed CPCs.
-                cpc_list = client.cpcs.list()
-                cpc_names = [cpc.name for cpc in cpc_list]
-                if not cpc_list:
+                all_cpc_list = client.cpcs.list()
+                all_cpc_names = [cpc.name for cpc in all_cpc_list]
+                if not all_cpc_list:
                     raise ImproperExit(
                         "This HMC does not manage any CPCs.")
                 if yaml_cpcs is not None:
                     ne_cpc_names = [cn for cn in yaml_cpcs
-                                    if cn not in cpc_names]
+                                    if cn not in all_cpc_names]
                     if ne_cpc_names:
                         raise ImproperExit(
                             "The config file specified non-existing CPCs: "
                             f"{', '.join(ne_cpc_names)} - existing CPCs "
-                            f"are: {', '.join(cpc_names)}")
-                    cpc_list = [cpc for cpc in cpc_list
-                                if cpc.name in yaml_cpcs]
-                    cpc_names = [cpc.name for cpc in cpc_list]
+                            f"are: {', '.join(all_cpc_names)}")
+                target_cpc_list = [cpc for cpc in all_cpc_list
+                                   if not yaml_cpcs or cpc.name in yaml_cpcs]
+                target_cpc_names = [cpc.name for cpc in target_cpc_list]
 
                 se_versions_by_cpc = {}
                 se_features_by_cpc = {}
-                for cpc in cpc_list:
+                for cpc in target_cpc_list:
                     cpc_name = cpc.name
                     se_versions_by_cpc[cpc_name] = split_version(
                         cpc.prop('se-version'), 3)
@@ -2106,15 +1854,12 @@ def main():
                 logprint(logging.INFO, PRINT_V,
                          f"HMC features: {hmc_features_str}")
 
-                logprint(logging.INFO, PRINT_V,
-                         f"Exporting data for CPCs: {', '.join(cpc_names)}")
-
-                for cpc in cpc_list:
+                for cpc in target_cpc_list:
                     cpc_name = cpc.name
                     se_version_str = version_str(se_versions_by_cpc[cpc_name])
                     logprint(logging.INFO, PRINT_V,
                              f"SE version of CPC {cpc_name}: {se_version_str}")
-                for cpc in cpc_list:
+                for cpc in target_cpc_list:
                     cpc_name = cpc.name
                     se_features_str = ', '.join(se_features_by_cpc[cpc_name]) \
                         or 'None'
@@ -2122,9 +1867,46 @@ def main():
                              f"SE features of CPC {cpc_name}: "
                              f"{se_features_str}")
 
-                context, resources, uri2resource = create_metrics_context(
-                    session, config_dict, yaml_metric_groups,
-                    hmc_version, hmc_api_version, hmc_features, cpc_list)
+                metric_mg_names, resource_mg_names = exported_metric_groups(
+                    config_dict, yaml_metric_groups, hmc_version,
+                    hmc_api_version, hmc_features)
+                exported_mg_names = metric_mg_names + resource_mg_names
+
+                logprint(logging.INFO, PRINT_V,
+                         "Caching resources for CPCs: "
+                         f"{', '.join(all_cpc_names)}")
+                logprint(logging.INFO, PRINT_V,
+                         "Exporting metrics for CPCs: "
+                         f"{', '.join(target_cpc_names)}")
+                logprint(logging.INFO, PRINT_V,
+                         "Exporting metric-based metric groups: "
+                         f"{', '.join(metric_mg_names)}")
+                logprint(logging.INFO, PRINT_V,
+                         "Exporting resource-based metric groups: "
+                         f"{', '.join(resource_mg_names)}")
+
+                context = create_metrics_context(client, metric_mg_names)
+
+                resource_cache = ResourceCache(
+                    client, all_cpc_list, target_cpc_list, yaml_metric_groups,
+                    exported_mg_names, se_features_by_cpc)
+
+                logprint(logging.INFO, PRINT_V,
+                         "Setting up the resource cache (may take some time)")
+
+                start_dt = datetime.now()
+                resource_cache.setup()  # Takes time
+                end_dt = datetime.now()
+                duration = (end_dt - start_dt).total_seconds()
+                num_res = resource_cache.num_resources()
+                num_cpcs = len(all_cpc_list)
+                logprint(logging.INFO, PRINT_V,
+                         f"Setup of resource cache is complete with {num_res} "
+                         f"resources on {num_cpcs} CPCs after "
+                         f"{duration:.0f} sec")
+
+                # print(f"Debug: auto_update={resource_cache._auto_update!r}")
+                # print(f"Debug: resource_cache={resource_cache!r}")
 
         except (ConnectionError, AuthError, OtherError) as exc:
             raise ImproperExit(exc)
@@ -2147,18 +1929,23 @@ def main():
         logprint(logging.INFO, PRINT_V,
                  f"Using extra labels: {extra_labels_str}")
 
-        resource_cache = ResourceCache()
         coll = ZHMCUsageCollector(
-            config_dict, session, context, resources, yaml_metric_groups,
-            yaml_metrics, yaml_fetch_properties, extra_labels, cpc_list,
-            metrics_filename,
-            config_filename, resource_cache, uri2resource, hmc_version,
+            config_dict, client, context, yaml_metric_groups, yaml_metrics,
+            yaml_fetch_properties, extra_labels, all_cpc_list, target_cpc_list,
+            metrics_filename, config_filename, resource_cache, hmc_version,
             hmc_api_version, hmc_features, se_versions_by_cpc,
             se_features_by_cpc)
 
         logprint(logging.INFO, PRINT_V,
                  "Registering the collector and performing first collection")
+        start_dt = datetime.now()
         REGISTRY.register(coll)  # Performs a first collection
+        end_dt = datetime.now()
+        duration = (end_dt - start_dt).total_seconds()
+        logprint(logging.INFO, PRINT_V,
+                 f"First collection is complete after {duration:.0f} sec")
+
+        # print(f"Debug: resource_cache={resource_cache!r}")
 
         # Get the Prometheus communication parameters
         prom_item = config_dict.get("prometheus", {})
@@ -2231,9 +2018,13 @@ def main():
                     f"Cannot start HTTP server: {exc.__class__.__name__}: "
                     f"{exc}")
 
+        fetch_rcs = []
+        for rc in ('cpc', 'logical-partition'):
+            if resource_cache.is_auto_update(rc):
+                fetch_rcs.append(rc)
         logprint(logging.INFO, PRINT_V,
-                 "Starting thread for fetching properties in background "
-                 "for which change notification is not supported")
+                 "Starting thread for fetching properties in background for "
+                 f"resource classes: {','.join(fetch_rcs)}")
         coll.start_fetch_thread(session)
 
         logprint(logging.INFO, PRINT_ALWAYS,

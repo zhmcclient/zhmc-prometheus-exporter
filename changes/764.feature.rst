@@ -1,0 +1,7 @@
+Improved performance of the startup phase with a consolidated new resource
+cache. So far, there were three caches in the exporter that were built for
+specific purposes. That has lead to fetching the same resources multiple times
+from the HMC and fetching a larger set of resource properties than minimally
+needed. The new resource cache fetches each resource only once and only with
+the smallest possible set of properties. That should reduce the duration of
+the startup phase.
