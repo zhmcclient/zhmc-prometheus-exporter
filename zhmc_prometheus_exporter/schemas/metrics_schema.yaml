@@ -18,6 +18,7 @@ properties:
         description: "Key: Name of the HMC or resource metric group"
         type: object
         required:
+          - type
           - prefix
         additionalProperties: false
         properties:
@@ -25,7 +26,6 @@ properties:
             description: "The type of metric group: metric - an HMC metric group in which the metric values come from the HMC metric service; resource - an artificial metric group in which the metric values come from resource properties."
             type: string
             enum: [metric, resource]
-            default: metric
           resource:
             description: "The resource class path for a resource metric group, starting at the zhmcclient.Client object (e.g. 'cpc.partition')."
             type: string
