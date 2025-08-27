@@ -1,0 +1,5 @@
+Improved the handling of missing object access permissions: Resources of
+enabled metric groups now may be inaccessible which causes their metrics not to
+be exported. That had always been documented that way, but the implementation
+did not step up to that. However, the direct and indirect parent resources of
+accessible resources of enabled metric groups also must be accessible.
