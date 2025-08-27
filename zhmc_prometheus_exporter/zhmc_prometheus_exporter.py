@@ -2109,11 +2109,16 @@ class ZHMCUsageCollector():
                 except KeyError:
                     continue
                 res.update_properties_local(updated_res.properties)
-            for fetch_item in self.yaml_fetch_properties.values():
+            for rc, fetch_item in self.yaml_fetch_properties.items():
                 for metric_group in fetch_item["metric-groups"]:
                     try:
                         resources = self.resources[metric_group]
                     except KeyError:
+                        logprint(logging.WARNING, PRINT_ALWAYS,
+                                 "Ignoring invalid metric group "
+                                 f"{metric_group} specified in "
+                                 f"'fetch_properties' for resource class {rc} "
+                                 "in the metric definition file")
                         continue
                     for res in resources:
                         try:
