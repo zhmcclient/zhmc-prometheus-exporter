@@ -7,14 +7,18 @@ metric_groups:
   # Available for CPCs in classic mode
 
   cpc-usage-overview:
+    cpc_mode: classic
     type: metric
+    resource_class: cpc
     prefix: cpc
     labels:
       - name: cpc
         value: "resource_obj.name"
 
   logical-partition-usage:
+    cpc_mode: classic
     type: metric
+    resource_class: logical-partition
     prefix: partition
     labels:
       - name: cpc
@@ -23,7 +27,9 @@ metric_groups:
         value: "resource_obj.name"
 
   channel-usage:
+    cpc_mode: classic
     type: metric
+    resource_class: cpc
     prefix: channel
     labels:
       - name: cpc
@@ -32,7 +38,9 @@ metric_groups:
         value: "metric_values['channel-name']"  # format: 'CSS.CHPID'
 
   crypto-usage:
+    cpc_mode: classic
     type: metric
+    resource_class: cpc
     prefix: crypto_adapter
     if: "hmc_version>='2.12.0'"
     labels:
@@ -42,7 +50,9 @@ metric_groups:
         value: "metric_values['channel-id']"
 
   flash-memory-usage:
+    cpc_mode: classic
     type: metric
+    resource_class: cpc
     prefix: flash_memory_adapter
     if: "hmc_version>='2.12.0'"
     labels:
@@ -52,7 +62,9 @@ metric_groups:
         value: "metric_values['channel-id']"
 
   roce-usage:
+    cpc_mode: classic
     type: metric
+    resource_class: cpc
     prefix: roce_adapter
     if: "hmc_version>='2.12.1'"
     labels:
@@ -62,8 +74,9 @@ metric_groups:
         value: "metric_values['channel-id']"
 
   logical-partition-resource:
+    cpc_mode: classic
     type: resource
-    resource: cpc.logical-partition
+    resource_class: logical-partition
     prefix: partition
     labels:
       - name: cpc
@@ -74,7 +87,9 @@ metric_groups:
   # Available for CPCs in DPM mode
 
   dpm-system-usage-overview:
+    cpc_mode: dpm
     type: metric
+    resource_class: cpc
     prefix: cpc
     if: "hmc_version>='2.13.1'"
     labels:
@@ -82,7 +97,9 @@ metric_groups:
         value: "resource_obj.name"
 
   partition-usage:
+    cpc_mode: dpm
     type: metric
+    resource_class: partition
     prefix: partition
     if: "hmc_version>='2.13.1'"
     labels:
@@ -92,7 +109,9 @@ metric_groups:
         value: "resource_obj.name"
 
   adapter-usage:
+    cpc_mode: dpm
     type: metric
+    resource_class: adapter
     prefix: adapter
     if: "hmc_version>='2.13.1'"
     labels:
@@ -102,7 +121,9 @@ metric_groups:
         value: "resource_obj.name"
 
   network-physical-adapter-port:
+    cpc_mode: dpm
     type: metric
+    resource_class: adapter
     prefix: port
     if: "hmc_version>='2.13.1'"
     labels:
@@ -114,7 +135,9 @@ metric_groups:
         value: "metric_values['network-port-id']"
 
   partition-attached-network-interface:
+    cpc_mode: dpm
     type: metric
+    resource_class: nic
     prefix: nic
     if: "hmc_version>='2.13.1'"
     labels:
@@ -130,8 +153,9 @@ metric_groups:
         value: "adapter_port(resource_obj)"
 
   partition-resource:
+    cpc_mode: dpm
     type: resource
-    resource: cpc.partition
+    resource_class: partition
     prefix: partition
     if: "hmc_version>='2.13.1'"
     labels:
@@ -141,8 +165,9 @@ metric_groups:
         value: "resource_obj.name"
 
   storagegroup-resource:
+    cpc_mode: dpm
     type: resource
-    resource: console.storagegroup
+    resource_class: storage-group
     prefix: storagegroup
     if: "hmc_version>='2.14.1'"
     labels:
@@ -152,8 +177,9 @@ metric_groups:
         value: "resource_obj.name"
 
   storagevolume-resource:
+    cpc_mode: dpm
     type: resource
-    resource: console.storagevolume
+    resource_class: storage-volume
     prefix: storagevolume
     if: "hmc_version>='2.14.1'"
     labels:
@@ -165,8 +191,9 @@ metric_groups:
         value: "resource_obj.name"
 
   adapter-resource:
+    cpc_mode: dpm
     type: resource
-    resource: cpc.adapter
+    resource_class: adapter
     prefix: adapter
     if: "hmc_version>='2.13.1'"
     labels:
@@ -178,14 +205,18 @@ metric_groups:
   # Available for CPCs in any mode
 
   zcpc-environmentals-and-power:
+    cpc_mode: any
     type: metric
+    resource_class: cpc
     prefix: cpc
     labels:
       - name: cpc
         value: "resource_obj.name"
 
   zcpc-processor-usage:
+    cpc_mode: any
     type: metric
+    resource_class: cpc
     prefix: processor
     labels:
       - name: cpc
@@ -196,7 +227,9 @@ metric_groups:
         value: "metric_values['processor-type']"
 
   environmental-power-status:
+    cpc_mode: any
     type: metric
+    resource_class: cpc
     prefix: cpc
     if: "hmc_version>='2.15.0'"
     labels:
@@ -204,8 +237,9 @@ metric_groups:
         value: "resource_obj.name"
 
   cpc-resource:
+    cpc_mode: any
     type: resource
-    resource: cpc
+    resource_class: cpc
     prefix: cpc
     labels:
       - name: cpc
