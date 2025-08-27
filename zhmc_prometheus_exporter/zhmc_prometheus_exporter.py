@@ -2114,6 +2114,7 @@ class ZHMCUsageCollector():
                     try:
                         resources = self.resources[metric_group]
                     except KeyError:
+                        # The metric group is not enabled for export
                         continue
                     for res in resources:
                         try:
