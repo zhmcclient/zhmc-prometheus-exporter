@@ -18,17 +18,24 @@ properties:
         description: "Key: Name of the HMC or resource metric group"
         type: object
         required:
+          - cpc_mode
           - type
+          - resource_class
           - prefix
         additionalProperties: false
         properties:
+          cpc_mode:
+            description: "The operational mode of the CPC for which this metric group is supported."
+            type: string
+            enum: [classic, dpm, any]
           type:
             description: "The type of metric group: metric - an HMC metric group in which the metric values come from the HMC metric service; resource - an artificial metric group in which the metric values come from resource properties."
             type: string
             enum: [metric, resource]
-          resource:
-            description: "The resource class path for a resource metric group, starting at the zhmcclient.Client object (e.g. 'cpc.partition')."
+          resource_class:
+            description: "The resource class for the resources the metrics in the metric group are about."
             type: string
+            enum: [cpc, adapter, logical-partition, partition, nic, storage-group, storage-volume]
           prefix:
             description: "<prefix> part of Prometheus metric name (format: zhmc_<prefix>_<metric_unit>)"
             type: string
