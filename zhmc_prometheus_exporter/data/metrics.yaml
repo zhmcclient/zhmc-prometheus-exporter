@@ -140,6 +140,19 @@ metric_groups:
       - name: partition
         value: "resource_obj.name"
 
+  nic-resource:
+    type: resource
+    resource: cpc.partition.nic
+    prefix: nic
+    fetch: true
+    labels:
+      - name: cpc
+        value: "resource_obj.manager.parent.manager.parent.name"
+      - name: partition
+        value: "resource_obj.manager.parent.name"
+      - name: nic
+        value: "resource_obj.name"
+
   storagegroup-resource:
     type: resource
     resource: console.storagegroup
@@ -1102,6 +1115,20 @@ metrics:
       labels:
         - name: value
           value: "uris2resources(resource_obj.properties['storage-group-uris']) | map(attribute='name') | join(',')"
+
+  nic-resource:  # can be in dictionary or list format
+    - properties_expression: "0"
+      exporter_name: adapter
+      exporter_desc: "Network adapter that backs the NIC"
+      labels:
+        - name: value
+          value: "uri2resource(resource_obj.properties['network-adapter-port-uri']).manager.parent.name if resource_obj.properties.type in ('roce', 'cna') else uri2resource(uri2resource(resource_obj.properties['virtual-switch-uri']).properties['backing-adapter-uri']).name"
+    - properties_expression: "0"
+      exporter_name: port_index
+      exporter_desc: "Port index on network adapter that backs the NIC"
+      labels:
+        - name: value
+          value: "uri2resource(resource_obj.properties['network-adapter-port-uri']).properties['port-index'] if resource_obj.properties.type in ('roce', 'cna') else '0'"
 
   storagegroup-resource:  # can be in dictionary or list format
     - properties_expression: "{'fcp': 0, 'fc': 1, 'nvme': 2}.get(properties.type, 99)"  # No change notification, but never changes
