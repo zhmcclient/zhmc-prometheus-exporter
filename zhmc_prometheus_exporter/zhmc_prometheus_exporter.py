@@ -64,18 +64,6 @@ FETCH_HYSTERESIS = 10
 # Sleep time in seconds when retrying metrics retrieval
 RETRY_SLEEP_TIME = 10
 
-# Retry / timeout configuration for zhmcclient (used at the socket level)
-RETRY_TIMEOUT_CONFIG = zhmcclient.RetryTimeoutConfig(
-    connect_timeout=10,
-    connect_retries=2,
-    read_timeout=900,
-    read_retries=2,
-    max_redirects=zhmcclient.DEFAULT_MAX_REDIRECTS,
-    operation_timeout=zhmcclient.DEFAULT_OPERATION_TIMEOUT,
-    status_timeout=zhmcclient.DEFAULT_STATUS_TIMEOUT,
-    name_uri_cache_timetolive=zhmcclient.DEFAULT_NAME_URI_CACHE_TIMETOLIVE,
-)
-
 
 def parse_args(args):
     """Parses the CLI arguments."""
@@ -704,11 +692,33 @@ def create_session(config_dict, config_filename):
     logprint(logging.INFO, PRINT_V,
              f"HMC certificate validation: {verify_cert}")
 
+    # Retry / timeout configuration for zhmcclient
+    rt_parms = hmc_dict.get("retry_timeout", {})
+    rt_config = zhmcclient.RetryTimeoutConfig(
+        connect_timeout=rt_parms.get("connect_timeout", 10),
+        connect_retries=rt_parms.get("connect_retries", 2),
+        read_timeout=rt_parms.get("read_timeout", 900),
+        read_retries=rt_parms.get("read_retries", 2),
+        max_redirects=zhmcclient.DEFAULT_MAX_REDIRECTS,
+        operation_timeout=rt_parms.get(
+            "operation_timeout", zhmcclient.DEFAULT_OPERATION_TIMEOUT),
+        status_timeout=rt_parms.get(
+            "status_timeout", zhmcclient.DEFAULT_STATUS_TIMEOUT),
+        name_uri_cache_timetolive=zhmcclient.DEFAULT_NAME_URI_CACHE_TIMETOLIVE,
+    )
+
+    logprint(logging.INFO, PRINT_V,
+             "Timeout/retry configuration: "
+             f"connect: {rt_config.connect_timeout} sec / "
+             f"{rt_config.connect_retries} retries, "
+             f"read: {rt_config.read_timeout} sec / "
+             f"{rt_config.read_retries} retries.")
+
     session = zhmcclient.Session(hmc_dict["host"],
                                  hmc_dict["userid"],
                                  hmc_dict["password"],
                                  verify_cert=verify_cert,
-                                 retry_timeout_config=RETRY_TIMEOUT_CONFIG)
+                                 retry_timeout_config=rt_config)
     return session
 
 
@@ -2042,13 +2052,6 @@ def main():
         logprint(logging.INFO, PRINT_V,
                  "Initial sleep time for fetching properties in background: "
                  f"{INITIAL_FETCH_SLEEP_TIME} sec")
-
-        logprint(logging.INFO, PRINT_V,
-                 "Timeout/retry configuration: "
-                 f"connect: {RETRY_TIMEOUT_CONFIG.connect_timeout} sec / "
-                 f"{RETRY_TIMEOUT_CONFIG.connect_retries} retries, "
-                 f"read: {RETRY_TIMEOUT_CONFIG.read_timeout} sec / "
-                 f"{RETRY_TIMEOUT_CONFIG.read_retries} retries.")
 
         yaml_cpcs = config_dict.get("cpcs", None)
         if yaml_cpcs == []:

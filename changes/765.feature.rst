@@ -1,0 +1,1 @@
+Made the retry and timeout values configurable in the exporter config file.

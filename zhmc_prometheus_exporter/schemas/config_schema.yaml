@@ -34,6 +34,29 @@ properties:
         verify_cert:
           description: "Controls whether and how the HMC certificate is verified. For details, see doc section 'HMC certificate'"
           type: [boolean, string]
+        retry_timeout:
+          description: "The HMC retry and timeout configuration"
+          type: object
+          additionalProperties: false
+          properties:
+            connect_timeout:
+              description: "The connect timeout in seconds. Default: 10"
+              type: integer
+            connect_retries:
+              description: "The maximum number of connect retries. Default: 2"
+              type: integer
+            read_timeout:
+              description: "The read timeout in seconds. Default: 900"
+              type: integer
+            read_retries:
+              description: "The maximum number of read retries. Default: 2"
+              type: integer
+            operation_timeout:
+              description: "The HMC operation timeout in seconds. Default: 3600"
+              type: integer
+            status_timeout:
+              description: "The HMC status change timeout in seconds. Default: 60"
+              type: integer
   metrics:
     description: "Deprecated: The HMC host and credentials"
     type: object
