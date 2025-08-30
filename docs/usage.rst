@@ -772,6 +772,13 @@ The exporter config file is in YAML format and has the following structure:
         userid: {hmc-userid}
         password: {hmc-password}
         verify_cert: {hmc-verify-cert}
+        retry_timeout:  # optional
+          connect_timeout: {connect_timeout}
+          connect_retries: {connect_retries}
+          read_timeout: {read_timeout}
+          read_retries: {read_retries}
+          operation_timeout: {operation_timeout}
+          status_timeout: {status_timeout}
 
     prometheus:  # optional
       port: {prom-port}
@@ -806,6 +813,18 @@ Where:
 
 * ``{hmc-verify-cert}`` controls whether and how the HMC server certificate is
   verified. For details, see :ref:`HMC certificate`.
+
+* ``{connect_timeout}`` is the connect timeout in seconds. Default: 10
+
+* ``{connect_retries}`` is the maximum number of connect retries. Default: 2
+
+* ``{read_timeout}`` is the read timeout in seconds. Default: 900
+
+* ``{read_retries}`` is the maximum number of read retries. Default: 2
+
+* ``{operation_timeout}`` is the HMC operation timeout in seconds. Default: 3600
+
+* ``{status_timeout}`` is the HMC status change timeout in seconds. Default: 60
 
 * ``{prom-port}`` is the port for exporting. Default: 9291.
 
