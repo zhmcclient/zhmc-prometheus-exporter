@@ -179,7 +179,7 @@ safety_develop_policy_file := .safety-policy-develop.yml
 bandit_rc_file := .bandit.toml
 
 ifdef TESTCASES
-  pytest_opts := $(TESTOPTS) -k "$(TESTCASES)"
+  pytest_opts := $(TESTOPTS) -k '$(TESTCASES)'
 else
   pytest_opts := $(TESTOPTS)
 endif
