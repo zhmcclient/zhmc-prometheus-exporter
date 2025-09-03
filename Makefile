@@ -382,6 +382,13 @@ builddoc: $(doc_build_file)
 all: install develop check_reqs check ruff pylint test build builddoc check_reqs safety bandit
 	@echo "Makefile: $@ done."
 
+.PHONY: doclinkcheck
+doclinkcheck: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done
+	@echo "Running Sphinx to check doc links"
+	sphinx-build -b linkcheck -v $(doc_dir) $(doc_build_dir)/linkcheck
+	@echo "Done: Look for any errors in the above output or in: $(doc_build_dir)/linkcheck/output.txt"
+	@echo "Makefile: $@ done."
+
 .PHONY: release_branch
 release_branch:
 	@bash -c 'if [ -z "$(VERSION)" ]; then echo ""; echo "Error: VERSION env var is not set"; echo ""; false; fi'

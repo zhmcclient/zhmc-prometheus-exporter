@@ -181,3 +181,40 @@ texinfo_documents = [
      'One line description of project.',
      'Miscellaneous'),
 ]
+
+# -- Options for linkcheck -----------------------------------------------
+
+linkcheck_request_headers = {
+    r'https://.*/': {
+        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:24.0) '
+        'Gecko/20100101 Firefox/24.0',
+    },
+}
+
+# All HTTP redirections from a matching source URI to the matching target URI
+# will be treated as "working".
+linkcheck_allowed_redirects = {
+    r'https://serverfault.com/a/':
+        r'https://serverfault.com/questions/',
+    r'https://readthedocs.org/projects/':
+        r'https://app.readthedocs.org/projects/',
+    r'https://readthedocs.org/accounts/':
+        r'https://app.readthedocs.org/accounts/',
+}
+
+linkcheck_ignore = [
+
+    # Ignored in order not to run into rate-limit of github.com
+    r'https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/\d+',
+
+    # Page exists, but linkcheck sometimes gets HTTP 404 "Not Found"
+    r'https://github.com/zhmcclient/zhmc-prometheus-exporter/'
+    r'security/dependabot',
+
+    # Page exists, but linkcheck sometimes gets HTTP 403 "Forbidden"
+    r'https://wiki.mozilla.org/CA/Included_Certificates',
+
+    # Used for describing a local setup with the exporter
+    r'http://localhost',
+    r'https://localhost',
+]
