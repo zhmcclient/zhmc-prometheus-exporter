@@ -62,7 +62,7 @@ Compare your exporter config file with the sample exporter config file from the
 ``examples`` folder, see :ref:`Exporter config file` for more information.
 You can also check the `YAML specification`_.
 
-.. _YAML specification: http://yaml.org/spec/1.2/spec.html
+.. _YAML specification: https://yaml.org/spec/1.2/spec.html
 
 YAML validation error in exporter config file
 ---------------------------------------------

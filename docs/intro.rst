@@ -38,7 +38,7 @@ the HMC come back up.
 The exporter supports HTTP and HTTPS (with and without mutual TLS) for
 Prometheus.
 
-.. _IBM Z: https://www.ibm.com/it-infrastructure/z
+.. _IBM Z: https://www.ibm.com/products/z?lnk=flatitem
 .. _Prometheus exporter: https://prometheus.io/docs/instrumenting/exporters/
 .. _Prometheus: https://prometheus.io
 
@@ -63,4 +63,4 @@ License
 
 This package is licensed under the `Apache 2.0 License`_.
 
-.. _Apache 2.0 License: http://apache.org/licenses/LICENSE-2.0
+.. _Apache 2.0 License: https://apache.org/licenses/LICENSE-2.0

@@ -37,7 +37,7 @@ Third party contributions to this project are welcome!
 
 In order to contribute, create a `Git pull request`_, considering this:
 
-.. _Git pull request: https://help.github.com/articles/using-pull-requests/
+.. _Git pull request: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests
 
 * Test is required.
 * Each commit should only contain one "logical" change.
@@ -171,12 +171,11 @@ right to pass it on as an open-source patch.
 
 .. _DCO 1.1: https://developercertificate.org/
 
-We use `GitCop`_ during creation of a pull request to check whether the commit
-messages in the pull request comply to this format. If the commit messages do
-not comply, GitCop will add a comment to the pull request with a description of
-what was wrong.
+All lines in the commit messages must not be longer than 80 characters.
 
-.. _GitCop: http://gitcop.com/
+We check in the test workflow whether the commit messages in the pull request
+comply to this format. If the commit messages do not comply, the test workflow
+will fail.
 
 Example commit message:
 
@@ -220,7 +219,7 @@ Releasing a version
 
 This section shows the steps for releasing a version to `PyPI`_.
 
-.. _PyPI: https://pypi.python.org/
+.. _PyPI: https://pypi.org/
 
 It covers all variants of versions that can be released:
 
@@ -351,7 +350,7 @@ local clone of the zhmc-prometheus-exporter Git repo.
     Then, perform the following verifications:
 
     * Verify that the new version is available on PyPI at
-      https://pypi.python.org/pypi/zhmc-prometheus-exporter/
+      https://pypi.org/project/zhmc-prometheus-exporter/
 
     * Verify that the new version has a release on Github at
       https://github.com/zhmcclient/zhmc-prometheus-exporter/releases

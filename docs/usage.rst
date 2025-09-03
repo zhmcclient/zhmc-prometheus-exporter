@@ -203,7 +203,7 @@ chain (usually the last one displayed):
     $ openssl storeutl -noout -text -certs /tmp/get-server-certs.pem | grep -E "Certificate|Subject:|Issuer"
 
 For more information, see the
-`Security <https://python-zhmcclient.readthedocs.io/en/latest/security.html>`_
+`Security <https://python-zhmcclient.readthedocs.io/en/stable/security.html>`_
 section in the documentation of the 'zhmcclient' package.
 
 
@@ -812,7 +812,7 @@ Where:
 * ``{hmc-password}`` is the password of that userid.
 
 * ``{hmc-verify-cert}`` controls whether and how the HMC server certificate is
-  verified. For details, see :ref:`HMC certificate`.
+  verified. For details, see :ref:`Using HMC certificates`.
 
 * ``{connect_timeout}`` is the connect timeout in seconds. Default: 10
 

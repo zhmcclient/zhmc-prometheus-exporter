@@ -805,7 +805,7 @@ Released: 2022-04-07
   added support for newer JSON schema versions, that broke. Fixed that by
   changing the array items from a list to its list item object. Also,
   in order to not fall into future JSON schema incompatibilities again, added
-  $schema: http://json-schema.org/draft-07/schema (issue #180)
+  $schema: https://json-schema.org/draft-07/schema (issue #180)
 
 * Increased minimum zhmcclient version to 1.2.0 to pick up the automatic
   presence of metric group definitions in its mock support, and adjusted
