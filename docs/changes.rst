@@ -23,6 +23,26 @@ Change log
 .. ============================================================================
 
 .. towncrier start
+Version 2.1.1
+^^^^^^^^^^^^^
+
+Released: 2025-09-05
+
+**Bug fixes:**
+
+* Increased socket read timeout from 300 to 900 seconds to avoid timeouts.
+
+* Dev: Circumvented safety issue with import of typer module by pinning typer
+  to <0.17.0.
+
+**Cleanup:**
+
+* Cleaned up incorrect metric group type 'hmc' and changed to 'metric' in the
+  metric definition file. Made the metric type mandatory in the schema for the
+  metric definition file to avoid such issues in the future. Note, this did not
+  cause an issue.
+
+
 Version 2.1.0
 ^^^^^^^^^^^^^
 
