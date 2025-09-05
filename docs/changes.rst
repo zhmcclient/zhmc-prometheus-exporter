@@ -23,6 +23,56 @@ Change log
 .. ============================================================================
 
 .. towncrier start
+Version 2.2.0
+^^^^^^^^^^^^^
+
+Released: 2025-09-05
+
+**Bug fixes:**
+
+* Increased socket read timeout from 300 to 900 seconds to avoid timeouts.
+
+* Dev: Circumvented safety issue with import of typer module by pinning typer
+  to <0.17.0.
+
+* Docs: Fixed broken links in the documentation. Fixed the description of
+  commit message checking in the development section of the documentation to
+  remove the mentioning of the GitCop service which is no longer used.
+
+* Docs: Updates in Bibliography section: Collapsed the HMC WS-API books to a
+  single version (2.17), Added link to HMC Help, Updated HMC Security book to
+  2.17, Removed the HMC Operations Guide which no longer exists.
+
+**Enhancements:**
+
+* Modularized the exporter code somewhat more.
+
+* Improved performance of the startup phase with a consolidated new resource
+  cache. So far, there were three caches in the exporter that were built for
+  specific purposes. That has lead to fetching the same resources multiple times
+  from the HMC and fetching a larger set of resource properties than minimally
+  needed. The new resource cache fetches each resource only once and only with
+  the smallest possible set of properties. That should reduce the duration of
+  the startup phase. (`#764 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/764>`_)
+
+* Improved the handling of missing object access permissions: Resources of
+  enabled metric groups now may be inaccessible which causes their metrics not to
+  be exported. That had always been documented that way, but the implementation
+  did not step up to that. However, the direct and indirect parent resources of
+  accessible resources of enabled metric groups also must be accessible. (`#764 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/764>`_)
+
+* Made the retry and timeout values configurable in the exporter config file. (`#765 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/765>`_)
+
+* Increased zhmcclient minimum version to 1.23.1 to pick up fixes and features. (`#777 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/777>`_)
+
+**Cleanup:**
+
+* Cleaned up incorrect metric group type 'hmc' and changed to 'metric' in the
+  metric definition file. Made the metric type mandatory in the schema for the
+  metric definition file to avoid such issues in the future. Note, this did not
+  cause an issue.
+
+
 Version 2.1.0
 ^^^^^^^^^^^^^
 
