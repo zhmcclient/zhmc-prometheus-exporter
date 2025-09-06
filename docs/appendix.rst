@@ -75,4 +75,4 @@ Bibliography
        `IBM SC28-7061-00, IBM Z Hardware Management Console Security (Version 2.17.0) <https://www.ibm.com/docs/ko/module_1721331501652/pdf/SC28-7061-00.pdf>`_
 
    HMC Help
-       `IBM Z Hardware Management Console Help (Version 2.17.0) <https://www.ibm.com/docs/en/help-ibm-hmc-z17>`
+       `IBM Z Hardware Management Console Help (Version 2.17.0) <https://www.ibm.com/docs/en/help-ibm-hmc-z17>`_
