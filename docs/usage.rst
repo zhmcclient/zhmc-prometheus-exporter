@@ -250,8 +250,15 @@ Exported metric concepts
 
 The exporter provides its metrics in the `Prometheus text-based format`_.
 
-All metrics are of the `metric type gauge`_ and follow the
-`Prometheus metric naming`_. The names of the metrics are defined in the
+In that format, timestamps are optional. The exporter does not provide
+timestamps, causing Prometheus to assume the time of scraping as the time to
+which the metric values apply. This should be an acceptable approach, because
+the metric values retrieved from the HMC metric service change only every
+15 (or so) seconds anyway, and the resource-based metric values change only
+when the resource properties are updated (i.e. rarely).
+
+All metrics are of the Prometheus metric types `Gauge`_ or `Counter`_ and follow
+the `Prometheus metric naming`_. The names of the metrics are defined in the
 :ref:`metric definition file`.
 
 The metric names are structured as follows:
@@ -293,7 +300,8 @@ usage percentages of two partitions in a single CPC:
     zhmc_partition_ifl_processor_usage_ratio{cpc='CPCA',partition='PART2'} 0.07
 
 .. _Prometheus text-based format: https://prometheus.io/docs/instrumenting/exposition_formats/#text-based-format
-.. _metric type gauge: https://prometheus.io/docs/concepts/metric_types/#gauge
+.. _Gauge: https://prometheus.io/docs/concepts/metric_types/#gauge
+.. _Counter: https://prometheus.io/docs/concepts/metric_types/#counter
 .. _Prometheus metric naming: https://prometheus.io/docs/practices/naming/
 .. _Prometheus labels: https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels
 
