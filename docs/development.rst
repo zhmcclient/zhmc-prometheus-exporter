@@ -355,16 +355,33 @@ local clone of the zhmc-prometheus-exporter Git repo.
     * Verify that the new version has a release on Github at
       https://github.com/zhmcclient/zhmc-prometheus-exporter/releases
 
-    * Verify that the new version has documentation on ReadTheDocs at
-      https://zhmc-prometheus-exporter.readthedocs.io/en/latest/changes.html
+.
+10. Verify the documentation on ReadTheDocs
 
-      The new version ``M.N.U`` should be automatically active on ReadTheDocs,
-      causing the documentation for the new version to be automatically
-      built and published.
+    ReadTheDocs automatically activates the new version and sets it as a
+    default version. Branches such as 'master' or 'stable' are no longer
+    shown.
 
-      If you cannot see the new version after some minutes, log in to
-      https://readthedocs.org/projects/zhmc-prometheus-exporter/versions/
-      and activate the new version.
+    Wait for the ReadTheDocs build for the new version to have completed:
+    https://readthedocs.org/projects/zhmc-prometheus-exporter/builds/
+
+    Then, perform the following verification:
+
+    * Verify that https://zhmc-prometheus-exporter.readthedocs.io/ gets
+      redirected to the URL for the new version. This verifies that it has been
+      activated and set as the default version.
+
+11. Hide previous fix version on ReadTheDocs
+
+    When releasing a fix version != 0 (e.g. M.N.1), log on to
+    https://readthedocs.org/accounts/login/, go to
+    https://readthedocs.org/projects/zhmc-prometheus-exporter/versions/, select
+    to configure the previous fix version (i.e. ``M.N.U-1``) and set it to
+    "hidden" (it remains active).
+
+    Hiding it causes it to be removed from the version list. Keeping it active
+    will ensure that any links to that version that were obtained earlier, still
+    work.
 
 
 Starting a new version
