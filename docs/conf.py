@@ -11,6 +11,8 @@
 Config file for Sphinx.
 """
 
+import sys
+import os
 import setuptools_scm
 
 
@@ -40,6 +42,27 @@ release = setuptools_scm.get_version(root='..', relative_to=__file__)
 # The short M.N.U version, displayed in the docs.
 # We also use the full version for that.
 version = release
+
+if "dev" in release:
+    print("conf.py: Generating change log entries using towncrier")
+    sys.stdout.flush()
+    os.system(
+        f'towncrier build --draft --version {version} '
+        '>tmp_changes.rst')  # nosec B605
+    print("conf.py: Building development version")
+    # The following "tags" object is injected by Sphinx at runtime.
+    tags.add("dev")  # noqa: F821 pylint: disable=undefined-variable
+else:
+    print("conf.py: Building release version")
+
+# Some prints, for extra information
+print(f"conf.py: pwd: {os.getcwd()}")
+print(f"conf.py: zhmcclient version: {version}")
+print("conf.py: Last 5 commits:")
+sys.stdout.flush()
+os.system('git log --decorate --oneline |head -5')  # nosec B605,M607
+print("conf.py: End of commits")
+sys.stdout.flush()
 
 # -- General configuration ---------------------------------------------------
 
