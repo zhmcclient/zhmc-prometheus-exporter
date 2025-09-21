@@ -64,6 +64,9 @@ FETCH_HYSTERESIS = 10
 # Sleep time in seconds when retrying metrics retrieval
 RETRY_SLEEP_TIME = 10
 
+# HMC request/response truncation of data in log entries. 0 means no truncation.
+LOG_CONTENT_TRUNCATE = 0
+
 
 def parse_args(args):
     """Parses the CLI arguments."""
@@ -703,6 +706,7 @@ def create_session(config_dict, config_filename):
         status_timeout=rt_parms.get(
             "status_timeout", zhmcclient.DEFAULT_STATUS_TIMEOUT),
         name_uri_cache_timetolive=zhmcclient.DEFAULT_NAME_URI_CACHE_TIMETOLIVE,
+        log_content_truncate=LOG_CONTENT_TRUNCATE,
     )
 
     logprint(logging.INFO, PRINT_V,
@@ -711,6 +715,11 @@ def create_session(config_dict, config_filename):
              f"{rt_config.connect_retries} retries, "
              f"read: {rt_config.read_timeout} sec / "
              f"{rt_config.read_retries} retries.")
+
+    truncate_str = f"{rt_config.log_content_truncate} B" if \
+        rt_config.log_content_truncate > 0 else 'none'
+    logprint(logging.INFO, PRINT_V,
+             f"Log truncation: {truncate_str}")
 
     session = zhmcclient.Session(hmc_dict["host"],
                                  hmc_dict["userid"],
