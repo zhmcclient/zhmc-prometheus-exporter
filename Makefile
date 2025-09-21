@@ -152,6 +152,7 @@ doc_build_file := $(doc_build_dir)/index.html
 doc_dependent_files := \
     $(wildcard $(doc_dir)/*.*) \
     $(wildcard $(doc_dir)/*/*.*) \
+    $(wildcard changes/*) \
     examples/config.yaml \
     $(package_py_files) \
     $(version_file) \
