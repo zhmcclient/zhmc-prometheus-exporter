@@ -27,6 +27,40 @@ Change log
    .. include:: tmp_changes.rst
 
 .. towncrier start
+Version 2.3.0
+^^^^^^^^^^^^^
+
+Released: 2025-09-22
+
+**Bug fixes:**
+
+* Docs: Fixed a link in the Bibliography section.
+
+* Docs: Fixed the statement that the exporter only exports Prometheus metric
+  type Gauge - it also exports type Counter.
+
+* Removed the pinning of typer version to <0.17.0 with the new release of safety 3.6.1 and
+  also upgraded minimum version of safety to be 3.6.1 to fix the issue with typer>=0.17.0, see  https://github.com/pyupio/safety/issues/778
+
+* Upgrade nltk to 3.9.1 to fix the wordnet error, see https://github.com/nltk/nltk/issues/3416
+
+* Docs: Added a statement that the exporter does not specify the optional
+  timestamp in its exported metric.
+
+**Enhancements:**
+
+* Docs: The change log of the documentation on ReadTheDocs now shows the changes
+  of the next functional release in the version for the 'master' branch.
+
+* Docs: Changed the version setup on ReadTheDocs to only show released versions
+  and no longer branches such as 'latest' or 'stable'. Adjusted the verification
+  steps in the release instructions accordingly.
+
+* Increased zhmcclient version to 1.24.0 to pick up fixes and functionality. (`#807.2 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/807.2>`_)
+
+* Configure HMC request/response data in logs to no longer be truncated. (`#807 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/807>`_)
+
+
 Version 2.2.0
 ^^^^^^^^^^^^^
 

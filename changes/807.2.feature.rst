@@ -1,1 +1,0 @@
-Increased zhmcclient version to 1.24.0 to pick up fixes and functionality.
