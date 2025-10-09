@@ -59,7 +59,8 @@ requests==2.32.4
 rpds-py==0.7.1  # used by jsonschema>=4.18.0
 ruamel.yaml.clib==0.2.8
 stomp-py==8.1.1
-typing-extensions==4.12.2
+typing-extensions==4.13.2; python_version == '3.8'
+typing-extensions==4.14.1; python_version >= '3.9'
 websocket-client==1.8.0
 yamlloader==0.5.5
 zipp==3.20.0
