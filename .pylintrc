@@ -171,7 +171,7 @@ confidence=
 #       breaking compatibility. We could move the message control statements
 #       into the source code, though.
 # Note: messages are described here: http://pylint-messages.wikidot.com/all-messages
-disable=I0011,
+disable=I0011, unrecognized-option,
         too-many-locals, too-many-branches, too-many-statements,
         too-many-lines, too-many-public-methods,
         too-many-nested-blocks, too-many-return-statements, too-many-arguments,
