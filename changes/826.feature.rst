@@ -1,0 +1,1 @@
+Added labels 'partition' and 'shared' to zhmc_channel_usage_ratio metric.

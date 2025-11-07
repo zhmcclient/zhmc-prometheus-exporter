@@ -36,6 +36,10 @@ metric_groups:
         value: "resource_obj.name"
       - name: channel_css_chpid
         value: "metric_values['channel-name']"  # format: 'CSS.CHPID'
+      - name: partition
+        value: "metric_values['logical-partition-name']|trim"  # May have trailing blanks
+      - name: shared
+        value: "metric_values['shared-channel']|string|lower"
 
   crypto-usage:
     cpc_mode: classic
