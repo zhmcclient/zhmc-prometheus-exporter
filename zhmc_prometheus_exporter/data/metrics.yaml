@@ -341,7 +341,7 @@ metrics:
     channel-usage:
       percent: true
       exporter_name: channel_usage_ratio
-      exporter_desc: Usage ratio across all channels of the CPC
+      exporter_desc: Average fraction of time the channels of the CPC were processing I/O
     power-consumption-watts:
       percent: false
       exporter_name: power_watt
@@ -391,7 +391,7 @@ metrics:
     channel-usage:
       percent: true
       exporter_name: usage_ratio
-      exporter_desc: Usage ratio of the channel
+      exporter_desc: Fraction of time the channel was processing I/O
     channel-name:
       percent: false
       exporter_name: null  # Ignored (used for identification in channel-usage)
@@ -409,7 +409,7 @@ metrics:
     adapter-usage:
       percent: true
       exporter_name: usage_ratio
-      exporter_desc: Usage ratio of the crypto adapter
+      exporter_desc: Fraction of time the crypto adapter was processing I/O
     channel-id:
       percent: false
       exporter_name: null  # Ignored (used for identification in adapter-usage)
@@ -423,7 +423,7 @@ metrics:
     adapter-usage:
       percent: true
       exporter_name: usage_ratio
-      exporter_desc: Usage ratio of the flash memory adapter
+      exporter_desc: Fraction of time the flash memory adapter was processing I/O
     channel-id:
       percent: false
       exporter_name: null  # Ignored (used for identification in adapter-usage)
@@ -433,7 +433,7 @@ metrics:
     adapter-usage:
       percent: true
       exporter_name: usage_ratio
-      exporter_desc: Usage ratio of the RoCE adapter
+      exporter_desc: Fraction of time the RoCE adapter was processing I/O
 
   logical-partition-resource:  # can be in dictionary or list format
     - properties_expression: "0"
@@ -794,19 +794,19 @@ metrics:
     network-usage:
       percent: true
       exporter_name: network_adapter_usage_ratio
-      exporter_desc: Usage ratio across all network adapters of the CPC
+      exporter_desc: Average fraction of time the network adapters of the CPC were processing I/O
     storage-usage:
       percent: true
       exporter_name: storage_adapter_usage_ratio
-      exporter_desc: Usage ratio across all storage adapters of the CPC
+      exporter_desc: Average fraction of time the storage adapters of the CPC were processing I/O
     accelerator-usage:
       percent: true
       exporter_name: accelerator_adapter_usage_ratio
-      exporter_desc: Usage ratio across all accelerator adapters of the CPC
+      exporter_desc: Average fraction of time the accelerator adapters of the CPC were processing I/O
     crypto-usage:
       percent: true
       exporter_name: crypto_adapter_usage_ratio
-      exporter_desc: Usage ratio across all crypto adapters of the CPC
+      exporter_desc: Average fraction of time the crypto adapters of the CPC were processing I/O
     power-consumption-watts:
       percent: false
       exporter_name: power_watt
@@ -824,25 +824,25 @@ metrics:
     network-usage:
       percent: true
       exporter_name: network_adapter_usage_ratio
-      exporter_desc: Usage ratio of all network adapters of the partition
+      exporter_desc: Average fraction of time the network adapters attached to the partition were processing I/O
     storage-usage:
       percent: true
       exporter_name: storage_adapter_usage_ratio
-      exporter_desc: Usage ratio of all storage adapters of the partition
+      exporter_desc: Average fraction of time the storage adapters attached to the partition were processing I/O
     accelerator-usage:
       percent: true
       exporter_name: accelerator_adapter_usage_ratio
-      exporter_desc: Usage ratio of all accelerator adapters of the partition
+      exporter_desc: Average fraction of time the accelerator adapters attached to the partition were processing I/O
     crypto-usage:
       percent: true
       exporter_name: crypto_adapter_usage_ratio
-      exporter_desc: Usage ratio of all crypto adapters of the partition
+      exporter_desc: Average fraction of time the crypto adapters attached to the partition were processing I/O
 
   adapter-usage:
     adapter-usage:
       percent: true
       exporter_name: usage_ratio
-      exporter_desc: Usage ratio of the adapter
+      exporter_desc: Fraction of time the adapter was processing I/O
 
   network-physical-adapter-port:
     network-port-id:
