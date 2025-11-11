@@ -26,6 +26,7 @@ __pycache__/
 
 # Make build_doc
 /build_docs/
+/docs/tmp_changes.rst
 
 # Other
 *.swp
