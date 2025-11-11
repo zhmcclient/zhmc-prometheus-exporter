@@ -364,12 +364,12 @@ For more details on the resource properties of CPC and Partition (DPM mode)
 and Logical Partition (classic mode), see the corresponding data models
 in the :term:`HMC API` book.
 
-====================================  ====  ====  ===========================  ================================
+====================================  ====  ====  ===========================  =========================================
 Exporter Metric Group                 Type  Mode  Prometheus Metrics           Prometheus Labels
-====================================  ====  ====  ===========================  ================================
+====================================  ====  ====  ===========================  =========================================
 cpc-usage-overview                    M     C     zhmc_cpc_*                   cpc
 logical-partition-usage               M     C     zhmc_partition_*             cpc, partition
-channel-usage                         M     C     zhmc_channel_*               cpc, channel_css_chpid
+channel-usage                         M     C     zhmc_channel_*               cpc, channel_css_chpid, partition, shared
 crypto-usage                          M     C     zhmc_crypto_adapter_*        cpc, adapter_pchid
 flash-memory-usage                    M     C     zhmc_flash_memory_adapter_*  cpc, adapter_pchid
 roce-usage                            M     C     zhmc_roce_adapter_*          cpc, adapter_pchid
@@ -386,7 +386,7 @@ partition-resource                    R     D     zhmc_partition_*             c
 logical-partition-resource            R     C     zhmc_partition_*             cpc, partition
 storagegroup-resource                 R     D     zhmc_storagegroup_*          cpc, storagegroup
 storagevolume-resource                R     D     zhmc_storagevolume_*         cpc, storagegroup, storagevolume
-====================================  ====  ====  ===========================  ================================
+====================================  ====  ====  ===========================  =========================================
 
 Legend:
 
