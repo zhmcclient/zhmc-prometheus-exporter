@@ -430,8 +430,11 @@ class ResourceCache:
                     f"Listing partitions of DPM-mode CPC {cpc.name}")
                 # While listing, get the URI props for possibly exported
                 # element child objects into the cached resource
-                partitions = cpc.partitions.list(
-                    additional_properties=["nic-uris"])
+                if self._client.version_info() >= (4, 1):
+                    partitions = cpc.partitions.list(
+                        additional_properties=["nic-uris"])
+                else:
+                    partitions = cpc.partitions.list()
                 for partition in partitions:
                     self._add_partition(partition)
 
