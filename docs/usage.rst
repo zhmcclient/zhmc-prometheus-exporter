@@ -440,11 +440,11 @@ zhmc_cpc_icf_dedicated_processor_usage_ratio            C     G     Usage ratio 
 zhmc_cpc_iip_processor_usage_ratio                      C     G     Usage ratio across all zIIP processors of the CPC
 zhmc_cpc_iip_shared_processor_usage_ratio               C     G     Usage ratio across all shared zIIP processors of the CPC
 zhmc_cpc_iip_dedicated_processor_usage_ratio            C     G     Usage ratio across all dedicated zIIP processors of the CPC
-zhmc_cpc_channel_usage_ratio                            C     G     Usage ratio across all channels of the CPC
-zhmc_cpc_accelerator_adapter_usage_ratio                D     G     Usage ratio across all accelerator adapters of the CPC
-zhmc_cpc_crypto_adapter_usage_ratio                     D     G     Usage ratio across all crypto adapters of the CPC
-zhmc_cpc_network_adapter_usage_ratio                    D     G     Usage ratio across all network adapters of the CPC
-zhmc_cpc_storage_adapter_usage_ratio                    D     G     Usage ratio across all storage adapters of the CPC
+zhmc_cpc_channel_usage_ratio                            C     G     Average fraction of time the channels of the CPC were processing I/O
+zhmc_cpc_accelerator_adapter_usage_ratio                D     G     Average fraction of time the accelerator adapters of the CPC were processing I/O; Omitted if there are no such adapters
+zhmc_cpc_crypto_adapter_usage_ratio                     D     G     Average fraction of time the crypto adapters of the CPC were processing I/O; Omitted if there are no such adapters
+zhmc_cpc_network_adapter_usage_ratio                    D     G     Average fraction of time the network adapters of the CPC were processing I/O; Omitted if there are no such adapters
+zhmc_cpc_storage_adapter_usage_ratio                    D     G     Average fraction of time the storage adapters of the CPC were processing I/O; Omitted if there are no such adapters
 zhmc_cpc_power_watt                                     C+D   G     Power consumption of the CPC
 zhmc_cpc_ambient_temperature_celsius                    C+D   G     Ambient temperature of the CPC
 zhmc_cpc_humidity_percent                               C+D   G     Relative humidity
@@ -497,10 +497,10 @@ zhmc_partition_ifl_processor_usage_ratio                C     G     Usage ratio 
 zhmc_partition_icf_processor_usage_ratio                C     G     Usage ratio across all ICF processors of the partition
 zhmc_partition_cbp_processor_usage_ratio                C     G     Usage ratio across all CBP processors of the partition; only for z14-z15
 zhmc_partition_iip_processor_usage_ratio                C     G     Usage ratio across all IIP processors of the partition
-zhmc_partition_accelerator_adapter_usage_ratio          D     G     Usage ratio of all accelerator adapters of the partition
-zhmc_partition_crypto_adapter_usage_ratio               D     G     Usage ratio of all crypto adapters of the partition
-zhmc_partition_network_adapter_usage_ratio              D     G     Usage ratio of all network adapters of the partition
-zhmc_partition_storage_adapter_usage_ratio              D     G     Usage ratio of all storage adapters of the partition
+zhmc_partition_accelerator_adapter_usage_ratio          D     G     Average fraction of time the accelerator adapters attached to the partition were processing I/O; Omitted if there are no such adapters
+zhmc_partition_crypto_adapter_usage_ratio               D     G     Average fraction of time the crypto adapters attached to the partition were processing I/O; Omitted if there are no such adapters
+zhmc_partition_network_adapter_usage_ratio              D     G     Average fraction of time the network adapters attached to the partition were processing I/O; Omitted if there are no such adapters
+zhmc_partition_storage_adapter_usage_ratio              D     G     Average fraction of time the storage adapters attached to the partition were processing I/O; Omitted if there are no such adapters
 zhmc_partition_zvm_paging_rate_pages_per_second         C     G     z/VM paging rate in pages/sec
 zhmc_partition_power_watt                               C     G     Power consumption of the partition; only with SE feature environmental-metrics
 zhmc_partition_processor_mode_int                       C+D   G     Allocation mode for processors as an integer (0=shared, 1=dedicated); since HMC 2.15
@@ -590,11 +590,11 @@ zhmc_storagevolume_fulfillment_state_int                D     G     Storage volu
 zhmc_storagevolume_usage_int                            D     G     Usage of volume as integer (0=boot, 1=data, 2=not-applicable, 99=unsupported value)
 zhmc_storagevolume_size_gib                             D     G     Size of volume in GiB (0 for ECKD alias volumes)
 zhmc_storagevolume_cylinders                            D     G     Size of ECKD volume in cylinders (0 for ECKD alias volumes); only for FC-type SGs
-zhmc_crypto_adapter_usage_ratio                         C     G     Usage ratio of the crypto adapter
-zhmc_flash_memory_adapter_usage_ratio                   C     G     Usage ratio of the flash memory adapter
-zhmc_adapter_usage_ratio                                D     G     Usage ratio of the adapter
-zhmc_channel_usage_ratio                                C     G     Usage ratio of the channel
-zhmc_roce_adapter_usage_ratio                           C     G     Usage ratio of the RoCE adapter
+zhmc_crypto_adapter_usage_ratio                         C     G     Fraction of time the crypto adapter was processing I/O
+zhmc_flash_memory_adapter_usage_ratio                   C     G     Fraction of time the flash memory adapter was processing I/O
+zhmc_adapter_usage_ratio                                D     G     Fraction of time the adapter was processing I/O
+zhmc_channel_usage_ratio                                C     G     Fraction of time the channel was processing I/O
+zhmc_roce_adapter_usage_ratio                           C     G     Fraction of time the RoCE adapter was processing I/O
 zhmc_port_bytes_sent_count                              D     C     Number of Bytes in unicast packets that were sent
 zhmc_port_bytes_received_count                          D     C     Number of Bytes in unicast packets that were received
 zhmc_port_packets_sent_count                            D     C     Number of unicast packets that were sent
