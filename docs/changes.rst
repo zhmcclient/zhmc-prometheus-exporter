@@ -27,6 +27,29 @@ Change log
    .. include:: tmp_changes.rst
 
 .. towncrier start
+Version 2.3.1
+^^^^^^^^^^^^^
+
+Released: 2025-11-12
+
+**Bug fixes:**
+
+* Fixed safety issues up to 2025-10-27.
+
+* Test: Fixed new issues raised by pylint 4.0.0.
+
+* Fixed an HTTP 400,1 error when listing partitions of a CPC in DPM mode on
+  a HMC version 2.15. (`#823 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/823>`_)
+
+**Enhancements:**
+
+* Clarified in the metric help text for adapter/channel usage ratio metrics that
+  they indicate how much the adapter/channel is working (i.e. the fraction of
+  time it is processing I/O).
+
+* Added labels 'partition' and 'shared' to zhmc_channel_usage_ratio metric. (`#826 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/826>`_)
+
+
 Version 2.3.0
 ^^^^^^^^^^^^^
 

@@ -8,4 +8,5 @@ Jakob Naucke <jakob.naucke@ibm.com>
 Juergen Leopold <leopoldj@de.ibm.com>
 Mu Chen <chenmu@cn.ibm.com>
 renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+vontedduchaithra <90314288+vontedduchaithra@users.noreply.github.com>
 ```
