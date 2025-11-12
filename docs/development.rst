@@ -355,7 +355,6 @@ local clone of the zhmc-prometheus-exporter Git repo.
     * Verify that the new version has a release on Github at
       https://github.com/zhmcclient/zhmc-prometheus-exporter/releases
 
-.
 10. Verify the documentation on ReadTheDocs
 
     ReadTheDocs automatically activates the new version and sets it as a
