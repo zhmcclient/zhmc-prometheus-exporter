@@ -28,15 +28,6 @@ security:
     ignore-vulnerabilities:
         70612:
             reason: Disputed issue in Jinja2 version 3.1.3 - No known fix
-        76752:
-            reason: Fixed setuptools version 78.1.1 requires Python>=3.9 and pyproject.toml does not support python_version markers
-        77744:
-            reason: Fixed urllib3 version 2.5.0 requires Python>=3.9 and is used there
-        77745:
-            reason: Fixed urllib3 version 2.5.0 requires Python>=3.9 and is used there
-        79883:
-            reason: Fixed pip version 25.2 requires Python>=3.9 and is used there
-
 
     # Continue with exit code 0 when vulnerabilities are found.
     continue-on-vulnerability-error: False

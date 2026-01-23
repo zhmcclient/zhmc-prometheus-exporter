@@ -1961,10 +1961,6 @@ def main():
         config_port = prom_item.get("port", None)
         server_cert_file = prom_item.get("server_cert_file", None)
         if server_cert_file:
-            prometheus_client_supports_https = sys.version_info[0:2] >= (3, 8)
-            if not prometheus_client_supports_https:
-                raise ImproperExit(
-                    "Use of https requires Python 3.8 or higher.")
             server_key_file = prom_item.get("server_key_file", None)
             if not server_key_file:
                 raise ImproperExit(
