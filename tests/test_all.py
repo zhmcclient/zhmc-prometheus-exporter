@@ -67,7 +67,7 @@ class TestParseYaml(unittest.TestCase):
 """)
         expected_dict = {"metrics": {"hmc": "127.0.0.1",
                                      "userid": "user",
-                                     "password": "pwd"}}
+                                     "password": "pwd"}}  # nosec: B105
         self.assertEqual(
             zhmc_prometheus_exporter.parse_yaml_file(filename, 'test file'),
             expected_dict)
@@ -300,7 +300,8 @@ class TestCreateContext(unittest.TestCase):
 
         config_dict = {
             "hmcs": [
-                {"host": "192.168.0.0", "userid": "user", "password": "pwd"}
+                {"host": "192.168.0.0", "userid": "user",
+                 "password": "pwd"}  # nosec: B105
             ],
         }
 
@@ -310,7 +311,8 @@ class TestCreateContext(unittest.TestCase):
 
         config_dict = {
             "hmcs": [
-                {"host": "192.168.0.0", "userid": "user", "password": "pwd"}
+                {"host": "192.168.0.0", "userid": "user",
+                 "password": "pwd"}  # nosec: B105
             ],
             "metric_groups": {}
         }
@@ -547,7 +549,8 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
 
         config_dict = {
             "hmcs": [
-                {"host": "192.168.0.0", "userid": "user", "password": "pwd"}
+                {"host": "192.168.0.0", "userid": "user",
+                 "password": "pwd"}  # nosec: B105
             ],
             "metric_groups": {
                 "dpm-system-usage-overview": {"export": True},
@@ -637,7 +640,8 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
 
         config_dict = {
             "hmcs": [
-                {"host": "192.168.0.0", "userid": "user", "password": "pwd"}
+                {"host": "192.168.0.0", "userid": "user",
+                 "password": "pwd"}  # nosec: B105
             ],
             "metric_groups": {
                 "dpm-system-usage-overview": {"export": True},
