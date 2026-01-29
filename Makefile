@@ -364,8 +364,8 @@ endif
 .PHONY: test
 test: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: Performing unit tests and coverage with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
-	@echo "Makefile: Note that the warning about an unknown metric is part of the tests"
 	bash -c "PYTHONPATH=. coverage run --append -m pytest $(pytest_general_opts) $(pytest_test_opts) $(test_dir)"
+	coverage html
 	@echo "Makefile: Done performing unit tests and coverage"
 	@echo "Makefile: $@ done."
 
