@@ -37,32 +37,8 @@ jobs:
         if [[ "${{ github.event_name }}" == "schedule" || "${{ github.head_ref }}" =~ ^release_ ]]; then \
           echo "matrix={ \
             \"os\": [ \"ubuntu-latest\", \"macos-latest\", \"windows-latest\" ], \
-            \"python-version\": [ \"3.8\", \"3.9\", \"3.10\", \"3.11\", \"3.12\", \"3.13\", \"3.14\" ], \
-            \"package_level\": [ \"minimum\", \"latest\" ], \
-            \"exclude\": [ \
-              { \
-                \"os\": \"ubuntu-latest\", \
-                \"python-version\": \"3.8\", \
-                \"package_level\": \"minimum\" \
-              }, \
-              { \
-                \"os\": \"ubuntu-latest\", \
-                \"python-version\": \"3.8\", \
-                \"package_level\": \"latest\" \
-              } \
-            ], \
-            \"include\": [ \
-              { \
-                \"os\": \"ubuntu-22.04\", \
-                \"python-version\": \"3.8\", \
-                \"package_level\": \"minimum\" \
-              }, \
-              { \
-                \"os\": \"ubuntu-22.04\", \
-                \"python-version\": \"3.8\", \
-                \"package_level\": \"latest\" \
-              } \
-            ] \
+            \"python-version\": [ \"3.9\", \"3.10\", \"3.11\", \"3.12\", \"3.13\", \"3.14\" ], \
+            \"package_level\": [ \"minimum\", \"latest\" ] \
           }" >> $GITHUB_OUTPUT; \
         else \
           echo "matrix={ \
@@ -71,13 +47,13 @@ jobs:
             \"package_level\": [ \"minimum\", \"latest\" ], \
             \"include\": [ \
               { \
-                \"os\": \"ubuntu-22.04\", \
-                \"python-version\": \"3.8\", \
+                \"os\": \"ubuntu-latest\", \
+                \"python-version\": \"3.9\", \
                 \"package_level\": \"minimum\" \
               }, \
               { \
-                \"os\": \"ubuntu-22.04\", \
-                \"python-version\": \"3.8\", \
+                \"os\": \"ubuntu-latest\", \
+                \"python-version\": \"3.9\", \
                 \"package_level\": \"latest\" \
               }, \
               { \
@@ -87,7 +63,7 @@ jobs:
               }, \
               { \
                 \"os\": \"macos-latest\", \
-                \"python-version\": \"3.8\", \
+                \"python-version\": \"3.9\", \
                 \"package_level\": \"latest\" \
               }, \
               { \
@@ -102,7 +78,7 @@ jobs:
               }, \
               { \
                 \"os\": \"windows-latest\", \
-                \"python-version\": \"3.8\", \
+                \"python-version\": \"3.9\", \
                 \"package_level\": \"minimum\" \
               }, \
               { \
