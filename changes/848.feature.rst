@@ -1,0 +1,5 @@
+Test: Improved some settings for coverage measurement, and enabled branch
+coverage reporting. This lowered the overall coverage percentage somewhat.
+Increased the minimum version of the "coverage" package to support the
+newer properties in the coverage config. Along with that, increased the
+minimum version of the "coveralls" package.

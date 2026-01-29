@@ -179,14 +179,12 @@ safety_develop_policy_file := .safety-policy-develop.yml
 # Bandit config file
 bandit_rc_file := .bandit.toml
 
+pytest_general_opts := -s --color=yes
 ifdef TESTCASES
-  pytest_opts := $(TESTOPTS) -k '$(TESTCASES)'
+  pytest_test_opts := $(TESTOPTS) -k '$(TESTCASES)'
 else
-  pytest_opts := $(TESTOPTS)
+  pytest_test_opts := $(TESTOPTS)
 endif
-
-pytest_cov_rc_file := .coveragerc
-pytest_cov_opts := --cov $(package_name) --cov-config $(pytest_cov_rc_file) --cov-append --cov-report=html
 
 ifeq ($(PACKAGE_LEVEL),minimum)
   pip_level_opts := -c minimum-constraints-develop.txt -c minimum-constraints-install.txt
@@ -364,10 +362,10 @@ endif
 	echo "done" >$@
 
 .PHONY: test
-test: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done $(pytest_cov_rc_file)
+test: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: Performing unit tests and coverage with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
 	@echo "Makefile: Note that the warning about an unknown metric is part of the tests"
-	pytest $(pytest_cov_opts) -s $(test_dir) $(pytest_opts)
+	bash -c "PYTHONPATH=. coverage run --append -m pytest $(pytest_general_opts) $(pytest_test_opts) $(test_dir)"
 	@echo "Makefile: Done performing unit tests and coverage"
 	@echo "Makefile: $@ done."
 
