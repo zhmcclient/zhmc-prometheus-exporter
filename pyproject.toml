@@ -53,10 +53,11 @@ maintainers = [
 ]
 
 readme = "README.md"
-license = {text = "Apache License, Version 2.0"}
+# License info in new PEP 639 format (since setuptools 77.0.3)
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 keywords = ["hmc", "prometheus", "monitoring"]
 classifiers = [
-    "License :: OSI Approved :: Apache Software License",
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Information Technology",
     "Topic :: System :: Systems Administration",
