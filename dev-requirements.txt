@@ -52,7 +52,7 @@ colorama>=0.4.6
 pluggy>=1.5.0
 
 # packaging is used by pytest, pip-check-reqs, sphinx
-packaging>=24.1
+packaging>=24.2
 
 # Coverage reporting (no imports, invoked via coveralls script):
 # coveralls versions 4.0.0/4.0.1 have increased their pinning of coverage to <8,
