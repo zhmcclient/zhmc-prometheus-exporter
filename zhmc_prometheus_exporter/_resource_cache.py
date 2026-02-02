@@ -688,7 +688,11 @@ class ResourceCache:
 
     def _add_inaccessible(self, uri):
         """
-        Add an inaccessible object to the cache.
+        Add an inaccessible resource object to the cache.
+
+        The resource object can be inaccessible due to missing object access
+        permissions or because the resource was deleted since the URI was
+        communicated to the exporter.
         """
         self._all_resources_by_uri[uri] = None  # Indicates inaccessible
 
@@ -944,10 +948,15 @@ class ResourceCache:
         cache and return it.
 
         If the resource URI cannot be found in the cache, the resource is
-        retrieved from the HMC.
+        retrieved from the HMC and added to the cache.
 
-        If the resource URI cannot be found on the HMC, `NotFound` is raised.
-        Note that missing object access permissions may be a reason for that.
+        If the URI cannot be found on the HMC, the resource URI is added as
+        inaccessible (value None) to the cache, and None is also returned.
+        Reasons for that can be missing object access permissions or that the
+        resource meanwhile has been deleted on the HMC.
+
+        The caller must ensure that the URI is for one of the resource classes
+        supported by the cache. If that is not the case, ValueError is raised.
 
         The setup() method must have been called before calling this method.
 
@@ -957,11 +966,13 @@ class ResourceCache:
 
         Returns:
 
-          zhmcclient.BaseResource: zhmcclient resource object.
+          zhmcclient.BaseResource: zhmcclient resource object, or None if
+          the resource was not found on the HMC.
 
         Raises:
 
-          zhmcclient.NotFound: The resource URI is not found on the HMC.
+          ValueError: The resource class of the URI is not supported by the
+            cache.
         """
         assert self._setup_called
         try:
@@ -974,8 +985,9 @@ class ResourceCache:
         Perform a "Get <resource> Properties" operation on the HMC for the
         specified URI and return the resulting resource properties.
 
-        If the URI cannot be found, we assume it is because of missing object
-        access permissions. In that case, None is returned.
+        If the URI cannot be found on the HMC, it can be due to missing object
+        access permissions, or because it has been deleted meanwhile. In those
+        cases, None is returned.
 
         Parameters:
 
@@ -984,7 +996,7 @@ class ResourceCache:
         Returns:
 
           dict: Properties of the resource, or None if the resource cannot be
-          found on the HMC.
+          found on the HMC (i.e. is inaccessible or has been deleted meanwhile).
 
         Raises:
 
@@ -1003,13 +1015,13 @@ class ResourceCache:
         Find a resource on the HMC and add its zhmcclient resource object to
         the cache.
 
-        If the URI cannot be found on the HMC, NotFound is raised.
-        Note that missing object access permissions may be a reason for that.
+        If the URI cannot be found on the HMC, the resource URI is added as
+        inaccessible (value None) to the cache, and None is also returned.
+        Reasons for that can be missing object access permissions or that the
+        resource meanwhile has been deleted on the HMC.
 
         The caller must ensure that the URI is for one of the resource classes
-        supported by the cache because the use of the URI is optimized for
-        performance and invalid resource classes are not fully detected by this
-        method.
+        supported by the cache. If that is not the case, ValueError is raised.
 
         The setup() method must have been called before calling this method.
 
@@ -1019,10 +1031,13 @@ class ResourceCache:
 
         Returns:
 
-          zhmcclient.BaseResource: zhmcclient resource object.
+          zhmcclient.BaseResource: zhmcclient resource object, or None if
+          the resource was not found on the HMC.
 
         Raises:
-          zhmcclient.NotFound: The resource URI is not found on the HMC.
+
+          ValueError: The resource class of the URI is not supported by the
+            cache.
         """
         assert self._setup_called
         self._setup_target_cpc_uri_list()
