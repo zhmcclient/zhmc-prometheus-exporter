@@ -25,6 +25,41 @@ from ._logging import PRINT_V, PRINT_VV, PRINT_ALWAYS, logprint
 from ._exceptions import InvalidMetricDefinitionFile
 
 
+class ResourceClassNotSupported(Exception):
+    """
+    Indicates that the resource cache does not support the resource class
+    of the specified URI.
+    """
+
+    def __init__(self, uri):
+        """
+        Parameters:
+
+          uri (str): The URI of the resource on the HMC.
+
+        ``args[0]`` will be set to a human readable message.
+        """
+        msg = ("The resource cache does not support the resource class in "
+               f"URI {uri!r}")
+        super().__init__(msg)
+        self._uri = uri
+
+    @property
+    def uri(self):
+        """
+        The URI of the resource on the HMC.
+        """
+        return self._uri
+
+    def __repr__(self):
+        """
+        Return a string with the state of this exception object, for debug
+        purposes.
+        """
+        return (f"{self.__class__.__name__}({self.args[0]!r}, "
+                f"uri={self.uri!r})")
+
+
 class ResourceCache:
     # pylint: disable=too-many-instance-attributes,line-too-long
     """
@@ -286,6 +321,10 @@ class ResourceCache:
     def _resource_id_dict(self, uri):
         """
         Return the resource class dict for the URI.
+
+        Raises:
+          ResourceClassNotSupported: The resource class of the URI is not
+            supported by the cache.
         """
         if re.match(r'/api/storage-groups/[a-f0-9\-]+/'
                     r'storage-volumes/[a-f0-9\-]+$', uri):
@@ -308,7 +347,7 @@ class ResourceCache:
             return self._vswitches
         if re.match(r'/api/cpcs/[a-f0-9\-]+$', uri):
             return self._cpcs
-        raise ValueError(f"Invalid URI for detecting resource dict: {uri}")
+        raise ResourceClassNotSupported(uri)
 
     def _enable_auto_update(self, resource, res_kind, res_name):
         """
@@ -956,7 +995,8 @@ class ResourceCache:
         resource meanwhile has been deleted on the HMC.
 
         The caller must ensure that the URI is for one of the resource classes
-        supported by the cache. If that is not the case, ValueError is raised.
+        supported by the cache. If that is not the case,
+        ResourceClassNotSupported is raised.
 
         The setup() method must have been called before calling this method.
 
@@ -971,8 +1011,8 @@ class ResourceCache:
 
         Raises:
 
-          ValueError: The resource class of the URI is not supported by the
-            cache.
+          ResourceClassNotSupported: The resource class of the URI is not
+            supported by the cache.
         """
         assert self._setup_called
         try:
@@ -1021,7 +1061,8 @@ class ResourceCache:
         resource meanwhile has been deleted on the HMC.
 
         The caller must ensure that the URI is for one of the resource classes
-        supported by the cache. If that is not the case, ValueError is raised.
+        supported by the cache. If that is not the case,
+        ResourceClassNotSupported is raised.
 
         The setup() method must have been called before calling this method.
 
@@ -1036,8 +1077,8 @@ class ResourceCache:
 
         Raises:
 
-          ValueError: The resource class of the URI is not supported by the
-            cache.
+          ResourceClassNotSupported: The resource class of the URI is not
+            supported by the cache.
         """
         assert self._setup_called
         self._setup_target_cpc_uri_list()
@@ -1173,7 +1214,7 @@ class ResourceCache:
             self._add_cpc(cpc)
             return cpc
 
-        raise ValueError(f"Invalid resource class in URI: {uri}")
+        raise ResourceClassNotSupported(uri)
 
     def remove(self, uri):
         """
@@ -1185,13 +1226,23 @@ class ResourceCache:
         If the cache does not have a resource for the specified URI, this is
         ignored.
 
+        The caller must ensure that the URI is for one of the resource classes
+        supported by the cache. If that is not the case,
+        ResourceClassNotSupported is raised.
+
         The setup() method must have been called before calling this method.
 
         Parameters:
 
           uri (str): URI of the resource.
+
+        Raises:
+
+          ResourceClassNotSupported: The resource class of the URI is not
+            supported by the cache.
         """
         assert self._setup_called
+        # The following may raise ResourceClassNotSupported
         res_id_dict = self._resource_id_dict(uri)
         try:
             res = self._all_resources_by_uri[uri]
