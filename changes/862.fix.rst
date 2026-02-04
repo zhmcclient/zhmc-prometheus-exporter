@@ -1,0 +1,1 @@
+Fixed an incorrect pattern that was used for matching URIs of virtual switches.

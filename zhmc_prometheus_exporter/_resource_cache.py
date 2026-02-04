@@ -342,8 +342,7 @@ class ResourceCache:
         if re.match(r'/api/adapters/[a-f0-9\-]+/'
                     r'(network|storage)-ports/[a-f0-9\-]+$', uri):
             return self._ports
-        if re.match(r'/api/cpcs/[a-f0-9\-]+/virtual-switches/[a-f0-9\-]+$',
-                    uri):
+        if re.match(r'/api/virtual-switches/[a-f0-9\-]+$', uri):
             return self._vswitches
         if re.match(r'/api/cpcs/[a-f0-9\-]+$', uri):
             return self._cpcs
@@ -1184,8 +1183,7 @@ class ResourceCache:
             self._add_port(port)
             return port
 
-        m = re.match(
-            r'(/api/cpcs/[a-f0-9\-]+)/virtual-switches/[a-f0-9\-]+$', uri)
+        m = re.match(r'/api/virtual-switches/[a-f0-9\-]+$', uri)
         if m:
             # A new vswitch
             # Vswitches use the access permissions of the backing adapter, so
@@ -1195,8 +1193,8 @@ class ResourceCache:
             if vswitch_props is None:
                 self._add_inaccessible(uri)
                 return None
-            cpc_uri = m.group(1)
-            cpc = self.lookup(cpc_uri)  # adds if needed
+            cpc_uri = vswitch_props['parent']
+            cpc = self._all_resources_by_uri[cpc_uri]
             vswitch = cpc.vswitches.resource_object(uri, vswitch_props)
             self._add_vswitch(vswitch)
             return vswitch
