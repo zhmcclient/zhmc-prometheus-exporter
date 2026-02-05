@@ -18,6 +18,7 @@ A resource cache for the IBM Z HMC Prometheus Exporter.
 
 import re
 import logging
+import threading
 import zhmcclient
 import zhmcclient_mock
 
@@ -174,7 +175,7 @@ class ResourceCache:
         self._se_features_by_cpc = se_features_by_cpc
 
         # Indicator that setup() was called
-        self._setup_called = False
+        self._prepare_complete = False
 
         # Some objects for faster access
         self._console = client.consoles.console
@@ -190,7 +191,7 @@ class ResourceCache:
         # List of str: URI of the CPC.
         self._target_cpc_uri_list = None  # Deferred initialization
 
-        # Auto-update enablement dict
+        # Auto-update needed dict
         #
         # This dict is set based on the metric groups that are enabled for
         # export: If the metric groups for a particular resource class has
@@ -199,9 +200,9 @@ class ResourceCache:
         # are enabled for export.
         #
         # Key: Resource class.
-        # Value: Boolean indicating that auto-update should be enabled for the
+        # Value: Boolean indicating that auto-update needs to be enabled for the
         # resource class.
-        self._auto_update = {}
+        self._auto_update_needed = {}
 
         # All-resources dict
         #
@@ -295,6 +296,20 @@ class ResourceCache:
             'storage-volume': self._storage_volumes,
         }
 
+        # Exported metric group items by resource class.
+        # Key: Resource class
+        # Value: List of metric group items from the metric definition file
+        # (of any type) that are exported for this resource class. The metric
+        # group items have an additional key 'name' with the metric group name.
+        self._exported_mg_items_by_rc = {}
+
+        # Notification listener thread
+        self._invchange_thread = None
+        self._invchange_stop_event = None
+
+        # Lock for serializing modifications to the cache between threads
+        self._thread_lock = threading.RLock()
+
     def __repr__(self):
         """
         Show the resources in the cache.
@@ -376,22 +391,23 @@ class ResourceCache:
                 "enabling auto-update for it failed with "
                 f"{exc.__class__.__name__}: {exc}")
 
-    @staticmethod
-    def _needs_auto_update(mg_items):
+    def _set_auto_update_needed(self, resource_class):
         """
-        Return boolean indicating whether the set of metric groups needs
-        auto-update enabled.
+        Sets whether auto-update is needed for a resource class.
 
-        That is the case when at least one of the metric groups is
-        resource-based.
+        Auto-update is needed when the resource class is the resource of any
+        exported resource-based metric group.
         """
+        auto_update_needed = False
+        mg_items = self._exported_mg_items_by_rc.get(resource_class)
         if mg_items:
             for mg_item in mg_items:
                 if mg_item['type'] == 'resource':
-                    return True
-        return False
+                    auto_update_needed = True
+                    break
+        self._auto_update_needed[resource_class] = auto_update_needed
 
-    def _setup_cpcs(self, mg_items_by_rc):
+    def _setup_cpcs(self):
         """
         Setup for resource class 'cpc'.
 
@@ -399,13 +415,12 @@ class ResourceCache:
         class are enabled for export, or when this resource class is a
         dependency for other resource classes.
         """
-        self._auto_update['cpc'] = \
-            self._needs_auto_update(mg_items_by_rc.get('cpc'))
+        self._set_auto_update_needed('cpc')
         if not self._cpcs:
             for cpc in self._all_cpc_list:
                 self._add_cpc(cpc)
 
-    def _setup_adapters(self, mg_items_by_rc):
+    def _setup_adapters(self):
         """
         Setup for resource class 'adapter'.
 
@@ -413,10 +428,9 @@ class ResourceCache:
         class are enabled for export, or when this resource class is a
         dependency for other resource classes.
         """
-        self._auto_update['adapter'] = \
-            self._needs_auto_update(mg_items_by_rc.get('adapter'))
+        self._set_auto_update_needed('adapter')
         if not self._adapters:
-            self._setup_cpcs(mg_items_by_rc)
+            self._setup_cpcs()
             for cpc in self._all_cpc_list:
                 logprint(
                     logging.DEBUG, PRINT_VV,
@@ -425,7 +439,7 @@ class ResourceCache:
                 for adapter in adapters:
                     self._add_adapter(adapter)
 
-    def _setup_logical_partitions(self, mg_items_by_rc):
+    def _setup_logical_partitions(self):
         """
         Setup for resource class 'logical-partition'.
 
@@ -433,10 +447,9 @@ class ResourceCache:
         class are enabled for export, or when this resource class is a
         dependency for other resource classes.
         """
-        self._auto_update['logical-partition'] = \
-            self._needs_auto_update(mg_items_by_rc.get('logical-partition'))
+        self._set_auto_update_needed('logical-partition')
         if not self._logical_partitions:
-            self._setup_cpcs(mg_items_by_rc)
+            self._setup_cpcs()
             for cpc in self._all_cpc_list:
                 if cpc.dpm_enabled:
                     continue
@@ -447,7 +460,7 @@ class ResourceCache:
                 for lpar in lpars:
                     self._add_logical_partition(lpar)
 
-    def _setup_partitions(self, mg_items_by_rc):
+    def _setup_partitions(self):
         """
         Setup for resource class 'partition'.
 
@@ -455,11 +468,10 @@ class ResourceCache:
         class are enabled for export, or when this resource class is a
         dependency for other resource classes.
         """
-        self._auto_update['partition'] = \
-            self._needs_auto_update(mg_items_by_rc.get('partition'))
+        self._set_auto_update_needed('partition')
         if not self._partitions:
-            self._setup_cpcs(mg_items_by_rc)
-            self._setup_storage_groups(mg_items_by_rc)
+            self._setup_cpcs()
+            self._setup_storage_groups()
             for cpc in self._all_cpc_list:
                 if not cpc.dpm_enabled:
                     continue
@@ -476,7 +488,7 @@ class ResourceCache:
                 for partition in partitions:
                     self._add_partition(partition)
 
-    def _setup_nics(self, mg_items_by_rc):
+    def _setup_nics(self):
         """
         Setup for resource class 'nic'.
 
@@ -484,13 +496,12 @@ class ResourceCache:
         class are enabled for export, or when this resource class is a
         dependency for other resource classes.
         """
-        self._auto_update['nic'] = \
-            self._needs_auto_update(mg_items_by_rc.get('nic'))
+        self._set_auto_update_needed('nic')
         if not self._nics:
-            self._setup_partitions(mg_items_by_rc)
-            self._setup_adapters(mg_items_by_rc)  # for backing adapters
-            self._setup_ports(mg_items_by_rc)  # for backing adapters
-            self._setup_vswitches(mg_items_by_rc)  # for backing adapters
+            self._setup_partitions()
+            self._setup_adapters()  # for backing adapters
+            self._setup_ports()  # for backing adapters
+            self._setup_vswitches()  # for backing adapters
             for partition in self._all_partitions_by_id.values():
                 cpc = partition.manager.parent
                 logprint(
@@ -501,7 +512,7 @@ class ResourceCache:
                 for nic in nics:
                     self._add_nic(nic)
 
-    def _setup_vswitches(self, mg_items_by_rc):
+    def _setup_vswitches(self):
         """
         Setup for virtual switches.
 
@@ -513,7 +524,7 @@ class ResourceCache:
         This is called during setup() as a dependency for NIC setup.
         """
         if not self._vswitches:
-            self._setup_cpcs(mg_items_by_rc)
+            self._setup_cpcs()
             for cpc in self._target_cpc_list:
                 if 'network-express-support' not in \
                         self._se_features_by_cpc[cpc.name]:
@@ -524,7 +535,7 @@ class ResourceCache:
                     for vswitch in vswitches:
                         self._add_vswitch(vswitch)
 
-    def _setup_ports(self, mg_items_by_rc):
+    def _setup_ports(self):
         """
         Setup for adapter ports.
 
@@ -536,7 +547,7 @@ class ResourceCache:
         This is called during setup() as a dependency for NIC setup.
         """
         if not self._ports:
-            self._setup_adapters(mg_items_by_rc)
+            self._setup_adapters()
             for adapter in self._adapters.values():
                 net_ports = adapter.prop('network-port-uris')
                 if net_ports:
@@ -549,7 +560,7 @@ class ResourceCache:
                     for port in ports:
                         self._add_port(port)
 
-    def _setup_storage_groups(self, mg_items_by_rc):
+    def _setup_storage_groups(self):
         """
         Setup for resource class 'storage-group'.
 
@@ -557,10 +568,9 @@ class ResourceCache:
         class are enabled for export, or when this resource class is a
         dependency for other resource classes.
         """
-        self._auto_update['storage-group'] = \
-            self._needs_auto_update(mg_items_by_rc.get('storage-group'))
+        self._set_auto_update_needed('storage-group')
         if not self._storage_groups:
-            self._setup_cpcs(mg_items_by_rc)
+            self._setup_cpcs()
             logprint(
                 logging.DEBUG, PRINT_VV,
                 "Listing storage groups")
@@ -570,7 +580,7 @@ class ResourceCache:
             for sg in storage_groups:
                 self._add_storage_group(sg)
 
-    def _setup_storage_volumes(self, mg_items_by_rc):
+    def _setup_storage_volumes(self):
         """
         Setup for resource class 'storage-volume'.
 
@@ -578,10 +588,9 @@ class ResourceCache:
         class are enabled for export, or when this resource class is a
         dependency for other resource classes.
         """
-        self._auto_update['storage-volume'] = \
-            self._needs_auto_update(mg_items_by_rc.get('storage-volume'))
+        self._set_auto_update_needed('storage-volume')
         if not self._storage_volumes:
-            self._setup_storage_groups(mg_items_by_rc)
+            self._setup_storage_groups()
             for sg in self._all_storage_groups_by_id.values():
                 logprint(
                     logging.DEBUG, PRINT_VV,
@@ -589,6 +598,20 @@ class ResourceCache:
                 storage_volumes = sg.storage_volumes.list()
                 for sv in storage_volumes:
                     self._add_storage_volume(sv)
+
+    def _add_resource_based_resource(self, res_obj):
+        """
+        Add a resource to the self._resource_based_resources_by_mg dict, if
+        its resource class is in any exported resource-based metric group.
+        """
+        resource_class = res_obj.manager.class_name
+        for mg_item in self._exported_mg_items_by_rc.get(resource_class, []):
+            mg_type = mg_item['type']
+            mg_name = mg_item['name']
+            if mg_type == "resource":
+                if mg_name not in self._resource_based_resources_by_mg:
+                    self._resource_based_resources_by_mg[mg_name] = []
+                self._resource_based_resources_by_mg[mg_name].append(res_obj)
 
     def _add_cpc(self, cpc):
         """
@@ -598,8 +621,9 @@ class ResourceCache:
         if cpc in self._target_cpc_list:  # comparison by object ID
             self._target_cpc_resources_by_id[id(cpc)] = cpc
             self._cpcs[id(cpc)] = cpc
-            if self.is_auto_update('cpc'):
+            if self._is_auto_update_needed('cpc'):
                 self._enable_auto_update(cpc, "CPC", cpc.name)
+            self._add_resource_based_resource(cpc)
 
     def _add_adapter(self, adapter):
         """
@@ -610,9 +634,10 @@ class ResourceCache:
         if cpc in self._target_cpc_list:  # comparison by object ID
             self._target_cpc_resources_by_id[id(adapter)] = adapter
             self._adapters[id(adapter)] = adapter
-            if self.is_auto_update('adapter'):
+            if self._is_auto_update_needed('adapter'):
                 self._enable_auto_update(
                     adapter, "adapter", f"{cpc.name}.{adapter.name}")
+            self._add_resource_based_resource(adapter)
 
     def _add_logical_partition(self, lpar):
         """
@@ -623,9 +648,10 @@ class ResourceCache:
         if cpc in self._target_cpc_list:  # comparison by object ID
             self._target_cpc_resources_by_id[id(lpar)] = lpar
             self._logical_partitions[id(lpar)] = lpar
-            if self.is_auto_update('logical-partition'):
+            if self._is_auto_update_needed('logical-partition'):
                 self._enable_auto_update(
                     lpar, "LPAR", f"{cpc.name}.{lpar.name}")
+            self._add_resource_based_resource(lpar)
 
     def _add_partition(self, partition):
         """
@@ -637,9 +663,10 @@ class ResourceCache:
         if cpc in self._target_cpc_list:  # comparison by object ID
             self._target_cpc_resources_by_id[id(partition)] = partition
             self._partitions[id(partition)] = partition
-            if self.is_auto_update('partition'):
+            if self._is_auto_update_needed('partition'):
                 self._enable_auto_update(
                     partition, "partition", f"{cpc.name}.{partition.name}")
+            self._add_resource_based_resource(partition)
 
     def _add_nic(self, nic):
         """
@@ -651,7 +678,7 @@ class ResourceCache:
         if cpc in self._target_cpc_list:  # comparison by object ID
             self._target_cpc_resources_by_id[id(nic)] = nic
             self._nics[id(nic)] = nic
-            if self.is_auto_update('nic'):
+            if self._is_auto_update_needed('nic'):
                 # Just for safety - there are no resource-based metric groups
                 # for NICs.
                 self._enable_auto_update(
@@ -667,6 +694,7 @@ class ResourceCache:
             adapter_name, port_index = self._get_backing_adapter_info(nic)
             nic.adapter_name = adapter_name
             nic.port_index = port_index
+            self._add_resource_based_resource(nic)
 
     def _add_vswitch(self, vswitch):
         """
@@ -677,6 +705,7 @@ class ResourceCache:
         if cpc in self._target_cpc_list:  # comparison by object ID
             self._target_cpc_resources_by_id[id(vswitch)] = vswitch
             self._vswitches[id(vswitch)] = vswitch
+            self._add_resource_based_resource(vswitch)
 
     def _add_port(self, port):
         """
@@ -688,6 +717,7 @@ class ResourceCache:
         if cpc in self._target_cpc_list:  # comparison by object ID
             self._target_cpc_resources_by_id[id(port)] = port
             self._ports[id(port)] = port
+            self._add_resource_based_resource(port)
 
     def _add_storage_group(self, sg):
         """
@@ -700,9 +730,10 @@ class ResourceCache:
         if cpc in self._target_cpc_list:  # comparison by object ID
             self._target_cpc_resources_by_id[id(sg)] = sg
             self._storage_groups[id(sg)] = sg
-            if self.is_auto_update('storage-group'):
+            if self._is_auto_update_needed('storage-group'):
                 self._enable_auto_update(
                     sg, "storage group", f"{sg.name} (CPC {cpc.name})")
+            self._add_resource_based_resource(sg)
 
     def _add_storage_volume(self, sv):
         """
@@ -715,7 +746,7 @@ class ResourceCache:
         if cpc in self._target_cpc_list:  # comparison by object ID
             self._target_cpc_resources_by_id[id(sv)] = sv
             self._storage_volumes[id(sv)] = sv
-            if self.is_auto_update('storage-volume'):
+            if self._is_auto_update_needed('storage-volume'):
                 self._enable_auto_update(
                     sv, "storage volume",
                     f"{sg.name}.{sv.name} (CPC {cpc.name})")
@@ -723,6 +754,7 @@ class ResourceCache:
                 # Get the name of the element object into the cached
                 # resource object
                 sv.pull_properties(['name'])
+            self._add_resource_based_resource(sv)
 
     def _add_inaccessible(self, uri):
         """
@@ -766,6 +798,117 @@ class ResourceCache:
         if self._target_cpc_uri_list is None:
             self._target_cpc_uri_list = \
                 [cpc.uri for cpc in self._target_cpc_list]
+
+    def start_invchange_thread(self):
+        """
+        Start the inventory change listener thread.
+
+        The inventory change listener thread must not be running.
+        """
+        logprint(logging.INFO, PRINT_V,
+                 "Starting the inventory change listener thread")
+        assert self._invchange_thread is None
+        self._invchange_stop_event = threading.Event()
+        self._invchange_thread = threading.Thread(
+            name='InventoryChangeThread',
+            target=self._invchange_listener_run)
+        self._invchange_thread.start()
+
+    def cleanup_invchange_thread(self):
+        """
+        Stop and clean up the inventory change listener thread, if it is
+        running.
+
+        If the thread is not running, the method does nothing.
+        """
+        if self._invchange_thread:
+            logprint(logging.INFO, PRINT_V,
+                     "Stopping the inventory change listener thread")
+            self._invchange_stop_event.set()
+            self._invchange_thread.join(10)
+            self._invchange_thread = None
+
+    def _invchange_listener_run(self):
+        """
+        Thread function that runs in the inventory change listener thread.
+
+        This thread function adds and removes resources from the resource
+        cache as a result of receiving inventory change notifications.
+        """
+        logprint(logging.DEBUG, None,
+                 "Entering inventory change listener thread function")
+
+        self._session.logon()
+
+        topic = self._session.object_topic
+        # pylint: disable=protected-access
+        receiver = zhmcclient.NotificationReceiver(
+            topic, host=self._session.actual_host,
+            userid=self._session.userid,
+            password=self._session._password,
+            verify_cert=self._session.verify_cert)
+
+        while not self._invchange_stop_event.is_set():
+            try:
+                for headers, _ in receiver.notifications(
+                        self._invchange_stop_event):
+
+                    noti_type = headers['notification-type']
+                    if noti_type == 'inventory-change':
+                        uri = self._invchange_uri(headers)
+                        if uri is None:
+                            continue
+                        action = headers['action']
+                        logprint(
+                            logging.INFO, None,
+                            "Received inventory change notification for "
+                            f"action {action!r} on resource {uri!r}")
+                        if action == 'add':
+                            self.lookup(uri)  # adds if not present
+                        elif action == 'remove':
+                            self.remove(uri)
+            except zhmcclient.NotificationParseError as exc:
+                logprint(logging.WARNING, PRINT_ALWAYS,
+                         f"Notification Parse Error: {exc} "
+                         f"(JMS message: {exc.jms_message!r}) - reconnecting")
+                continue
+            except zhmcclient.NotificationError as exc:
+                logprint(logging.WARNING, PRINT_ALWAYS,
+                         f"Notification Error: {exc} - reconnecting")
+                continue
+
+        receiver.close()
+
+        logprint(logging.DEBUG, None,
+                 "Leaving inventory change listener thread function")
+
+    @staticmethod
+    def _invchange_uri(headers):
+        """
+        Return the URI of the object or element resource from an inventory
+        change notification.
+
+        If the notification is about an element resource, element-uri is
+        present and is the URI of that resource, and object-uri is the URI of
+        the parent (containing) object.
+
+        If the notification is about an object (=non-element) resource,
+        element-uri is not present, and object-uri is the URI of that
+        resource.
+        """
+        try:
+            uri = headers['element-uri']
+        except KeyError:
+            try:
+                uri = headers['object-uri']
+            except KeyError:
+                logprint(
+                    logging.WARNING, PRINT_ALWAYS,
+                    "JMS message for inventory change notification has no "
+                    "'element-uri' or 'object-uri' fields in its headers "
+                    f"(ignored): {headers!r}")
+                return None
+        return uri
 
     @property
     def resource_based_resources(self):
@@ -827,6 +970,25 @@ class ResourceCache:
         """
         return self._storage_volumes.values()
 
+    def prepare(self):
+        """
+        Prepare the cache for setup and for dynamic adds and removes based
+        on inventory change notifications.
+        """
+
+        # Initialize self._exported_mg_items_by_rc
+        self._exported_mg_items_by_rc = {}
+        for mg_name in self._exported_mg_names:
+            mg_item = dict(self._mdf_metric_groups[mg_name])
+            mg_item['name'] = mg_name
+            resource_class = mg_item['resource_class']
+            if resource_class not in self._exported_mg_items_by_rc:
+                self._exported_mg_items_by_rc[resource_class] = []
+            self._exported_mg_items_by_rc[resource_class].append(mg_item)
+
+        # After this point, dynamic adds and removes can happen.
+        self._prepare_complete = True
+
     def setup(self):
         """
         Set up the cache with resources from the exported metric groups and
@@ -835,36 +997,28 @@ class ResourceCache:
         The resources will be listed on the HMC and put into the cache.
         Resources that are needed for resource-based metric groups will get
         auto-enabled.
+
+        The prepare() method must have been called before calling this method.
         """
+        assert self._prepare_complete
 
-        # Some methods check that so we set it right at the begin
-        self._setup_called = True
-
-        mg_items_by_rc = {}  # key: resource class, value: list of mg_items
-        for mg_name in self._exported_mg_names:
-            mg_item = self._mdf_metric_groups[mg_name]
-            resource_class = mg_item['resource_class']
-            if resource_class not in mg_items_by_rc:
-                mg_items_by_rc[resource_class] = []
-            mg_items_by_rc[resource_class].append(mg_item)
-
-        for resource_class in mg_items_by_rc:
+        for resource_class in self._exported_mg_items_by_rc:
             # Note that vswitches and ports are not a resource of any metric
             # group.
             if resource_class == 'cpc':
-                self._setup_cpcs(mg_items_by_rc)
+                self._setup_cpcs()
             elif resource_class == 'adapter':
-                self._setup_adapters(mg_items_by_rc)
+                self._setup_adapters()
             elif resource_class == 'logical-partition':
-                self._setup_logical_partitions(mg_items_by_rc)
+                self._setup_logical_partitions()
             elif resource_class == 'partition':
-                self._setup_partitions(mg_items_by_rc)
+                self._setup_partitions()
             elif resource_class == 'nic':
-                self._setup_nics(mg_items_by_rc)
+                self._setup_nics()
             elif resource_class == 'storage-group':
-                self._setup_storage_groups(mg_items_by_rc)
+                self._setup_storage_groups()
             elif resource_class == 'storage-volume':
-                self._setup_storage_volumes(mg_items_by_rc)
+                self._setup_storage_volumes()
             else:
                 new_exc = InvalidMetricDefinitionFile(
                     f"Unknown resource class {resource_class} in a metric "
@@ -872,13 +1026,11 @@ class ResourceCache:
                 new_exc.__cause__ = None  # pylint: disable=invalid-name
                 raise new_exc
 
-        for mg_name in self._exported_mg_names:
-            mg_item = self._mdf_metric_groups[mg_name]
-            mg_type = mg_item['type']
-            resource_class = mg_item['resource_class']
-            if mg_type == "resource":
-                res_list = self._resource_id_dicts[resource_class].values()
-                self._resource_based_resources_by_mg[mg_name] = list(res_list)
+    def cleanup(self):
+        """
+        Cleanup any resources used by the resource cache.
+        """
+        self.cleanup_invchange_thread()
 
     def num_resources(self):
         """
@@ -899,7 +1051,7 @@ class ResourceCache:
         If the resource has no CPC, None is returned. This should not happen
         for the resource classes currently supported by the resource cache.
 
-        The setup() method must have been called before calling this method.
+        The prepare() method must have been called before calling this method.
 
         Parameters:
 
@@ -910,7 +1062,7 @@ class ResourceCache:
           zhmcclient.Cpc: The CPC of the resource, or None if the resource
           does not have a CPC.
         """
-        assert self._setup_called
+        assert self._prepare_complete
         if isinstance(resource, zhmcclient.StorageGroup):
             # Storage groups are not children of CPCs
             sg = resource
@@ -942,7 +1094,7 @@ class ResourceCache:
         This method is used to determine whether a metric returned by the HMC
         metric service is for a target CPC.
 
-        The setup() method must have been called before calling this method.
+        The prepare() method must have been called before calling this method.
 
         Parameters:
 
@@ -954,16 +1106,19 @@ class ResourceCache:
           bool: Boolean indicating that the specified resource is for a target
           CPC.
         """
-        assert self._setup_called
+        assert self._prepare_complete
         return resource is not None and \
             id(resource) in self._target_cpc_resources_by_id
 
-    def is_auto_update(self, resource_class):
+    def _is_auto_update_needed(self, resource_class):
         """
-        Return boolean indicating that the specified resource class is enabled
-        for auto-update.
+        Return boolean indicating whether auto-update is needed for a
+        resource class.
 
-        The setup() method must have been called before calling this method.
+        Auto-update is needed when the resource class is the resource of any
+        exported resource-based metric group.
+
+        The prepare() method must have been called before calling this method.
 
         Parameters:
 
@@ -974,9 +1129,9 @@ class ResourceCache:
           bool: Boolean indicating that the specified resource class has metric
           groups that are enabled for export.
         """
-        assert self._setup_called
+        assert self._prepare_complete
         try:
-            return self._auto_update[resource_class]
+            return self._auto_update_needed[resource_class]
         except KeyError:
             return False
 
@@ -997,7 +1152,7 @@ class ResourceCache:
         supported by the cache. If that is not the case,
         ResourceClassNotSupported is raised.
 
-        The setup() method must have been called before calling this method.
+        The prepare() method must have been called before calling this method.
 
         Parameters:
 
@@ -1013,11 +1168,12 @@ class ResourceCache:
           ResourceClassNotSupported: The resource class of the URI is not
             supported by the cache.
         """
-        assert self._setup_called
-        try:
-            return self._all_resources_by_uri[uri]
-        except KeyError:
-            return self.add(uri)
+        assert self._prepare_complete
+        with self._thread_lock:
+            try:
+                return self._all_resources_by_uri[uri]
+            except KeyError:
+                return self.add(uri)
 
     def _get_resource_tolerant(self, uri):
         """
@@ -1063,7 +1219,7 @@ class ResourceCache:
         supported by the cache. If that is not the case,
         ResourceClassNotSupported is raised.
 
-        The setup() method must have been called before calling this method.
+        The prepare() method must have been called before calling this method.
 
         Parameters:
 
@@ -1079,140 +1235,143 @@ class ResourceCache:
           ResourceClassNotSupported: The resource class of the URI is not
             supported by the cache.
         """
-        assert self._setup_called
-        self._setup_target_cpc_uri_list()
+        assert self._prepare_complete
+        with self._thread_lock:  # Note: lock is re-entrant and can be nested
 
-        # The order of URI tests is by decreasing number of resources, so it is
-        # optimitzed for the initial setup.
+            self._setup_target_cpc_uri_list()
 
-        m = re.match(
-            r'(/api/storage-groups/[a-f0-9\-]+)/storage-volumes/[a-f0-9\-]+$',
-            uri)
-        if m:
-            # A new storage volume
-            sg_uri = m.group(1)
-            sg = self.lookup(sg_uri)  # adds if needed
-            if sg is None:
-                self._add_inaccessible(uri)
-                return None
-            sv = sg.storage_volumes.resource_object(uri)
-            self._add_storage_volume(sv)
-            return sv
+            # The order of URI tests is by decreasing number of resources,
+            # so it is optimitzed for the initial setup.
 
-        m = re.match(r'/api/storage-groups/[a-f0-9\-]+$', uri)
-        if m:
-            # A new storage group
-            # Storage groups have access permissions, so we check access.
-            sg_get_uri = f"{uri}?properties=name,cpc-uri"
-            sg_props = self._get_resource_tolerant(sg_get_uri)
-            if sg_props is None:
-                self._add_inaccessible(uri)
-                return None
-            sg = self._console.storage_groups.resource_object(uri, sg_props)
-            self._add_storage_group(sg)
-            return sg
+            m = re.match(
+                r'(/api/storage-groups/[a-f0-9\-]+)/storage-volumes/'
+                r'[a-f0-9\-]+$', uri)
+            if m:
+                # A new storage volume
+                sg_uri = m.group(1)
+                sg = self.lookup(sg_uri)  # adds if needed
+                if sg is None:
+                    self._add_inaccessible(uri)
+                    return None
+                sv = sg.storage_volumes.resource_object(uri)
+                self._add_storage_volume(sv)
+                return sv
 
-        m = re.match(r'(/api/partitions/[a-f0-9\-]+)/nics/[a-f0-9\-]+$', uri)
-        if m:
-            # A new NIC
-            part_uri = m.group(1)
-            part = self.lookup(part_uri)  # adds if needed
-            if part is None:
-                self._add_inaccessible(uri)
-                return None
-            nic = part.nics.resource_object(uri)
-            self._add_nic(nic)
-            return nic
+            m = re.match(r'/api/storage-groups/[a-f0-9\-]+$', uri)
+            if m:
+                # A new storage group
+                # Storage groups have access permissions, so we check access.
+                sg_get_uri = f"{uri}?properties=name,cpc-uri"
+                sg_props = self._get_resource_tolerant(sg_get_uri)
+                if sg_props is None:
+                    self._add_inaccessible(uri)
+                    return None
+                sg = self._console.storage_groups.resource_object(uri, sg_props)
+                self._add_storage_group(sg)
+                return sg
 
-        m = re.match(r'/api/partitions/[a-f0-9\-]+$', uri)
-        if m:
-            # A new partition
-            # Partitions have access permissions, so we check access.
-            part_get_uri = f"{uri}?properties=name,parent"
-            part_props = self._get_resource_tolerant(part_get_uri)
-            if part_props is None:
-                self._add_inaccessible(uri)
-                return None
-            cpc_uri = part_props['parent']
-            cpc = self._all_resources_by_uri[cpc_uri]
-            part = cpc.partitions.resource_object(uri, part_props)
-            self._add_partition(part)
-            return part
+            m = re.match(
+                r'(/api/partitions/[a-f0-9\-]+)/nics/[a-f0-9\-]+$', uri)
+            if m:
+                # A new NIC
+                part_uri = m.group(1)
+                part = self.lookup(part_uri)  # adds if needed
+                if part is None:
+                    self._add_inaccessible(uri)
+                    return None
+                nic = part.nics.resource_object(uri)
+                self._add_nic(nic)
+                return nic
 
-        m = re.match(r'/api/logical-partitions/[a-f0-9\-]+$', uri)
-        if m:
-            # A new LPAR
-            # LPARs have access permissions, so we check access.
-            lpar_get_uri = f"{uri}?properties=name,parent"
-            lpar_props = self._get_resource_tolerant(lpar_get_uri)
-            if lpar_props is None:
-                self._add_inaccessible(uri)
-                return None
-            cpc_uri = lpar_props['parent']
-            cpc = self._all_resources_by_uri[cpc_uri]
-            lpar = cpc.lpars.resource_object(uri, lpar_props)
-            self._add_logical_partition(lpar)
-            return lpar
+            m = re.match(r'/api/partitions/[a-f0-9\-]+$', uri)
+            if m:
+                # A new partition
+                # Partitions have access permissions, so we check access.
+                part_get_uri = f"{uri}?properties=name,parent"
+                part_props = self._get_resource_tolerant(part_get_uri)
+                if part_props is None:
+                    self._add_inaccessible(uri)
+                    return None
+                cpc_uri = part_props['parent']
+                cpc = self.lookup(cpc_uri)  # adds if needed
+                part = cpc.partitions.resource_object(uri, part_props)
+                self._add_partition(part)
+                return part
 
-        m = re.match(r'/api/adapters/[a-f0-9\-]+$', uri)
-        if m:
-            # A new adapter
-            # Adapters have access permissions, so we check access.
-            # "Get Adapter Properties" does not support property selection
-            ad_props = self._get_resource_tolerant(uri)
-            if ad_props is None:
-                self._add_inaccessible(uri)
-                return None
-            cpc_uri = ad_props['parent']
-            cpc = self._all_resources_by_uri[cpc_uri]
-            ad = cpc.adapters.resource_object(uri, ad_props)
-            self._add_adapter(ad)
-            return ad
+            m = re.match(r'/api/logical-partitions/[a-f0-9\-]+$', uri)
+            if m:
+                # A new LPAR
+                # LPARs have access permissions, so we check access.
+                lpar_get_uri = f"{uri}?properties=name,parent"
+                lpar_props = self._get_resource_tolerant(lpar_get_uri)
+                if lpar_props is None:
+                    self._add_inaccessible(uri)
+                    return None
+                cpc_uri = lpar_props['parent']
+                cpc = self.lookup(cpc_uri)  # adds if needed
+                lpar = cpc.lpars.resource_object(uri, lpar_props)
+                self._add_logical_partition(lpar)
+                return lpar
 
-        m = re.match(
-            r'(/api/adapters/[a-f0-9\-]+)/(network|storage)-ports/[a-f0-9\-]+$',
-            uri)
-        if m:
-            # A new network or storage port
-            adapter_uri = m.group(1)
-            ad = self.lookup(adapter_uri)  # adds if needed
-            if ad is None:
-                self._add_inaccessible(uri)
-                return None
-            port = ad.ports.resource_object(uri)
-            self._add_port(port)
-            return port
+            m = re.match(r'/api/adapters/[a-f0-9\-]+$', uri)
+            if m:
+                # A new adapter
+                # Adapters have access permissions, so we check access.
+                # "Get Adapter Properties" does not support property selection
+                ad_props = self._get_resource_tolerant(uri)
+                if ad_props is None:
+                    self._add_inaccessible(uri)
+                    return None
+                cpc_uri = ad_props['parent']
+                cpc = self.lookup(cpc_uri)  # adds if needed
+                ad = cpc.adapters.resource_object(uri, ad_props)
+                self._add_adapter(ad)
+                return ad
 
-        m = re.match(r'/api/virtual-switches/[a-f0-9\-]+$', uri)
-        if m:
-            # A new vswitch
-            # Vswitches use the access permissions of the backing adapter, so
-            # we check access.
-            # "Get V. Switch Properties" does not support property selection
-            vswitch_props = self._get_resource_tolerant(uri)
-            if vswitch_props is None:
-                self._add_inaccessible(uri)
-                return None
-            cpc_uri = vswitch_props['parent']
-            cpc = self._all_resources_by_uri[cpc_uri]
-            vswitch = cpc.vswitches.resource_object(uri, vswitch_props)
-            self._add_vswitch(vswitch)
-            return vswitch
+            m = re.match(
+                r'(/api/adapters/[a-f0-9\-]+)/(network|storage)-ports/'
+                r'[a-f0-9\-]+$', uri)
+            if m:
+                # A new network or storage port
+                adapter_uri = m.group(1)
+                ad = self.lookup(adapter_uri)  # adds if needed
+                if ad is None:
+                    self._add_inaccessible(uri)
+                    return None
+                port = ad.ports.resource_object(uri)
+                self._add_port(port)
+                return port
 
-        m = re.match(r'/api/cpcs/[a-f0-9\-]+$', uri)
-        if m:
-            # A new CPC
-            # CPCs have access permissions, so we check access.
-            cpc_get_uri = f"{uri}?properties=name"
-            cpc_props = self._get_resource_tolerant(cpc_get_uri)
-            if cpc_props is None:
-                self._add_inaccessible(uri)
-                return None
-            cpc = self._client.cpcs.resource_object(uri, cpc_props)
-            self._add_cpc(cpc)
-            return cpc
+            m = re.match(r'/api/virtual-switches/[a-f0-9\-]+$', uri)
+            if m:
+                # A new vswitch
+                # Vswitches use the access permissions of the backing adapter,
+                # so we check access.
+                # "Get V. Switch Properties" does not support property selection
+                vswitch_props = self._get_resource_tolerant(uri)
+                if vswitch_props is None:
+                    self._add_inaccessible(uri)
+                    return None
+                cpc_uri = vswitch_props['parent']
+                cpc = self.lookup(cpc_uri)  # adds if needed
+                vswitch = cpc.vswitches.resource_object(uri, vswitch_props)
+                self._add_vswitch(vswitch)
+                return vswitch
 
-        raise ResourceClassNotSupported(uri)
+            m = re.match(r'/api/cpcs/[a-f0-9\-]+$', uri)
+            if m:
+                # A new CPC
+                # CPCs have access permissions, so we check access.
+                cpc_get_uri = f"{uri}?properties=name"
+                cpc_props = self._get_resource_tolerant(cpc_get_uri)
+                if cpc_props is None:
+                    self._add_inaccessible(uri)
+                    return None
+                cpc = self._client.cpcs.resource_object(uri, cpc_props)
+                self._add_cpc(cpc)
+                return cpc
+
+            raise ResourceClassNotSupported(uri)
 
     def remove(self, uri):
         """
@@ -1228,7 +1387,7 @@ class ResourceCache:
         supported by the cache. If that is not the case,
         ResourceClassNotSupported is raised.
 
-        The setup() method must have been called before calling this method.
+        The prepare() method must have been called before calling this method.
 
         Parameters:
 
@@ -1239,19 +1398,22 @@ class ResourceCache:
           ResourceClassNotSupported: The resource class of the URI is not
             supported by the cache.
         """
-        assert self._setup_called
-        # The following may raise ResourceClassNotSupported
-        res_id_dict = self._resource_id_dict(uri)
-        try:
-            res = self._all_resources_by_uri[uri]
-            del self._all_resources_by_uri[uri]
-            del self._target_cpc_resources_by_id[id(res)]
-            if res_id_dict is self._storage_groups:
-                del self._all_storage_groups_by_id[id(res)]
-            if res_id_dict is self._partitions:
-                del self._all_partitions_by_id[id(res)]
-            del res_id_dict[id(res)]
-        except KeyError:
-            logprint(logging.ERROR, None,
-                     "Ignored failure when removing a resource from the cache: "
-                     f"URI not found in one of the cache properties: '{uri}'")
+        assert self._prepare_complete
+        with self._thread_lock:
+
+            # The following may raise ResourceClassNotSupported
+            res_id_dict = self._resource_id_dict(uri)
+            try:
+                res = self._all_resources_by_uri[uri]
+                del self._all_resources_by_uri[uri]
+                del self._target_cpc_resources_by_id[id(res)]
+                if res_id_dict is self._storage_groups:
+                    del self._all_storage_groups_by_id[id(res)]
+                if res_id_dict is self._partitions:
+                    del self._all_partitions_by_id[id(res)]
+                del res_id_dict[id(res)]
+            except KeyError:
+                logprint(logging.INFO, None,
+                         "Ignored failure when removing a resource from "
+                         "the cache: URI not found in one of the cache "
+                         f"properties: '{uri}'")
