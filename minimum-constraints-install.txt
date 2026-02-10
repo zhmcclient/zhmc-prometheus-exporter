@@ -19,7 +19,9 @@ wheel==0.41.3
 
 # Direct dependencies for install (must be consistent with requirements.txt)
 
-zhmcclient==1.24.0
+# TODO(ZHMC): Enable again once zhmcclient 1.26.0 has been released
+# zhmcclient>=1.26.0
+zhmcclient@git+https://github.com/zhmcclient/python-zhmcclient.git@master
 
 # TODO: Use official prometheus-client version (0.21.0 ?) once released.
 # prometheus-client==0.21.0
