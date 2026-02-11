@@ -27,6 +27,20 @@ Change log
    .. include:: tmp_changes.rst
 
 .. towncrier start
+Version 2.3.2
+^^^^^^^^^^^^^
+
+Released: 2026-02-11
+
+**Bug fixes:**
+
+* Fixed safety issues up to 2026-02-11.
+
+* Dev: Added dependencies for Sphinx.
+
+* Fixed an incorrect pattern that was used for matching URIs of virtual switches. (`#862 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/862>`_)
+
+
 Version 2.3.1
 ^^^^^^^^^^^^^
 
