@@ -96,6 +96,7 @@ pip-check-reqs==2.5.1
 # Indirect dependencies for development that are not in dev-requirements.txt
 
 alabaster==0.7.9
+anyio==4.12.1
 atomicwrites==1.4.0
 appdirs==1.4.3
 bleach==3.3.0
@@ -112,7 +113,10 @@ iniconfig==1.1.1  # used by pytest since its 6.0.0
 keyring==18.0.0
 levenshtein==0.25.1
 more-itertools==8.0.0
-nltk==3.9.1
+# nltk 3.9.3 fixes CVE-2025-14009
+# Need to comment out nltk==3.9.2 due to issue https://github.com/pyupio/safety/issues/847
+# nltk==3.9.2; python_version == '3.9'
+nltk==3.9.3; python_version >= '3.10'
 pkginfo==1.4.2
 pyparsing==2.4.5
 requests-toolbelt==0.8.0
