@@ -23,7 +23,7 @@ dparse==0.6.4
 click==8.0.2
 Authlib==1.6.9; python_version == '3.8'
 Authlib==1.6.9; python_version >= '3.9'
-marshmallow==3.15.0
+marshmallow==3.26.2
 pydantic==2.8.0
 pydantic_core==2.20.0
 typer==0.16.0
@@ -80,7 +80,7 @@ Sphinx==7.2.0; python_version >= '3.9'
 docutils==0.20.1
 sphinx-git==10.1.1
 GitPython==3.1.41
-Pygments==2.15.0
+Pygments==2.20.0
 sphinx-rtd-theme==2.0.0
 sphinxcontrib-applehelp==1.0.4
 sphinxcontrib-devhelp==1.0.2
@@ -109,7 +109,7 @@ bleach==3.3.0
 chardet==3.0.4
 contextlib2==0.6.0
 # safety 3.4.0 depends on filelock~=3.16.1
-filelock==3.16.1
+filelock==3.20.3
 gitdb==4.0.8
 html5lib==1.0.1
 httpx==0.28.1
@@ -119,7 +119,7 @@ iniconfig==1.1.1  # used by pytest since its 6.0.0
 keyring==18.0.0
 levenshtein==0.25.1
 more-itertools==8.0.0
-nltk==3.9.1
+nltk==3.9.4
 pkginfo==1.4.2
 pyparsing==2.4.5
 requests-toolbelt==0.8.0
