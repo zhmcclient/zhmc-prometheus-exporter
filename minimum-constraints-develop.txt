@@ -21,7 +21,7 @@ safety-schemas==0.0.16
 dparse==0.6.4
 # ruamel.yaml is used by safety and is covered in minimum-constraints-install.txt
 click==8.0.2
-Authlib==1.6.6
+Authlib==1.6.9
 marshmallow==3.26.2
 pydantic==2.12.0
 pydantic_core==2.41.1
@@ -35,7 +35,8 @@ bandit==1.7.8
 # PyYAML is used by bandit and is covered in minimum-constraints-install.txt
 
 # Unit test (imports into testcases):
-pytest==8.4.0
+pytest==8.3.5; python_version <= '3.9'
+pytest==9.0.3; python_version >= '3.10'
 pluggy==1.5.0
 importlib-metadata==8.7.0
 colorama==0.4.6
@@ -72,7 +73,8 @@ Sphinx==7.2.0
 docutils==0.20.1
 sphinx-git==10.1.1
 GitPython==3.1.41
-Pygments==2.15.0
+Pygments==2.19.2; python_version == '3.8'
+Pygments==2.20.0; python_version >= '3.10'
 sphinx-rtd-theme==2.0.0
 sphinxcontrib-applehelp==1.0.4
 sphinxcontrib-devhelp==1.0.2
@@ -116,7 +118,7 @@ more-itertools==8.0.0
 # nltk 3.9.3 fixes CVE-2025-14009
 # Need to comment out nltk==3.9.2 due to issue https://github.com/pyupio/safety/issues/847
 # nltk==3.9.2; python_version == '3.9'
-nltk==3.9.3; python_version >= '3.10'
+nltk==3.9.4; python_version >= '3.10'
 pkginfo==1.4.2
 pyparsing==2.4.5
 requests-toolbelt==0.8.0
