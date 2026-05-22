@@ -19,7 +19,8 @@
 Unit test module for the _resource_cache.py module.
 """
 
-import pytest
+import pytest  # pylint: disable=import-error
+
 from zhmc_prometheus_exporter._resource_cache import ResourceClassNotSupported
 
 

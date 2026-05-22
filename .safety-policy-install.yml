@@ -30,6 +30,12 @@ security:
     ignore-vulnerabilities:
         70612:
             reason: Disputed issue in Jinja2 version 3.1.3 - No known fix
+        85681:
+           reason: Fixed pip version 26.0 requires Python>=3.10 and is used there
+        90553:
+           reason: Fixed requests version 2.33.0 requires Python>=3.10 and is used there
+        84961:
+           reason: Fixed wheel version 0.46.2 requires Python>=3.10 and is used there
 
     # Continue with exit code 0 when vulnerabilities are found.
     continue-on-vulnerability-error: False

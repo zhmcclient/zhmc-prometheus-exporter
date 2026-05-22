@@ -17,7 +17,7 @@
 import sys
 import re
 import tempfile
-import pytest
+import pytest  # pylint: disable=import-error
 
 from zhmc_prometheus_exporter import zhmc_prometheus_exporter
 
