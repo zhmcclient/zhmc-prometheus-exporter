@@ -10,8 +10,10 @@
 
 # Base dependencies (must be consistent with base-requirements.txt)
 
-pip==25.0; python_version == '3.8'
-pip==26.0; python_version >= '3.9'
+# Need to comment out pip==26.0.1 due to issue https://github.com/pyupio/safety/issues/847
+# pip==25.0; python_version == '3.8'
+# pip==26.0.1; python_version == '3.9'
+pip==26.1; python_version >= '3.10'
 setuptools==70.0.0; python_version == '3.8'
 setuptools==78.1.1; python_version >= '3.9'
 # Note on not specifying 'setuptools-scm[toml]': Extras cannot be in constraints files
