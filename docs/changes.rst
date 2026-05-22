@@ -27,6 +27,19 @@ Change log
    .. include:: tmp_changes.rst
 
 .. towncrier start
+Version 2.3.3
+^^^^^^^^^^^^^
+
+Released: 2026-05-22
+
+**Bug fixes:**
+
+* Fixed safety issues up to 2026-05-22.
+
+* Development: Fixed that squash merges of the release/start PRs did not work in
+  the release/start process.
+
+
 Version 2.3.2
 ^^^^^^^^^^^^^
 
