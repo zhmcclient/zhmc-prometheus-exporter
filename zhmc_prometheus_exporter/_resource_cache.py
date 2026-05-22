@@ -625,7 +625,16 @@ class ResourceCache:
             logprint(logging.INFO, PRINT_V,
                      "Getting backing adapter port for NIC "
                      f"{cpc.name}.{partition.name}.{nic.name}")
-            adapter_name, port_index = self._get_backing_adapter_info(nic)
+            backing_info = self._get_backing_adapter_info(nic)
+            if backing_info is None:
+                # Backing adapter or virtual switch is inaccessible
+                logprint(
+                    logging.WARNING, PRINT_ALWAYS,
+                    f"Skipping NIC {cpc.name}.{partition.name}.{nic.name} "
+                    "because its backing adapter or virtual switch is "
+                    "inaccessible")
+                return
+            adapter_name, port_index = backing_info
             nic.adapter_name = adapter_name
             nic.port_index = port_index
 
@@ -699,19 +708,29 @@ class ResourceCache:
           nic (zhmcclient.Nic): The NIC.
 
         Returns:
-          tuple(adapter_name, port_index)
+          tuple(adapter_name, port_index) or None if backing adapter is
+          inaccessible.
         """
         vswitch_uri = nic.prop('virtual-switch-uri')
         if vswitch_uri:
             # Handle vswitch-based NIC (OSA, HS before z17)
             vswitch = self.lookup(vswitch_uri)
+            if vswitch is None:
+                # Virtual switch is inaccessible
+                return None
             adapter_uri = vswitch.get_property('backing-adapter-uri')
             adapter = self.lookup(adapter_uri)
+            if adapter is None:
+                # Backing adapter is inaccessible
+                return None
             port_index = vswitch.get_property('port')
         else:
             # Handle adapter-based NIC (RoCE, CNA before z17, all since z17)
             port_uri = nic.get_property('network-adapter-port-uri')
             port = self.lookup(port_uri)
+            if port is None:
+                # Network adapter port is inaccessible
+                return None
             adapter = port.manager.parent
             port_index = port.get_property('index')
         return adapter.name, port_index
