@@ -42,8 +42,7 @@ bandit>=1.7.8
 # PyYAML is used by bandit and is covered in requirements.txt
 
 # Unit test (imports into testcases):
-# pytest 8.4.0 added support for Python 3.14.
-pytest>=8.3.5; python_version <= '3.9'
+pytest>=8.4.0; python_version == '3.9'
 pytest>=9.0.3; python_version >= '3.10'
 # For versions of importlib-metadata that are in Python, see https://pypi.org/project/importlib-metadata/
 importlib-metadata>=8.7.0
@@ -89,8 +88,7 @@ Sphinx>=7.2.0
 docutils>=0.20.1
 sphinx-git>=10.1.1
 GitPython>=3.1.41
-Pygments>=2.19.2; python_version == '3.8'
-Pygments>=2.20.0; python_version == '3.10'
+Pygments>=2.20.0
 sphinx-rtd-theme>=2.0.0
 sphinxcontrib-applehelp>=1.0.4
 sphinxcontrib-devhelp>=1.0.2
