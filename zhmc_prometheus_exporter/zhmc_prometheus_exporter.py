@@ -39,7 +39,7 @@ import zhmcclient
 from ._exceptions import AuthError, OtherError, ProperExit, ImproperExit, \
     InvalidMetricDefinitionFile, EarlyExit, zhmc_exceptions
 from ._exceptions import ConnectionError  # pylint: disable=redefined-builtin
-from ._logging import PRINT_ALWAYS, PRINT_V, PRINT_VV, logprint, \
+from ._logging import PRINT_ALWAYS, PRINT_V, logprint, \
     VALID_LOG_DESTINATIONS, VALID_LOG_LEVELS, VALID_LOG_COMPONENTS, \
     DEFAULT_LOG_LEVEL, DEFAULT_LOG_COMP, DEFAULT_SYSLOG_FACILITY, \
     VALID_SYSLOG_FACILITIES, setup_logging
@@ -1218,7 +1218,7 @@ def build_family_objects_res(
                     # For attribute 'name', the exception is only raised when
                     # the name is not yet known locally.
                     res_str = f"with URI {resource.uri}"
-                logprint(logging.INFO, PRINT_VV,
+                logprint(logging.INFO, None,
                          "Resource no longer exists on HMC: "
                          f"{resource.manager.class_name} {res_str}")
 
@@ -1487,6 +1487,11 @@ class ZHMCUsageCollector():
         refreshing the metrics context.
 
         Raises exception in case of authentication errors or other errors.
+
+        Note that the "Get Metrics" operation properly factors in resources
+        that were created or deleted after creation of the metric context, so
+        we do not need to renew the metric context when resources are created
+        or deleted.
         """
         logprint(logging.INFO, None,
                  "Collecting metrics")
@@ -1721,6 +1726,7 @@ def main():
     context = None
     resources = None
     coll = None  # For exceptions that happen before it is set
+    resource_cache = None
 
     try:
         args = parse_args(sys.argv[1:])
@@ -1900,9 +1906,11 @@ def main():
                     client, all_cpc_list, target_cpc_list, yaml_metric_groups,
                     exported_mg_names, se_features_by_cpc)
 
+                resource_cache.prepare()
+                resource_cache.start_invchange_thread()
+
                 logprint(logging.INFO, PRINT_V,
                          "Setting up the resource cache (may take some time)")
-
                 start_dt = datetime.now()
                 resource_cache.setup()  # Takes time
                 end_dt = datetime.now()
@@ -2063,6 +2071,9 @@ def main():
                  "Exporter interrupted after server start.")
         cleanup(session, context, resources, coll)
         exit_rc(0)
+    finally:
+        if resource_cache is not None:
+            resource_cache.cleanup()
 
 
 def exit_rc(rc):
