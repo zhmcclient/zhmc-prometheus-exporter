@@ -44,12 +44,12 @@ security:
             reason: Fixed urllib3 version 2.6.0 requires Python>=3.9 and is used there
         84031:
             reason: Fixed urllib3 version 2.6.3 requires Python>=3.9 and is used there
+        84961:
+           reason: Fixed wheel version 0.46.2 requires Python>=3.9 and is used there
         85681:
            reason: Fixed pip version 26.0 requires Python>=3.10 and is used there
         90553:
            reason: Fixed requests version 2.33.0 requires Python>=3.10 and is used there
-        84961:
-           reason: Fixed wheel version 0.46.2 requires Python>=3.10 and is used there
 
         # Need to comment out SFTY IDs due to issue https://github.com/pyupio/safety/issues/847
         # SFTY-20260420-60812:
