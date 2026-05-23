@@ -56,7 +56,8 @@ nocasedict==1.0.2
 python-dateutil==2.8.2
 pytz==2019.1
 referencing==0.28.4  # used by jsonschema>=4.18.0
-requests==2.32.4
+requests==2.32.4; python_version == '3.9'
+requests==2.33.0; python_version >= '3.10'
 rpds-py==0.7.1  # used by jsonschema>=4.18.0
 ruamel.yaml.clib==0.2.8
 stomp-py==8.1.1
