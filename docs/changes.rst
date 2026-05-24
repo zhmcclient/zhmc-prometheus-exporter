@@ -36,8 +36,15 @@ Released: 2026-05-22
 
 * Fixed safety issues up to 2026-05-22.
 
+* Handled inaccessible backing adapters during NIC discovery.
+  (part of `#895 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/895>`_)
+
 * Development: Fixed that squash merges of the release/start PRs did not work in
   the release/start process.
+
+* Development: Added retry for coveralls in test workflow.
+
+* Fixed mismatches between safety ignores and actual dependencies
 
 * Upgraded the vendorized version of the 'prometheus_client' package to
   0.21.1.post1 to pick up the fix for vulnerabilities detected by testssl.sh
