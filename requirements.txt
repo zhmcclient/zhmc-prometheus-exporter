@@ -9,14 +9,11 @@
 zhmcclient>=1.24.0
 # zhmcclient @ git+https://github.com/zhmcclient/python-zhmcclient.git@master
 
-# prometheus-client 0.19.0 added support for HTTPS/mTLS
-# prometheus-client 0.20.0 improved HTTPS/mTLS support
-# prometheus-client 0.20.0.post1 (on forked repo) adds the following PRs:
+# prometheus-client 0.21.1.post1 (on forked repo) adds the following PRs to 0.21.1:
 # - Removed CBC ciphers to address CVE-2013-0169 (LUCKY13) (PR https://github.com/prometheus/client_python/pull/1051)
-# - Reject invalid HTTP methods and resources (PR https://github.com/prometheus/client_python/pull/1019)
-# For now, 0.20.0.post1 has been vendorized.
-# TODO: Use official prometheus-client version (0.21.0 ?) with these PRs once released.
-# prometheus-client>=0.21.0
+# For now, 0.21.1.post1 has been vendorized.
+# TODO: Use official prometheus-client version once we require Python>=3.10.
+# prometheus-client==0.25.0
 
 urllib3>=2.6.3; python_version == '3.9'
 urllib3>=2.7.0; python_version >= '3.10'
