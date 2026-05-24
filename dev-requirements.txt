@@ -99,7 +99,7 @@ Sphinx>=7.2.0; python_version >= '3.9'
 # Sphinx 7.1.0 pins docutils to <0.21
 docutils>=0.20.1
 sphinx-git>=10.1.1
-GitPython>=3.1.41
+GitPython>=3.1.50
 Pygments>=2.19.2; python_version == '3.8'
 Pygments>=2.20.0; python_version >= '3.9'
 sphinx-rtd-theme>=2.0.0
