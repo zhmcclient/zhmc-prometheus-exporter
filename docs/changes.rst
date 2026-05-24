@@ -39,6 +39,10 @@ Released: 2026-05-22
 * Development: Fixed that squash merges of the release/start PRs did not work in
   the release/start process.
 
+* Upgraded the vendorized version of the 'prometheus_client' package to
+  0.21.1.post1 to pick up the fix for vulnerabilities detected by testssl.sh
+  (which by mistake was not in exporter version 1.7.0).
+  (`#509 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/509>`_)
 
 Version 2.3.2
 ^^^^^^^^^^^^^
