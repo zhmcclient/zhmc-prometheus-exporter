@@ -48,23 +48,18 @@ pyrsistent==0.20.0
 attrs==22.2.0
 certifi==2024.07.04
 charset-normalizer==2.0.4
-decorator==4.0.11
 docopt==0.6.2
 # idna>3 requires using requests >=2.26.0
 idna==3.15
-immutable-views==0.6.0
 jsonschema-specifications==2023.03.6  # used by jsonschema>=4.18.0
 MarkupSafe==2.0.0
 nocasedict==1.0.2
-python-dateutil==2.8.2
-pytz==2019.1
 referencing==0.28.4  # used by jsonschema>=4.18.0
 requests==2.32.4; python_version == '3.9'
 requests==2.33.0; python_version >= '3.10'
 rpds-py==0.7.1  # used by jsonschema>=4.18.0
 ruamel.yaml.clib==0.2.8
-stomp-py==8.1.1
+stomp.py==8.1.1
 typing-extensions==4.14.1
 websocket-client==1.8.0
-yamlloader==0.5.5
 zipp==3.20.0
