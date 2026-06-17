@@ -26,7 +26,8 @@ zhmcclient==1.24.0
 # TODO: Use official prometheus-client version once we require Python>=3.10
 # prometheus-client==0.25.0
 
-urllib3==2.6.3; python_version == '3.9'
+# Need to comment out urllib3==2.6.3 due to issue https://github.com/pyupio/safety/issues/847
+# urllib3==2.6.3; python_version == '3.9'
 urllib3==2.7.0; python_version >= '3.10'
 jsonschema==4.18.0
 six==1.16.0
