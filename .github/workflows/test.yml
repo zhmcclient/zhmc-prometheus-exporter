@@ -67,7 +67,7 @@ jobs:
         else \
           echo "matrix={ \
             \"os\": [ \"ubuntu-latest\" ], \
-            \"python-version\": [ \"3.14\" ], \
+            \"python-version\": [ \"3.9\", \"3.14\" ], \
             \"package_level\": [ \"minimum\", \"latest\" ], \
             \"include\": [ \
               { \
