@@ -49,49 +49,16 @@ endif
 ifeq ($(OS),Windows_NT)
   ifdef PWD
     PLATFORM := Windows_UNIX
+    SHELL := $(shell which bash)
   else
     PLATFORM := Windows_native
-    ifndef COMSPEC
-      # Make variables are case sensitive and some native Windows environments have
-      # ComSpec set instead of COMSPEC.
-      ifdef ComSpec
-        COMSPEC = $(ComSpec)
-      endif
-    endif
-    ifdef COMSPEC
-      SHELL := $(subst \,/,$(COMSPEC))
-    else
-      SHELL := cmd.exe
-    endif
-    .SHELLFLAGS := /c
+    SHELL := wsl bash
   endif
+  .SHELLFLAGS := -c
 else
-  # Values: Linux, Darwin
-  PLATFORM := $(shell uname -s)
-endif
-
-ifeq ($(PLATFORM),Windows_native)
-  # Note: The substituted backslashes must be doubled.
-  # Remove files (blank-separated list of wildcard path specs)
-  RM_FUNC = del /f /q $(subst /,\\,$(1))
-  # Remove files recursively (single wildcard path spec)
-  RM_R_FUNC = del /f /q /s $(subst /,\\,$(1))
-  # Remove directories (blank-separated list of wildcard path specs)
-  RMDIR_FUNC = rmdir /q /s $(subst /,\\,$(1))
-  # Remove directories recursively (single wildcard path spec)
-  RMDIR_R_FUNC = rmdir /q /s $(subst /,\\,$(1))
-  # Copy a file, preserving the modified date
-  CP_FUNC = copy /y $(subst /,\\,$(1)) $(subst /,\\,$(2))
-  ENV = set
-  WHICH = where
-else
-  RM_FUNC = rm -f $(1)
-  RM_R_FUNC = find . -type f -name '$(1)' -delete
-  RMDIR_FUNC = rm -rf $(1)
-  RMDIR_R_FUNC = find . -type d -name '$(1)' | xargs -n 1 rm -rf
-  CP_FUNC = cp -r $(1) $(2)
-  ENV = env | sort
-  WHICH = which -a
+  PLATFORM := $(shell uname -s)  # Values: Linux, Darwin
+  SHELL := $(shell which bash)
+  .SHELLFLAGS := -c
 endif
 
 package_name := zhmc_prometheus_exporter
@@ -254,17 +221,17 @@ endif
 	@echo "Shell flags: $(.SHELLFLAGS)"
 	@echo "Make version: $(MAKE_VERSION)"
 	@echo "Python command name: $(PYTHON_CMD)"
-	@echo "Python command location: $(shell $(WHICH) $(PYTHON_CMD))"
+	@echo "Python command location: $(shell which -a $(PYTHON_CMD))"
 	@echo "Python version: $(python_version)"
 	@echo "Pip command name: $(PIP_CMD)"
-	@echo "Pip command location: $(shell $(WHICH) $(PIP_CMD))"
+	@echo "Pip command location: $(shell which -a $(PIP_CMD))"
 	@echo "Pip version: $(shell $(PIP_CMD) --version)"
 	@echo "$(package_name) package version: $(package_version)"
 
 .PHONY: env
 env:
 	@echo "Makefile: Environment variables as seen by make:"
-	$(ENV)
+	env | sort
 
 .PHONY: _always
 _always:
@@ -291,8 +258,8 @@ pylint: $(done_dir)/pylint_$(pymn)_$(PACKAGE_LEVEL).done
 
 .PHONY: safety
 safety: Makefile $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done $(safety_develop_policy_file) $(safety_install_policy_file) minimum-constraints-develop.txt minimum-constraints-install.txt
-	bash -c "safety check --policy-file $(safety_develop_policy_file) -r minimum-constraints-develop.txt --full-report || test '$(RUN_TYPE)' == 'normal' || test '$(RUN_TYPE)' == 'scheduled' || exit 1"
-	bash -c "safety check --policy-file $(safety_install_policy_file) -r minimum-constraints-install.txt --full-report || test '$(RUN_TYPE)' == 'normal' || exit 1"
+	safety check --policy-file $(safety_develop_policy_file) -r minimum-constraints-develop.txt --full-report || test '$(RUN_TYPE)' == 'normal' || test '$(RUN_TYPE)' == 'scheduled' || exit 1
+	safety check --policy-file $(safety_install_policy_file) -r minimum-constraints-install.txt --full-report || test '$(RUN_TYPE)' == 'normal' || exit 1
 	@echo "Makefile: $@ done."
 
 .PHONY: bandit
@@ -305,35 +272,35 @@ check_reqs: $(done_dir)/check_reqs_$(pymn)_$(PACKAGE_LEVEL).done
 
 $(done_dir)/flake8_$(pymn)_$(PACKAGE_LEVEL).done: Makefile $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done $(check_py_files)
 	@echo "Makefile: Performing flake8 checks with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
-	-$(call RM_FUNC,$@)
+	rm -f $@
 	flake8 --config .flake8 $(check_py_files)
 	echo "done" >$@
 	@echo "Makefile: Done performing flake8 checks"
 
 $(done_dir)/ruff_$(pymn)_$(PACKAGE_LEVEL).done: Makefile $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done $(check_py_files)
 	@echo "Makefile: Performing ruff checks with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
-	-$(call RM_FUNC,$@)
+	rm -f $@
 	ruff check --unsafe-fixes --config $(ruff_rc_file) $(check_py_files)
 	echo "done" >$@
 	@echo "Makefile: Done performing ruff checks"
 
 $(done_dir)/pylint_$(pymn)_$(PACKAGE_LEVEL).done: Makefile $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done $(check_py_files)
 	@echo "Makefile: Performing pylint checks with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
-	-$(call RM_FUNC,$@)
+	rm -f $@
 	pylint --rcfile=.pylintrc --disable=fixme $(check_py_files)
 	echo "done" >$@
 	@echo "Makefile: Done performing pylint checks"
 
 $(done_dir)/bandit_$(pymn)_$(PACKAGE_LEVEL).done: Makefile $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done $(bandit_rc_file) $(check_py_files)
 	@echo "Makefile: Running Bandit"
-	-$(call RM_FUNC,$@)
+	rm -f $@
 	bandit -c $(bandit_rc_file) -l $(check_py_files)
 	echo "done" >$@
 	@echo "Makefile: Done running Bandit"
 
 $(done_dir)/check_reqs_$(pymn)_$(PACKAGE_LEVEL).done: Makefile $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done minimum-constraints-develop.txt minimum-constraints-install.txt requirements.txt
 	@echo "Makefile: Checking missing dependencies of this package"
-	-$(call RM_FUNC,$@)
+	rm -f $@
 	pip-missing-reqs $(package_name) --requirements-file=requirements.txt
 	pip-missing-reqs $(package_name) --requirements-file=minimum-constraints-install.txt
 	@echo "Makefile: Done checking missing dependencies of this package"
@@ -352,7 +319,7 @@ endif
 .PHONY: test
 test: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Makefile: Performing unit tests and coverage with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
-	bash -c "PYTHONPATH=. coverage run --append -m pytest $(pytest_general_opts) $(pytest_test_opts) $(test_dir)"
+	PYTHONPATH=. coverage run --append -m pytest $(pytest_general_opts) $(pytest_test_opts) $(test_dir)
 	coverage html
 	@echo "Makefile: Done performing unit tests and coverage"
 	@echo "Makefile: $@ done."
@@ -372,29 +339,29 @@ all: install develop check_reqs check ruff pylint test build builddoc check_reqs
 .PHONY: doclinkcheck
 doclinkcheck: $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done
 	@echo "Running Sphinx to check doc links"
-	@bash -c 'sphinx-build -b linkcheck -v $(doc_dir) $(doc_build_dir)/linkcheck; rc=$$?; if [ $$rc -ne 0 ]; then echo "::notice::doclinkcheck failed (ignored)"; fi'
+	@sphinx-build -b linkcheck -v $(doc_dir) $(doc_build_dir)/linkcheck; rc=$$?; if [ $$rc -ne 0 ]; then echo "::notice::doclinkcheck failed (ignored)"; fi
 	@echo "Done: Look for any errors in the above output or in: $(doc_build_dir)/linkcheck/output.txt"
 	@echo "Makefile: $@ done."
 
 .PHONY: release_branch
 release_branch:
-	@bash -c 'if [ -z "$(VERSION)" ]; then echo ""; echo "Error: VERSION env var is not set"; echo ""; false; fi'
-	@bash -c 'if [ -n "$$(git status -s)" ]; then echo ""; echo "Error: Local git repo has uncommitted files:"; echo ""; git status; false; fi'
+	@if [ -z "$(VERSION)" ]; then echo ""; echo "Error: VERSION env var is not set"; echo ""; false; fi
+	@if [ -n "$$(git status -s)" ]; then echo ""; echo "Error: Local git repo has uncommitted files:"; echo ""; git status; false; fi
 	git fetch origin
-	@bash -c 'if [ -z "$$(git tag -l $(VERSION)a0)" ]; then echo ""; echo "Error: Release start tag $(VERSION)a0 does not exist (the version has not been started)"; echo ""; false; fi'
-	@bash -c 'if [ -n "$$(git tag -l $(VERSION))" ]; then echo ""; echo "Error: Release tag $(VERSION) already exists (the version has already been released)"; echo ""; false; fi'
-	@bash -c 'if [[ -n "$${BRANCH}" ]]; then echo $${BRANCH} >branch.tmp; elif [[ "$${VERSION#*.*.}" == "0" ]]; then echo "master" >branch.tmp; else echo "stable_$${VERSION%.*}" >branch.tmp; fi'
-	@bash -c 'if [ -z "$$(git branch --contains $(VERSION)a0 $$(cat branch.tmp))" ]; then echo ""; echo "Error: Release start tag $(VERSION)a0 is not in target branch $$(cat branch.tmp), but in:"; echo ""; git branch --contains $(VERSION)a0;. false; fi'
+	@if [ -z "$$(git tag -l $(VERSION)a0)" ]; then echo ""; echo "Error: Release start tag $(VERSION)a0 does not exist (the version has not been started)"; echo ""; false; fi
+	@if [ -n "$$(git tag -l $(VERSION))" ]; then echo ""; echo "Error: Release tag $(VERSION) already exists (the version has already been released)"; echo ""; false; fi
+	@if [[ -n "$${BRANCH}" ]]; then echo $${BRANCH} >branch.tmp; elif [[ "$${VERSION#*.*.}" == "0" ]]; then echo "master" >branch.tmp; else echo "stable_$${VERSION%.*}" >branch.tmp; fi
+	@if [ -z "$$(git branch --contains $(VERSION)a0 $$(cat branch.tmp))" ]; then echo ""; echo "Error: Release start tag $(VERSION)a0 is not in target branch $$(cat branch.tmp), but in:"; echo ""; git branch --contains $(VERSION)a0;. false; fi
 	@echo "==> This will start the release of $(package_name) version $(VERSION) to PyPI using target branch $$(cat branch.tmp)"
 	@echo -n '==> Continue? [yN] '
-	@bash -c 'read answer; if [ "$$answer" != "y" ]; then echo "Aborted."; false; fi'
-	bash -c 'git checkout $$(cat branch.tmp)'
+	@read answer; if [ "$$answer" != "y" ]; then echo "Aborted."; false; fi
+	git checkout $$(cat branch.tmp)
 	git pull
-	@bash -c 'if [ -z "$$(git branch -l release_$(VERSION))" ]; then echo "Creating release branch release_$(VERSION)"; git checkout -b release_$(VERSION); fi'
+	@if [ -z "$$(git branch -l release_$(VERSION))" ]; then echo "Creating release branch release_$(VERSION)"; git checkout -b release_$(VERSION); fi
 	git checkout release_$(VERSION)
 	make authors
 	towncrier build --version $(VERSION) --yes
-	@bash -c 'if ls changes/*.rst >/dev/null 2>/dev/null; then echo ""; echo "Error: There are incorrectly named change fragment files that towncrier did not use:"; ls -1 changes/*.rst; echo ""; false; fi'
+	@if ls changes/*.rst >/dev/null 2>/dev/null; then echo ""; echo "Error: There are incorrectly named change fragment files that towncrier did not use:"; ls -1 changes/*.rst; echo ""; false; fi
 	git commit -asm "Release $(VERSION)"
 	git push --set-upstream origin release_$(VERSION)
 	rm -f branch.tmp
@@ -403,17 +370,17 @@ release_branch:
 
 .PHONY: release_publish
 release_publish:
-	@bash -c 'if [ -z "$(VERSION)" ]; then echo ""; echo "Error: VERSION env var is not set"; echo ""; false; fi'
-	@bash -c 'if [ -n "$$(git status -s)" ]; then echo ""; echo "Error: Local git repo has uncommitted files:"; echo ""; git status; false; fi'
+	@if [ -z "$(VERSION)" ]; then echo ""; echo "Error: VERSION env var is not set"; echo ""; false; fi
+	@if [ -n "$$(git status -s)" ]; then echo ""; echo "Error: Local git repo has uncommitted files:"; echo ""; git status; false; fi
 	git fetch origin
-	@bash -c 'if [ -n "$$(git tag -l $(VERSION))" ]; then echo ""; echo "Error: Release tag $(VERSION) already exists (the version has already been released)"; echo ""; false; fi'
-	@bash -c 'if [[ -n "$${BRANCH}" ]]; then echo $${BRANCH} >branch.tmp; elif [[ "$${VERSION#*.*.}" == "0" ]]; then echo "master" >branch.tmp; else echo "stable_$${VERSION%.*}" >branch.tmp; fi'
-	@bash -c 'if ! git show-ref --quiet refs/remotes/origin/$$(cat branch.tmp); then echo ""; echo "Error: Branch origin/$$(cat branch.tmp) does not exist. Incorrect VERSION env var?"; echo ""; false; fi'
-	@bash -c 'if [[ ! $$(git log --format=format:%s origin/$$(cat branch.tmp)~..origin/$$(cat branch.tmp)) =~ ^Release\ $(VERSION) ]]; then echo ""; echo "Error: Release PR for $(VERSION) has not been merged yet"; echo ""; false; fi'
+	@if [ -n "$$(git tag -l $(VERSION))" ]; then echo ""; echo "Error: Release tag $(VERSION) already exists (the version has already been released)"; echo ""; false; fi
+	@if [[ -n "$${BRANCH}" ]]; then echo $${BRANCH} >branch.tmp; elif [[ "$${VERSION#*.*.}" == "0" ]]; then echo "master" >branch.tmp; else echo "stable_$${VERSION%.*}" >branch.tmp; fi
+	@if ! git show-ref --quiet refs/remotes/origin/$$(cat branch.tmp); then echo ""; echo "Error: Branch origin/$$(cat branch.tmp) does not exist. Incorrect VERSION env var?"; echo ""; false; fi
+	@if [[ ! $$(git log --format=format:%s origin/$$(cat branch.tmp)~..origin/$$(cat branch.tmp)) =~ ^Release\ $(VERSION) ]]; then echo ""; echo "Error: Release PR for $(VERSION) has not been merged yet"; echo ""; false; fi
 	@echo "==> This will publish $(package_name) version $(VERSION) to PyPI using target branch $$(cat branch.tmp)"
 	@echo -n '==> Continue? [yN] '
-	@bash -c 'read answer; if [ "$$answer" != "y" ]; then echo "Aborted."; false; fi'
-	bash -c 'git checkout $$(cat branch.tmp)'
+	@read answer; if [ "$$answer" != "y" ]; then echo "Aborted."; false; fi
+	git checkout $$(cat branch.tmp)
 	git pull
 	git tag -f $(VERSION)
 	git push -f --tags
@@ -425,17 +392,17 @@ release_publish:
 
 .PHONY: start_branch
 start_branch:
-	@bash -c 'if [ -z "$(VERSION)" ]; then echo ""; echo "Error: VERSION env var is not set"; echo ""; false; fi'
-	@bash -c 'if [ -n "$$(git status -s)" ]; then echo ""; echo "Error: Local git repo has uncommitted files:"; echo ""; git status; false; fi'
+	@if [ -z "$(VERSION)" ]; then echo ""; echo "Error: VERSION env var is not set"; echo ""; false; fi
+	@if [ -n "$$(git status -s)" ]; then echo ""; echo "Error: Local git repo has uncommitted files:"; echo ""; git status; false; fi
 	git fetch origin
-	@bash -c 'if [ -n "$$(git tag -l $(VERSION))" ]; then echo ""; echo "Error: Release tag $(VERSION) already exists (the version has already been released)"; echo ""; false; fi'
-	@bash -c 'if [ -n "$$(git tag -l $(VERSION)a0)" ]; then echo ""; echo "Error: Release start tag $(VERSION)a0 already exists (the new version has alreay been started)"; echo ""; false; fi'
-	@bash -c 'if [ -n "$$(git branch -l start_$(VERSION))" ]; then echo ""; echo "Error: Start branch start_$(VERSION) already exists (the start of the new version is already underway)"; echo ""; false; fi'
-	@bash -c 'if [[ -n "$${BRANCH}" ]]; then echo $${BRANCH} >branch.tmp; elif [[ "$${VERSION#*.*.}" == "0" ]]; then echo "master" >branch.tmp; else echo "stable_$${VERSION%.*}" >branch.tmp; fi'
+	@if [ -n "$$(git tag -l $(VERSION))" ]; then echo ""; echo "Error: Release tag $(VERSION) already exists (the version has already been released)"; echo ""; false; fi
+	@if [ -n "$$(git tag -l $(VERSION)a0)" ]; then echo ""; echo "Error: Release start tag $(VERSION)a0 already exists (the new version has alreay been started)"; echo ""; false; fi
+	@if [ -n "$$(git branch -l start_$(VERSION))" ]; then echo ""; echo "Error: Start branch start_$(VERSION) already exists (the start of the new version is already underway)"; echo ""; false; fi
+	@if [[ -n "$${BRANCH}" ]]; then echo $${BRANCH} >branch.tmp; elif [[ "$${VERSION#*.*.}" == "0" ]]; then echo "master" >branch.tmp; else echo "stable_$${VERSION%.*}" >branch.tmp; fi
 	@echo "==> This will start new version $(VERSION) using target branch $$(cat branch.tmp)"
 	@echo -n '==> Continue? [yN] '
-	@bash -c 'read answer; if [ "$$answer" != "y" ]; then echo "Aborted."; false; fi'
-	bash -c 'git checkout $$(cat branch.tmp)'
+	@read answer; if [ "$$answer" != "y" ]; then echo "Aborted."; false; fi
+	git checkout $$(cat branch.tmp)
 	git pull
 	git checkout -b start_$(VERSION)
 	echo "Dummy change for starting new version $(VERSION)" >changes/noissue.$(VERSION).notshown.rst
@@ -448,17 +415,17 @@ start_branch:
 
 .PHONY: start_tag
 start_tag:
-	@bash -c 'if [ -z "$(VERSION)" ]; then echo ""; echo "Error: VERSION env var is not set"; echo ""; false; fi'
-	@bash -c 'if [ -n "$$(git status -s)" ]; then echo ""; echo "Error: Local git repo has uncommitted files:"; echo ""; git status; false; fi'
+	@if [ -z "$(VERSION)" ]; then echo ""; echo "Error: VERSION env var is not set"; echo ""; false; fi
+	@if [ -n "$$(git status -s)" ]; then echo ""; echo "Error: Local git repo has uncommitted files:"; echo ""; git status; false; fi
 	git fetch origin
-	@bash -c 'if [ -n "$$(git tag -l $(VERSION)a0)" ]; then echo ""; echo "Error: Release start tag $(VERSION)a0 already exists (the new version has alreay been started)"; echo ""; false; fi'
-	@bash -c 'if [[ -n "$${BRANCH}" ]]; then echo $${BRANCH} >branch.tmp; elif [[ "$${VERSION#*.*.}" == "0" ]]; then echo "master" >branch.tmp; else echo "stable_$${VERSION%.*}" >branch.tmp; fi'
-	@bash -c 'if ! git show-ref --quiet refs/remotes/origin/$$(cat branch.tmp); then echo ""; echo "Error: Branch origin/$$(cat branch.tmp) does not exist. Incorrect VERSION env var?"; echo ""; false; fi'
-	@bash -c 'if [[ ! $$(git log --format=format:%s origin/$$(cat branch.tmp)~..origin/$$(cat branch.tmp)) =~ ^Start\ $(VERSION) ]]; then echo ""; echo "Error: Start PR for $(VERSION) has not been merged yet"; echo ""; false; fi'
+	@if [ -n "$$(git tag -l $(VERSION)a0)" ]; then echo ""; echo "Error: Release start tag $(VERSION)a0 already exists (the new version has alreay been started)"; echo ""; false; fi
+	@if [[ -n "$${BRANCH}" ]]; then echo $${BRANCH} >branch.tmp; elif [[ "$${VERSION#*.*.}" == "0" ]]; then echo "master" >branch.tmp; else echo "stable_$${VERSION%.*}" >branch.tmp; fi
+	@if ! git show-ref --quiet refs/remotes/origin/$$(cat branch.tmp); then echo ""; echo "Error: Branch origin/$$(cat branch.tmp) does not exist. Incorrect VERSION env var?"; echo ""; false; fi
+	@if [[ ! $$(git log --format=format:%s origin/$$(cat branch.tmp)~..origin/$$(cat branch.tmp)) =~ ^Start\ $(VERSION) ]]; then echo ""; echo "Error: Start PR for $(VERSION) has not been merged yet"; echo ""; false; fi
 	@echo "==> This will complete the start of new version $(VERSION) using target branch $$(cat branch.tmp)"
 	@echo -n '==> Continue? [yN] '
-	@bash -c 'read answer; if [ "$$answer" != "y" ]; then echo "Aborted."; false; fi'
-	bash -c 'git checkout $$(cat branch.tmp)'
+	@read answer; if [ "$$answer" != "y" ]; then echo "Aborted."; false; fi
+	git checkout $$(cat branch.tmp)
 	git pull
 	git tag -f $(VERSION)a0
 	git push -f --tags
@@ -483,45 +450,45 @@ AUTHORS.md: _always
 	echo "" >>AUTHORS.md.tmp
 	echo "Sorted list of authors derived from git commit history:" >>AUTHORS.md.tmp
 	echo '```' >>AUTHORS.md.tmp
-	bash -c "git shortlog --summary --email HEAD | cut -f 2 | LC_ALL=C.UTF-8 sort >>AUTHORS.md.tmp"
+	git shortlog --summary --email HEAD | cut -f 2 | LC_ALL=C.UTF-8 sort >>AUTHORS.md.tmp
 	echo '```' >>AUTHORS.md.tmp
-	bash -c "if ! diff -q AUTHORS.md.tmp AUTHORS.md; then echo 'Updating AUTHORS.md as follows:'; diff AUTHORS.md.tmp AUTHORS.md; mv AUTHORS.md.tmp AUTHORS.md; else echo 'AUTHORS.md was already up to date'; rm AUTHORS.md.tmp; fi"
+	if ! diff -q AUTHORS.md.tmp AUTHORS.md; then echo 'Updating AUTHORS.md as follows:'; diff AUTHORS.md.tmp AUTHORS.md; mv AUTHORS.md.tmp AUTHORS.md; else echo 'AUTHORS.md was already up to date'; rm AUTHORS.md.tmp; fi
 
 .PHONY: clean
 clean:
-	-$(call RM_R_FUNC,*.pyc)
-	-$(call RM_R_FUNC,*.tmp)
-	-$(call RM_R_FUNC,tmp_*)
-	-$(call RM_FUNC,.coverage MANIFEST MANIFEST.in AUTHORS ChangeLog)
-	-$(call RMDIR_R_FUNC,__pycache__)
-	-$(call RMDIR_R_FUNC,.ruff_cache)
-	-$(call RMDIR_FUNC,build $(package_name).egg-info .pytest_cache)
+	find . -type f -name '*.pyc' -delete
+	find . -type f -name '*.tmp' -delete
+	find . -type f -name 'tmp_*' -delete
+	rm -f .coverage MANIFEST MANIFEST.in AUTHORS ChangeLog
+	find . -type d -name '__pycache__' | xargs -n 1 rm -rf
+	find . -type d -name '.ruff_cache' | xargs -n 1 rm -rf
+	rm -rf build $(package_name).egg-info .pytest_cache
 	docker image prune --force
 	@echo "Makefile: $@ done."
 
 .PHONY: clobber
 clobber: clean
-	-$(call RMDIR_FUNC,$(doc_build_dir) htmlcov)
-	-$(call RM_R_FUNC,*.done)
+	rm -rf $(doc_build_dir) htmlcov
+	find . -type f -name '*.done' -delete
 	@echo "Makefile: $@ done."
 
 $(done_dir)/base_$(pymn)_$(PACKAGE_LEVEL).done: Makefile base-requirements.txt minimum-constraints-develop.txt minimum-constraints-install.txt
 	@echo "Makefile: Installing base packages with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
-	-$(call RM_FUNC,$@)
+	rm -f $@
 	$(PYTHON_CMD) -m pip install $(pip_level_opts) -r base-requirements.txt
 	@echo "Makefile: Done installing base packages"
 	echo "done" >$@
 
 $(done_dir)/install_$(pymn)_$(PACKAGE_LEVEL).done: Makefile $(done_dir)/base_$(pymn)_$(PACKAGE_LEVEL).done requirements.txt minimum-constraints-develop.txt minimum-constraints-install.txt $(dist_dependent_files)
 	@echo "Makefile: Installing package and its prerequisites with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
-	-$(call RM_FUNC,$@)
+	rm -f $@
 	$(PYTHON_CMD) -m pip install $(pip_level_opts) .
 	@echo "Makefile: Done installing package and its prerequisites"
 	echo "done" >$@
 
 $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done: Makefile $(done_dir)/base_$(pymn)_$(PACKAGE_LEVEL).done dev-requirements.txt requirements.txt minimum-constraints-develop.txt minimum-constraints-install.txt
 	@echo "Makefile: Installing prerequisites for development with PACKAGE_LEVEL=$(PACKAGE_LEVEL)"
-	-$(call RM_FUNC,$@)
+	rm -f $@
 	$(PYTHON_CMD) -m pip install $(pip_level_opts) -r dev-requirements.txt
 	@echo "Makefile: Done installing prerequisites for development"
 	echo "done" >$@
@@ -534,18 +501,18 @@ $(doc_build_file): Makefile $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done $(
 $(sdist_file): Makefile $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done $(dist_dependent_files)
 	@echo "Makefile: Building the source distribution archive: $(sdist_file)"
 	$(PYTHON_CMD) -m build --no-isolation --sdist --outdir $(dist_dir) .
-	bash -c "ls -l $(sdist_file) || ls -l $(dist_dir) && echo package_level=$(package_level) && $(PYTHON_CMD) -m setuptools_scm"
+	ls -l $(sdist_file) || ls -l $(dist_dir) && echo package_level=$(package_level) && $(PYTHON_CMD) -m setuptools_scm
 	@echo "Makefile: Done building the source distribution archive: $(sdist_file)"
 
 $(bdist_file) $(version_file): $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done $(dist_dependent_files)
 	@echo "Makefile: Building the wheel distribution archive: $(bdist_file)"
 	$(PYTHON_CMD) -m build --no-isolation --wheel --outdir $(dist_dir) -C--universal .
-	bash -c "ls -l $(bdist_file) $(version_file) || ls -l $(dist_dir) && echo package_level=$(package_level) && $(PYTHON_CMD) -m setuptools_scm"
+	ls -l $(bdist_file) $(version_file) || ls -l $(dist_dir) && echo package_level=$(package_level) && $(PYTHON_CMD) -m setuptools_scm
 	@echo "Makefile: Done building the wheel distribution archive: $(bdist_file)"
 
 $(done_dir)/docker_$(pymn)_$(PACKAGE_LEVEL).done: Makefile $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done Dockerfile .dockerignore $(bdist_file)
 	@echo "Makefile: Building Docker image $(docker_image_name):$(docker_image_tag)"
-	-$(call RM_FUNC,$@)
+	rm -f $@
 	docker build --tag $(docker_image_name):$(docker_image_tag) --build-arg bdist_file=$(bdist_file) --build-arg package_version=$(subst +,.,$(package_version)) --build-arg build_date="$(shell date -Iseconds)" --build-arg git_commit="$(shell git rev-parse HEAD)" .
 	docker run --rm $(docker_image_name):$(docker_image_tag) --version
 	docker image list --filter reference=$(docker_image_name)
