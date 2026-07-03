@@ -51,9 +51,6 @@ colorama>=0.4.6
 # Unit test (indirect dependencies):
 pluggy>=1.5.0
 
-# packaging is used by pytest, pip-check-reqs, sphinx
-packaging>=24.2
-
 # Coverage reporting (no imports, invoked via coveralls script):
 # coveralls versions 4.0.0/4.0.1 require Python>=3.8 and pin Python<=3.12.
 # coveralls version 4.0.2 requires Python>=3.10 and no longer pins to a Python 3.x version.
