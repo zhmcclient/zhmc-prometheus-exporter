@@ -16,7 +16,7 @@ incremental==22.10.0
 click-default-group==1.2.4
 
 # Safety CI by pyup.io
-safety==3.6.2
+safety==3.8.1
 safety-schemas==0.0.16
 dparse==0.6.4
 # ruamel.yaml is used by safety and is covered in minimum-constraints-install.txt
@@ -28,16 +28,14 @@ pydantic_core==2.41.1
 typer==0.16.0
 typer-cli==0.16.0
 typer-slim==0.16.0
-psutil==6.1.0
-truststore==0.9.1
+truststore==0.10.4; python_version >= '3.10'
 
 # Bandit checker
 bandit==1.7.8
 # PyYAML is used by bandit and is covered in minimum-constraints-install.txt
 
 # Unit test (imports into testcases):
-# Need to comment out pytest==8.4.0 due to issue https://github.com/pyupio/safety/issues/847
-# pytest==8.4.0; python_version == '3.9'
+pytest==8.4.0; python_version == '3.9'
 pytest==9.0.3; python_version >= '3.10'
 pluggy==1.5.0
 importlib-metadata==8.7.0
@@ -119,9 +117,7 @@ joblib==1.5.3
 joserfc==1.6.8
 markdown-it-py==4.2.0
 mdurl==0.1.2
-# nltk 3.9.3 fixes CVE-2025-14009
-# Need to comment out nltk==3.9.2 due to issue https://github.com/pyupio/safety/issues/847
-# nltk==3.9.2; python_version == '3.9'
+nltk==3.9.2; python_version == '3.9'
 nltk==3.9.4; python_version >= '3.10'
 pbr==7.0.3
 pycparser==2.23
