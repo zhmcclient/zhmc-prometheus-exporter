@@ -2,7 +2,7 @@
 
 
 # Direct dependencies for development and indirect dependencies for development
-# that are needed for some reason (must be consistent with dev-requirements.txt)
+# that are needed for some reason (must be consistent with requirements-develop.txt)
 
 # PEP517 package builder, used in Makefile
 build==1.0.0
@@ -92,7 +92,7 @@ pipdeptree==2.24.0
 pip-check-reqs==2.5.1
 
 
-# Indirect dependencies for development that are not in dev-requirements.txt
+# Indirect dependencies for development that are not in requirements-develop.txt
 
 alabaster==0.7.9
 annotated-doc==0.0.4
