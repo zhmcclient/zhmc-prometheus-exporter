@@ -33,3 +33,4 @@ __pycache__/
 *.tmp
 .DS_Store
 /try/
+/extra_reqs*.txt
