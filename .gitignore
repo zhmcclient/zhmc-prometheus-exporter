@@ -31,6 +31,7 @@ __pycache__/
 # Other
 *.swp
 *.tmp
+tmp_*
 .DS_Store
 /try/
 /extra_reqs*.txt
