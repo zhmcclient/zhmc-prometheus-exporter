@@ -62,7 +62,7 @@ requests==2.32.4; python_version == '3.9'
 requests==2.33.0; python_version >= '3.10'
 rpds-py==0.7.1  # used by jsonschema>=4.18.0
 stomp.py==8.1.1
-tomli==2.0.1; python_version <= '3.10'  # used by a number of packages; built-in to Python>=3.11
+tomli==2.0.1
 typing-extensions==4.14.1
 vcs-versioning==1.1.1
 websocket-client==1.8.0
