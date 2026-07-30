@@ -618,19 +618,19 @@ def eval_condition(
             m.group(1), split_version(m.group(2), 3), m.group(3))
 
     # The variables that can be used in the expression
-    eval_vars = dict(
-        __builtins__={},
-        hmc_version=hmc_version,
-        hmc_api_version=hmc_api_version,
-        hmc_features=hmc_features,
-    )
+    eval_vars = {
+        '__builtins__': {},
+        'hmc_version': hmc_version,
+        'hmc_api_version': hmc_api_version,
+        'hmc_features': hmc_features,
+    }
     if resource_obj:
         # In an export-condition (not in a fetch-condition)
-        eval_vars.update(dict(
-            se_version=se_version,
-            se_features=se_features,
-            resource_obj=resource_obj,
-        ))
+        eval_vars.update({
+            'se_version': se_version,
+            'se_features': se_features,
+            'resource_obj': resource_obj,
+        })
 
     # --- begin debug code - enable in case of issues with conditions
     # var_dict = dict(eval_vars)
@@ -1090,7 +1090,8 @@ def build_family_objects(
             # Calculate the resource labels at the metric group level:
             mg_labels = dict(extra_labels)
             # labels is optional in the metrics schema:
-            default_labels = [dict(name='resource', value='resource_obj.name')]
+            default_labels = [
+                {'name': 'resource', 'value': 'resource_obj.name'}]
             yaml_labels = yaml_metric_group.get('labels', default_labels)
             for item in yaml_labels:
                 # name, value are required in the metrics schema:
@@ -1241,7 +1242,8 @@ def build_family_objects_res(
             # Calculate the resource labels at the metric group level:
             mg_labels = dict(extra_labels)
             # labels is optional in the metrics schema:
-            default_labels = [dict(name='resource', value='resource_obj.name')]
+            default_labels = [
+                {'name': 'resource', 'value': 'resource_obj.name'}]
             yaml_labels = yaml_metric_group.get('labels', default_labels)
             for item in yaml_labels:
                 # name, value are required in the metrics schema:
@@ -1442,7 +1444,7 @@ def build_family_objects_res(
     return family_objects
 
 
-class ZHMCUsageCollector():
+class ZHMCUsageCollector:
     # pylint: disable=too-few-public-methods,too-many-instance-attributes
     """Collects the usage for exporting."""
 
@@ -1700,7 +1702,7 @@ class ZHMCUsageCollector():
         self.fetch_thread = threading.Thread(
             name='FetchThread',
             target=self.run_fetch_thread,
-            kwargs=dict(session=session))
+            kwargs={'session': session})
         self.fetch_thread.start()
 
     def cleanup_fetch_thread(self):
