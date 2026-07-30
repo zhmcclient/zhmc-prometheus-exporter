@@ -110,7 +110,7 @@ roman-numerals==4.1.0
 # Package dependency management tools (not used by any make rules)
 pipdeptree==2.24.0
 pip-check-reqs==2.4.3; python_version == '3.8'
-pip-check-reqs==2.5.1; python_version >= '3.9'
+pip-check-reqs==2.5.6; python_version >= '3.9'
 
 
 # Indirect dependencies for development that are not in dev-requirements.txt
