@@ -482,6 +482,7 @@ class TestMetrics(unittest.TestCase):
         resource_cache = ResourceCache(
             client, cpc_list, cpc_list, yaml_metric_groups, exported_mg_names,
             se_features_by_cpc)
+        resource_cache.prepare()
         resource_cache.setup()  # from mocked env
 
         metrics_object = zhmc_prometheus_exporter.retrieve_metrics(context)
@@ -611,6 +612,7 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
         resource_cache = ResourceCache(
             client, cpc_list, cpc_list, yaml_metric_groups, exported_mg_names,
             se_features_by_cpc)
+        resource_cache.prepare()
         resource_cache.setup()  # from mocked env
 
         my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
@@ -702,6 +704,7 @@ class TestInitZHMCUsageCollector(unittest.TestCase):
         resource_cache = ResourceCache(
             client, cpc_list, cpc_list, yaml_metric_groups, exported_mg_names,
             se_features_by_cpc)
+        resource_cache.prepare()
         resource_cache.setup()  # from mocked env
 
         my_zhmc_usage_collector = zhmc_prometheus_exporter.ZHMCUsageCollector(
