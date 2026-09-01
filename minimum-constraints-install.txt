@@ -24,7 +24,7 @@ ld==0.5.0; sys_platform=="linux"
 
 # Direct dependencies for install (must be consistent with requirements.txt)
 
-zhmcclient==1.24.0
+zhmcclient==1.26.0
 
 # TODO: Use official prometheus-client version once we require Python>=3.10
 # prometheus-client==0.25.0
