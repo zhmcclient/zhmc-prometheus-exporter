@@ -27,6 +27,104 @@ Change log
    .. include:: tmp_changes.rst
 
 .. towncrier start
+Version 2.4.0
+^^^^^^^^^^^^^
+
+Released: 2026-09-01
+
+**Incompatible changes:**
+
+* Removed support for Python 3.8, because (1) Python 3.8 is out of service since
+  2024-10-07, and (2) the license definition according to PEP 639 requires
+  setuptools >= 77.0.3 which requires Python >= 3.9, and pyproject.toml does
+  not support environment markers. (`#842 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/842>`_)
+
+**Bug fixes:**
+
+* Changed from the unmaintained GitHub action gsactions/commit-message-checker
+  to its new fork ddev/commit-message-checker.
+
+* Development: Fixed that pip-missing-reqs raised TypeError by pinning pip
+  to <26.2.
+
+* Fixed safety issues up to 2026-07-10.
+
+* Development: Fixed that squash merges of the release/start PRs did not work in
+  the release/start process.
+
+* Dev: Added dependencies for Sphinx.
+
+* Relaxed the commit message length check in the test workflow so
+  that it no longer requires an empty line after the title and that it
+  ignores the PR ID created by squash commits when checking the length.
+
+* Test: Fixed new issues raised by pylint 4.0.0.
+
+* Upgraded the vendorized version of the 'prometheus_client' package to
+  0.21.1.post1 to pick up the fix for vulnerabilities detected by testssl.sh
+  (which by mistake was not in exporter version 1.7.0). (`#509 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/509>`_)
+
+* Fixed an HTTP 400,1 error when listing partitions of a CPC in DPM mode on
+  a HMC version 2.15. (`#823 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/823>`_)
+
+* Fixed an incorrect pattern that was used for matching URIs of virtual switches. (`#862 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/862>`_)
+
+* Handled inaccessible backing adapters during NIC discovery. (`#895 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/895>`_)
+
+**Enhancements:**
+
+* Test: Added check for missing and extra dependencies in minimum constraints
+  files based on installed packages. The result is displayed as a warning in
+  the summary of the GitHub Actions run of the "test" workflow.
+
+* Development: Added a GitHub Actions workflow named 'backport' that creates a
+  backport PR to the latest stable branch stable_M.N when a PR labeled with the
+  'backport' label is merged.
+
+* Docs: Added sections that describe how to handle GitHub Dependabot alerts
+  and how to use the assisted backporting of PRs.
+
+* Clarified in the metric help text for adapter/channel usage ratio metrics that
+  they indicate how much the adapter/channel is working (i.e. the fraction of
+  time it is processing I/O).
+
+* Test: Enabled tests on Python 3.14.
+
+* Added labels 'partition' and 'shared' to zhmc_channel_usage_ratio metric. (`#826 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/826>`_)
+
+* Test: Improved some settings for coverage measurement, and enabled branch
+  coverage reporting. This lowered the overall coverage percentage somewhat.
+  Increased the minimum version of the "coverage" package to support the
+  newer properties in the coverage config. Along with that, increased the
+  minimum version of the "coveralls" package. (`#848 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/848>`_)
+
+**Cleanup:**
+
+* Test: Added retries for sending coverage data to the coveralls.io site to
+  address issues with the site.
+
+* Dev: Changed default shell on Windows to use bash from WSL. Removed make macros
+  that encapsulated differences between Windows and Linux/macOS. Removed 'bash -c'
+  from commands in the Makefile.
+
+* Test: Reduced the GitHub Actions test environments to save resources.
+
+* Renamed base-requirements.txt to requirements-base.txt and dev-requirements.txt
+  to requirements-develop.txt, for consistency with other projects.
+
+* Removed Travis control file (was used in IBM internal fork).
+
+* Simplified pip dependency file requirements-develop.txt by removing any indirect
+  package dependencies and leaving that to the requirements of the packages
+  we use directly. Reorganized the minimum-constraints-develop.txt file
+  accordingly.
+
+* Resolved several issues reported by new ruff version 4.
+
+* Used new license format defined in PEP 639 to accommodate upcoming removal
+  of support for old format. (`#839 <https://github.com/zhmcclient/zhmc-prometheus-exporter/issues/839>`_)
+
+
 Version 2.3.0
 ^^^^^^^^^^^^^
 
