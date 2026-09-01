@@ -11,7 +11,7 @@
 # Base dependencies (must be consistent with requirements-base.txt)
 
 pip==26.0.1; python_version == '3.9'
-pip==26.1.2; python_version >= '3.10'
+pip==26.2; python_version >= '3.10'
 setuptools>=78.1.1; python_version == '3.9'
 setuptools==83.0.0; python_version >= '3.10'
 # Note on not specifying 'setuptools-scm[toml]': Extras cannot be in constraints files
