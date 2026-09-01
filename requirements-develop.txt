@@ -52,4 +52,4 @@ bandit>=1.7.8
 
 # Pip is covered by requirements-base.txt but needs to be repeated here because it is used by pip-check-reqs.
 # Pinning pip to <26.2 is a quick fix to circumvent https://github.com/adamtheturtle/pip-check-reqs/issues/570
-pip>=26.1.2,<26.2; python_version >= '3.10'
+pip>=26.2,<26.3; python_version >= '3.10'
