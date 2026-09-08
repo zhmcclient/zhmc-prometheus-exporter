@@ -319,8 +319,8 @@ ifeq ($(PLATFORM),Windows_native)
 # Reason for skipping on Windows is https://github.com/r1chardj0n3s/pip-check-reqs/issues/67
 	@echo "Makefile: Warning: Skipping the use of pip-missing-reqs on native Windows" >&2
 else
-	pip-missing-reqs $(package_name) --requirements-file=requirements.txt
-	pip-missing-reqs $(package_name) --requirements-file=minimum-constraints-install.txt
+	pip-missing-reqs $(package_dir) --requirements-file=requirements.txt
+	pip-missing-reqs $(package_dir) --requirements-file=minimum-constraints-install.txt
 endif
 	cat minimum-constraints-develop.txt minimum-constraints-install.txt >tmp_minimum-constraints.txt
 # Create empty tmp_initial-packages.txt for local runs that missed running check_reqs_prepare
