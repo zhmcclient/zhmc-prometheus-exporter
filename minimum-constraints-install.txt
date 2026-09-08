@@ -11,8 +11,8 @@
 # Base dependencies (must be consistent with requirements-base.txt)
 
 pip==26.0.1; python_version == '3.9'
-pip==26.1.2; python_version >= '3.10'
-setuptools>=78.1.1; python_version == '3.9'
+pip==26.2.0; python_version >= '3.10'
+setuptools==82.0.1; python_version == '3.9'
 setuptools==83.0.0; python_version >= '3.10'
 # Note on not specifying 'setuptools-scm[toml]': Extras cannot be in constraints files
 setuptools-scm==9.2.0
@@ -57,7 +57,7 @@ immutabledict==4.3.1
 jsonschema-specifications==2023.03.6  # used by jsonschema>=4.18.0
 MarkupSafe==2.0.0
 nocasedict==1.0.2
-packaging==24.2
+packaging==26.2
 referencing==0.28.4  # used by jsonschema>=4.18.0
 requests==2.32.4; python_version == '3.9'
 requests==2.33.0; python_version >= '3.10'
