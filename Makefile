@@ -348,8 +348,8 @@ $(done_dir)/bandit_$(pymn)_$(PACKAGE_LEVEL).done: Makefile $(done_dir)/develop_$
 $(done_dir)/check_reqs_$(pymn)_$(PACKAGE_LEVEL).done: Makefile $(done_dir)/develop_$(pymn)_$(PACKAGE_LEVEL).done minimum-constraints-develop.txt minimum-constraints-install.txt requirements.txt
 	@echo "Makefile: Checking missing dependencies of this package"
 	-$(call RM_FUNC,$@)
-	pip-missing-reqs $(package_name) --requirements-file=requirements.txt
-	pip-missing-reqs $(package_name) --requirements-file=minimum-constraints-install.txt
+	pip-missing-reqs $(package_dir) --requirements-file=requirements.txt
+	pip-missing-reqs $(package_dir) --requirements-file=minimum-constraints-install.txt
 	@echo "Makefile: Done checking missing dependencies of this package"
 ifeq ($(PLATFORM),Windows_native)
 # Reason for skipping on Windows is https://github.com/r1chardj0n3s/pip-check-reqs/issues/67
