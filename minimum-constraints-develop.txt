@@ -29,8 +29,9 @@ sphinx-git==10.1.1
 sphinx-rtd-theme==2.0.0
 
 # Package dependency checkers
-pipdeptree==2.24.0
-pip-check-reqs==2.5.6
+pipdeptree==2.28.0
+pip-check-reqs==2.5.6; python_version == '3.9'
+pip-check-reqs==3.0.0; python_version >= '3.10'
 
 # Safety checker
 safety==3.8.1
@@ -52,7 +53,7 @@ bandit==1.7.8
 
 # Pip is covered by requirements-base.txt but needs to be repeated here because it is used by pip-check-reqs.
 pip==26.0.1; python_version == '3.9'
-pip==26.1.2; python_version >= '3.10'
+pip==26.2.0; python_version >= '3.10'
 
 
 # Indirect dependencies for development that are not in requirements-develop.txt
@@ -106,11 +107,12 @@ marshmallow==3.26.2
 mccabe==0.7.0
 mdurl==0.1.2
 mypy_extensions==1.1.0
-nab-index==0.0.11
-nab-project==0.0.15
-nab-provider==0.0.15
-nab-python==0.0.11
-nab-resolver==0.0.11
+nab-index==0.0.15; python_version >= '3.10'
+nab-markersets==0.0.16; python_version >= '3.10'
+nab-project==0.0.15; python_version >= '3.10'
+nab-provider==0.0.15; python_version >= '3.10'
+nab-python==0.0.13; python_version >= '3.10'
+nab-resolver==0.0.15; python_version >= '3.10'
 nltk==3.10.0; python_version >= '3.10'
 nltk==3.9.2; python_version == '3.9'
 pbr==7.0.3
