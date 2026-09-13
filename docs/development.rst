@@ -355,16 +355,32 @@ local clone of the zhmc-prometheus-exporter Git repo.
     If any of the two safety runs fails, fix the safety issues that are reported,
     in a separate branch/PR.
 
-    Roll back the PR into any maintained stable branches.
+    :ref:`Backport <Backporting>` the PR into any maintained stable branches.
 
-3.  Check for any
+3.  Run the check for missing dependencies:
+
+    .. code-block:: sh
+
+        make check_reqs
+
+    If this fails, add the missing dependencies that are reported to the
+    correct minimum-constraints*.txt file, in a separate branch/PR.
+
+    You can determine the correct minimum-constraints*.txt file for a dependent
+    package by using ``python -m pipdeptree -r -p <package-name>`` to see which
+    other packages use it. The dependent package should be put into the
+    minimum-constraints*.txt file that has the package(s) using it.
+
+    :ref:`Backport <Backporting>` the PR into the latest ``stable_M.N`` branch.
+
+4.  Check for any
     `dependabot alerts <https://github.com/zhmcclient/zhmc-prometheus-exporter/security/dependabot>`_.
 
     If there are any dependabot alerts, fix them in a separate branch/PR.
 
-    Roll back the PR into any maintained stable branches.
+    :ref:`Backport <Backporting>` the PR into any maintained stable branches.
 
-4.  Create and push the release branch (replace M,N,U accordingly):
+5.  Create and push the release branch (replace M,N,U accordingly):
 
     .. code-block:: sh
 
@@ -391,7 +407,7 @@ local clone of the zhmc-prometheus-exporter Git repo.
     If this command fails, the fix can be committed to the release branch
     and the command above can be retried.
 
-5.  On GitHub, create a Pull Request for branch ``release_M.N.U``.
+6.  On GitHub, create a Pull Request for branch ``release_M.N.U``.
 
     Important: When creating Pull Requests, GitHub by default targets the
     ``master`` branch. When releasing based on a stable branch, you need to
@@ -406,18 +422,18 @@ local clone of the zhmc-prometheus-exporter Git repo.
     tests for all defined environments, since it discovers by the branch name
     that this is a PR for a release.
 
-6.  On GitHub, once the checks for that Pull Request have succeeded, merge the
+7.  On GitHub, once the checks for that Pull Request have succeeded, merge the
     Pull Request (no review is needed). This automatically deletes the branch
     on GitHub.
 
     If the PR did not succeed, fix the issues.
 
-7.  On GitHub, close milestone ``M.N.U``.
+8.  On GitHub, close milestone ``M.N.U``.
 
     Verify that the milestone has no open items anymore. If it does have open
     items, investigate why and fix (probably step 1 was not performed).
 
-8.  Publish the package (replace M,N,U accordingly):
+9.  Publish the package (replace M,N,U accordingly):
 
     .. code-block:: sh
 
@@ -439,7 +455,7 @@ local clone of the zhmc-prometheus-exporter Git repo.
     GitHub, and finally creates a new stable branch on GitHub if the master
     branch was released.
 
-9.  Verify the publishing
+10. Verify the publishing
 
     Wait for the "publish" workflow for the new release to have completed:
     https://github.com/zhmcclient/zhmc-prometheus-exporter/actions/workflows/publish.yml
@@ -452,7 +468,7 @@ local clone of the zhmc-prometheus-exporter Git repo.
     * Verify that the new version has a release on Github at
       https://github.com/zhmcclient/zhmc-prometheus-exporter/releases
 
-10. Verify the documentation on ReadTheDocs
+11. Verify the documentation on ReadTheDocs
 
     ReadTheDocs automatically activates the new version and sets it as a
     default version. Branches such as 'master' or 'stable' are no longer
@@ -467,7 +483,7 @@ local clone of the zhmc-prometheus-exporter Git repo.
       redirected to the URL for the new version. This verifies that it has been
       activated and set as the default version.
 
-11. Hide previous fix version on ReadTheDocs
+12. Hide previous fix version on ReadTheDocs
 
     When releasing a fix version != 0 (e.g. M.N.1), log on to
     https://readthedocs.org/accounts/login/, go to
