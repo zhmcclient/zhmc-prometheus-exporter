@@ -114,7 +114,7 @@ nab-provider==0.0.17; python_version >= '3.10'
 nab-python==0.0.13; python_version >= '3.10'
 nab-resolver==0.0.17; python_version >= '3.10'
 nab==0.0.17; python_version >= '3.10'
-nltk==3.10.0; python_version >= '3.10'
+nltk==3.10.3; python_version >= '3.10'
 nltk==3.9.2; python_version == '3.9'
 pathspec==1.0.3
 pbr==7.0.3
