@@ -911,8 +911,7 @@ def expand_global_label_value(
         return None
     try:
         value = func(hmc_info=hmc_info)
-    # pylint: disable=broad-exception-caught,broad-except
-    except Exception as exc:
+    except Exception as exc:  # pylint: disable=broad-exception-caught
         tb_str = traceback.format_tb(exc.__traceback__, limit=-1)[0]
         logprint(logging.WARNING, PRINT_ALWAYS,
                  f"Not adding global label '{label_name}' due to error when "
@@ -963,8 +962,7 @@ def expand_group_label_value(
             uris2resources=uris2resources_func,
             adapter_name=adapter_name_func,
             adapter_port=adapter_port_func)
-    # pylint: disable=broad-exception-caught,broad-except
-    except Exception as exc:
+    except Exception as exc:  # pylint: disable=broad-exception-caught
         tb_str = traceback.format_tb(exc.__traceback__, limit=-1)[0]
         logprint(logging.WARNING, PRINT_ALWAYS,
                  f"Not adding label '{label_name}' on the metrics of metric "
@@ -1016,8 +1014,7 @@ def expand_metric_label_value(
             uris2resources=uris2resources_func,
             adapter_name=adapter_name_func,
             adapter_port=adapter_port_func)
-    # pylint: disable=broad-exception-caught,broad-except
-    except Exception as exc:
+    except Exception as exc:  # pylint: disable=broad-exception-caught
         tb_str = traceback.format_tb(exc.__traceback__, limit=-1)[0]
         logprint(logging.WARNING, PRINT_ALWAYS,
                  f"Not adding label '{label_name}' on Prometheus metric "
@@ -1325,8 +1322,7 @@ def build_family_objects_res(
 
                     try:
                         metric_value = func(properties=resource.properties)
-                    # pylint: disable=broad-exception-caught,broad-except
-                    except Exception as exc:
+                    except Exception as exc:  # noqa: E501 pylint: disable=broad-exception-caught
                         # Typical exceptions:
                         # - jinja2.exceptions.UndefinedError, e.g. for missing
                         #   HMC resource properties
@@ -1541,8 +1537,7 @@ class ZHMCUsageCollector:
                                  "Abandoning after client authentication "
                                  f"error: {exc}")
                         raise
-                    # pylint: disable=broad-exception-caught,broad-except
-                    except Exception as exc:
+                    except Exception as exc:  # noqa: E501 pylint: disable=broad-exception-caught
                         tb_str = traceback.format_tb(
                             exc.__traceback__, limit=-1)[0]
                         logprint(logging.ERROR, PRINT_ALWAYS,
