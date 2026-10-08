@@ -1,1 +1,0 @@
-Handled inaccessible backing adapters during NIC discovery.
