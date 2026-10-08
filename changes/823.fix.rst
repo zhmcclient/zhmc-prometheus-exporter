@@ -1,2 +1,0 @@
-Fixed an HTTP 400,1 error when listing partitions of a CPC in DPM mode on
-a HMC version 2.15.
