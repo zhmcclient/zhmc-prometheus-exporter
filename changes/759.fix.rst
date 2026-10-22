@@ -1,0 +1,7 @@
+Fixed crashes of the exporter when object access permissions are missing for
+objects whose URIs are returned by the HMC. In particular, the exporter failed
+with a KeyError when the parent CPC of an adapter, partition, LPAR or virtual
+switch was inaccessible; and it failed when a storage group or storage volume
+was associated with an inaccessible CPC. Such objects are now treated as if
+they did not exist, i.e. no metrics are exported for them. Added unit tests
+for reduced object access permissions.
