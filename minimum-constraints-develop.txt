@@ -122,10 +122,10 @@ platformdirs==4.1.0
 pluggy==1.5.0
 pycodestyle==2.11.0
 pycparser==2.23
-pydantic_core==2.41.1; python_version <= '3.14'
-pydantic_core==2.50.1; python_version >= '3.15'
-pydantic==2.12.0; python_version <= '3.14'
-pydantic==2.14.1; python_version >= '3.15'
+pydantic_core==2.41.1; python_version == '3.9'
+pydantic_core==2.50.1; python_version >= '3.10'
+pydantic==2.12.0; python_version == '3.9'
+pydantic==2.14.1; python_version >= '3.10'
 pyflakes==3.1.0
 Pygments==2.20.0
 pyproject-api==1.6.1
@@ -156,7 +156,7 @@ truststore==0.10.4
 typer-cli==0.20.1
 typer-slim==0.20.1
 typer==0.20.1
-typing-inspection==0.4.2; python_version <= '3.14'
-typing-inspection==0.4.4; python_version >= '3.15'
+typing-inspection==0.4.2; python_version == '3.9'
+typing-inspection==0.4.4; python_version >= '3.10'
 virtualenv==20.36.1
 zipp==3.20.0

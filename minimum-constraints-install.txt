@@ -61,11 +61,12 @@ packaging==26.2
 referencing==0.28.4  # used by jsonschema>=4.18.0
 requests==2.32.4; python_version == '3.9'
 requests==2.33.0; python_version >= '3.10'
-rpds-py==0.27.1; python_version <= '3.14'  # used by jsonschema>=4.18.0
-rpds-py==2026.9.1; python_version >= '3.15'  # used by jsonschema>=4.18.0
+rpds-py==0.27.1; python_version == '3.9'  # used by jsonschema>=4.18.0
+rpds-py==0.30.0; python_version == '3.10'  # used by jsonschema>=4.18.0
+rpds-py==2026.9.1; python_version >= '3.11'  # used by jsonschema>=4.18.0
 stomp.py==8.1.1
 tomli==2.0.1
-typing-extensions==4.14.1; python_version <= '3.14'
-typing-extensions==4.16.0; python_version >= '3.15'
+typing-extensions==4.14.1; python_version == '3.9'
+typing-extensions==4.16.0; python_version >= '3.10'
 vcs-versioning==1.1.1
 websocket-client==1.8.0
