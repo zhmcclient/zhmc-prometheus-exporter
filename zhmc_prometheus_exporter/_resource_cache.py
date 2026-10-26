@@ -666,12 +666,15 @@ class ResourceCache:
                      f"{cpc.name}.{partition.name}.{nic.name}")
             backing_info = self._get_backing_adapter_info(nic)
             if backing_info is None:
-                # Backing adapter or virtual switch is inaccessible
+                # Backing adapter or virtual switch is inaccessible. Remove
+                # the NIC from the target resources so it is not exported.
                 logprint(
                     logging.WARNING, PRINT_ALWAYS,
                     f"Skipping NIC {cpc.name}.{partition.name}.{nic.name} "
                     "because its backing adapter or virtual switch is "
                     "inaccessible")
+                del self._target_cpc_resources_by_id[id(nic)]
+                del self._nics[id(nic)]
                 return
             adapter_name, port_index = backing_info
             nic.adapter_name = adapter_name
@@ -705,7 +708,8 @@ class ResourceCache:
         self._all_resources_by_uri[sg.uri] = sg
         self._all_storage_groups_by_id[id(sg)] = sg
         cpc_uri = sg.get_property('cpc-uri')
-        cpc = self._all_resources_by_uri[cpc_uri]
+        # The CPC may be inaccessible (None), in which case it is not a target
+        cpc = self.lookup(cpc_uri)
         if cpc in self._target_cpc_list:  # comparison by object ID
             self._target_cpc_resources_by_id[id(sg)] = sg
             self._storage_groups[id(sg)] = sg
@@ -720,7 +724,8 @@ class ResourceCache:
         self._all_resources_by_uri[sv.uri] = sv
         sg = sv.manager.parent
         cpc_uri = sg.get_property('cpc-uri')
-        cpc = self._all_resources_by_uri[cpc_uri]
+        # The CPC may be inaccessible (None), in which case it is not a target
+        cpc = self.lookup(cpc_uri)
         if cpc in self._target_cpc_list:  # comparison by object ID
             self._target_cpc_resources_by_id[id(sv)] = sv
             self._storage_volumes[id(sv)] = sv
@@ -1153,7 +1158,11 @@ class ResourceCache:
                 self._add_inaccessible(uri)
                 return None
             cpc_uri = part_props['parent']
-            cpc = self._all_resources_by_uri[cpc_uri]
+            cpc = self.lookup(cpc_uri)
+            if cpc is None:
+                # The parent CPC is inaccessible, so the resource is as well
+                self._add_inaccessible(uri)
+                return None
             part = cpc.partitions.resource_object(uri, part_props)
             self._add_partition(part)
             return part
@@ -1168,7 +1177,11 @@ class ResourceCache:
                 self._add_inaccessible(uri)
                 return None
             cpc_uri = lpar_props['parent']
-            cpc = self._all_resources_by_uri[cpc_uri]
+            cpc = self.lookup(cpc_uri)
+            if cpc is None:
+                # The parent CPC is inaccessible, so the resource is as well
+                self._add_inaccessible(uri)
+                return None
             lpar = cpc.lpars.resource_object(uri, lpar_props)
             self._add_logical_partition(lpar)
             return lpar
@@ -1183,7 +1196,11 @@ class ResourceCache:
                 self._add_inaccessible(uri)
                 return None
             cpc_uri = ad_props['parent']
-            cpc = self._all_resources_by_uri[cpc_uri]
+            cpc = self.lookup(cpc_uri)
+            if cpc is None:
+                # The parent CPC is inaccessible, so the resource is as well
+                self._add_inaccessible(uri)
+                return None
             ad = cpc.adapters.resource_object(uri, ad_props)
             self._add_adapter(ad)
             return ad
@@ -1213,7 +1230,11 @@ class ResourceCache:
                 self._add_inaccessible(uri)
                 return None
             cpc_uri = vswitch_props['parent']
-            cpc = self._all_resources_by_uri[cpc_uri]
+            cpc = self.lookup(cpc_uri)
+            if cpc is None:
+                # The parent CPC is inaccessible, so the resource is as well
+                self._add_inaccessible(uri)
+                return None
             vswitch = cpc.vswitches.resource_object(uri, vswitch_props)
             self._add_vswitch(vswitch)
             return vswitch

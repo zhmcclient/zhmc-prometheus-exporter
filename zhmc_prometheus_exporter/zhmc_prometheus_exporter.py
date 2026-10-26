@@ -932,7 +932,9 @@ def expand_group_label_value(
         return resource_cache.lookup(uri)
 
     def uris2resources_func(uris):
-        return [resource_cache.lookup(uri) for uri in uris]
+        # Inaccessible resources (None) are omitted
+        resources = [resource_cache.lookup(uri) for uri in uris]
+        return [res for res in resources if res is not None]
 
     def adapter_name_func(nic):
         # Get the original Nic object that has the dynamic attributes with the
@@ -984,7 +986,9 @@ def expand_metric_label_value(
         return resource_cache.lookup(uri)
 
     def uris2resources_func(uris):
-        return [resource_cache.lookup(uri) for uri in uris]
+        # Inaccessible resources (None) are omitted
+        resources = [resource_cache.lookup(uri) for uri in uris]
+        return [res for res in resources if res is not None]
 
     def adapter_name_func(nic):
         # Get the original Nic object that has the dynamic attributes with the
@@ -1687,6 +1691,9 @@ class ZHMCUsageCollector:
             # Update properties of our local resource objects from result
             for uri, updated_res in updated_resources.items():
                 res = self.resource_cache.lookup(uri)
+                if res is None:
+                    # Resource is inaccessible
+                    continue
                 res.update_properties_local(updated_res.properties)
 
     def start_fetch_thread(self, session):
